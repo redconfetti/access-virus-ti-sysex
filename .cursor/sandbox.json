@@ -1,0 +1,22 @@
+{
+  "type": "workspace_readwrite",
+  "additionalReadwritePaths": [],
+  "additionalReadonlyPaths": [],
+  "disableTmpWrite": true,
+  "enableSharedBuildCache": true,
+  "networkPolicy": {
+    "default": "deny",
+    "allow": [
+      "github.com",
+      "codeload.github.com",
+      "*.githubusercontent.com",
+      "gitlab.com",
+      "bitbucket.org",
+      "deb.debian.org",
+      "security.ubuntu.com",
+      "archive.ubuntu.com",
+      "json.schemastore.org"
+    ],
+    "deny": []
+  }
+}
