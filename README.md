@@ -59,51 +59,39 @@ Multi mode programs in order to supply you with old and new fashion Multi mode
 program. The additional programs can be accessed on slot 17-127.
 
 The "Multi" data that is stored in a "Multi" program, for both embedded and
-reference type multis, is as follows:
+reference type multis, is as follows.
 
-* Global Parameters
+**Official parameter list for this project.** The fields below match the **Virus TI**
+**Edit Multi** screen (TI manual). They are the target set for mapping the
+267-byte `DUMP_MULTI` payload. See [docs/multis.md](docs/multis.md) for dump
+offsets and [docs/live-sysex.md](docs/live-sysex.md) for live-only controls
+(e.g. Reverb Send while editing a part).
+
+*Not on Edit Multi:* per-part effect sends (Reverb Send), shared Multi Delay
+(OS4 docs), and CONFIG globals — [docs/multis.md](docs/multis.md#beyond-edit-multi).
+
+* Global (Edit Multi)
   * Multi Program Name
-  * Master Clock Tempo: 63 bpm to 190 bpm - Specifies the tempo that applies
-    to all parts in the Multi, overriding any Master Clock/Tempo parameters
-    included in the Single programs
-  * Global routing settings
-* Part Settings
+  * Master Clock Tempo: 63–190 bpm — tempo for all parts in the Multi,
+    overriding Single-program Master Clock settings
+  * Keyboard to MIDI: Disabled / Enabled — **global** (one built-in keyboard).
+    **TI Keyboard and Polar** on the panel; **desktop module** has no keyboard.
+    Live `0x72` param `0x40` works from AURA; **not stored in `DUMP_MULTI`**
+    on the desktop module (same as live-only for multi file purposes).
+* Part (Edit Multi)
   * Part Enable: On/Off
-  * Bank: Selects the bank from which a Single program is automatically copied
-    into the current part (used only with reference multis)
-  * Program: 0 to 127 - Selects the Single program to be automatically copied
-    into the current Part (usedo nly with referene multis)
-  * Volume: -64 to +63 - Bipolar parameter for balancing levels between
-    different Parts
-  * Panorama: -64 to +63 - Stereo position of the Part. Overrides/overwrites the
-    Single parameter of the same name.
-  * MIDI Channel: 01 to 16 - The MIDI channel to which this Part will respond.
-  * Output: Out 1 L ... USB2 R - Sends this Part to the selected analogue or USB
-    output. Each option is either OUT or USB, with L (left), R (right) or
-    L+R (Left + Right). There are 3 analog outputs (OUT 1, OUT 2, OUT 3), and 3
-    USB  outputs (USB 1, USB 2, USB 3)
-  * Transpose: -48 to +48 semitones - Part transposition. Adds/subtracts from
-    the Single parameter of the same name.
-  * Detune: -64 to +63 - Tunes all pitched elements (oscillators, filters)
-    within a fairly narrow range.
-  * Priority: Low/High - Specifies whether note-stealing will favor the current
-    Part when all voices in the Virus have been used up. The Virus TI has plenty
-    of voices and applies a very clever note-stealing algorithm, so you should
-    seldom (or never) notice this happening.
-  * Init Volume: Off, 1 to 127 - Initializes MIDI volume (CC#7) for the current
-    Part whenever this Multi program is selected. See Volume RX below.
-  * Low Key: C-2 to G8 - The lowest MIDI note to which this Part will respond.
-    If this is higher than High Key (see below) the range between Low Key and
-    High Key is disabled, and all notes outside this range are enabled.
-  * High Key: C-2 to G8 - The highest MIDI note to which this Part will respond.
-    If this is set lower than Low Key (see above), the range between Low Key
-    and High Key is disabled, and all notes outside this range are enabled.
-  * Hold Pedal: Disabled/Enabled - Specifies whether the Part will respond to
-    MIDI CC#64 (usually a Sustain Pedal)
-  * Volume RX: Disabled/Enabled - Specifies whether the Part will respond to
-    MIDI CC#7 (Volume)
-  * Prog Change: Disabled/Enabled - Specifies whether the Part will respond to
-    MIDI Program Change messages. The global "Program Change" parameter in the
-    CONFIG menu is ignored.
-  * Patch Volume: Quick access to the Patch Volume parameter, used for balancing
-    levels between different programs.
+  * Bank — reference multis only: bank from which a Single is copied into the part
+  * Program: 0–127 — reference multis only: program number to copy into the part
+  * Volume: −64 to +63 — balance between parts (AURA: **Part Level**)
+  * Panorama: −64 to +63 — part stereo position; overrides the Single parameter
+  * MIDI Channel: 1–16
+  * Output: Out 1 L … USB 3 R (analog Out 1–3 and USB 1–3, each L / L+R / R)
+  * Transpose: −48 to +48 semitones — adds to the Single transpose value
+  * Detune: −64 to +63
+  * Priority: Low / High — note-stealing preference when voices are exhausted
+  * Init Volume: Off, 1–127 — MIDI volume (CC#7) when the Multi is selected
+  * Low Key / High Key: C−2 to G8 — part note range (inverted range = outside range enabled)
+  * Hold Pedal: Disabled / Enabled — MIDI CC#64 (sustain)
+  * Volume RX: Disabled / Enabled — MIDI CC#7
+  * Program Change: Disabled / Enabled — part responds to MIDI Program Change;
+    CONFIG “Program Change” global is ignored for parts
