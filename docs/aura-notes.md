@@ -1,8 +1,10 @@
 # AURA Plugin Notes
 
+**Version used for captures in this repo:** **26.05.17** (Virus TI mk2 desktop).
+
 ## Discovered Bugs
 
-Issues observed when using the AURA Plugin with a Virus TI mk2.
+Issues observed when using the AURA Plugin (**26.05.17**) with a Virus TI mk2.
 Live SysEx (`cmd=0x72` / `0x6E`) often works even when the
 **267-byte `DUMP_MULTI`** does not reflect the change.
 
@@ -19,7 +21,8 @@ Live SysEx (`cmd=0x72` / `0x6E`) often works even when the
 
 | AURA label     | Edit Multi / synth parameter                                                            |
 | -------------- | --------------------------------------------------------------------------------------- |
-| **Part Level** | Part **Volume** (`0x99 + part`, live `0x27`); not a separate Patch Volume in multi dump |
+| **Part Level** | Multi **Volume** (`0x99 + part`, live `0x27`) on Edit Multi page |
+| **Patch Volume** | Edit Single → Common; **CC 91 only** — see [control-change.md](control-change.md) |
 
 AURA may display the **stored** byte value (e.g. `100` = `0x64`)
 while the Virus panel shows **bipolar** UI (e.g. `+36` where `0x64`
@@ -30,6 +33,7 @@ while the Virus panel shows **bipolar** UI (e.g. `+36` where `0x64`
 | Behavior                    | Notes                                                      |
 | --------------------------- | ---------------------------------------------------------- |
 | Init Volume → **Off** (`0`) | AURA also sets **Volume RX** to **Disabled** automatically |
+| Smooth Mode → **Off**       | AURA **26.05.17** cannot send Off; hardware accepts `71 00 19 00` |
 
 When capturing Init Volume, note **Volume RX** on the panel after
 setting Init Volume — do not assume RX stayed enabled.

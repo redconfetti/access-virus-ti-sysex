@@ -350,12 +350,20 @@ MIDI**. Remaining bytes are metadata or keyboard-only storage.
 | `0xE8..0xF7` | **16 × `0x00`**                     | Between Pan and flags — candidate for Keyboard to MIDI            |
 
 Elimination captures confirmed **`0xB9..0xC7`** and **`0xE8..0xF7`** do
-not hold Pan, Output, Enable, or Master Clock. **Keyboard to MIDI** cannot
-be probed on the desktop module (enable/disable dumps are identical). On
-**TI Keyboard / Polar**, toggle Edit Multi **Keyboard to MIDI** and dump.
-CONFIG **Local** / **Mode** are separate globals — see
-[global-live-edit.md](global-live-edit.md) for **`cmd=0x73`** settings to
-test against these regions.
+not hold Pan, Output, Enable, or Master Clock.
+
+**Hardware correlation (edit buffer, INIT MULTI):** live edits for **Bend
+Up/Down** (`cmd=0x71`, `0x1A`/`0x1B`), **Secondary Output** (`0x73`/`0x72`,
+`0x2D`), and **Keyboard** (`0x72`, `0x40`) produced **identical**
+`DUMP_MULTI` vs baseline — none of the unmapped regions changed. These
+settings are **runtime-only** on the desktop module (or stored outside this
+267-byte block). Global **`0x73`** settings (e.g. All Delays `0x1B`) also
+did not alter the multi dump.
+
+**Keyboard to MIDI** cannot be probed on the desktop module (enable/disable
+dumps are identical). On **TI Keyboard / Polar**, toggle Edit Multi
+**Keyboard to MIDI** and dump. CONFIG **Local** / **Mode** are separate
+globals — see [global-live-edit.md](global-live-edit.md).
 
 #### INIT MULTI slot 32 reference
 

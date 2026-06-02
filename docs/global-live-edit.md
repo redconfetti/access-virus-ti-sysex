@@ -31,8 +31,10 @@ when changed on the front panel.
 | `0x5F`   | MIDI Controller Page B | See [MIDI Controller Page B](#midi-controller-page-b-0x5f) | Unverified   | —           |
 | `0x60`   | Global ARP Note Send   | See [Global ARP Note Send](#global-arp-note-send-0x60) | Unverified   | —           |
 | `0x6A`   | MIDI Clock             | See [MIDI Clock](#midi-clock-0x6a)      | Unverified   | —           |
+| `0x76`   | Memory Protect         | See [Memory Protect](#memory-protect-0x76) | Unverified   | —           |
 | `0x7C`   | Global MIDI Channel    | Zero-based (`00` = ch 1 … `0F` = ch 16) | Unverified   | —           |
 | `0x7D`   | LED Mode               | See [LED Mode](#led-mode-0x7d)          | Unverified   | —           |
+| `0x7E`   | LCD Contrast           | See [LCD Contrast](#lcd-contrast-0x7e)  | Unverified   | —           |
 
 ## Parameters
 
@@ -271,6 +273,24 @@ F0 00 20 33 01 00 73 00 6A 01 F7
 F0 00 20 33 01 00 73 00 6A 02 F7
 ```
 
+### Memory Protect (`0x76`)
+
+**Memory Protect** on/off — prevents overwriting stored programs when
+enabled.
+
+| Value | Setting   |
+| ----- | --------- |
+| `00`  | Disabled  |
+| `01`  | Enabled   |
+
+```text
+# Disabled
+F0 00 20 33 01 00 73 00 76 00 F7
+
+# Enabled
+F0 00 20 33 01 00 73 00 76 01 F7
+```
+
 ### Global MIDI Channel (`0x7C`)
 
 Zero-based channel index (same convention as per-part MIDI channel in
@@ -311,6 +331,32 @@ F0 00 20 33 01 00 73 00 7D 03 F7   # Output1
 F0 00 20 33 01 00 73 00 7D 04 F7   # Output2
 F0 00 20 33 01 00 73 00 7D 05 F7   # Output3
 F0 00 20 33 01 00 73 00 7D 06 F7   # ---
+```
+
+### LCD Contrast (`0x7E`)
+
+**LCD** contrast (**0%**–**100%**). Same encoding as
+[BPM Brightness](#bpm-brightness-0x32) / [LED Lux](#led-lux-0x33): direct
+7-bit `0x00`–`0x7F`,
+
+```text
+stored = min(0x7F, round(percent × 128 / 100))
+```
+
+| LCD     | `<value>` |
+| ------- | --------- |
+| 0.0%    | `00`      |
+| 31.3%   | `28`      |
+| 50.0%   | `40`      |
+| 98.4%   | `7E`      |
+| 100.0%  | `7F`      |
+
+```text
+F0 00 20 33 01 00 73 00 7E 00 F7   # 0%
+F0 00 20 33 01 00 73 00 7E 28 F7   # 31.3%
+F0 00 20 33 01 00 73 00 7E 40 F7   # 50%
+F0 00 20 33 01 00 73 00 7E 7E F7   # 98.4%
+F0 00 20 33 01 00 73 00 7E 7F F7   # 100%
 ```
 
 ## Correlation with `DUMP_MULTI` (planned)

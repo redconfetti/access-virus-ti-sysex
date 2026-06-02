@@ -200,6 +200,26 @@ Run in order after any setup change (port name, OS update, plugin path).
 | 3   | P16 Enable `48` `00`   | Part 16 **Off**          |
 | 4   | P1 Vol `27` `48` (+8)  | Part 1 Vol **+8**        |
 
+## Unmapped-region correlation tests
+
+After loading **INIT MULTI** in the edit buffer, send a live edit and
+`REQUEST_MULTI` (`31 00 7F 7C`); diff against baseline. Sanity check:
+Part 1 Volume (`72 00 27 48`) changes **`0x99`** only (+ checksum).
+
+Tested **2026-06-02** on TI mk2 desktop — **no** `DUMP_MULTI` change in
+`0x09..0x0C`, `0x19..0x28`, `0xB9..0xC7`, or `0xE8..0xF7` for:
+
+| Live message (summary)        | Notes                          |
+| ----------------------------- | ------------------------------ |
+| Bend Up `71 00 1A` `00`/`7F`  | Part 1                         |
+| Bend Down `71 00 1B` `00`/`7F`| Part 1                         |
+| Secondary Out `73 00 2D`/`01` | AURA path                      |
+| Secondary Out `72 00 2D 01`   | Alternate cmd — still no dump  |
+| Keyboard `72 00 40` `00`/`01`| Desktop                        |
+| All Delays `73 00 1B 01`      | Global — not in multi dump     |
+
+Use `receivemidi syx` (not `dump`) for hex capture.
+
 Expected single-byte dump changes: (1) `0xF9` `0x45` to `0x41`; (2) back to
 `0x45`; (3) `0x108` `0x45` to `0x44`; (4) `0x99` `0x40` to `0x48`.
 

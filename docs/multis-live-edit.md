@@ -6,6 +6,12 @@ Live SysEx notes for Multi edit behavior on Virus TI mk2.
 F0 00 20 33 01 00 72 <part> <param> <value> F7
 ```
 
+Some AURA edits use **`cmd=0x71`** instead (same byte layout):
+
+```text
+F0 00 20 33 01 00 71 <part> <param> <value> F7
+```
+
 - `<part>` — zero-based part index (`00` = Part 1, `0F` = Part 16)
 - `<param>` — Multi edit parameter ID
 - `<value>` — parameter value (encoding depends on parameter)
@@ -22,14 +28,17 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 | `0x24`   | `0x69 + part`                | High Key         | Part high key limit                          |
 | `0x25`   | `0x79 + part`                | Transpose        | Part transposition                           |
 | `0x26`   | `0x89 + part`                | Detune           | Part detune                                  |
+| `0x1A`   | **Not in dump**              | Bend Up          | Pitch bend up limit (`cmd=0x71`)             |
+| `0x1B`   | **Not in dump**              | Bend Down        | Pitch bend down limit (`cmd=0x71`)           |
 | `0x27`   | `0x99 + (part−1)`            | Volume           | Part level (Part 16 at `0xA8`)               |
 | `0x20`   | `0x29 + (part−1)`            | Bank             | Single bank index (P1 at `0x29`)             |
 | `0x21`   | `0x39 + (part−1)`            | Program          | Single program 0–127 (P1 at `0x39`)          |
 | `0x22`   | `0x49 + (part−1)`            | MIDI Channel     | Part MIDI channel 1–16 (P1 at `0x49`)        |
 | `0x28`   | `0xA9 + (part−1)`            | Init Volume      | MIDI volume on multi select (Part 16 `0xB8`) |
 | `0x29`   | `0xC8 + part`                | Output Routing   | Part output bus and channel                  |
+| `0x2D`   | **Not in dump** (`0x73` AURA) | Secondary Output | Second output bus                            |
 | `0x2B`   | `0xD8 + part`                | Panorama         | Part pan position                            |
-| `0x40`   | Global (dump target unknown) | Keyboard-related | Keyboard global behavior control (unmapped)  |
+| `0x40`   | **Not in dump** (desktop)    | Keyboard-related | Keyboard global behavior control             |
 | `0x48`   | `0xF8 + part` (packed flags) | Part Enable      | Part on/off                                  |
 | `0x49`   | `0xF8 + part` (packed flags) | Volume RX        | Receive MIDI CC#7                            |
 | `0x4A`   | `0xF8 + part` (packed flags) | Hold Pedal       | Sustain pedal behavior                       |
@@ -69,6 +78,60 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 - Dump correlation: `0x89 + part`.
 - Live/dump values align (`00` = minimum, `40` = center-ish, `7F` = maximum).
 - Supported values: see **Value Reference → Bipolar `-63..+64` (live encoding)**.
+
+### Bend Up (`0x1A`, `cmd=0x71`)
+
+- Per-part **pitch bend up** limit (Edit Single → Common; AURA: “Bend Up”).
+- Sent via **`cmd=0x71`**, not `0x72`:
+
+  ```text
+  F0 00 20 33 01 00 71 <part> <param> <value> F7
+  ```
+
+- Dump correlation: **not in `DUMP_MULTI`** (edit buffer; hardware-tested:
+  `71 00 1A` at `00` / `7F` — identical dump vs INIT baseline).
+- Encoding: **`stored = ui + 64`** (center `0x40` = 0); UI **−64..+63** →
+  `0x00..0x7F`.
+
+| UI    | `<value>` (Part 1) |
+| ----- | ------------------ |
+| −64   | `00`               |
+| −2    | `3E`               |
+| 0     | `40`               |
+| +2    | `42`               |
+| +63   | `7F`               |
+
+```text
+F0 00 20 33 01 00 71 00 1A 00 F7   # −64
+F0 00 20 33 01 00 71 00 1A 3E F7   # −2
+F0 00 20 33 01 00 71 00 1A 40 F7   # 0
+F0 00 20 33 01 00 71 00 1A 42 F7   # +2
+F0 00 20 33 01 00 71 00 1A 7F F7   # +63
+```
+
+### Bend Down (`0x1B`, `cmd=0x71`)
+
+- Per-part **pitch bend down** limit (Edit Single → Common).
+- Same transport and encoding as [Bend Up](#bend-up-0x1a-cmd0x71) (`cmd=0x71`,
+  **`stored = ui + 64`**, UI **−64..+63**).
+- Dump correlation: **not in `DUMP_MULTI`** (hardware-tested: `71 00 1B` at
+  `00` / `7F` — no dump change).
+
+| UI    | `<value>` (Part 1) |
+| ----- | ------------------ |
+| −64   | `00`               |
+| −2    | `3E`               |
+| 0     | `40`               |
+| +2    | `42`               |
+| +63   | `7F`               |
+
+```text
+F0 00 20 33 01 00 71 00 1B 00 F7   # −64
+F0 00 20 33 01 00 71 00 1B 3E F7   # −2
+F0 00 20 33 01 00 71 00 1B 40 F7   # 0
+F0 00 20 33 01 00 71 00 1B 42 F7   # +2
+F0 00 20 33 01 00 71 00 1B 7F F7   # +63
+```
 
 ### Volume (`0x27`)
 
@@ -114,6 +177,23 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 - Dump correlation: `0xC8 + part`.
 - Supported values: see [Output Routing Enum (`0x29`)](#output-routing-enum-0x29).
 
+### Secondary Output (`0x2D`)
+
+- Per-part **secondary** output routing (Edit Multi / AURA).
+- **AURA** sends this via **`cmd=0x73`**, not `0x72`:
+
+  ```text
+  F0 00 20 33 01 00 73 00 2D <value> F7
+  ```
+
+  Captures are for **Part 1** with that part selected in AURA; whether
+  other parts use the same param with a different part selector is **not
+  confirmed**.
+- Dump correlation: **not in `DUMP_MULTI`** (hardware-tested: `73 00 2D`
+  Off/`01`, and `72 00 2D 01` — no dump change vs INIT baseline).
+- Supported values: see
+  [Secondary Output Enum (`0x2D`)](#secondary-output-enum-0x2d).
+
 ### Panorama (`0x2B`)
 
 - Per-part panorama setting.
@@ -124,7 +204,8 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 
 - Observed as global control (`part=00`).
 - AURA label: `kbd local enabled`.
-- On TI desktop module, toggling this does not change `DUMP_MULTI`.
+- On TI desktop module, **`72 00 40` on/off does not change `DUMP_MULTI`**
+  (hardware-tested).
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
 ### Part Enable (`0x48`)
@@ -263,6 +344,37 @@ Used by: `0x23` (Low Key), `0x24` (High Key).
 | `0F`–`11` | USB 3: L, L+R, R |
 
 Used by: `0x29`.
+
+### Secondary Output Enum (`0x2D`)
+
+**`00`** = Off. Otherwise same routes as
+[primary output](#output-routing-enum-0x29), offset by **+1**:
+
+| Value | Routing     |
+| ----- | ----------- |
+| `00`  | Off         |
+| `01`  | Out 1 L     |
+| `02`  | Out 1 L+R   |
+| `03`  | Out 1 R     |
+| `04`–`06` | Out 2: L, L+R, R |
+| `07`–`09` | Out 3: L, L+R, R |
+| `0A`–`0C` | USB 1: L, L+R, R |
+| `0D`–`0F` | USB 2: L, L+R, R |
+| `10`–`12` | USB 3: L, L+R, R |
+
+(`stored = primary_enum + 1`, or `00` = Off.)
+
+Part 1 captures (AURA, `cmd=0x73`):
+
+```text
+F0 00 20 33 01 00 73 00 2D 00 F7   # Off
+F0 00 20 33 01 00 73 00 2D 01 F7   # Out 1 L
+F0 00 20 33 01 00 73 00 2D 02 F7   # Out 1 L+R
+F0 00 20 33 01 00 73 00 2D 0A F7   # USB 1 L
+F0 00 20 33 01 00 73 00 2D 11 F7   # USB 3 L+R
+```
+
+Used by: `0x2D` (AURA: `cmd=0x73`).
 
 ### Priority Enum
 

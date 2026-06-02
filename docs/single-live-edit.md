@@ -2,6 +2,85 @@
 
 Single-related SysEx notes for Virus TI mk2.
 
+```text
+F0 00 20 33 01 00 72 <part> <param> <value> F7   # multi / common (some params)
+F0 00 20 33 01 00 71 <part> <param> <value> F7   # common (some params)
+F0 00 20 33 01 00 6E <part> <param> <value> F7   # part single edit buffer
+```
+
+Param IDs are **not global** — the same hex ID can mean different settings
+under different `cmd` bytes (e.g. **`0x73` / `0x19`** = All EQs global,
+**`0x71` / `0x19`** = Smooth Mode).
+
+## Common (Edit Single)
+
+Per-part **Common** page settings (AURA). Not stored in **`DUMP_MULTI`**
+(hardware-tested for Bend Up/Down — see [multis-live-edit.md](multis-live-edit.md)).
+
+### Smooth Mode (`0x19`, `cmd=0x71`)
+
+Arpeggiator / note **Smooth Mode** (Edit Single → Common).
+
+| Value | Mode              | Confirmed |
+| ----- | ----------------- | --------- |
+| `00`  | Off               | ✓ (AURA 26.05.17 cannot set Off — [aura-notes.md](aura-notes.md)) |
+| `01`  | On                | ✓         |
+| `02`  | Auto              | ✓         |
+| `03`  | Note              | ✓         |
+| `04`  | Quantise 1/64     | ✓         |
+| `05`  | Quantise 1/32     | ✓         |
+| `06`  | Quantise 1/16     | inferred  |
+| `07`  | Quantise 1/8      | inferred  |
+| `08`  | Quantise 1/4      | inferred  |
+| `09`  | Quantise 1/2      | ✓         |
+| `0A`  | Quantise 3/64     | ✓         |
+| `0B`  | Quantise 3/32     | inferred  |
+| `0C`  | Quantise 3/16     | inferred  |
+| `0D`  | Quantise 3/8      | inferred  |
+| `0E`  | Quantise 1/24     | inferred  |
+| `0F`  | Quantise 1/12     | inferred  |
+| `10`  | Quantise 1/6      | inferred  |
+| `11`  | Quantise 1/3      | inferred  |
+| `12`  | Quantise 2/3      | inferred  |
+| `13`  | Quantise 3/4      | inferred  |
+| `14`  | Quantise 1/1      | inferred  |
+
+```text
+F0 00 20 33 01 00 71 00 19 00 F7   # Off
+F0 00 20 33 01 00 71 00 19 01 F7   # On
+F0 00 20 33 01 00 71 00 19 02 F7   # Auto
+F0 00 20 33 01 00 71 00 19 03 F7   # Note
+F0 00 20 33 01 00 71 00 19 04 F7   # Quantise 1/64
+F0 00 20 33 01 00 71 00 19 05 F7   # Quantise 1/32
+F0 00 20 33 01 00 71 00 19 09 F7   # Quantise 1/2
+F0 00 20 33 01 00 71 00 19 0A F7   # Quantise 3/64
+```
+
+### Bender Scale (`0x1C` / `0x1D`)
+
+**Pitch bender curve** (Edit Single → Common → Bender Scale).
+
+| Mode         | Message | Confirmed |
+| ------------ | ------- | --------- |
+| Linear       | `F0 … 72 00 1D 00 F7` | ✓ |
+| Exponential  | `F0 … 71 00 1C 01 F7` | ✓ |
+
+Uses **mixed commands** (`0x72` for Linear / param **`0x1D`**, `0x71` for
+Exponential / param **`0x1C`**). Re-verify Exponential on hardware if a
+single param ID is expected.
+
+### Bend Up / Bend Down (`0x1A` / `0x1B`, `cmd=0x71`)
+
+Pitch bend **range** limits — documented in
+[multis-live-edit.md — Bend Up / Bend Down](multis-live-edit.md#bend-up-0x1a-cmd0x71).
+Same Edit Single **Common** context; not in **`DUMP_MULTI`**.
+
+### Patch Volume (CC 91)
+
+**Edit Single → Common → Patch Volume** — **MIDI CC 91 only** (no SysEx).
+See [control-change.md — Patch Volume](control-change.md#patch-volume-cc-91).
+Distinct from Multi **Part Level** (`0x99 + part` / live `0x27`).
+
 ## Live Edit
 
 ### Reverb Send (`cmd=0x6E`)
