@@ -1,6 +1,8 @@
 ---
 name: project-sandbox-guard
-description: Constrain work to the current project directory and avoid credential exposure. Use when operating in this repository or when asked to enforce local-only and secrets-safe behavior.
+description: Constrain work to the current project directory and avoid
+credential exposure. Use when operating in this repository or when asked
+to enforce local-only and secrets-safe behavior.
 disable-model-invocation: true
 ---
 
