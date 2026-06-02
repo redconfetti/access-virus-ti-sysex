@@ -22,10 +22,10 @@ and **External I/O** routing are out of scope unless the user says otherwise.
 
 ## MIDI port
 
-| Direction    | Command       | Port name                     |
-| ------------ | ------------- | ----------------------------- |
-| Host → Virus | `sendmidi`    | `Virus TI USB Plugin I/O`     |
-| Virus → Host | `receivemidi` | `Virus TI USB Plugin I/O`     |
+| Direction    | Command       | Port name                 |
+| ------------ | ------------- | ------------------------- |
+| Host → Virus | `sendmidi`    | `Virus TI USB Plugin I/O` |
+| Virus → Host | `receivemidi` | `Virus TI USB Plugin I/O` |
 
 Verify names have not changed:
 
@@ -71,11 +71,11 @@ F0 00 20 33 01 00 72 00 4A 00 F7
 
 ## Message types
 
-| Purpose            | Cmd  | Length    | Doc                                                                                  |
-| ------------------ | ---- | --------- | ------------------------------------------------------------------------------------ |
-| Live multi edit    | `72` | 11 bytes  | [multis-live-edit.md](multis-live-edit.md)                                           |
-| Request multi dump | `31` | 11 bytes  | [multis-dump.md](multis-dump.md#request_multi-byte-table)                            |
-| Multi dump reply   | `11` | 267 bytes | [multis-dump.md](multis-dump.md#dump_multi-byte-table-267-bytes)                     |
+| Purpose            | Cmd  | Length    | Doc                                                              |
+| ------------------ | ---- | --------- | ---------------------------------------------------------------- |
+| Live multi edit    | `72` | 11 bytes  | [multis-live-edit.md](multis-live-edit.md)                       |
+| Request multi dump | `31` | 11 bytes  | [multis-dump.md](multis-dump.md#request_multi-byte-table)        |
+| Multi dump reply   | `11` | 267 bytes | [multis-dump.md](multis-dump.md#dump_multi-byte-table-267-bytes) |
 
 Live edit template:
 
@@ -98,7 +98,53 @@ Re-enable:
 sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 72 00 4a 01
 ```
 
-## Standard test workflow
+## Interactive single-parameter capture (panel → host)
+
+Use this loop when the **user** turns a control on the Virus and the agent
+listens with `receivemidi syx`.
+
+### Agent setup
+
+```bash
+VIRUS_DEV='Virus TI USB Plugin I/O'
+receivemidi dev "$VIRUS_DEV" syx 2>&1 | tee /tmp/virus-live-capture.txt
+```
+
+Run with `required_permissions: ["all"]`. Work **one parameter at a time**
+from [single-dump.md — Single parameter map](single-dump.md#single-parameter-map).
+Skip **Easy / Quick Edit** — those are VC panel shortcuts to parameters listed
+under other categories.
+
+### User / agent rules
+
+1. Agent names the **category** and **parameter** before each capture.
+2. User edits that control on the Virus (Edit Single context, Part 1 unless
+   noted).
+3. **Knob turns** often produce **many SysEx messages** — use the **last
+   message** in the burst as the landing value. The user states the **final
+   UI value** they landed on (not every intermediate step).
+4. After capture, agent records **`cmd`**, **param**, **value** encoding
+   from the last message and updates docs.
+5. Toggle/switch controls may send a single message; knobs and sliders may
+   send a stream.
+6. Some Easy-page controls send **MIDI CC only** (no SysEx) — e.g. **Sub
+   Oscillator Volume** = **CC 34**; see [control-change.md](control-change.md).
+7. **Before a SysEx mapping session**, set globals **MIDI Controller Page A**
+   and **Page B** to **SysEx** (not Controller Data) so panel edits emit
+   Access SysEx instead of CC — see
+   [global-live-edit.md — Page A / B](global-live-edit.md#midi-controller-page-a-0x5e).
+   With Page A = **SysEx**, Page A parameters use **`cmd=0x70`** (see
+   [waf80.md](waf80.md)); with **Controller Data**, they use **MIDI CC**
+   (CC number = Page A index).
+
+### Parse template (11-byte live edit)
+
+```text
+F0 00 20 33 01 00 <cmd> <part> <param> <value> F7
+```
+
+Confirm `<part>` on the first few captures (Part 1 is often `0x00` but
+hardware may use other scope bytes — note anomalies in docs).
 
 Use this loop to confirm a **single** documented mapping at a time.
 
@@ -209,14 +255,14 @@ Part 1 Volume (`72 00 27 48`) changes **`0x99`** only (+ checksum).
 Tested **2026-06-02** on TI mk2 desktop — **no** `DUMP_MULTI` change in
 `0x09..0x0C`, `0x19..0x28`, `0xB9..0xC7`, or `0xE8..0xF7` for:
 
-| Live message (summary)        | Notes                          |
-| ----------------------------- | ------------------------------ |
-| Bend Up `71 00 1A` `00`/`7F`  | Part 1                         |
-| Bend Down `71 00 1B` `00`/`7F`| Part 1                         |
-| Secondary Out `73 00 2D`/`01` | AURA path                      |
-| Secondary Out `72 00 2D 01`   | Alternate cmd — still no dump  |
-| Keyboard `72 00 40` `00`/`01`| Desktop                        |
-| All Delays `73 00 1B 01`      | Global — not in multi dump     |
+| Live message (summary)         | Notes                         |
+| ------------------------------ | ----------------------------- |
+| Bend Up `71 00 1A` `00`/`7F`   | Part 1                        |
+| Bend Down `71 00 1B` `00`/`7F` | Part 1                        |
+| Secondary Out `73 00 2D`/`01`  | AURA path                     |
+| Secondary Out `72 00 2D 01`    | Alternate cmd — still no dump |
+| Keyboard `72 00 40` `00`/`01`  | Desktop                       |
+| All Delays `73 00 1B 01`       | Global — not in multi dump    |
 
 Use `receivemidi syx` (not `dump`) for hex capture.
 

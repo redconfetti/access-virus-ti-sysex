@@ -19,20 +19,28 @@ Live SysEx (`cmd=0x72` / `0x6E`) often works even when the
 
 ## UI naming (AURA)
 
-| AURA label     | Edit Multi / synth parameter                                                            |
-| -------------- | --------------------------------------------------------------------------------------- |
-| **Part Level** | Multi **Volume** (`0x99 + part`, live `0x27`) on Edit Multi page |
+| AURA label       | Edit Multi / synth parameter                                                      |
+| ---------------- | --------------------------------------------------------------------------------- |
+| **Part Level**   | Multi **Volume** (`0x99 + part`, live `0x27`) on Edit Multi page                  |
 | **Patch Volume** | Edit Single → Common; **CC 91 only** — see [control-change.md](control-change.md) |
 
 AURA may display the **stored** byte value (e.g. `100` = `0x64`)
 while the Virus panel shows **bipolar** UI (e.g. `+36` where `0x64`
 = `36 + 64`).
 
+## Multi mixer UI (VC vs AURA)
+
+| Control           | Virus Control | AURA | Notes                                                                                                     |
+| ----------------- | ------------- | ---- | --------------------------------------------------------------------------------------------------------- |
+| Direct Monitoring | Yes           | No   | Analog outs direct, bypassing USB/DAW return — see [Direct Monitoring](multis-dump.md#direct-monitoring). |
+| Solo              | No            | Yes  | UI-only: toggles **Enable** on other parts.                                                               |
+| Mute              | Yes           | Yes  | No dedicated dump byte (likely **Enable** off).                                                           |
+
 ## UI coupling (AURA)
 
-| Behavior                    | Notes                                                      |
-| --------------------------- | ---------------------------------------------------------- |
-| Init Volume → **Off** (`0`) | AURA also sets **Volume RX** to **Disabled** automatically |
+| Behavior                    | Notes                                                             |
+| --------------------------- | ----------------------------------------------------------------- |
+| Init Volume → **Off** (`0`) | AURA also sets **Volume RX** to **Disabled** automatically        |
 | Smooth Mode → **Off**       | AURA **26.05.17** cannot send Off; hardware accepts `71 00 19 00` |
 
 When capturing Init Volume, note **Volume RX** on the panel after

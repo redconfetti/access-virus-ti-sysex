@@ -5,11 +5,14 @@ Device-wide settings shown alongside Multi edit in the AURA plugin. These use
 **`DUMP_MULTI`** is **not confirmed** — capture plans below.
 
 ```text
-F0 00 20 33 01 00 73 00 <param> <value> F7
+F0 00 20 33 01 <device_id> 73 00 <param> <value> F7
 ```
 
-Observed captures always use **`00`** as the byte after **`0x73`** (global
-scope, analogous to `part=00` on `0x72`).
+The byte **`<device_id>`** (immediately before **`0x73`**) is the SysEx
+**destination device ID**. The Virus only acts on the message when this
+matches its configured **MIDI Device ID** (CONFIG). Captures in this doc
+use **`00`** (device 1) unless noted. AURA may address other IDs when
+changing globals on a unit configured for a non-default ID.
 
 Most globals documented here were captured from **AURA → Virus** traffic
 only. At least **All Delays** (`0x1B`) is also **transmitted by the Virus**
@@ -17,24 +20,25 @@ when changed on the front panel.
 
 ## Summary
 
-| Param ID | Parameter              | Value encoding                          | `DUMP_MULTI` | Hardware TX |
-| -------- | ---------------------- | --------------------------------------- | ------------ | ----------- |
-| `0x19`   | All EQs                | See [All EQs](#all-eqs-0x19)            | Unverified   | —           |
-| `0x1A`   | All Arpeggiators       | See [All Arpeggiators](#all-arpeggiators-0x1a) | Unverified   | —           |
-| `0x1B`   | All Delays             | See [All Delays](#all-delays-0x1b)      | Unverified   | Yes         |
-| `0x1C`   | All Reverbs            | See [All Reverbs](#all-reverbs-0x1c)    | Unverified   | —           |
-| `0x32`   | BPM Brightness         | See [BPM Brightness](#bpm-brightness-0x32) | Unverified   | —           |
-| `0x33`   | LED Lux                | See [LED Lux](#led-lux-0x33)            | Unverified   | —           |
-| `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change-0x55) | Unverified   | —           |
-| `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx-0x57) | Unverified   | —           |
+| Param ID | Parameter              | Value encoding                                             | `DUMP_MULTI` | Hardware TX |
+| -------- | ---------------------- | ---------------------------------------------------------- | ------------ | ----------- |
+| `0x19`   | All EQs                | See [All EQs](#all-eqs-0x19)                               | Unverified   | —           |
+| `0x1A`   | All Arpeggiators       | See [All Arpeggiators](#all-arpeggiators-0x1a)             | Unverified   | —           |
+| `0x1B`   | All Delays             | See [All Delays](#all-delays-0x1b)                         | Unverified   | Yes         |
+| `0x1C`   | All Reverbs            | See [All Reverbs](#all-reverbs-0x1c)                       | Unverified   | —           |
+| `0x32`   | BPM Brightness         | See [BPM Brightness](#bpm-brightness-0x32)                 | Unverified   | —           |
+| `0x33`   | LED Lux                | See [LED Lux](#led-lux-0x33)                               | Unverified   | —           |
+| `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change-0x55)   | Unverified   | —           |
+| `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx-0x57)   | Unverified   | —           |
+| `0x5D`   | MIDI Device ID         | See [MIDI Device ID](#midi-device-id-0x5d)                 | Unverified   | AURA only   |
 | `0x5E`   | MIDI Controller Page A | See [MIDI Controller Page A](#midi-controller-page-a-0x5e) | Unverified   | —           |
 | `0x5F`   | MIDI Controller Page B | See [MIDI Controller Page B](#midi-controller-page-b-0x5f) | Unverified   | —           |
-| `0x60`   | Global ARP Note Send   | See [Global ARP Note Send](#global-arp-note-send-0x60) | Unverified   | —           |
-| `0x6A`   | MIDI Clock             | See [MIDI Clock](#midi-clock-0x6a)      | Unverified   | —           |
-| `0x76`   | Memory Protect         | See [Memory Protect](#memory-protect-0x76) | Unverified   | —           |
-| `0x7C`   | Global MIDI Channel    | Zero-based (`00` = ch 1 … `0F` = ch 16) | Unverified   | —           |
-| `0x7D`   | LED Mode               | See [LED Mode](#led-mode-0x7d)          | Unverified   | —           |
-| `0x7E`   | LCD Contrast           | See [LCD Contrast](#lcd-contrast-0x7e)  | Unverified   | —           |
+| `0x60`   | Global ARP Note Send   | See [Global ARP Note Send](#global-arp-note-send-0x60)     | Unverified   | —           |
+| `0x6A`   | MIDI Clock             | See [MIDI Clock](#midi-clock-0x6a)                         | Unverified   | —           |
+| `0x76`   | Memory Protect         | See [Memory Protect](#memory-protect-0x76)                 | Unverified   | —           |
+| `0x7C`   | Global MIDI Channel    | Zero-based (`00` = ch 1 … `0F` = ch 16)                    | Unverified   | —           |
+| `0x7D`   | LED Mode               | See [LED Mode](#led-mode-0x7d)                             | Unverified   | —           |
+| `0x7E`   | LCD Contrast           | See [LCD Contrast](#lcd-contrast-0x7e)                     | Unverified   | —           |
 
 ## Parameters
 
@@ -42,10 +46,10 @@ when changed on the front panel.
 
 Global **All EQs** on/off.
 
-| Value | Setting   |
-| ----- | --------- |
-| `00`  | Disabled  |
-| `01`  | Enabled   |
+| Value | Setting  |
+| ----- | -------- |
+| `00`  | Disabled |
+| `01`  | Enabled  |
 
 ```text
 # Disabled
@@ -59,10 +63,10 @@ F0 00 20 33 01 00 73 00 19 01 F7
 
 Global **All Arpeggiators** on/off.
 
-| Value | Setting   |
-| ----- | --------- |
-| `00`  | Disabled  |
-| `01`  | Enabled   |
+| Value | Setting  |
+| ----- | -------- |
+| `00`  | Disabled |
+| `01`  | Enabled  |
 
 ```text
 # Disabled
@@ -78,10 +82,10 @@ Global **All Delays** on/off. **Confirmed:** the Virus sends this message
 on the USB interface when the setting is changed on the **front panel**
 (same `cmd=0x73` format).
 
-| Value | Setting   |
-| ----- | --------- |
-| `00`  | Disabled  |
-| `01`  | Enabled   |
+| Value | Setting  |
+| ----- | -------- |
+| `00`  | Disabled |
+| `01`  | Enabled  |
 
 ```text
 # Disabled
@@ -95,10 +99,10 @@ F0 00 20 33 01 00 73 00 1B 01 F7
 
 Global **All Reverbs** on/off.
 
-| Value | Setting   |
-| ----- | --------- |
-| `00`  | Disabled  |
-| `01`  | Enabled   |
+| Value | Setting  |
+| ----- | -------- |
+| `00`  | Disabled |
+| `01`  | Enabled  |
 
 ```text
 # Disabled
@@ -117,14 +121,14 @@ F0 00 20 33 01 00 73 00 1C 01 F7
 stored = min(0x7F, round(percent × 128 / 100))
 ```
 
-| LCD     | `<value>` |
-| ------- | --------- |
-| 0%      | `00`      |
-| 0.8%    | `01`      |
-| 1.6%    | `02`      |
-| 64.1%   | `52`      |
-| 98.4%   | `7E`      |
-| 100.0%  | `7F`      |
+| LCD    | `<value>` |
+| ------ | --------- |
+| 0%     | `00`      |
+| 0.8%   | `01`      |
+| 1.6%   | `02`      |
+| 64.1%  | `52`      |
+| 98.4%  | `7E`      |
+| 100.0% | `7F`      |
 
 ```text
 F0 00 20 33 01 00 73 00 32 00 F7   # 0%
@@ -146,13 +150,13 @@ stored = min(0x7F, round(percent × 128 / 100))
 
 LCD **`100.0%`** = **`0x7F`**. Examples:
 
-| LCD     | `<value>` |
-| ------- | --------- |
-| 0%      | `00`      |
-| 21.1%   | `1B`      |
-| 24.2%   | `1F`      |
-| 71.9%   | `5C`      |
-| 100.0%  | `7F`      |
+| LCD    | `<value>` |
+| ------ | --------- |
+| 0%     | `00`      |
+| 21.1%  | `1B`      |
+| 24.2%  | `1F`      |
+| 71.9%  | `5C`      |
+| 100.0% | `7F`      |
 
 ```text
 F0 00 20 33 01 00 73 00 33 00 F7   # 0%
@@ -168,10 +172,10 @@ Global **Program Change** receive. Distinct from per-part **Program Change**
 in Edit Multi (packed flag at `0xF8 + part` in `DUMP_MULTI`; CONFIG global
 ignored for parts per TI manual).
 
-| Value | Setting   |
-| ----- | --------- |
-| `00`  | Disabled  |
-| `01`  | Enabled   |
+| Value | Setting  |
+| ----- | -------- |
+| `00`  | Disabled |
+| `01`  | Enabled  |
 
 ```text
 # Disabled
@@ -186,10 +190,10 @@ F0 00 20 33 01 00 73 00 55 01 F7
 Global receive **MIDI Volume** (CC#7). Distinct from per-part **Volume RX**
 in Edit Multi (packed flag at `0xF8 + part` in `DUMP_MULTI`).
 
-| Value | Setting   |
-| ----- | --------- |
-| `00`  | Disabled  |
-| `01`  | Enabled   |
+| Value | Setting  |
+| ----- | -------- |
+| `00`  | Disabled |
+| `01`  | Enabled  |
 
 ```text
 # Disabled
@@ -199,14 +203,41 @@ F0 00 20 33 01 00 73 00 57 00 F7
 F0 00 20 33 01 00 73 00 57 01 F7
 ```
 
+### MIDI Device ID (`0x5D`)
+
+CONFIG **MIDI Device ID** (**1–16**, or **Omni**). Observed from **AURA
+→ Virus** only — not seen echoed when changed on the **Virus front panel**
+(may be normal: the SysEx **`<device_id>`** byte must match the unit’s
+configured ID, so mis-addressed traffic is ignored).
+
+| UI ID | `<device_id>` | `<value>` | Full message (AURA)                             |
+| ----- | ------------- | --------- | ----------------------------------------------- |
+| 1     | `00`          | `00`      | `F0 … 01 00 73 00 5D 00 F7`                     |
+| 2     | *(TBD)*       | *(TBD)*   | Capture matched ID 1 in one session — re-verify |
+| 3     | `01`          | `01`      | `F0 … 01 01 73 00 5D 01 F7`                     |
+
+**`<value>`** appears zero-based (`UI − 1` for IDs 1 and 3). **Omni**
+encoding not yet captured.
+
+```text
+# Device ID 1 (destination device 1, value 1)
+F0 00 20 33 01 00 73 00 5D 00 F7
+
+# Device ID 3 (destination device 3, value 3)
+F0 00 20 33 01 01 73 00 5D 01 F7
+```
+
+When sending manually, set **both** the envelope **`<device_id>`** and
+**`<value>`** to match the target Virus CONFIG setting.
+
 ### MIDI Controller Page A (`0x5E`)
 
 Soft-knob **MIDI Controller** assignment, **Page A**.
 
-| Value | Mode              |
-| ----- | ----------------- |
-| `00`  | SysEx             |
-| `01`  | Controller Data   |
+| Value | Mode            |
+| ----- | --------------- |
+| `00`  | SysEx           |
+| `01`  | Controller Data |
 
 Additional values not yet captured.
 
@@ -222,10 +253,10 @@ F0 00 20 33 01 00 73 00 5E 01 F7
 
 Soft-knob **MIDI Controller** assignment, **Page B**.
 
-| Value | Mode            |
-| ----- | --------------- |
-| `00`  | SysEx           |
-| `01`  | Poly Pressure   |
+| Value | Mode          |
+| ----- | ------------- |
+| `00`  | SysEx         |
+| `01`  | Poly Pressure |
 
 Additional values not yet captured.
 
@@ -241,10 +272,10 @@ F0 00 20 33 01 00 73 00 5F 01 F7
 
 Whether the arpeggiator sends **MIDI note** data.
 
-| Value | Setting   |
-| ----- | --------- |
-| `00`  | Disabled  |
-| `01`  | Enabled   |
+| Value | Setting  |
+| ----- | -------- |
+| `00`  | Disabled |
+| `01`  | Enabled  |
 
 ```text
 # Disabled
@@ -256,10 +287,10 @@ F0 00 20 33 01 00 73 00 60 01 F7
 
 ### MIDI Clock (`0x6A`)
 
-| Value | Mode (AURA / LCD)   |
-| ----- | ------------------- |
-| `00`  | Internal sync       |
-| `01`  | Sync to External    |
+| Value | Mode (AURA / LCD)                        |
+| ----- | ---------------------------------------- |
+| `00`  | Internal sync                            |
+| `01`  | Sync to External                         |
 | `02`  | *(third option — label TBD on hardware)* |
 
 ```text
@@ -278,10 +309,10 @@ F0 00 20 33 01 00 73 00 6A 02 F7
 **Memory Protect** on/off — prevents overwriting stored programs when
 enabled.
 
-| Value | Setting   |
-| ----- | --------- |
-| `00`  | Disabled  |
-| `01`  | Enabled   |
+| Value | Setting  |
+| ----- | -------- |
+| `00`  | Disabled |
+| `01`  | Enabled  |
 
 ```text
 # Disabled
@@ -313,15 +344,15 @@ F0 00 20 33 01 00 73 00 7C 08 F7
 
 Front-panel **LED** meter/display mode.
 
-| Value | Mode (LCD)   |
-| ----- | ------------ |
-| `00`  | Lfo          |
-| `01`  | Ext Inputs   |
-| `02`  | Auto         |
-| `03`  | Output1      |
-| `04`  | Output2      |
-| `05`  | Output3      |
-| `06`  | ---          |
+| Value | Mode (LCD) |
+| ----- | ---------- |
+| `00`  | Lfo        |
+| `01`  | Ext Inputs |
+| `02`  | Auto       |
+| `03`  | Output1    |
+| `04`  | Output2    |
+| `05`  | Output3    |
+| `06`  | ---        |
 
 ```text
 F0 00 20 33 01 00 73 00 7D 00 F7   # Lfo
@@ -343,13 +374,13 @@ F0 00 20 33 01 00 73 00 7D 06 F7   # ---
 stored = min(0x7F, round(percent × 128 / 100))
 ```
 
-| LCD     | `<value>` |
-| ------- | --------- |
-| 0.0%    | `00`      |
-| 31.3%   | `28`      |
-| 50.0%   | `40`      |
-| 98.4%   | `7E`      |
-| 100.0%  | `7F`      |
+| LCD    | `<value>` |
+| ------ | --------- |
+| 0.0%   | `00`      |
+| 31.3%  | `28`      |
+| 50.0%  | `40`      |
+| 98.4%  | `7E`      |
+| 100.0% | `7F`      |
 
 ```text
 F0 00 20 33 01 00 73 00 7E 00 F7   # 0%

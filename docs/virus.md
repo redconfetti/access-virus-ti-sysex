@@ -19,20 +19,20 @@ There are also **26 ROM banks** (ROM A through ROM Z), each with **128 factory S
 
 In each Multi, every part stores a **bank index** and **program number**
 pointing at a Single. The encoding is documented in
-[multis-dump.md](multis-dump.md#part-bank-index-0x29--part).
+[multis-dump.md](multis-dump.md#part-bank-index).
 
 ## SysEx dump types
 
 The Virus can export or stream several kinds of MIDI SysEx data:
 
-| #   | Name                | Description                                                          | Project interest                                 |
-| --- | ------------------- | -------------------------------------------------------------------- | ------------------------------------------------ |
-| 1   | **Single Buffer**   | One Single in the temporary edit buffer                              | Secondary — relates to arrangement exports       |
-| 2   | **Single Bank**     | All 128 programs in a RAM bank (A–D)                                 | Secondary                                        |
-| 3   | **Controller Dump** | One Single as a sequence of parameter changes (CC or SysEx)          | Secondary                                        |
-| 4   | **Arrangement**     | Current Multi (or sequencer) buffer: **multi settings + 16 Singles** | Important — full performance snapshot            |
-| 5   | **Multi Bank**      | All programs in the Multi bank (128 slots)                           | Important                                        |
-| 6   | **Remote Patches**  | Remote control templates                                             | Out of scope                                     |
+| #   | Name                | Description                                                          | Project interest                           |
+| --- | ------------------- | -------------------------------------------------------------------- | ------------------------------------------ |
+| 1   | **Single Buffer**   | One Single in the temporary edit buffer                              | Secondary — relates to arrangement exports |
+| 2   | **Single Bank**     | All 128 programs in a RAM bank (A–D)                                 | Secondary                                  |
+| 3   | **Controller Dump** | One Single as a sequence of parameter changes (CC or SysEx)          | Secondary                                  |
+| 4   | **Arrangement**     | Current Multi (or sequencer) buffer: **multi settings + 16 Singles** | Important — full performance snapshot      |
+| 5   | **Multi Bank**      | All programs in the Multi bank (128 slots)                           | Important                                  |
+| 6   | **Remote Patches**  | Remote control templates                                             | Out of scope                               |
 
 **Multi bank export:** one **`DUMP_MULTI`** (267 bytes) for every slot.
 **Slots 1–16** also include **sixteen `DUMP_SINGLE`** messages (524 bytes
