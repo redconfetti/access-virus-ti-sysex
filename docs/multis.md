@@ -34,9 +34,9 @@ F0 00 20 33 01 00 72 <part> <param> <value> F7
 | `0x24`   | High Key                                    | Direct 7-bit note                                    | `0x69 + part`                                                                                   |
 | `0x25`   | Part Transpose                              | Live: `00` = −63 … `7F` = +64                        | Dump: `0x79 + part`, `stored = ui + 64` (TI UI −48..+48) — **not** the same byte values as live |
 | `0x27`   | Volume                                      | `stored = ui + 64` (bipolar)                         | `0x99 + part`                                                                                   |
-| `0x29`   | Part Output routing                         | Enum — [table below](#part-output-routing-enum-0x29) | `0xB8 + part`                                                                                   |
+| `0x29`   | Part Output routing                         | Enum — [table below](#part-output-routing-enum-0x29) | `0xC8 + part`                                                                                   |
 | `0x2B`   | Panorama                                    | `00` = Off, `40` = center, etc.                      | `0xD8 + part`                                                                                   |
-| `0x40`   | Keyboard to MIDI (“kbd local”) — **global** | `00` / `01`; live `part=00`                          | TBD (single byte) — [global](#keyboard-to-midi-0x40--global)                                    |
+| `0x40`   | Keyboard-related — **global**               | `00` / `01`; live `part=00`                          | TBD — [keyboard settings](#keyboard-settings-ti-keyboard--polar)                                |
 | `0x48`   | Part Enable                                 | `00` / `01`                                          | `0xF8 + part`                                                                                   |
 | `0x49`   | Volume RX (CC#7)                            | `00` / `01`                                          | `0xF8` flag `+2`                                                                                |
 | `0x4A`   | Hold Pedal (CC#64)                          | `00` / `01`                                          | `0xF8` flags                                                                                    |
@@ -46,21 +46,46 @@ F0 00 20 33 01 00 72 <part> <param> <value> F7
 AURA reuses **`0x48`** for track **mute** and **solo** (solo sends Off
 to all other parts).
 
-### Keyboard to MIDI (`0x40`) — global
+### Keyboard settings (TI Keyboard / Polar)
 
-Manual name: **Keyboard to MIDI**. AURA: **“kbd local enabled”** (same function).
+The manual describes **three separate** keyboard behaviors. Do not
+conflate them; only **Keyboard to MIDI** is an **Edit Multi** field
+(stored with the Multi). **Local** and **Mode** are **global CONFIG /
+Keyboard** settings (device-wide, not part of the 267-byte multi
+payload on the desktop module).
 
-**Scope:** **Global** for the whole Multi (one built-in keyboard → MIDI).
-Not a per-part mix parameter. The manual may expose it on a part
-page, but it applies to the instrument, not Part 1–16 individually.
+#### Edit Multi: Keyboard to MIDI
 
-- **Hardware:** **Virus TI Keyboard** and **Polar** only.
-- **TI desktop module:** no panel control; live `0x72` works but
-  **`DUMP_MULTI` unchanged** (enable vs disable captures identical on
-  mk2 module).
-- **AURA:** shows the control for all models; live messages use
-  **`part=00`** — treat the part byte as a formality, not
-  “Part 1 only”.
+**Scope:** one built-in keyboard for the whole Multi (not per-part).
+
+| Setting    | Meaning (TI manual)                                              |
+| ---------- | ---------------------------------------------------------------- |
+| Disabled   | Notes on the keyboard are **not** also sent to **MIDI OUT**      |
+| Enabled    | Notes on the keyboard are **also** sent to **MIDI OUT**          |
+
+**Hardware:** **Virus TI Keyboard** and **Polar** (Edit Multi screen).
+**TI desktop module:** no keyboard; field may be absent or ignored on
+save/export.
+
+**Dump:** not observed in `DUMP_MULTI` on the **mk2 desktop module**
+(enable vs disable captures identical). A **keyboard** model may store
+this byte in the multi — not confirmed.
+
+#### Global CONFIG: Keyboard (not Edit Multi)
+
+These live under global **Keyboard** in the manual. They are **not**
+the same parameter as **Keyboard to MIDI** above.
+
+| Setting   | Values                       | Effect (TI manual)                                                                                                                                                                                                                                              |
+| --------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Local** | Off / On                     | **Off:** keyboard (notes, mod wheel, pitch bend, etc.) → **MIDI OUT only**, not internal sound generation. **On:** keyboard → internal sound generation **and** MIDI OUT.                                                                                       |
+| **Mode**  | One Channel / Multi Channels | **Multi mode only** (editable in Single mode UI but applies in Multi). **One Channel:** keyboard MIDI → currently **selected Part**, on that Part’s MIDI channel. **Multi Channels:** keyboard MIDI → **all Parts**, ignoring per-part MIDI channel assignment. |
+
+**Dump / live:** not mapped in this project yet. Expect **device
+settings** or a different SysEx path than Edit Multi `0x72` — do not
+assume they share live param `0x40`.
+
+#### Live SysEx: param `0x40` (unverified target)
 
 ```text
 F0 00 20 33 01 00 72 00 40 <value> F7
@@ -68,29 +93,33 @@ F0 00 20 33 01 00 72 00 40 <value> F7
 
 | Value | State    |
 | ----- | -------- |
-| `00`  | Disabled |
-| `01`  | Enabled  |
+| `00`  | Off      |
+| `01`  | On       |
 
-Confirmed: `F0 00 20 33 01 00 72 00 40 00 F7` (off), `... 72 00 40 01 F7` (on).
+Confirmed traffic: `... 72 00 40 00 F7` (off), `... 72 00 40 01 F7`
+(on). Uses **`part=00`** — treat as global, not “Part 1 only”.
 
-**Dump mapping:** On a **TI desktop module**, toggling kbd local does
-**not** change `DUMP_MULTI` (tested: enable and disable dumps
-byte-identical). A **keyboard** model might store it elsewhere
-(device/global settings, or multi only when hardware supports it) —
-not confirmed.
+**AURA** labels this control **“kbd local enabled”**, which matches
+**Local** (On = internal + MIDI OUT), **not** the Edit Multi name
+**Keyboard to MIDI** (MIDI OUT mirroring). Until verified on **TI
+Keyboard** hardware (panel toggle vs `0x72` vs dump byte), record
+`0x40` as **keyboard-related, target TBD**.
+
+On the **TI desktop module**, toggling the AURA control does **not**
+change `DUMP_MULTI` (tested: identical dumps).
 
 ### Part Output routing enum (`0x29`)
 
 Each output group uses three values: **L**, **L+R**, **R**.
 
-| Value     | Routing                                 |
-| --------- | --------------------------------------- |
-| `00`–`02` | Out 1: L, L+R, R                        |
-| `03`–`05` | Out 2: L, L+R, R                        |
-| `06`–`08` | Out 3: L, L+R, R                        |
-| `09`–`0B` | USB 1: L, L+R, R                        |
-| `0C`–`0E` | USB 2: L, L+R, R (`0D` confirmed)       |
-| `0F`–`11` | USB 3: L, L+R, R (`10`, `11` confirmed) |
+| Value     | Routing          |
+| --------- | ---------------- |
+| `00`–`02` | Out 1: L, L+R, R |
+| `03`–`05` | Out 2: L, L+R, R |
+| `06`–`08` | Out 3: L, L+R, R |
+| `09`–`0B` | USB 1: L, L+R, R |
+| `0C`–`0E` | USB 2: L, L+R, R |
+| `0F`–`11` | USB 3: L, L+R, R |
 
 ### Example messages (`0x72`)
 
@@ -106,8 +135,8 @@ Each output group uses three values: **L**, **L+R**, **R**.
 - `F0 00 20 33 01 00 72 00 0F 3D F7` — Master Clock 124 bpm (`0x3D` = 124 −
   63)  
 - `F0 00 20 33 01 00 72 00 48 00 F7` / `... 48 01 F7` — Part 1 Enable off / on  
-- `F0 00 20 33 01 00 72 00 40 00 F7` / `... 40 01 F7` — Keyboard to MIDI off / on
-  (global; AURA kbd local)
+- `F0 00 20 33 01 00 72 00 40 00 F7` / `... 40 01 F7` — keyboard-related
+  (global; AURA “kbd local” — may be CONFIG **Local**, not Keyboard to MIDI)
 
 Single-edit / single-dump notes (`cmd=0x6E`, `cmd=0x10`) are in
 [single.md](single.md#live-edit).
@@ -141,11 +170,12 @@ Dump offsets and confirmed deltas are in
 - **Multi Program Name**
 - **Master Clock Tempo:** 63–190 bpm — tempo for all parts in the Multi,
 overriding Single-program Master Clock settings
-- **Keyboard to MIDI:** Disabled / Enabled — **global** (one built-in
-  keyboard). **TI Keyboard and Polar** on the panel; **desktop module**
-  has no keyboard. Live `0x72` param `0x40` works from AURA; **not
-  stored in `DUMP_MULTI`** on the desktop module (enable/disable dumps
-  identical).
+- **Keyboard to MIDI:** Disabled / Enabled — whether keyboard notes are
+  **also sent to MIDI OUT** (Edit Multi global; **not** the same as
+  CONFIG **Local** or **Mode** — [keyboard settings](#keyboard-settings-ti-keyboard--polar)).
+  **TI Keyboard and Polar** on the panel; desktop module has no keyboard.
+  Live `0x72` param `0x40` exists (AURA); dump byte **not confirmed** on
+  desktop (identical enable/disable dumps).
 
 ### Part
 
@@ -155,7 +185,9 @@ overriding Single-program Master Clock settings
 - **Volume:** −64 to +63 — balance between parts (AURA: **Part Level**)
 - **Panorama:** −64 to +63 — overrides the Single pan
 - **MIDI Channel:** 1–16
-- **Output:** Out 1 L … USB 3 R (analog Out 1–3 and USB 1–3, each L / L+R / R)
+- **Output:** Out 1 L … Out 3 R on **Virus Edit Multi** (analog only);
+  full protocol also includes USB 1–3 (`09`–`11`) — see
+  [Output enum](#part-output-routing-enum-0x29)
 - **Transpose:** −48 to +48 semitones — adds to the Single transpose
 - **Detune:** −64 to +63
 - **Priority:** Low / High — note stealing when voices are exhausted
@@ -184,29 +216,29 @@ deltas here.
 Status of Edit Multi fields in the 267-byte `DUMP_MULTI`.
 Live param IDs are in [Live Edit](#live-edit).
 
-| Parameter (TI Edit Multi) | Dump offset          | Live param | Status                                                                                      |
-| ------------------------- | -------------------- | ---------- | ------------------------------------------------------------------------------------------- |
-| **Global**                |                      |            |                                                                                             |
-| Multi Program Name        | `0x0D..`             | —          | Dump confirmed                                                                              |
-| Master Clock Tempo        | `0x17`               | `0x0F`     | `stored = bpm - 63` (`120`→`0x39`, `124`→`0x3D`); Virus clean baseline                      |
-| Keyboard to MIDI          | **Not in dump**      | `0x40`     | Global; live `part=00`; **not** in `DUMP_MULTI` on desktop (enable/disable dumps identical) |
-| **Part**                  |                      |            |                                                                                             |
-| Part Enable               | `0xF8 + part`        | `0x48`     | `0x44` off / `0x45` on at `0xF8` (Part 1, Virus)                                            |
-| Bank (reference multi)    | `0x29 + part`        | TBD        | Sequential index; full table below; Virus Part 1                                            |
-| Program (reference multi) | `0x39 + part`        | TBD        | `0x00..0x7F` direct; Virus Part 1                                                           |
-| Volume                    | `0x99 + (part−1)`    | `0x27`     | Parts **1–15** at `0x99..0xA7`; `stored = ui + 64`; Part 16 not stored                      |
-| Panorama                  | `0xD8 + part`        | `0x2B`     | Dump + live confirmed; Part 1 at `0xD8` (Virus)                                             |
-| MIDI Channel              | `0x49 + part`        | —          | Dump confirmed                                                                              |
-| Output                    | `0xB8 + part`        | `0x29`     | `0xB8..0xC7`; P1: `00`=Out 1 L, `03`=Out 2 L (Virus + live `72 00 29 03`)                   |
-| Transpose                 | `0x79 + part`        | `0x25`     | `stored = ui + 64` (center `0x40` = 0); UI −48..+48 → `0x10..0x70`; Virus P1, P3            |
-| Detune                    | `0x89 + part`        | —          | Dump confirmed (Parts 1–2)                                                                  |
-| Priority                  | `0xF8 + part` (flag) | `0x4D`     | Low: no `+0x20`; High: **`+0x20`** (`0x41`→`0x61` with Hold off); Virus Part 1              |
-| Init Volume               | `0xA8 + (part−1)`    | TBD        | Parts **1–15** at **`0xA8..0xB6`**; UI direct; **`0xB7` unused**; Part **16** not stored    |
-| Low Key                   | `0x59 + part`        | `0x23`     | Dump + live confirmed (Part 1)                                                              |
-| High Key                  | `0x69 + part`        | `0x24`     | Dump + live confirmed (Part 1)                                                              |
-| Hold Pedal                | `0xF8 + part` (flag) | `0x4A`     | `0x41` off / `0x45` on (AURA + Virus, Part 1)                                               |
-| Volume RX                 | `0xF8 + part` (flag) | `0x49`     | **`+2`** when enabled; Virus Part 1; AURA couples RX off when Init Vol → 0                  |
-| Program Change            | `0xF8 + part` (flag) | `0x4E`     | Off: **`-0x40`** → `0x05`; On: `0x45` (AURA INIT, Part 1)                                   |
+| Parameter (TI Edit Multi) | Dump offset               | Live param | Status                                                                                                            |
+| ------------------------- | ------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Global**                |                           |            |                                                                                                                   |
+| Multi Program Name        | `0x0D..`                  | —          | Dump confirmed                                                                                                    |
+| Master Clock Tempo        | `0x17`                    | `0x0F`     | `stored = bpm - 63` (`120`→`0x39`, `124`→`0x3D`); Virus clean baseline                                            |
+| Keyboard to MIDI          | **Not in dump** (desktop) | `0x40`     | Edit Multi field; distinct from CONFIG **Local** / **Mode**; live `0x40` target **unverified** (AURA “kbd local”) |
+| **Part**                  |                           |            |                                                                                                                   |
+| Part Enable               | `0xF8 + part`             | `0x48`     | `0x44` off / `0x45` on at `0xF8` (Part 1, Virus)                                                                  |
+| Bank (reference multi)    | `0x29 + part`             | TBD        | Sequential index; full table below; Virus Part 1                                                                  |
+| Program (reference multi) | `0x39 + part`             | TBD        | `0x00..0x7F` direct; Virus Part 1                                                                                 |
+| Volume                    | `0x99 + (part−1)`         | `0x27`     | Parts **1–15** at `0x99..0xA7`; `stored = ui + 64`; Part 16 not stored                                            |
+| Panorama                  | `0xD8 + part`             | `0x2B`     | Dump + live confirmed; Part 1 at `0xD8` (Virus)                                                                   |
+| MIDI Channel              | `0x49 + part`             | —          | Dump confirmed                                                                                                    |
+| Output                    | `0xC8 + part`             | `0x29`     | `0xC8..0xD7`; P1: `00`=Out 1 L, `03`=Out 2 L (Virus + live `72 00 29 03`)                                         |
+| Transpose                 | `0x79 + part`             | `0x25`     | `stored = ui + 64` (center `0x40` = 0); UI −48..+48 → `0x10..0x70`; Virus P1, P3                                  |
+| Detune                    | `0x89 + part`             | —          | Dump confirmed (Parts 1–2)                                                                                        |
+| Priority                  | `0xF8 + part` (flag)      | `0x4D`     | Low: no `+0x20`; High: **`+0x20`** (`0x41`→`0x61` with Hold off); Virus Part 1                                    |
+| Init Volume               | `0xA8 + (part−1)`         | `0x28`     | Parts **1–16** at **`0xA8..0xB8`**; UI direct; live `0x28` and dump values align                                  |
+| Low Key                   | `0x59 + part`             | `0x23`     | Dump + live confirmed (Part 1)                                                                                    |
+| High Key                  | `0x69 + part`             | `0x24`     | Dump + live confirmed (Part 1)                                                                                    |
+| Hold Pedal                | `0xF8 + part` (flag)      | `0x4A`     | `0x41` off / `0x45` on (AURA + Virus, Part 1)                                                                     |
+| Volume RX                 | `0xF8 + part` (flag)      | `0x49`     | **`+2`** when enabled; Virus Part 1; AURA couples RX off when Init Vol → 0                                        |
+| Program Change            | `0xF8 + part` (flag)      | `0x4E`     | Off: **`-0x40`** → `0x05`; On: `0x45` (AURA INIT, Part 1)                                                         |
 
 ### Part bank index (`0x29 + part`)
 
@@ -214,7 +246,7 @@ One byte per part (`0x29..0x38`). **Formula:** RAM A–D = `0x00`–`0x03`;
 ROM *letter* = `0x04 + (letter - 'A')` for ROM A–Z.
 
 | Index       | Bank  | Confirmed |
-| ----------: | ----- | :-------: |
+| ----------- | ----- | --------- |
 | `0x00`      | RAM A | ✓         |
 | `0x01`      | RAM B | ✓         |
 | `0x02`      | RAM C | inferred  |
@@ -311,9 +343,9 @@ listed above.
 | `0x79..0x88`  | Part transpose (16 bytes)       | Bipolar centered at `0x40`                                 | UI −48..+48 → `stored = ui + 64` (`0x10`..`0x70`); `0x40` = 0; Part 1 at `0x79`; live `0x25` uses **different** encoding — [Live Edit](#live-edit)        |
 | `0x89..0x98`  | Part detune (16 bytes)          | Bipolar centered at `0x40`                                 | `0x00..0x7F` -> UI `-64..+63` (`stored = ui + 64`); Part 1 confirmed at `0x89`, Part 2 confirmed at `0x8A`                                                |
 | `0x99..0xA7`  | Part volume (**15** bytes)      | Bipolar centered at `0x40`                                 | Parts **1–15**; `stored = ui + 64`; Part 1 at `0x99`; Part 16 not stored                                                                                  |
-| `0xA8..0xB6`  | Part Init Volume (**15** bytes) | Direct 7-bit                                               | Parts **1–15**; P1 at **`0xA8`** (`64`→`0x40`); P15 at **`0xB6`**; **`0xB7` unused**; Part 16 not stored                                                  |
-| `0xB8..0xC7`  | Part output routing (16 bytes)  | [Output enum](#part-output-routing-enum-0x29)              | Part 1 at **`0xB8`**: `00` = Out 1 L, `03` = Out 2 L                                                                                                      |
-| `0xC8..0xD7`  | *(unmapped)*                    | —                                                          | All `0x00` in captures                                                                                                                                    |
+| `0xA8..0xB8`  | Part Init Volume (16 bytes)     | Direct 7-bit                                               | Parts **1–16**; P1 at **`0xA8`**, P2 at **`0xA9`**, P15 at **`0xB7`**, P16 at **`0xB8`** (e.g. `81`→`0x51`)                                               |
+| `0xB9..0xC7`  | *(unmapped)*                    | —                                                          | All `0x00` in current captures                                                                                                                            |
+| `0xC8..0xD7`  | Part output routing (16 bytes)  | [Output enum](#part-output-routing-enum-0x29)              | Same bytes as live `0x29`; P1: `00`–`03` dump confirmed; `06`–`08` Out 3 live (Virus)                                                                     |
 | `0xD8..0xE7`  | Part panorama (16 bytes)        | Direct `0..127`                                            | Part 1 at `0xD8`: `0x00` = Off, `0x40` = Center                                                                                                           |
 | `0xE8..0xF7`  | *(unmapped)*                    | —                                                          | All `0x00` in captures                                                                                                                                    |
 | `0xF8..0x107` | Part packed flags (16 bytes)    | Packed flags                                               | `0x44` Off; `0x45` On + defaults; live `0x48` at **`0xF8`** (Part 1)                                                                                      |
@@ -339,8 +371,10 @@ Earlier Virus Prog Change captures (`0x21` / `0x61`) likely had
 ### Unmapped payload (elimination)
 
 **Hypothesis:** `DUMP_MULTI` may reserve a byte for **Keyboard to MIDI**
-(and other globals); the **desktop module** ignores it on save/export,
-so live `0x72` / `0x40` does not change a Virus-requested dump.
+(per-multi on keyboard models). The **desktop module** may ignore it on
+save/export, so live `0x72` / `0x40` does not change a Virus-requested
+dump. CONFIG **Local** / **Mode** are separate globals and are unlikely
+to live in the same byte without keyboard-hardware captures.
 
 **Unmapped regions** in the 256-byte payload
 (everything else is assigned in the table above):
@@ -349,11 +383,12 @@ so live `0x72` / `0x40` does not change a Virus-requested dump.
 | ------------ | ----------------------------------- | ------------------------------------------------------------------- |
 | `0x09..0x0C` | `02 00 00 20`                       | Message/payload header; `0x0A` toggles on edit                      |
 | `0x19..0x28` | `01 3C 00 10 00 01 01 00` + 8 bytes | Between name/tempo and bank table; `0x26` = edited part (`00`–`0F`) |
-| `0xC8..0xD7` | **16 × `0x00`**                     | Between **Output** and **Pan**                                      |
+| `0xB9..0xC7` | **15 × `0x00`**                     | Between **Init Volume** and **Output**                              |
 | `0xE8..0xF7` | **16 × `0x00`**                     | Between **Pan** and **flags** (`0xF8..`)                            |
 
-A **global** bool (Keyboard to MIDI) would most likely be **`0xC8`** or
-**`0xE8`** (`00` / `01`) in the remaining zero blocks.
+A **global** bool (**Keyboard to MIDI**, if stored on keyboard
+hardware) would most likely be in **`0xB9..0xC7`** or **`0xE8`**
+(`00` / `01`) in the remaining zero blocks.
 
 ### Elimination captures (Virus LCD → one change → dump)
 
@@ -363,16 +398,16 @@ offset(s); if a gap byte changes too, note it.
 | Change                                         | Should touch                | Confirms gap           |
 | ---------------------------------------------- | --------------------------- | ---------------------- |
 | Part 1 **Pan** Off ↔ Center                    | `0xD8` only                 | `0xC8..0xD7` unchanged |
-| Part 1 **Output** Out 1 L → Out 2 L            | `0xB8` only                 | `0xC8..0xD7` unchanged |
+| Part 1 **Output** Out 1 L → Out 2 L            | `0xC8` only                 | `0xB9..0xC7` unchanged |
 | Part 1 **Enable** Off                          | `0xF8` `45`→`44`            | `0xE8..0xF7` unchanged |
 | **Master Clock** 120 → 124 bpm                 | `0x17` only (`0x39`→`0x3D`) | `0x19..0x28` unchanged |
 | **Multi name** (one character)                 | `0x0D..`                    | Name block isolated    |
 
 **Cannot eliminate Keyboard to MIDI on desktop** via dump
-(enable/disable dumps are identical). Options: TI **Keyboard** panel
-toggle + dump; compare **AURA file export** vs Virus dump after kbd
-local (does AURA embed a byte the hardware omits?); compare two
-**factory** multis that differ only in keyboard-related behavior.
+(enable/disable dumps are identical). On **TI Keyboard / Polar**:
+toggle **Keyboard to MIDI** on Edit Multi and dump (vs CONFIG **Local**
+/ **Mode** separately); compare **AURA export** vs hardware dump;
+compare factory multis that differ only in keyboard-related behavior.
 
 ### Candidate / partially understood bytes
 
@@ -398,12 +433,14 @@ Live `0x72` examples: [Live Edit](#live-edit).
   only **`0xA8`** `0x00` → `0x40` + checksum;
   **`0xF8` unchanged** (`0x45`).
 - **Part 15 Init Vol** (Virus, clean baseline):
-  only **`0xB6`** — `0x00` / `0x7F` (127) / `0x14` (20);
-  **`0xB7` stays `0`**; Part 15 flag **`0x106` unchanged** (`0x45`);
-  `0x26` = `0x0E` (edited part).
+  only **`0xB7`** — `0x00` / `0x51` (81); checksum changes.
 - AURA INIT, Part 1 **Init Volume** 64:
   `0xA9` `0x00` → `0x40`; `0xF9` `0x45` → `0x47` (`+2`) —
   AURA offset/export may differ from Virus **`0xA8`**.
+- Virus Part 1 **Init Volume** 37/127:
+  `0xA8` `0x00` → `0x25` / `0x7F`; live `72 00 28 26/7E`.
+- Virus Part 2 **Init Volume** 37/0:
+  `0xA9` `0x00` ↔ `0x25`; live `72 01 28 25/00`.
 - AURA **Part Level** at `0x99`:
   INIT `0x40`; UI `-64` → `0x00`; UI `+36` → `0x64`.
 - Virus Part 1 **Program** 64→65: only `0x39` `0x40` → `0x41` + checksum.
@@ -421,21 +458,20 @@ Live `0x72` examples: [Live Edit](#live-edit).
   `0x79` `0x40` (+0), `0x70` (+48), `0x10` (−48), `0x34` (−12);
   header `0x0A` often `0x01` when edited; Part 3 +48:
   `0x7B` `0x70`, `0x26` `0x02`.
-- Virus Part 1 **Output** Out 1 L → Out 2 L:
-  only `0xB8` `00` → `03` + checksum; live `72 00 29 03`;
-  `0xC8..0xD7` unchanged.
+- Virus Part 1 **Output** Out 1 L ↔ L+R ↔ R:
+  `0xC8` `00` ↔ `01` ↔ `02` + checksum; live `72 00 29 00/01/02`.
+- Virus Part 1 **Output** Out 3 L / L+R / R (Edit Multi menu):
+  live `72 00 29 06` / `07` / `08` only (no dump captures in this session).
 - Virus Part 1 **Pan** Off vs Center:
   only `0xD8` `00` ↔ `0x40` + checksum; `0xC8..0xD7` unchanged.
 - Virus Part 1 **Enable** Off:
   only `0xF8` `0x45` → `0x44` + checksum; `0xE8..0xF7` unchanged.
-- **Part 15 Init Vol** (Virus, clean baseline):
-  only **`0xB6`** — `0x00` / `0x7F` (127) / `0x14` (20);
-  **`0xB7` stays `0`**; Part 15 flag **`0x106` unchanged** (`0x45`);
-  `0x26` = `0x0E` (edited part).
-- **Part 16 Init Vol** — not in dump (`0xB7` unused; `0xB8` = Part 1 Output).
-- **Keyboard to MIDI** (AURA kbd local, live `72 00 40 00/01`):
+- **Part 15 Init Vol** (`0xB7`) and **Part 16 Init Vol** (`0xB8`) are stored:
+  P15 `81`→`0x51`; P16 `0/81/127`→`0x00/0x51/0x7F`; live `0x28`.
+- **Keyboard / live `0x40`** (AURA “kbd local”, `72 00 40 00/01`):
   two `DUMP_MULTI` captures from **TI desktop module** —
-  **identical** (no payload/checksum change).
+  **identical** (no payload/checksum change). Does **not** prove whether
+  `0x40` is **Keyboard to MIDI**, **Local**, or another keyboard global.
 
 ### AURA behavior: part enable sends `DUMP_SINGLE`
 
