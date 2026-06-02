@@ -46,6 +46,7 @@ Message formats: [multis-live-edit.md](docs/multis-live-edit.md),
 | General notes about Virus architecture | [docs/virus.md](docs/virus.md)                       |
 | Single program dump (`DUMP_SINGLE`)    | [docs/single-dump.md](docs/single-dump.md)           |
 | Multi program dump (`DUMP_MULTI`)      | [docs/multis-dump.md](docs/multis-dump.md)           |
-| Multi Live Edit (`0x72`, `0x6E`, …)    | [docs/multis-live-edit.md](docs/multis-live-edit.md) |
+| Multi Live Edit (`0x72`, …)            | [docs/multis-live-edit.md](docs/multis-live-edit.md) |
+| Global Live Edit (`0x73`)              | [docs/global-live-edit.md](docs/global-live-edit.md) |
 | Single Live Edit                       | [docs/single-live-edit.md](docs/single-live-edit.md) |
 | AURA plugin notes                      | [docs/aura-notes.md](docs/aura-notes.md)             |

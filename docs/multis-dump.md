@@ -345,7 +345,7 @@ MIDI**. Remaining bytes are metadata or keyboard-only storage.
 | Offset(s)    | INIT MULTI (typical)                | Notes                                                               |
 | ------------ | ----------------------------------- | ------------------------------------------------------------------- |
 | `0x09..0x0C` | `02 00 00 20`                       | Payload header; `0x0A` toggles on edit                              |
-| `0x19..0x28` | `01 3C 00 10 00 01 01 00` + 8 bytes | Between name/tempo and bank table; `0x26` = edited part (`00`–`0F`) |
+| `0x19..0x28` | `01 3C 00 10 00 01 01 00 40 40 40 40 40 0F 40 40` | 16 bytes between tempo and bank; `0x26` = edited part (`00`–`0F`); see [slot 32 INIT](#init-multi-slot-32-reference) |
 | `0xB9..0xC7` | **15 × `0x00`**                     | Between Init Volume and Output — candidate for Keyboard to MIDI     |
 | `0xE8..0xF7` | **16 × `0x00`**                     | Between Pan and flags — candidate for Keyboard to MIDI            |
 
@@ -353,7 +353,25 @@ Elimination captures confirmed **`0xB9..0xC7`** and **`0xE8..0xF7`** do
 not hold Pan, Output, Enable, or Master Clock. **Keyboard to MIDI** cannot
 be probed on the desktop module (enable/disable dumps are identical). On
 **TI Keyboard / Polar**, toggle Edit Multi **Keyboard to MIDI** and dump.
-CONFIG **Local** / **Mode** are separate globals.
+CONFIG **Local** / **Mode** are separate globals — see
+[global-live-edit.md](global-live-edit.md) for **`cmd=0x73`** settings to
+test against these regions.
+
+#### INIT MULTI slot 32 reference
+
+Stored **`REQUEST_MULTI`** bank **`01`** slot **`0x20`** (slot 32), full
+267-byte message (checksum `0x42`). Name is null-terminated at **`0x17`**;
+Master Clock tempo at **`0x18`** (`0x39` = 120 bpm).
+
+Unmapped block **`0x19..0x28`** (16 bytes):
+
+```text
+01 3C 00 10 00 01 01 00 40 40 40 40 40 0F 40 40
+```
+
+Notable: **`0x26`** = `0x0F` (edited-part index, Part 16). Remaining
+non-zero bytes (`0x3C`, `0x10`, six × `0x40`) are **uninterpreted** — not
+yet tied to Edit Multi or **`0x73`** globals.
 
 ### Notes
 
