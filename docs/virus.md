@@ -19,7 +19,7 @@ There are also **26 ROM banks** (ROM A through ROM Z), each with **128 factory S
 
 In **reference** Multi programs, each part stores a **bank index** and
 **program number** pointing at one of these Singles. The encoding is
-documented in [multis.md](multis.md#part-bank-index-0x29--part).
+documented in [multis-dump.md](multis-dump.md#part-bank-index-0x29--part).
 
 ## SysEx dump types
 
@@ -41,9 +41,9 @@ send only `DUMP_MULTI` when the host requests a stored reference multi.
 
 Message-level layouts:
 
-- Multi: [multis.md](multis.md)
-- Single: [single.md](single.md)
-- Live multi edits (not full dumps): [multis.md#live-edit](multis.md#live-edit)
+- Multi dump: [multis-dump.md](multis-dump.md)
+- Single dump: [single-dump.md](single-dump.md)
+- Live multi edits (not full dumps): [multis-live-edit.md](multis-live-edit.md)
 
 ## Multi bank (TI series)
 
@@ -61,4 +61,4 @@ behavior (pointers only) coexists with TI embedded multis.
 Whether the panel always dumps the **edit buffer** (arrangement-style)
 vs a **stored** slot (reference-only payload) depends on export path
 and tool — see capture notes in
-[multis.md](multis.md#capture-baseline).
+[multis-dump.md](multis-dump.md#capture-baseline).
