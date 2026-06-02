@@ -23,6 +23,9 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 | `0x25`   | `0x79 + part`                | Transpose        | Part transposition                           |
 | `0x26`   | `0x89 + part`                | Detune           | Part detune                                  |
 | `0x27`   | `0x99 + (part−1)`            | Volume           | Part level (Part 16 at `0xA8`)               |
+| `0x20`   | `0x29 + (part−1)`            | Bank             | Single bank index (P1 at `0x29`)             |
+| `0x21`   | `0x39 + (part−1)`            | Program          | Single program 0–127 (P1 at `0x39`)          |
+| `0x22`   | `0x49 + (part−1)`            | MIDI Channel     | Part MIDI channel 1–16 (P1 at `0x49`)        |
 | `0x28`   | `0xA9 + (part−1)`            | Init Volume      | MIDI volume on multi select (Part 16 `0xB8`) |
 | `0x29`   | `0xC8 + part`                | Output Routing   | Part output bus and channel                  |
 | `0x2B`   | `0xD8 + part`                | Panorama         | Part pan position                            |
@@ -78,6 +81,32 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 - Per-part init MIDI volume when Multi is selected.
 - Dump correlation: `0xA9 + (part−1)` — Parts **1–16** at `0xA9..0xB8`.
 - Supported values: see **Value Reference → Init Volume (direct 7-bit)**.
+
+### Bank (`0x20`)
+
+- Per-part Single **bank** for the part.
+- Dump correlation: **`0x29 + (part−1)`** — see
+  [Part bank index](multis-dump.md#part-bank-index-0x29--part) in
+  `multis-dump.md`.
+- Live value = dump bank index (`0x00` = RAM A, `0x01` = RAM B, `0x04` =
+  ROM A, etc.).
+- Virus Part 1: live `72 00 20 01` → LCD **RAM-B** (confirmed).
+
+### Program (`0x21`)
+
+- Per-part Single **program** number.
+- Dump correlation: **`0x39 + (part−1)`** — stored byte = UI program
+  number on LCD (`0x00` = 0, `0x40` = 64, `0x41` = 65).
+- Virus Part 1: `21 41` → program **65**; `21 00` → program **0** (dump
+  confirmed).
+
+### MIDI Channel (`0x22`)
+
+- Per-part MIDI channel assignment.
+- Dump correlation: `0x49 + (part−1)` — Part 1 at **`0x49`**.
+- Live value is **zero-based** channel index: `0x00` = channel 1 …
+  `0x0F` = channel 16 (Part 1: all 16 steps confirmed on Virus LCD).
+- Supported values: see [MIDI Channel (zero-based)](#midi-channel-zero-based).
 
 ### Output Routing (`0x29`)
 
@@ -149,6 +178,10 @@ variants, so `0x40` remains keyboard-related with target TBD.
   High Key C1
 - `F0 00 20 33 01 00 72 00 49 00 F7` / `... 49 01 F7` — Part 1 Volume RX
   off / on
+- `F0 00 20 33 01 00 72 00 20 01 F7` / `... 21 41 F7` — Part 1 Bank RAM B /
+  Program 65
+- `F0 00 20 33 01 00 72 00 22 01 F7` / `... 22 0F F7` — Part 1 MIDI
+  channel 2 / 16 (`0x01` / `0x0F` at dump `0x49`)
 - `F0 00 20 33 01 00 72 00 4A 00 F7` / `... 4A 01 F7` — Part 1 Hold Pedal
   off / on
 - `F0 00 20 33 01 00 72 0F 4A 00 F7` / `... 4A 01 F7` — Part 16 Hold Pedal
@@ -199,6 +232,16 @@ Used by: `0x25` (live transpose), `0x27` (volume).
 | `01`..`7F`  | UI `1`..`127`  |
 
 Used by: `0x28`.
+
+### MIDI Channel (zero-based)
+
+| Value     | MIDI channel |
+| --------- | ------------ |
+| `00`      | 1            |
+| `01`      | 2            |
+| `0F`      | 16           |
+
+Stored the same way in `DUMP_MULTI` at `0x49 + (part−1)`. Used by: `0x22`.
 
 ### Key Range (direct 7-bit)
 

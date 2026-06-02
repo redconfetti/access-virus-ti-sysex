@@ -151,7 +151,10 @@ sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 31 00 7f 7c
 
 Replies with **`cmd=0x11`**, **267 bytes**, bank/slot **`00 7F`**. Checksum
 `0x7C` = `(128 - (sum & 0x7F)) & 0x7F` over `00 20 33 01 00 31 00 7F`.
-Requesting **`01 00`** returns a **stored** multi slot, not the edit buffer.
+
+**Option C — Stored Multi bank slot**  
+Bank **`01`**, slot = slot number (`09`, `30`, …). **No checksum** (AURA
+format). See [multis-dump.md — Stored Multi bank request](multis-dump.md#request_multi-byte-table).
 
 ### 5. Diff against baseline
 
@@ -233,6 +236,6 @@ Some fields do not appear in AURA-exported `DUMP_MULTI` files. Prefer
 ## References
 
 - [README Setup](../README.md#setup) — install and minimal examples
-- [virus.md](virus.md) — dump types (arrangement vs reference)
+- [virus.md](virus.md) — dump types and Multi bank slots
 - [multis-live-edit.md](multis-live-edit.md) — `0x72` param IDs
 - [multis-dump.md](multis-dump.md) — payload offsets and capture rules

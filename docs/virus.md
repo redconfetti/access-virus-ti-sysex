@@ -17,9 +17,9 @@ The TI mk2 provides **four RAM banks** (A–D). Each bank holds **128 Single pro
 
 There are also **26 ROM banks** (ROM A through ROM Z), each with **128 factory Singles**.
 
-In **reference** Multi programs, each part stores a **bank index** and
-**program number** pointing at one of these Singles. The encoding is
-documented in [multis-dump.md](multis-dump.md#part-bank-index-0x29--part).
+In each Multi, every part stores a **bank index** and **program number**
+pointing at a Single. The encoding is documented in
+[multis-dump.md](multis-dump.md#part-bank-index-0x29--part).
 
 ## SysEx dump types
 
@@ -31,13 +31,16 @@ The Virus can export or stream several kinds of MIDI SysEx data:
 | 2   | **Single Bank**     | All 128 programs in a RAM bank (A–D)                                 | Secondary                                        |
 | 3   | **Controller Dump** | One Single as a sequence of parameter changes (CC or SysEx)          | Secondary                                        |
 | 4   | **Arrangement**     | Current Multi (or sequencer) buffer: **multi settings + 16 Singles** | Important — full performance snapshot            |
-| 5   | **Multi Bank**      | All programs in the Multi bank (128 slots)                           | Important — slot 1–16 embedded, 17–128 reference |
+| 5   | **Multi Bank**      | All programs in the Multi bank (128 slots)                           | Important                                        |
 | 6   | **Remote Patches**  | Remote control templates                                             | Out of scope                                     |
 
-**Arrangement** exports are often what you get when dumping the **Multi
-edit buffer** from the panel: one `DUMP_MULTI` (267 bytes) plus sixteen
-`DUMP_SINGLE` messages (524 bytes each). **Reference-style** transfers
-send only `DUMP_MULTI` when the host requests a stored reference multi.
+**Multi bank export:** one **`DUMP_MULTI`** (267 bytes) for every slot.
+**Slots 1–16** also include **sixteen `DUMP_SINGLE`** messages (524 bytes
+each) — the full part sounds are stored with the multi. **Slots 17–128**
+return the 267-byte multi settings only (bank/program pointers per part in
+that header). The **edit buffer** (`REQUEST` bank `00` slot `7F`) uses the
+same 267-byte block; it may be exported with sixteen singles like slots
+1–16.
 
 Message-level layouts:
 
@@ -47,18 +50,4 @@ Message-level layouts:
 
 ## Multi bank (TI series)
 
-The Virus TI has **one Multi bank** with **128 Multi program slots**.
-
-| Slots      | Type            | Contents                                                    |
-| ---------- | --------------- | ----------------------------------------------------------- |
-| **1–16**   | Embedded multi  | Multi parameters **plus** full Single data for all 16 parts |
-| **17–128** | Reference multi | Multi parameters **plus** bank/program pointer per part     |
-
-From OS **1.1** onward, slots 17–127 (documentation sometimes says
-17–127 vs 17–128) add **reference-style** multis so older Multi
-behavior (pointers only) coexists with TI embedded multis.
-
-Whether the panel always dumps the **edit buffer** (arrangement-style)
-vs a **stored** slot (reference-only payload) depends on export path
-and tool — see capture notes in
-[multis-dump.md](multis-dump.md#capture-baseline).
+See [multis-dump.md — Embedded vs Reference Multis](multis-dump.md#embedded-vs-reference-multis).
