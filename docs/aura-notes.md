@@ -1,8 +1,10 @@
 # AURA Plugin Notes
 
+[Docs index](README.md) · [Root README](../README.md)
+
 Notes about the **Access Virus TI AURA plugin** (host software). For SysEx
 the **Virus TI mk2** responds to regardless of host, see the other docs in
-[README — Documentation](../README.md#documentation).
+[README — Documentation index](../README.md#documentation-index).
 
 **Version referenced here:** **26.05.17** (Virus TI mk2 desktop).
 
@@ -16,6 +18,23 @@ that port, not **External I/O**.
 
 AURA-exported **`DUMP_MULTI`** files can differ from **Virus panel** dumps
 even when the patch sounds the same. When diffing captures:
+
+```mermaid
+flowchart LR
+    Aura["AURA / host UI edit"]
+    Live["Live SysEx may work"]
+    Export["AURA export may omit fields"]
+    Panel["Virus panel or REQUEST_MULTI"]
+    Baseline["same-route baseline"]
+    Risk["do not use host export alone\nfor byte mapping"]
+    Diff["trusted byte diff"]
+
+    Aura --> Live
+    Live --> Export
+    Live --> Panel
+    Panel --> Baseline --> Diff
+    Export -.-> Risk -.-> Diff
+```
 
 | Difference               | Typical cause                          |
 | ------------------------ | -------------------------------------- |

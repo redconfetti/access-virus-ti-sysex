@@ -1,5 +1,7 @@
 # Multis Dump
 
+[Docs index](README.md) · [Root README](../README.md)
+
 Multi mode on the Virus TI: program types, **Edit Multi** parameters, and
 byte-level `DUMP_MULTI` mapping.
 
@@ -20,6 +22,9 @@ in [Unmapped payload](#unmapped-payload).
 The TI **Multi bank** has **128 slots**. Every slot — and the **Multi edit
 buffer** — uses the same **267-byte** `DUMP_MULTI` layout, including
 per-part **Bank** and **Program** bytes at `0x29..` / `0x39..`.
+Stored-slot request captures currently cover the slot-number byte convention
+through `0x7F`; the exact request byte for UI slot **128** still needs a
+hardware capture.
 
 | Slots      | Storage model | Typical MIDI export                                                                                                                                                                                    |
 | ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -38,12 +43,21 @@ A **`REQUEST_MULTI`** reply is always the **267-byte** multi block first;
 **Arrangement**-style export (edit buffer or slots **1–16**) adds the
 sixteen singles in **part order** — see
 [single-dump.md — Arrangement export](single-dump.md#arrangement-export-dump_single--16).
+The checked-in baseline is
+[`artifacts/sysex/init-multi-arrangement.syx`](../artifacts/sysex/init-multi-arrangement.syx).
+For capture setup, see
+[testing.md — Running `receivemidi` as an agent](testing.md#running-receivemidi-as-an-agent).
 
 ### Multi parameter map
 
 Fields match the **Virus TI Edit Multi** screen (TI manual).
 
 #### Summary
+
+Live-edit `<part>` bytes are **zero-based** (`00` = Part 1). Dump formulas
+below are offsets in the **full 267-byte SysEx frame**. When a row says
+`0x29 + (part−1)`, use human part numbers 1–16; when a row says
+`0xC8 + part`, use zero-based part indices as shown in the captured layout.
 
 | Parameter (TI Edit Multi) | Scope         | Dump offset               |
 | ------------------------- | ------------- | ------------------------- |
@@ -177,12 +191,12 @@ Off, **1–127** — MIDI volume (CC#7) when the Multi is selected. Parts
 
 ##### Low Key
 
-**C−2..G8** — part low note limit (inverted range = outside range
+**C1..G9** — part low note limit (inverted range = outside range
 enabled). Part 1 at `0x59` confirmed.
 
 ##### High Key
 
-**C−2..G8** — part high note limit (inverted range = outside range
+**C1..G9** — part high note limit (inverted range = outside range
 enabled). Part 1 at `0x69` confirmed.
 
 ##### Hold Pedal
@@ -204,7 +218,7 @@ On (INIT): `0x45` (Part 1; Part 16 at `0x108` same delta).
 ### Part bank index
 
 One byte per part (`0x29..0x38`) in **every** `DUMP_MULTI`. **Formula:** RAM
-A–D = `0x00`–`0x03`; ROM *letter* = `0x04 + (letter - 'A')` for ROM A–Z.
+A–D = `0x00`–`0x03`; ROM _letter_ = `0x04 + (letter - 'A')` for ROM A–Z.
 
 | Index       | Bank  | Confirmed |
 | ----------- | ----- | --------- |
@@ -226,7 +240,7 @@ stored byte); same for all multi bank slots.
 
 ### Message-level structure
 
-- `REQUEST_MULTI` message length: 11 bytes
+- `REQUEST_MULTI` message length: 10 or 11 bytes, depending on checksum use
 - `DUMP_MULTI` message length: 267 bytes
 - `DUMP_MULTI` command: `0x11`
 - `REQUEST_MULTI` command: `0x31`
@@ -235,17 +249,17 @@ stored byte); same for all multi bank slots.
 
 ### `REQUEST_MULTI` byte table
 
-| Offset       | Bytes       | Meaning                  | Value range / notes                                                              |
-| ------------ | ----------- | ------------------------ | -------------------------------------------------------------------------------- |
-| `0x00`       | `F0`        | SysEx start              | Fixed                                                                            |
-| `0x01..0x03` | `00 20 33`  | Access manufacturer ID   | Fixed                                                                            |
-| `0x04`       | `01`        | Virus family marker      | Fixed in observed TI/TI2 messages                                                |
-| `0x05`       | `device_id` | Device ID                | `00` observed                                                                    |
-| `0x06`       | `31`        | Request Multi command    | Fixed for `REQUEST_MULTI`                                                        |
-| `0x07`       | `bank`      | Multi bank selector      | **`00`** + slot **`7F`** = edit buffer; **`01`** + slot = Multi bank             |
-| `0x08`       | `slot`      | Multi slot/program index | **`0x01`–`0x7F`** = Multi bank slots **1–127** (slot *N* → byte *N*)             |
-| `0x09`       | `checksum`  | Checksum byte            | **`0x7C`** for edit buffer only (see below); **omitted** on stored-slot requests |
-| `0x0A`       | `F7`        | SysEx end                | Fixed (stored slot: message may be **10 bytes**, no checksum)                    |
+| Offset       | Bytes       | Meaning                  | Value range / notes                                                                                                    |
+| ------------ | ----------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `0x00`       | `F0`        | SysEx start              | Fixed                                                                                                                  |
+| `0x01..0x03` | `00 20 33`  | Access manufacturer ID   | Fixed                                                                                                                  |
+| `0x04`       | `01`        | Virus family marker      | Fixed in observed TI/TI2 messages                                                                                      |
+| `0x05`       | `device_id` | Device ID                | `00` observed                                                                                                          |
+| `0x06`       | `31`        | Request Multi command    | Fixed for `REQUEST_MULTI`                                                                                              |
+| `0x07`       | `bank`      | Multi bank selector      | **`00`** + slot **`7F`** = edit buffer; **`01`** + slot = Multi bank                                                   |
+| `0x08`       | `slot`      | Multi slot/program index | Confirmed stored-slot captures use slot _N_ → byte _N_ for **1–127**; UI slot **128** request byte is not yet captured |
+| `0x09`       | `checksum`  | Checksum byte            | **`0x7C`** for edit buffer only (see below); **omitted** on stored-slot requests                                       |
+| `0x0A`       | `F7`        | SysEx end                | Fixed (stored slot: message may be **10 bytes**, no checksum)                                                          |
 
 **Edit buffer request** (Virus TI, confirmed): body
 `00 20 33 01 00 31 00 7F 7C` → 267-byte `DUMP_MULTI` with `00 7F` echoed at
@@ -286,6 +300,21 @@ Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
 
 ### `DUMP_MULTI` byte table (267 bytes)
 
+```mermaid
+flowchart LR
+    Start["0x00\nF0"]
+    Header["0x01..0x08\nAccess ID, family, device,\ncmd 0x11, bank, slot"]
+    Payload["0x09..0x108\n256-byte Multi payload"]
+    Checksum["0x109\nchecksum"]
+    End["0x10A\nF7"]
+
+    Start --> Header --> Payload --> Checksum --> End
+    Payload --> Name["0x0D..0x16\nname"]
+    Payload --> Tempo["0x17\ntempo"]
+    Payload --> PerPart["0x29..0x108\nper-part fields"]
+    PerPart --> Flags["0xF8..0x107\npacked flags"]
+```
+
 | Offset        | Bytes       | Meaning                  | Value range / notes               |
 | ------------- | ----------- | ------------------------ | --------------------------------- |
 | `0x00`        | `F0`        | SysEx start              | Fixed                             |
@@ -314,10 +343,10 @@ Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
 | `0x89..0x98`  | Part detune (16 bytes)         | Bipolar centered at `0x40`            | `0x00..0x7F` -> UI `-64..+63` (`stored = ui + 64`); Part 1 at `0x89`, Part 8 at `0x90`, Part 16 at `0x98` (`00/40/7F`) |
 | `0x99..0xA8`  | Part volume (16 bytes)         | Bipolar centered at `0x40`            | Parts **1–16**; `stored = ui + 64`; P1 at `0x99`, P16 at `0xA8` (`+46`→`0x6E`)                                         |
 | `0xA9..0xB8`  | Part Init Volume (16 bytes)    | Direct 7-bit                          | Parts **1–16**; P1 at **`0xA9`** (UI `64`→`0x40`); P16 at **`0xB8`**                                                   |
-| `0xB9..0xC7`  | *(unmapped)*                   | —                                     | All `0x00` in current captures                                                                                         |
+| `0xB9..0xC7`  | _(unmapped)_                   | —                                     | All `0x00` in current captures                                                                                         |
 | `0xC8..0xD7`  | Part output routing (16 bytes) | Per-part enum (see [Output](#output)) | P1: `00`–`03` confirmed; `06`–`08` = Out 3 L/L+R/R                                                                     |
 | `0xD8..0xE7`  | Part panorama (16 bytes)       | Direct `0..127`                       | Part 1 at `0xD8`: `0x00` = Off, `0x40` = Center                                                                        |
-| `0xE8..0xF7`  | *(unmapped)*                   | —                                     | All `0x00` in captures                                                                                                 |
+| `0xE8..0xF7`  | _(unmapped)_                   | —                                     | All `0x00` in captures                                                                                                 |
 | `0xF8..0x107` | Part packed flags (16 bytes)   | Packed flags                          | `0x44` Off; `0x45` On + defaults; Part 1 at **`0xF9`**, Part 16 at **`0x108`**                                         |
 
 ### Packed flags at `0xF8 + part`

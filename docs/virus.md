@@ -1,8 +1,36 @@
 # Access Virus (TI mk2)
 
-General notes about Access Virus TI mk2 architecture
+[Docs index](README.md) · [Root README](../README.md)
 
-Note: Currently applies only to Access Virus TI mk2 desktop (not keyboard/Polar)
+General notes about Access Virus TI mk2 desktop architecture, storage, and
+front-panel modes.
+
+Note: Currently applies only to Access Virus TI mk2 desktop (not keyboard/Polar).
+
+## Architecture map
+
+```mermaid
+flowchart LR
+    MultiBank["Multi bank\n128 slots"]
+    Embedded["Slots 1-16\nembedded arrangements"]
+    Reference["Slots 17-128\nreference multis"]
+    DumpMulti["DUMP_MULTI\n267 bytes"]
+    PartRefs["Per-part bank/program\nbytes in DUMP_MULTI"]
+    Singles["Single banks\nRAM A-D, ROM A-Z"]
+    DumpSingle["DUMP_SINGLE\n524 bytes"]
+    LiveEdit["Live edits\n0x70/0x71/0x72/0x73/0x6E"]
+
+    MultiBank --> Embedded
+    MultiBank --> Reference
+    Embedded -->|"export"| DumpMulti
+    Embedded -->|"plus 16 part sounds"| DumpSingle
+    Reference -->|"export"| DumpMulti
+    DumpMulti --> PartRefs
+    PartRefs --> Singles
+    Singles --> DumpSingle
+    LiveEdit -->|"changes current edit state"| DumpMulti
+    LiveEdit -->|"single sound state"| DumpSingle
+```
 
 ## Banks and programs
 

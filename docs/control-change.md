@@ -1,5 +1,7 @@
 # MIDI Control Change
 
+[Docs index](README.md) · [Root README](../README.md)
+
 MIDI **CC** parameters on the **part MIDI channel** (Multi / Edit Single).
 Observed from the **Virus hardware panel** (and MIDI CC when Page A =
 **Controller Data**).
@@ -11,14 +13,31 @@ Page A / B** are set to **Controller Data**; set both to **SysEx** for Access
 SysEx on wire during mapping sessions — see
 [global-live-edit.md](global-live-edit.md#midi-controller-page-a-0x5e).
 
+```mermaid
+flowchart TD
+    Edit["Panel or host edit"]
+    CCOnly{"Known CC-only\ncontrol?"}
+    PageMode{"Page A/B set to\nController Data?"}
+    CC["MIDI CC on\npart channel"]
+    SysEx["Access SysEx\ncmd 0x70/0x71"]
+    Global["Set Page A/B to SysEx\nfor mapping captures"]
+
+    Edit --> CCOnly
+    CCOnly -->|"yes"| CC
+    CCOnly -->|"no"| PageMode
+    PageMode -->|"yes"| CC
+    PageMode -->|"no"| SysEx
+    Global --> PageMode
+```
+
 ## Summary
 
-| CC  | Scope         | Parameter             | Transport   | `DUMP_MULTI` | Menu path            |
-| --- | ------------- | --------------------- | ----------- | ------------ | -------------------- |
-| 34  | Part-specific | Sub Oscillator Volume | **CC only** | Unverified   | Oscillators → Mixer  |
-| 91  | Part-specific | Patch Volume          | **CC only** | **No**       | Edit Single → Common |
-| 93  | Part-specific | Patch Transpose       | **CC only** | Unverified   | Edit Single → Common |
-| 94  | Part-specific | Key Mode              | **CC only** | Unverified   | Edit Single → Common |
+| CC  | Scope         | Parameter             | Transport       | `DUMP_MULTI` | Menu path            |
+| --- | ------------- | --------------------- | --------------- | ------------ | -------------------- |
+| 34  | Part-specific | Sub Oscillator Volume | **CC only**     | Unverified   | Oscillators → Mixer  |
+| 91  | Part-specific | Patch Volume          | **CC only**     | **No**       | Edit Single → Common |
+| 93  | Part-specific | Patch Transpose       | **CC only**     | Unverified   | Edit Single → Common |
+| 94  | Part-specific | Key Mode              | **CC or SysEx** | Unverified   | Edit Single → Common |
 
 ## Parameters
 
@@ -75,6 +94,9 @@ Distinct from Edit Multi **Volume** (`0x99 + part` in `DUMP_MULTI`, live
 
 **Key Mode** — Page **A** param **94** (`0x5E`). Full enum confirmed via
 **CC 94** and **`cmd=0x70`** / `0x5E` on the Virus panel (Page A = SysEx).
+The command/scope discussion in
+[single-live-edit.md — Key Mode](single-live-edit.md#key-mode-0x5e-cmd0x70--cc-94)
+is the canonical SysEx reference for this parameter.
 
 | CC / value | Mode   |
 | ---------- | ------ |

@@ -1,5 +1,7 @@
 # Global Live Edit (`cmd=0x73`)
 
+[Docs index](README.md) · [Root README](../README.md)
+
 Device-wide settings on the Virus TI. These use **`cmd=0x73`**, not Multi edit
 **`cmd=0x72`**. Whether any of them appear in **`DUMP_MULTI`** is **not
 confirmed** for most parameters.
@@ -8,6 +10,20 @@ Host-specific capture notes (AURA plugin): [aura-notes.md](aura-notes.md).
 
 ```text
 F0 00 20 33 01 <device_id> 73 00 <param> <value> F7
+```
+
+```mermaid
+flowchart LR
+    Start["F0"]
+    Access["00 20 33 01\nAccess + TI family"]
+    Device["device_id\ndestination route"]
+    Cmd["cmd 0x73\nglobal live edit"]
+    Scope["scope byte\nusually 0x00"]
+    Param["param id"]
+    Value["value\nnew setting"]
+    End["F7"]
+
+    Start --> Access --> Device --> Cmd --> Scope --> Param --> Value --> End
 ```
 
 The byte **`<device_id>`** (immediately before **`0x73`**) is the SysEx
@@ -234,25 +250,34 @@ CONFIG **MIDI Device ID** (**1–16**, or **Omni**). Not yet confirmed from
 the unit’s configured ID). First captures were from a host plugin — see
 [aura-notes.md](aura-notes.md).
 
-| UI ID | `<device_id>` | `<value>` | Full message                                    |
-| ----- | ------------- | --------- | ----------------------------------------------- |
-| 1     | `00`          | `00`      | `F0 … 01 00 73 00 5D 00 F7`                     |
-| 2     | *(TBD)*       | *(TBD)*   | Capture matched ID 1 in one session — re-verify |
-| 3     | `01`          | `01`      | `F0 … 01 01 73 00 5D 01 F7`                     |
+Do not collapse the two ID bytes into one concept:
 
-**`<value>`** appears zero-based (`UI − 1` for IDs 1 and 3). **Omni**
-encoding not yet captured.
+- Envelope **`<device_id>`** routes the SysEx to the currently addressed
+  device.
+- Payload **`<value>`** is the setting being written.
+- Both appear zero-based in coherent captures, but changing the ID needs more
+  panel verification because the route byte may need to track the old ID until
+  the setting is accepted.
+
+| Observed label | `<device_id>` | `<value>` | Full message                                     |
+| -------------- | ------------- | --------- | ------------------------------------------------ |
+| UI ID 1        | `00`          | `00`      | `F0 … 01 00 73 00 5D 00 F7`                      |
+| UI ID 2        | _(TBD)_       | _(TBD)_   | Capture matched ID 1 in one session — re-verify  |
+| UI ID 3?       | `01`          | `01`      | Host-plugin capture; label needs re-verification |
+
+**Omni** encoding not yet captured.
 
 ```text
-# Device ID 1 (destination device 1, value 1)
+# UI ID 1 observed: destination route 00, payload value 00
 F0 00 20 33 01 00 73 00 5D 00 F7
 
-# Device ID 3 (destination device 3, value 3)
+# Host-plugin capture with route 01, payload value 01; label needs re-verification
 F0 00 20 33 01 01 73 00 5D 01 F7
 ```
 
-When sending manually, set **both** the envelope **`<device_id>`** and
-**`<value>`** to match the target Virus CONFIG setting.
+When sending manually, use the envelope **`<device_id>`** that currently
+addresses the Virus. Treat the payload **`<value>`** as unconfirmed beyond
+the examples above until a front-panel capture verifies the exact UI mapping.
 
 ### MIDI Controller Page A (`0x5E`)
 
@@ -315,7 +340,7 @@ F0 00 20 33 01 00 73 00 60 01 F7
 | ----- | ---------------------------------------- |
 | `00`  | Internal sync                            |
 | `01`  | Sync to External                         |
-| `02`  | *(third option — label TBD on hardware)* |
+| `02`  | _(third option — label TBD on hardware)_ |
 
 ```text
 # Internal

@@ -1,5 +1,7 @@
 # Multis Live Edit
 
+[Docs index](README.md) · [Root README](../README.md)
+
 Live SysEx notes for Multi edit behavior on Virus TI mk2.
 
 ```text
@@ -16,8 +18,22 @@ F0 00 20 33 01 00 71 <part> <param> <value> F7
 - `<param>` — Multi edit parameter ID
 - `<value>` — parameter value (encoding depends on parameter)
 
-Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
+Single-related live edits (`cmd=0x70`, `cmd=0x71`, `cmd=0x6E`) are in
 [single-live-edit.md](single-live-edit.md).
+
+```mermaid
+flowchart TD
+    Send["Send live edit\n0x72 / 0x71 / 0x73"]
+    Panel["Virus panel changes now"]
+    Dump["Capture DUMP_MULTI\ncmd 0x11, 267 bytes"]
+    Stored["Mapped dump offset\npersisted in Multi block"]
+    Runtime["No dump delta\nruntime-only or stored elsewhere"]
+    Docs["Record cmd, param,\nvalue encoding, evidence"]
+
+    Send --> Panel --> Dump
+    Dump -->|"single expected byte changes"| Stored --> Docs
+    Dump -->|"no matching byte changes"| Runtime --> Docs
+```
 
 ## Summary
 
@@ -75,14 +91,14 @@ unmapped — [multis-dump.md](multis-dump.md#direct-monitoring)).
 - Per-part transpose in live edit.
 - Dump correlation: `0x79 + part`.
 - Note: live and dump use different value mapping for TI UI range.
-- Supported values: see **Value Reference → Bipolar `-63..+64` (live encoding)**.
+- Supported values: see **Value Reference → Live bipolar offset (`value - 63`)**.
 
 ### Detune (`0x26`)
 
 - Per-part detune in live edit.
 - Dump correlation: `0x89 + part`.
 - Live/dump values align (`00` = minimum, `40` = center-ish, `7F` = maximum).
-- Supported values: see **Value Reference → Bipolar `-63..+64` (live encoding)**.
+- Supported values: see **Value Reference → Standard bipolar (`ui + 64`)**.
 
 ### Bend Up (`0x1A`, `cmd=0x71`)
 
@@ -142,7 +158,7 @@ F0 00 20 33 01 00 71 00 1B 7F F7   # +63
 
 - Per-part volume / level.
 - Dump correlation: `0x99 + (part−1)` — Parts **1–16** at `0x99..0xA8`.
-- Supported values: see **Value Reference → Bipolar `-63..+64` (live encoding)**.
+- Supported values: see **Value Reference → Live bipolar offset (`value - 63`)**.
 
 ### Init Volume (`0x28`)
 
@@ -193,6 +209,7 @@ F0 00 20 33 01 00 71 00 1B 7F F7   # +63
 
   Part 1 captures confirmed; whether other parts use a part selector byte
   with the same param is **not confirmed**.
+
 - Dump correlation: **not in `DUMP_MULTI`** (hardware-tested: `73 00 2D`
   Off/`01`, and `72 00 2D 01` — no dump change vs INIT baseline).
 - Supported values: see
@@ -276,8 +293,7 @@ variants, so `0x40` remains keyboard-related with target TBD.
 - `F0 00 20 33 01 00 72 0F 4E 00 F7` / `... 4E 01 F7` — Part 16 Program
   Change off / on
 - `F0 00 20 33 01 00 72 0F 4D 01 F7` — Part 16 Priority High
-- `F0 00 20 33 01 00 72 00 0F 3D F7` — Master Clock 124 bpm (`0x3D` = 124 −
-  63)
+- `F0 00 20 33 01 00 72 00 0F 3D F7` — Master Clock 124 bpm (`0x3D` = 124 − 63)
 - `F0 00 20 33 01 00 72 00 48 00 F7` / `... 48 01 F7` — Part 1 Enable
   off / on
 - `F0 00 20 33 01 00 72 07 48 00 F7` — Part 8 Enable off (dump `0x100`
@@ -298,7 +314,10 @@ variants, so `0x40` remains keyboard-related with target TBD.
 
 Used by: `0x40`, `0x48`, `0x49`, `0x4A`, `0x4E`.
 
-### Bipolar `-63..+64` (live encoding)
+### Live bipolar offset (`value - 63`)
+
+Observed for live **Transpose** and **Volume**. This is distinct from the
+more common dump encoding `stored = ui + 64`.
 
 | Value range | Meaning    |
 | ----------- | ---------- |
@@ -308,6 +327,19 @@ Used by: `0x40`, `0x48`, `0x49`, `0x4A`, `0x4E`.
 | `7F`        | `+64`      |
 
 Used by: `0x25` (live transpose), `0x27` (volume).
+
+### Standard bipolar (`ui + 64`)
+
+Common dump/live encoding where UI `0` is stored as `0x40`.
+
+| Value range | Meaning    |
+| ----------- | ---------- |
+| `00`..`7F`  | `-64..+63` |
+| `00`        | `-64`      |
+| `40`        | `0`        |
+| `7F`        | `+63`      |
+
+Used by: `0x26` (detune) and many Single parameters.
 
 ### Init Volume (direct 7-bit)
 

@@ -1,7 +1,9 @@
 # Access Virus SysEx
 
-Reverse engineered **Access Virus TI mk2** SysEx specifications with assistance
-from Cursor AI.
+Reverse-engineered **Access Virus TI mk2 desktop** SysEx notes, hardware
+captures, and mapping worksheets. The repo documents how to request dumps,
+parse `DUMP_SINGLE` / `DUMP_MULTI`, send live parameter edits, and record which
+observations are confirmed on hardware versus inherited from older Virus docs.
 
 ## Setup
 
@@ -35,7 +37,10 @@ receivemidi dev "Virus TI USB Plugin I/O" dump
 ```
 
 Message formats: [multis-live-edit.md](docs/multis-live-edit.md),
-[multis-dump.md](docs/multis-dump.md). For agent/hardware test workflows see
+[multis-dump.md](docs/multis-dump.md),
+[single-live-edit.md](docs/single-live-edit.md), and
+[single-dump.md](docs/single-dump.md). For classic request tables see
+[docs/waf80.md](docs/waf80.md). For agent/hardware test workflows see
 [docs/testing.md](docs/testing.md).
 
 ## Reading the documentation
@@ -43,6 +48,26 @@ Message formats: [multis-live-edit.md](docs/multis-live-edit.md),
 Access Virus SysEx is standard MIDI: one message per `F0 … F7` frame. The
 docs use the same byte layout you see in a MIDI monitor or in `sendmidi hex
 syx` (without the `F0`/`F7` wrappers — sendmidi adds those).
+
+The core split is **request / dump / live edit**:
+
+```mermaid
+sequenceDiagram
+    participant Host as Host or agent
+    participant Virus as Virus TI
+
+    Host->>Virus: REQUEST_MULTI cmd 0x31
+    Virus-->>Host: DUMP_MULTI cmd 0x11, 267 bytes
+    Host->>Virus: REQUEST_SINGLE or ARRANGEMENT cmd 0x30/0x34
+    Virus-->>Host: DUMP_SINGLE cmd 0x10, 524 bytes
+    Host->>Virus: Live edit cmd 0x70/0x71/0x72/0x73/0x6E
+    Virus-->>Host: Optional panel TX, usually no full dump
+```
+
+Use the dump docs when you need a byte offset in a saved program. Use the
+live-edit docs when you need to change one parameter now. Use
+[docs/testing.md](docs/testing.md) to prove that the two views agree before
+promoting a mapping.
 
 ### One message, byte by byte
 
@@ -60,7 +85,7 @@ start             (TI) ID                      end
 | `01`        | Family (TI series)                                                  |
 | `00`        | Device ID (`00`–`0F` = unit 1–16; match your synth)                 |
 | **`<cmd>`** | **What kind of message this is** (see below)                        |
-| *rest*      | Depends on command: bank/slot, parameter bytes, or a full dump body |
+| _rest_      | Depends on command: bank/slot, parameter bytes, or a full dump body |
 
 Placeholders like `<part>`, `<param>`, and `<value>` are **one byte each** in
 the real message (shown as hex). Example — change one live parameter:
@@ -134,7 +159,7 @@ The parameter map tables mark **Live edit** as command + param (e.g.
 
 ```text
 # Request: “send me the edit-buffer Multi” (you receive DUMP_MULTI 0x11)
-F0 00 20 33 01 00 31 00 7f F7
+F0 00 20 33 01 00 31 00 7f 7c F7
 
 # Request: “send arrangement” → DUMP_MULTI + 16 × DUMP_SINGLE
 F0 00 20 33 01 00 34 00 F7
@@ -149,29 +174,37 @@ F0 00 20 33 01 00 71 00 19 00 F7
 Not everything is SysEx: some controls use **MIDI CC** only (e.g. Patch
 Volume = CC 91). See [docs/control-change.md](docs/control-change.md).
 
-### Where to go next
+## Glossary
 
-| You want…                                   | Start here                                                                             |
-| ------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Request/dump command list (1999 + TI notes) | [docs/waf80.md](docs/waf80.md)                                                         |
-| Single / Multi file layout and byte offsets | [docs/single-dump.md](docs/single-dump.md), [docs/multis-dump.md](docs/multis-dump.md) |
-| Live Multi edits (`0x72`, …)                | [docs/multis-live-edit.md](docs/multis-live-edit.md)                                   |
-| Live Single / part sound edits              | [docs/single-live-edit.md](docs/single-live-edit.md)                                   |
-| Banks, arrangement, architecture            | [docs/virus.md](docs/virus.md)                                                         |
-| AURA plugin / host quirks (not Virus SysEx) | [docs/aura-notes.md](docs/aura-notes.md)                                               |
+| Term                    | Meaning                                                                                  |
+| ----------------------- | ---------------------------------------------------------------------------------------- |
+| `cmd`                   | Command byte after manufacturer/family/device bytes; selects request, dump, or edit type |
+| `param`                 | Parameter ID within the selected command/page; not globally unique                       |
+| `value`                 | One 7-bit data byte, usually `00`–`7F`; encoding depends on the parameter                |
+| Offset                  | Byte position in a full SysEx frame, including `F0` at `0x00`                            |
+| Payload-relative offset | Offset inside the dump body only; subtract the documented header size                    |
+| Bank                    | Program storage group, e.g. RAM A-D, ROM A-Z, or edit-buffer bank `00`                   |
+| Slot                    | Program or Multi position within a bank                                                  |
+| Program                 | Single sound number stored or referenced by a Multi part                                 |
+| Part index              | Zero-based live-edit part byte: `00` = Part 1, `0F` = Part 16                            |
+| Edit buffer             | Temporary current state, not necessarily a stored program slot                           |
+| Arrangement             | Multi snapshot plus sixteen part Singles                                                 |
+| Checksum                | Final data byte before `F7` on dump replies and some requests                            |
+| AURA / VC / OsTIrus     | Host software or emulator sources; verify with hardware before promoting mappings        |
 
-## Documentation
+## Documentation index
 
-| Topic                                  | Document                                                         |
-| -------------------------------------- | ---------------------------------------------------------------- |
-| Hardware testing (`sendmidi`, etc.)    | [docs/testing.md](docs/testing.md)                               |
-| General notes about Virus architecture | [docs/virus.md](docs/virus.md)                                   |
-| Single program dump (`DUMP_SINGLE`)    | [docs/single-dump.md](docs/single-dump.md)                       |
-| Multi program dump (`DUMP_MULTI`)      | [docs/multis-dump.md](docs/multis-dump.md)                       |
-| Multi Live Edit (`0x72`, …)            | [docs/multis-live-edit.md](docs/multis-live-edit.md)             |
-| Global Live Edit (`0x73`)              | [docs/global-live-edit.md](docs/global-live-edit.md)             |
-| MIDI Control Change (CC)               | [docs/control-change.md](docs/control-change.md)                 |
-| WAF80 SysEx reference (1999, classic)  | [docs/waf80.md](docs/waf80.md)                                   |
-| Single Live Edit                       | [docs/single-live-edit.md](docs/single-live-edit.md)             |
-| Single parameter option lists          | [docs/parameter-option-lists.md](docs/parameter-option-lists.md) |
-| AURA plugin / host quirks (not Virus)  | [docs/aura-notes.md](docs/aura-notes.md)                         |
+| You need to…                                 | Start here                                                                               |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Install MIDI tools and capture hardware data | [docs/testing.md](docs/testing.md)                                                       |
+| Understand banks, slots, and play modes      | [docs/virus.md](docs/virus.md)                                                           |
+| Request a Multi or parse `DUMP_MULTI`        | [docs/multis-dump.md](docs/multis-dump.md)                                               |
+| Send live Multi edits (`0x72`, `0x71`, etc.) | [docs/multis-live-edit.md](docs/multis-live-edit.md)                                     |
+| Request arrangement Singles or parse Singles | [docs/single-dump.md](docs/single-dump.md)                                               |
+| Send live Single / part sound edits          | [docs/single-live-edit.md](docs/single-live-edit.md)                                     |
+| Work with device-wide settings               | [docs/global-live-edit.md](docs/global-live-edit.md)                                     |
+| Identify controls that are MIDI CC only      | [docs/control-change.md](docs/control-change.md)                                         |
+| Look up option labels and enum values        | [docs/parameter-option-lists.md](docs/parameter-option-lists.md)                         |
+| Compare against the classic 1999 map         | [docs/waf80.md](docs/waf80.md)                                                           |
+| Account for AURA / host plugin behavior      | [docs/aura-notes.md](docs/aura-notes.md)                                                 |
+| Inspect the INIT arrangement capture         | [artifacts/sysex/init-multi-arrangement.syx](artifacts/sysex/init-multi-arrangement.syx) |
