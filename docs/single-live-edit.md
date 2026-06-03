@@ -177,9 +177,9 @@ string.
 | Classic         | `6E`  | `1E`    | `00`      | ✓         |
 | Hypersaw        | `6E`  | `1E`    | `01`      | ✓         |
 | Wavetable       | `6E`  | `1E`    | `02`      | ✓         |
-| Wavetable PWM   | `6E`  | `1E`    |           |           |
-| Grain Simple    | `6E`  | `1E`    |           |           |
-| Grain Complex   | `6E`  | `1E`    |           |           |
+| Wavetable PWM   | `6E`  | `1E`    | `03`      | ✓         |
+| Grain Simple    | `6E`  | `1E`    | `04`      | ✓         |
+| Grain Complex   | `6E`  | `1E`    | `05`      | ✓         |
 | Formant Simple  | `6E`  | `1E`    |           |           |
 | Formant Complex | `6E`  | `1E`    |           |           |
 
@@ -190,6 +190,9 @@ on **`0x6E`** only (not **`0x71`** Filter 1 env polarity).
 F0 00 20 33 01 00 6E 00 1E 00 F7   # Mode Classic
 F0 00 20 33 01 00 6E 00 1E 01 F7   # Mode Hypersaw
 F0 00 20 33 01 00 6E 00 1E 02 F7   # Mode Wavetable
+F0 00 20 33 01 00 6E 00 1E 03 F7   # Mode Wavetable PWM (panel: Wave PWM)
+F0 00 20 33 01 00 6E 00 1E 04 F7   # Mode Grain Simple
+F0 00 20 33 01 00 6E 00 1E 05 F7   # Mode Grain Complex
 ```
 
 ### Oscillator 1 — Classic
@@ -496,12 +499,14 @@ Hypersaw **Density** / **Sync**).
 | -------------- | ----- | ------- | -------- | --------- |
 | Index          | `70`  | `11`    | **0..127** → `stored = lcd` | ✓ |
 | Wavetable      | `70`  | `13`    | Enum **`00`–`63`** (100 names); see below | ✓ |
-| Interpolation  |       |         |          |           |
-| Semitone       | `70`  | `14`    | Same as Classic (assumed) | — |
-| Key Follow     | `70`  | `15`    | Same as Classic (assumed) | — |
-| Balance        | `70`  | `21`    | Same as Classic (assumed) | — |
+| Interpolation  | `6E`  | `2C`    | **0..127** → `stored = lcd` | ✓ |
+| Semitone       | `70`  | `14`    | Same as [Classic](#oscillator-1--classic) | ✓† |
+| Key Follow     | `70`  | `15`    | Same as Classic | ✓† |
+| Balance        | `70`  | `21`    | Same as [Classic Balance](#balance-osc-1-classic) | ✓† |
 
-**Index** (`11` in Wavetable only): same Page A index as Classic **Shape** / Hypersaw
+† Panel present in Wavetable mode; encoding matches Classic (not re-swept in mode **`02`**).
+
+**Index** (`11` in Wavetable / Wave PWM): same Page A index as Classic **Shape** / Hypersaw
 **Density**. **`stored = lcd`** (**`00`–`7F`**).
 
 | LCD | `<value>` | Confirmed |
@@ -532,46 +537,128 @@ F0 00 20 33 01 00 70 00 13 00 F7   # Wavetable index 0 (Sine)
 F0 00 20 33 01 00 70 00 13 63 F7   # Wavetable index 99 (Domina7rix)
 ```
 
+**Interpolation** (`6E` / `2C`): **0..127**, **`stored = lcd`**. Uses **`cmd=0x6E`**
+(part buffer), not **`0x70`** Page A — same param index **`0x2C`** as [Filter 1
+Envelope Amount](#filter-1-envelope-amount-cmd0x70-param-0x2c) on **`0x70`**.
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| 0 | `00` | ✓ |
+| 127 | `7F` | ✓ |
+
+```text
+F0 00 20 33 01 00 6E 00 2C 00 F7   # Interpolation 0
+F0 00 20 33 01 00 6E 00 2C 7F F7   # Interpolation 127
+```
+
 ### Oscillator 1 — Wavetable PWM
 
-Panel label **Wave PWM**. **Sub-menus:** **1–3**. Same as Wavetable plus:
+**Mode `<value>` = `03`**. Panel label **Wave PWM**. **Sub-menus:** **1–3**.
 
 | Control        | `cmd` | `param` | Encoding | Confirmed |
 | -------------- | ----- | ------- | -------- | --------- |
-| Pulse Width    |       |         |          |           |
-| Local Detune   |       |         |          |           |
+| Index          | `70`  | `11`    | **0..127** → `stored = lcd` (same as Wavetable) | ✓ |
+| Wavetable      | `70`  | `13`    | Enum **`00`–`63`** (same names as Wavetable) | ✓ |
+| Pulse Width    | `70`  | `12`    | **0..127** → `stored = lcd` | ✓ |
+| Interpolation  | `6E`  | `2C`    | **0..127** → `stored = lcd` (same as Wavetable) | ✓ |
+| Local Detune   | `6E`  | `2B`    | **0..127** → `stored = lcd` | ✓ |
+| Semitone       | `70`  | `14`    | Same as Classic | ✓† |
+| Key Follow     | `70`  | `15`    | Same as Classic | ✓† |
+| Balance        | `70`  | `21`    | Same as Classic | ✓† |
 
-*(Index, Wavetable, Interpolation, Semitone, Key Follow, Balance — see Wavetable table.)*
+† Assumed same as Classic / Hypersaw / Wavetable (panel match; not re-swept in mode **`03`**).
+
+**`0x12` is mode-dependent:** Classic **Pulse Width** (**50.0 %..100 %**), Hypersaw
+**Local Detune** (**`70`/`12`**, **0..127**), Wave PWM **Pulse Width** (**`70`/`12`**, **0..127**).
+
+**Pulse Width** (Wave PWM, `70`/`12`):
+
+```text
+F0 00 20 33 01 00 70 00 12 00 F7   # Pulse Width 0
+F0 00 20 33 01 00 70 00 12 7F F7   # Pulse Width 127
+```
+
+**Local Detune** (Wave PWM only on **`6E`/`2B`** — not **`70`/`12`**; Hypersaw uses
+**`70`/`12`** for Local Detune):
+
+```text
+F0 00 20 33 01 00 6E 00 2B 00 F7   # Local Detune 0
+F0 00 20 33 01 00 6E 00 2B 7F F7   # Local Detune 127
+```
+
+**Index**, **Wavetable**, **Interpolation** — same wire rules as
+[Wavetable](#oscillator-1--wavetable) (reconfirmed in mode **`03`** sweeps).
 
 ### Oscillator 1 — Grain Simple
 
-**Sub-menus:** **1–3**.
+**Mode `<value>` = `04`**. **Sub-menus:** **1–3**. Panel: **Index**, **Wavetable**,
+**F-Shift**, **Interpolation**, **Semitone**, **Key Follow**, **Balance**.
 
 | Control        | `cmd` | `param` | Encoding | Confirmed |
 | -------------- | ----- | ------- | -------- | --------- |
-| Index          |       |         |          |           |
-| Wavetable      |       |         | enum     |           |
-| F-Shift        |       |         |          |           |
-| Interpolation  |       |         |          |           |
-| Semitone       |       |         |          |           |
-| Key Follow     |       |         |          |           |
-| Balance        |       |         |          |           |
+| Index          | `70`  | `11`    | **0..127** → `stored = lcd` (same as Wavetable) | ✓† |
+| Wavetable      | `70`  | `13`    | Enum **`00`–`63`** (same names) | ✓† |
+| F-Shift        | `6E`  | `2A`    | **−64..+63** → `stored = ui + 64` | ✓ |
+| Interpolation  | `6E`  | `2C`    | **0..127** → `stored = lcd` | ✓ |
+| Semitone       | `70`  | `14`    | Same as Classic | ✓† |
+| Key Follow     | `70`  | `15`    | Same as Classic | ✓† |
+| Balance        | `70`  | `21`    | Same as Classic | ✓† |
+
+† Same wire/encoding as Wavetable; not re-swept in mode **`04`** (Wavetable left on **Domina7rix** → **`13`/`63`**).
+
+**F-Shift** (`6E`/`2A`): **−64..+63** → `stored = ui + 64` (**`00`–`7F`**), same bipolar
+pattern as **Key Follow**. Same param index **`0x2A`** as [Filter 1
+Resonance](#filter-1-resonance-cmd0x70-param-0x2a) on **`0x70`** — use **`cmd`** to
+disambiguate.
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| −64 | `00` | ✓ |
+| +0 | `40` | ✓ |
+| +63 | `7F` | ✓ |
+
+```text
+F0 00 20 33 01 00 6E 00 2A 00 F7   # F-Shift −64
+F0 00 20 33 01 00 6E 00 2A 40 F7   # F-Shift +0
+F0 00 20 33 01 00 6E 00 2A 7F F7   # F-Shift +63
+F0 00 20 33 01 00 6E 00 2C 00 F7   # Interpolation 0
+F0 00 20 33 01 00 6E 00 2C 7F F7   # Interpolation 127
+```
 
 ### Oscillator 1 — Grain Complex
 
-**Sub-menus:** **1–4**.
+**Mode `<value>` = `05`**. **Sub-menus:** **1–4**. Same as
+[Grain Simple](#oscillator-1--grain-simple) plus **F-Spread** and **Local Detune**.
 
 | Control        | `cmd` | `param` | Encoding | Confirmed |
 | -------------- | ----- | ------- | -------- | --------- |
-| Index          |       |         |          |           |
-| Wavetable      |       |         | enum     |           |
-| F-Shift        |       |         |          |           |
-| F-Spread       |       |         |          |           |
-| Local Detune   |       |         |          |           |
-| Interpolation  |       |         |          |           |
-| Semitone       |       |         |          |           |
-| Key Follow     |       |         |          |           |
-| Balance        |       |         |          |           |
+| Index          | `70`  | `11`    | Same as Wavetable / Grain Simple (assumed) | — |
+| Wavetable      | `70`  | `13`    | Same enum as Wavetable (assumed) | — |
+| F-Shift        | `6E`  | `2A`    | Same as Grain Simple; current **+63** = `7F` | ✓† |
+| F-Spread       | `6E`  | `25`    | **0..127** → `stored = lcd` | ✓ |
+| Local Detune   | `6E`  | `2B`    | **0..127** → `stored = lcd` | ✓ |
+| Interpolation  | `6E`  | `2C`    | Same as Grain Simple (assumed) | — |
+| Semitone       | `70`  | `14`    | Same as Classic (assumed) | — |
+| Key Follow     | `70`  | `15`    | Same as Classic (assumed) | — |
+| Balance        | `70`  | `21`    | Same as Classic (assumed) | — |
+
+† **F-Shift** carried over while changing from Grain Simple; not re-swept in mode **`05`**.
+
+**F-Spread** (`6E`/`25`): newly visible in Grain Complex. Panel **0..127** —
+**`stored = lcd`**.
+
+```text
+F0 00 20 33 01 00 6E 00 25 00 F7   # F-Spread 0
+F0 00 20 33 01 00 6E 00 25 7F F7   # F-Spread 127
+```
+
+**Local Detune** (`6E`/`2B`): same slot as Wave PWM **Local Detune**. Panel
+**0..127** — **`stored = lcd`**.
+
+```text
+F0 00 20 33 01 00 6E 00 2B 00 F7   # Local Detune 0
+F0 00 20 33 01 00 6E 00 2B 7F F7   # Local Detune 127
+```
 
 ### Oscillator 1 — Formant Simple
 

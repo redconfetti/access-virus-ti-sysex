@@ -132,22 +132,22 @@ Multi edit parameters are in
 | Oscillator 1+2 X-Sync Frequency        | Oscillator 1 Hypersaw        | `70` / `0x1B` | **0..127** when Sync On; `stored = lcd` |
 | Oscillator 1 Wavetable / Waveform      | Oscillator 1 Wavetable       | `70` / `0x13` | Index **0–99** → `00`–`63`; names in [parameter-option-lists.md](parameter-option-lists.md#wavetable-names) |
 | Oscillator 1 Wavetable Index           | Oscillator 1 Wavetable       | `70` / `0x11` | **0..127** `stored = lcd` (mode `02`; not Shape/Density) |
-| Oscillator 1 Interpolation             | Oscillator 1 Wavetable       |             |                       |
+| Oscillator 1 Interpolation             | Oscillator 1 Wavetable       | `6E` / `0x2C` | **0..127** `stored = lcd` (not `70`/`2C` Filter Env) |
 | Oscillator 1 Wavetable / Waveform      | Oscillator 1 Wavetable PWM   |             |                       |
 | Oscillator 1 Wavetable Index           | Oscillator 1 Wavetable PWM   |             |                       |
-| Oscillator 1 Pulsewidth                | Oscillator 1 Wavetable PWM   |             |                       |
-| Oscillator 1 Local Detune              | Oscillator 1 Wavetable PWM   |             |                       |
+| Oscillator 1 Pulsewidth                | Oscillator 1 Wavetable PWM   | `70` / `0x12` | **0..127** `stored = lcd` (not Classic 50–100 %) |
+| Oscillator 1 Local Detune              | Oscillator 1 Wavetable PWM   | `6E` / `0x2B` | **0..127** `stored = lcd` |
 | Oscillator 1 Interpolation             | Oscillator 1 Wavetable PWM   |             |                       |
-| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Grain Simple    |             |                       |
-| Oscillator 1 Wavetable Index           | Oscillator 1 Grain Simple    |             |                       |
-| Oscillator 1 Formant Shift             | Oscillator 1 Grain Simple    |             |                       |
-| Oscillator 1 Interpolation             | Oscillator 1 Grain Simple    |             |                       |
-| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Grain Complex   |             |                       |
-| Oscillator 1 Wavetable Index           | Oscillator 1 Grain Complex   |             |                       |
-| Oscillator 1 Formant Shift             | Oscillator 1 Grain Complex   |             |                       |
-| Oscillator 1 Formant Spread            | Oscillator 1 Grain Complex   |             |                       |
-| Oscillator 1 Local Detune              | Oscillator 1 Grain Complex   |             |                       |
-| Oscillator 1 Interpolation             | Oscillator 1 Grain Complex   |             |                       |
+| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Grain Simple    | `70` / `0x13` | Same enum as Wavetable mode |
+| Oscillator 1 Wavetable Index           | Oscillator 1 Grain Simple    | `70` / `0x11` | **0..127** `stored = lcd` |
+| Oscillator 1 Formant Shift             | Oscillator 1 Grain Simple    | `6E` / `0x2A` | F-Shift **−64..+63** → `ui+64` (not `70`/`2A` Resonance) |
+| Oscillator 1 Interpolation             | Oscillator 1 Grain Simple    | `6E` / `0x2C` | **0..127** `stored = lcd` |
+| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Grain Complex   | `70` / `0x13` | Same enum as Wavetable mode (assumed) |
+| Oscillator 1 Wavetable Index           | Oscillator 1 Grain Complex   | `70` / `0x11` | Same as Wavetable / Grain Simple (assumed) |
+| Oscillator 1 Formant Shift             | Oscillator 1 Grain Complex   | `6E` / `0x2A` | Same as Grain Simple; **+63** → `7F` |
+| Oscillator 1 Formant Spread            | Oscillator 1 Grain Complex   | `6E` / `0x25` | F-Spread **0..127** → `stored = lcd` |
+| Oscillator 1 Local Detune              | Oscillator 1 Grain Complex   | `6E` / `0x2B` | **0..127** → `stored = lcd` |
+| Oscillator 1 Interpolation             | Oscillator 1 Grain Complex   | `6E` / `0x2C` | Same as Grain Simple (assumed) |
 | Oscillator 1 Wavetable / Waveform      | Oscillator 1 Formant Simple  |             |                       |
 | Oscillator 1 Wavetable Index           | Oscillator 1 Formant Simple  |             |                       |
 | Oscillator 1 Formant Shift             | Oscillator 1 Formant Simple  |             |                       |
