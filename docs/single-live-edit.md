@@ -139,13 +139,44 @@ Capture path: **`Mode` / `Shape` / `Control` → LCD value**. Use **+/−** when
 possible. Knob sweeps: use the **last** SysEx line. Master inventory:
 [single-dump.md — Oscillators](single-dump.md#oscillators).
 
+#### LCD “landing zones” (same label, different wire)
+
+On many TI controls the **panel shows one LCD value on several consecutive
+detents** while the **SysEx byte still steps +1** each time (`00`–`7F` on the
+wire). That does **not** feel like the knob is “stuck” — turn rate still feels
+normal — because **display updates and wire resolution are decoupled**: the
+firmware keeps fine internal steps for sound and automation, but only changes
+the readout when the value crosses the next **0.1**-style label (or a named
+tick like **Norm**). While the LCD holds **1.7**, the engine may still walk
+**`15` → `16` → `17`** without you noticing each hex step.
+
+This is **usability engineering** for physical knobs (high sensitivity, limited
+precision): wide **landing zones** for values humans often want (**+0**, **Norm**,
+round percents) without tedious micro-adjustment, while the backend still uses
+the full **128**-step range.
+
+Examples from this repo:
+
+| Control | Landing users care about | Wire (examples) |
+| ------- | ------------------------ | --------------- |
+| Semitone | **+0** | **`40`** (not the only byte, but a stable center) |
+| Key Follow | **Norm (+32)** | **`60`** (between **`5F`** / **`61`**) |
+| Balance | **0 %** | **`40`** |
+| Hypersaw Density | round **1.x–8.x** | e.g. **`15`/`16`** → 1.7, **`3F`/`40`** → 3.0 |
+| Classic Shape (Saw>Pulse) | sparse **%** | many **+1/+2** LCD steps |
+
+**Implication for tools:** map **wire → LCD** with a full detent table (or capture),
+not `stored = f(lcd)` from one formula alone. For **automation**, send the **wire**
+byte; for **UI display**, use the table or accept that several wires show the same
+string.
+
 ### Oscillator 1 — Mode
 
 | LCD (Mode)      | `cmd` | `param` | `<value>` | Confirmed |
 | --------------- | ----- | ------- | --------- | --------- |
 | Classic         | `6E`  | `1E`    | `00`      | ✓         |
 | Hypersaw        | `6E`  | `1E`    | `01`      | ✓         |
-| Wavetable       | `6E`  | `1E`    |           |           |
+| Wavetable       | `6E`  | `1E`    | `02`      | ✓         |
 | Wavetable PWM   | `6E`  | `1E`    |           |           |
 | Grain Simple    | `6E`  | `1E`    |           |           |
 | Grain Complex   | `6E`  | `1E`    |           |           |
@@ -158,6 +189,7 @@ on **`0x6E`** only (not **`0x71`** Filter 1 env polarity).
 ```text
 F0 00 20 33 01 00 6E 00 1E 00 F7   # Mode Classic
 F0 00 20 33 01 00 6E 00 1E 01 F7   # Mode Hypersaw
+F0 00 20 33 01 00 6E 00 1E 02 F7   # Mode Wavetable
 ```
 
 ### Oscillator 1 — Classic
@@ -366,29 +398,139 @@ F0 00 20 33 01 00 70 00 12 7F F7   # max 100 %
 ### Oscillator 1 — Hypersaw
 
 **Mode `<value>` = `01`**. No **Shape** / **Wave Select** (Classic-only). **Sub-menus:**
-**1–2**. Panel controls (wire TBD):
+**1–2**. Page A **`0x11`** = **Density** here (Classic uses the same index for **Shape**).
 
 | Control      | `cmd` | `param` | Encoding | Confirmed |
 | ------------ | ----- | ------- | -------- | --------- |
-| Density      |       |         |          |           |
-| Local Detune |       |         |          |           |
-| Sync         |       |         | On/Off   |           |
-| Semitone     |       |         |          |           |
-| Key Follow   |       |         |          |           |
-| Balance      |       |         |          |           |
+| Density      | `70`  | `11`    | **1.0..9.0** — see below | ✓ |
+| Local Detune | `70`  | `12`    | **0..127** → `stored = lcd` | ✓ |
+| Sync         | `70`  | `1C`    | Off **`00`** / On **`01`** | ✓ |
+| Sync Frequency | `70`  | `1B`    | **0..127** when **Sync On**; `stored = lcd` | ✓ |
+| Semitone     | `70`  | `14`    | Same as [Classic](#oscillator-1--classic) | ✓ |
+| Key Follow   | `70`  | `15`    | Same as Classic | ✓ |
+| Balance      | `70`  | `21`    | Same as [Classic Balance](#balance-osc-1-classic) | ✓ |
+
+**Density** (`11` in Hypersaw only): **1.0..9.0**, +1 wire per detent **`00`–`7F`**.
+
+```text
+internal = 1 + stored × 8 / 127          # SysEx / engine (00 → 1.0, 7F → 9.0)
+scale    = stored / 127
+lcd      ≈ round(1 + (internal − 1) × scale, 0.1)
+```
+
+**LCD formula status:** `lcd ≈ round(1 + (internal − 1) × scale, 0.1)` lands **`40`**, **`74`–`76`**,
+**`7B`**, **`7F`**; **`58`–`6C`** often **~0.1–0.5 below** pred; **`44`–`57`**, **`74`+** within **~0.1**. Dup
+labels on some detents (**`5C`/`5D`**, **`67`/`68`**, **`77`/`78`**, etc.). Full **128**-entry map:
+[parameter-option-lists.md — Density LCD](parameter-option-lists.md#osc-1-hypersaw--density-lcd).
+
+**Do not** use `stored = round((lcd − 1) × 127 / 8)` from LCD alone (e.g. LCD **3.0** →
+**`3F`**, not **`20`**).
+
+```text
+F0 00 20 33 01 00 70 00 11 00 F7   # Density 1.0
+F0 00 20 33 01 00 70 00 11 3F F7   # Density 3.0 (LCD)
+F0 00 20 33 01 00 70 00 11 7F F7   # Density 9.0
+```
+
+**Local Detune** (`12` in Hypersaw only): same Page A index as Classic **Pulse Width**
+(**`12`** there is **50.0 %** … **100 %**). Only interpret **`12`** with **Mode `01`**.
+
+Panel **0..127** (unsigned, not bipolar). **Wire = LCD** (one detent per step **`00`–`7F`**).
+
+```text
+stored = lcd    # 0..127
+lcd    = stored
+```
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| 0 | `00` | ✓ |
+| 80 | `50` | ✓ |
+
+```text
+F0 00 20 33 01 00 70 00 12 00 F7   # Local Detune 0
+F0 00 20 33 01 00 70 00 12 50 F7   # Local Detune 80
+F0 00 20 33 01 00 70 00 12 7F F7   # Local Detune 127 (max wire)
+```
+
+**Sync** (`1C` in Hypersaw): panel **Off** / **On**. WAF80 CC **28** lists **Osc2 Sync**
+**0/1** — same wire pattern on Osc 1 here.
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| Off | `00` | ✓ |
+| On | `01` | ✓ |
+
+```text
+F0 00 20 33 01 00 70 00 1C 00 F7   # Sync Off
+F0 00 20 33 01 00 70 00 1C 01 F7   # Sync On
+```
+
+**Sync Frequency** (`1B`, conditional on **Sync On**): dump **Oscillator 1+2 X-Sync
+Frequency**. Hidden when **Sync Off**. Panel **0..127** — **`stored = lcd`** (same as
+**Local Detune**).
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| 0 | `00` | ✓ |
+| 64 | `40` | ✓ |
+| 127 | `7F` | ✓ |
+
+```text
+F0 00 20 33 01 00 70 00 1B 00 F7   # Sync Frequency 0
+F0 00 20 33 01 00 70 00 1B 40 F7   # Sync Frequency 64
+F0 00 20 33 01 00 70 00 1B 7F F7   # Sync Frequency 127
+```
+
+**Semitone**, **Key Follow**, **Balance** — same **`14` / `15` / `21`** and encodings as
+Classic (verified in **Mode `01`** sweeps: Semitone **`10`..`70`** → **−48..+48**,
+Key Follow **`00`..`7F`** → **−64..+63**, Balance **`00`/`40`/`7F`** → **−100 % / 0 % / +100 %**).
 
 ### Oscillator 1 — Wavetable
 
-**Sub-menus:** **1–3**.
+**Mode `<value>` = `02`**. **Sub-menus:** **1–3**. Panel: **Index**, **Wavetable**,
+**Interpolation**, **Semitone**, **Key Follow**, **Balance** (no Classic **Shape** /
+Hypersaw **Density** / **Sync**).
 
 | Control        | `cmd` | `param` | Encoding | Confirmed |
 | -------------- | ----- | ------- | -------- | --------- |
-| Index          |       |         |          |           |
-| Wavetable      |       |         | enum     |           |
+| Index          | `70`  | `11`    | **0..127** → `stored = lcd` | ✓ |
+| Wavetable      | `70`  | `13`    | Enum **`00`–`63`** (100 names); see below | ✓ |
 | Interpolation  |       |         |          |           |
-| Semitone       |       |         |          |           |
-| Key Follow     |       |         |          |           |
-| Balance        |       |         |          |           |
+| Semitone       | `70`  | `14`    | Same as Classic (assumed) | — |
+| Key Follow     | `70`  | `15`    | Same as Classic (assumed) | — |
+| Balance        | `70`  | `21`    | Same as Classic (assumed) | — |
+
+**Index** (`11` in Wavetable only): same Page A index as Classic **Shape** / Hypersaw
+**Density**. **`stored = lcd`** (**`00`–`7F`**).
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| 0 | `00` | ✓ |
+| 127 | `7F` | ✓ |
+
+```text
+F0 00 20 33 01 00 70 00 11 00 F7   # Index 0
+F0 00 20 33 01 00 70 00 11 7F F7   # Index 127
+```
+
+Stepped **`00`→`38`** (+1 per detent) then fast sweep to **`7F`** — no anomalies vs
+**1:1** encoding.
+
+**Wavetable** (`13` in Wavetable mode): same Page A index as Classic **Wave Select**.
+**`stored`** = wavetable index (**0**–**99** → **`00`–`63`**). Panel order matches
+[parameter-option-lists.md — Wavetable Names](parameter-option-lists.md#wavetable-names)
+(hardware verified: full sweep **Sine** → **Domina7rix**).
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| Sine (0) | `00` | ✓ |
+| Domina7rix (99) | `63` | ✓ |
+
+```text
+F0 00 20 33 01 00 70 00 13 00 F7   # Wavetable index 0 (Sine)
+F0 00 20 33 01 00 70 00 13 63 F7   # Wavetable index 99 (Domina7rix)
+```
 
 ### Oscillator 1 — Wavetable PWM
 

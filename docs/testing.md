@@ -215,7 +215,12 @@ when doing WAF80-driven mapping; otherwise pick one row from
    send a stream.
 8. Some controls send **MIDI CC only** (no SysEx) — e.g. **Sub Oscillator
    Volume** = **CC 34**; see [control-change.md](control-change.md).
-9. **Before a SysEx mapping session**, set globals **MIDI Controller Page A**
+9. **Duplicate LCD on adjacent wire bytes** is normal — the wire still advances
+   **`00`–`7F`** every detent while the readout may stay fixed for **2–3** steps.
+   That is for human **landing zones** (e.g. **0**, **Norm**), not slow stepping;
+   knob motion still feels continuous. Document every **wire** detent in lookup
+   tables; do not assume one LCD value ↔ one byte.
+10. **Before a SysEx mapping session**, set globals **MIDI Controller Page A**
    and **Page B** to **SysEx** (not Controller Data) so panel edits emit
    Access SysEx instead of CC — see
    [global-live-edit.md — Page A / B](global-live-edit.md#midi-controller-page-a-0x5e).

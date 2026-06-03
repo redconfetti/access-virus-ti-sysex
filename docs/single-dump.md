@@ -128,10 +128,10 @@ Multi edit parameters are in
 | Oscillator 1 Wave Select               | Oscillator 1 Classic         |             | `70` / `0x13` (64 waves `00`–`3F`) |
 | Oscillator 1 Pulsewidth                | Oscillator 1 Classic         |             |                       |
 | Oscillator 1 Density                   | Oscillator 1 Hypersaw        |             |                       |
-| Oscillator 1 Local Detune              | Oscillator 1 Hypersaw        |             |                       |
-| Oscillator 1+2 X-Sync Frequency        | Oscillator 1 Hypersaw        |             |                       |
-| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Wavetable       |             |                       |
-| Oscillator 1 Wavetable Index           | Oscillator 1 Wavetable       |             |                       |
+| Oscillator 1 Local Detune              | Oscillator 1 Hypersaw        | `70` / `0x12` | **0..127** `stored = lcd` (Hypersaw; Classic `12` = Pulse Width) |
+| Oscillator 1+2 X-Sync Frequency        | Oscillator 1 Hypersaw        | `70` / `0x1B` | **0..127** when Sync On; `stored = lcd` |
+| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Wavetable       | `70` / `0x13` | Index **0–99** → `00`–`63`; names in [parameter-option-lists.md](parameter-option-lists.md#wavetable-names) |
+| Oscillator 1 Wavetable Index           | Oscillator 1 Wavetable       | `70` / `0x11` | **0..127** `stored = lcd` (mode `02`; not Shape/Density) |
 | Oscillator 1 Interpolation             | Oscillator 1 Wavetable       |             |                       |
 | Oscillator 1 Wavetable / Waveform      | Oscillator 1 Wavetable PWM   |             |                       |
 | Oscillator 1 Wavetable Index           | Oscillator 1 Wavetable PWM   |             |                       |
