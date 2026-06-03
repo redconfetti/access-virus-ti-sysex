@@ -93,16 +93,16 @@ On / Off. Bit **`0x01`**: `0x44` off / `0x45` on at INIT (`±0x01` from
 the other state). Part 8 at **`0x100`** (`0x45`→`0x44`); Part 16 at
 **`0x108`** (`0x45`→`0x44`, checksum unchanged `0x20`).
 
-**Mute** (VC / AURA) and **Solo** (AURA only) are mixer UI controls, not
-separate dump fields. Solo temporarily disables other parts by toggling
-**Enable** on those parts.
+**Mute** and **Solo** in host software are mixer UI controls, not separate
+dump fields. Solo may disable other parts by toggling **Enable** — see
+[aura-notes.md](aura-notes.md#multi-mixer-ui-host-software).
 
 ##### Direct Monitoring
 
-**Virus Control (VC) only** — not in the AURA plugin. When enabled, that
-part’s audio is routed from the **analog outputs** directly, bypassing the
-USB return path through the DAW (avoids USB buffer latency for live
-performance). Per-part Edit Multi setting (Virus Control inventory).
+Per-part Edit Multi setting. When enabled, that part’s audio is routed from
+the **analog outputs** directly, bypassing the USB return path through the
+DAW (avoids USB buffer latency for live performance). Availability in host
+apps: [aura-notes.md](aura-notes.md#multi-mixer-ui-host-software).
 **`DUMP_MULTI` byte not confirmed** — prime candidate in
 [unmapped payload](#unmapped-payload)
 (e.g. `0x19..0x28` or a packed per-part flag not yet decoded).

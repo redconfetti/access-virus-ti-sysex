@@ -8,8 +8,8 @@ and **External I/O** routing are out of scope unless the user says otherwise.
 
 ## Prerequisites
 
-1. Virus TI mk2 powered on, USB connected, **Virus TI plugin / AURA** path
-   active so **`Virus TI USB Plugin I/O`** appears in port lists.
+1. Virus TI mk2 powered on, USB connected, **Virus TI plugin** active so
+   **`Virus TI USB Plugin I/O`** appears in port lists.
 2. Tools installed (see [README Setup](../README.md#setup)):
 
    ```bash
@@ -197,8 +197,8 @@ Replies with **`cmd=0x11`**, **267 bytes**, bank/slot **`00 7F`**. Checksum
 `0x7C` = `(128 - (sum & 0x7F)) & 0x7F` over `00 20 33 01 00 31 00 7F`.
 
 **Option C — Stored Multi bank slot**  
-Bank **`01`**, slot = slot number (`09`, `30`, …). **No checksum** (AURA
-format). See [multis-dump.md — Stored Multi bank request](multis-dump.md#request_multi-byte-table).
+Bank **`01`**, slot = slot number (`09`, `30`, …). **No checksum** on the
+request. See [multis-dump.md — Stored Multi bank request](multis-dump.md#request_multi-byte-table).
 
 ### 5. Diff against baseline
 
@@ -209,10 +209,8 @@ parameter edit.
 Example — Part 1 Hold off should change **`0xF9`** only (`0x45` → `0x41`),
 plus often **`0x0A`** and the checksum byte **`0x109`**.
 
-Ignore when diffing Virus panel vs AURA export baselines:
-
-- `0x08` slot (`0x7F` vs `0x00`)
-- `0x0C`, `0x26` (edited-part context)
+When diffing against a host-plugin export baseline, see
+[aura-notes.md — Export and diff baselines](aura-notes.md#export-and-diff-baselines).
 
 Python one-liner (two full messages as space-separated hex strings):
 
@@ -230,8 +228,8 @@ for i, (x, y) in enumerate(zip(a, b)):
 ### 6. Update documentation
 
 Record results in [multis-dump.md](multis-dump.md) and/or
-[multis-live-edit.md](multis-live-edit.md): offset, encoding, example hex,
-and whether the source was **Virus hardware** vs AURA.
+[multis-live-edit.md](multis-live-edit.md): offset, encoding, and example
+hex from **Virus hardware** captures.
 
 ## Suggested smoke tests
 
@@ -257,7 +255,7 @@ Tested **2026-06-02** on TI mk2 desktop — **no** `DUMP_MULTI` change in
 | ------------------------------ | ----------------------------- |
 | Bend Up `71 00 1A` `00`/`7F`   | Part 1                        |
 | Bend Down `71 00 1B` `00`/`7F` | Part 1                        |
-| Secondary Out `73 00 2D`/`01`  | AURA path                     |
+| Secondary Out `73 00 2D`/`01`  | `cmd=0x73`                    |
 | Secondary Out `72 00 2D 01`    | Alternate cmd — still no dump |
 | Keyboard `72 00 40` `00`/`01`  | Desktop                       |
 | All Delays `73 00 1B 01`       | Global — not in multi dump    |
@@ -283,11 +281,7 @@ Change on, Vol RX off, Priority low. See
 
 macOS may not have `timeout`; do not rely on it.
 
-## AURA vs hardware
-
-Some fields do not appear in AURA-exported `DUMP_MULTI` files. Prefer
-**Virus panel edits + hardware dump** for mapping. See
-[aura-notes.md](aura-notes.md).
+Host plugin quirks (export gaps, UI labels): [aura-notes.md](aura-notes.md).
 
 ## When to stop and ask the user
 

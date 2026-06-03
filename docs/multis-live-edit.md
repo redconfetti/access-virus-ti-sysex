@@ -6,7 +6,7 @@ Live SysEx notes for Multi edit behavior on Virus TI mk2.
 F0 00 20 33 01 00 72 <part> <param> <value> F7
 ```
 
-Some AURA edits use **`cmd=0x71`** instead (same byte layout):
+Some parameters use **`cmd=0x71`** instead of **`0x72`** (same byte layout):
 
 ```text
 F0 00 20 33 01 00 71 <part> <param> <value> F7
@@ -36,7 +36,7 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 | `0x22`   | `0x49 + (part−1)`             | MIDI Channel     | Part MIDI channel 1–16 (P1 at `0x49`)        |
 | `0x28`   | `0xA9 + (part−1)`             | Init Volume      | MIDI volume on multi select (Part 16 `0xB8`) |
 | `0x29`   | `0xC8 + part`                 | Output Routing   | Part output bus and channel                  |
-| `0x2D`   | **Not in dump** (`0x73` AURA) | Secondary Output | Second output bus                            |
+| `0x2D`   | **Not in dump** (`cmd=0x73`)  | Secondary Output | Second output bus (`cmd=0x73`)               |
 | `0x2B`   | `0xD8 + part`                 | Panorama         | Part pan position                            |
 | `0x40`   | **Not in dump** (desktop)     | Keyboard-related | Keyboard global behavior control             |
 | `0x48`   | `0xF8 + part` (packed flags)  | Enable           | Part on/off                                  |
@@ -47,7 +47,8 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 
 **Not in this table:** **Direct Monitoring** (VC-only; dump byte
 unmapped — [multis-dump.md](multis-dump.md#direct-monitoring)).
-**Solo** (AURA UI) manipulates **`0x48` Enable** on other parts.
+**Solo** in some host UIs manipulates **`0x48` Enable** on other parts — see
+[aura-notes.md](aura-notes.md#multi-mixer-ui-host-software).
 
 ## Parameters
 
@@ -85,7 +86,7 @@ unmapped — [multis-dump.md](multis-dump.md#direct-monitoring)).
 
 ### Bend Up (`0x1A`, `cmd=0x71`)
 
-- Per-part **pitch bend up** limit (Edit Single → Common; AURA: “Bend Up”).
+- Per-part **pitch bend up** limit (Edit Single → Common).
 - Sent via **`cmd=0x71`**, not `0x72`:
 
   ```text
@@ -183,16 +184,15 @@ F0 00 20 33 01 00 71 00 1B 7F F7   # +63
 
 ### Secondary Output (`0x2D`)
 
-- Per-part **secondary** output routing (Edit Multi / AURA).
-- **AURA** sends this via **`cmd=0x73`**, not `0x72`:
+- Per-part **secondary** output routing (Edit Multi).
+- Sent via **`cmd=0x73`**, not `0x72`:
 
   ```text
   F0 00 20 33 01 00 73 00 2D <value> F7
   ```
 
-  Captures are for **Part 1** with that part selected in AURA; whether
-  other parts use the same param with a different part selector is **not
-  confirmed**.
+  Part 1 captures confirmed; whether other parts use a part selector byte
+  with the same param is **not confirmed**.
 - Dump correlation: **not in `DUMP_MULTI`** (hardware-tested: `73 00 2D`
   Off/`01`, and `72 00 2D 01` — no dump change vs INIT baseline).
 - Supported values: see
@@ -207,7 +207,7 @@ F0 00 20 33 01 00 71 00 1B 7F F7   # +63
 ### Keyboard-related (`0x40`) — global
 
 - Observed as global control (`part=00`).
-- AURA label: `kbd local enabled`.
+- Keyboard local / global keyboard behavior (label TBD on panel).
 - On TI desktop module, **`72 00 40` on/off does not change `DUMP_MULTI`**
   (hardware-tested).
 - Supported values: see [Boolean On/Off](#boolean-onoff).
@@ -217,7 +217,7 @@ F0 00 20 33 01 00 71 00 1B 7F F7   # +63
 - Per-part packed-flag control (dump bit **`0x01`**: `0x44` off / `0x45` on
   at INIT).
 - Dump correlation: `0xF8 + part`.
-- AURA may reuse this for mute/solo behavior.
+- Host **Mute** / **Solo** UIs may toggle this flag — [aura-notes.md](aura-notes.md).
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
 ### Volume RX (`0x49`)
@@ -368,7 +368,7 @@ Used by: `0x29`.
 
 (`stored = primary_enum + 1`, or `00` = Off.)
 
-Part 1 captures (AURA, `cmd=0x73`):
+Part 1 captures (`cmd=0x73`):
 
 ```text
 F0 00 20 33 01 00 73 00 2D 00 F7   # Off
@@ -378,7 +378,7 @@ F0 00 20 33 01 00 73 00 2D 0A F7   # USB 1 L
 F0 00 20 33 01 00 73 00 2D 11 F7   # USB 3 L+R
 ```
 
-Used by: `0x2D` (AURA: `cmd=0x73`).
+Used by: `0x2D` with **`cmd=0x73`**.
 
 ### Priority Enum
 

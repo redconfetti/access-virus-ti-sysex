@@ -158,6 +158,7 @@ Volume = CC 91). See [docs/control-change.md](docs/control-change.md).
 | Live Multi edits (`0x72`, …)                | [docs/multis-live-edit.md](docs/multis-live-edit.md)                                   |
 | Live Single / part sound edits              | [docs/single-live-edit.md](docs/single-live-edit.md)                                   |
 | Banks, arrangement, architecture            | [docs/virus.md](docs/virus.md)                                                         |
+| AURA plugin / host quirks (not Virus SysEx) | [docs/aura-notes.md](docs/aura-notes.md)                                               |
 
 ## Documentation
 
@@ -173,4 +174,4 @@ Volume = CC 91). See [docs/control-change.md](docs/control-change.md).
 | WAF80 SysEx reference (1999, classic)  | [docs/waf80.md](docs/waf80.md)                                   |
 | Single Live Edit                       | [docs/single-live-edit.md](docs/single-live-edit.md)             |
 | Single parameter option lists          | [docs/parameter-option-lists.md](docs/parameter-option-lists.md) |
-| AURA plugin notes                      | [docs/aura-notes.md](docs/aura-notes.md)                         |
+| AURA plugin / host quirks (not Virus)  | [docs/aura-notes.md](docs/aura-notes.md)                         |

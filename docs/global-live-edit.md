@@ -1,8 +1,10 @@
 # Global Live Edit (`cmd=0x73`)
 
-Device-wide settings shown alongside Multi edit in the AURA plugin. These use
-**`cmd=0x73`**, not Multi edit **`cmd=0x72`**. Whether any of them appear in
-**`DUMP_MULTI`** is **not confirmed** — capture plans below.
+Device-wide settings on the Virus TI. These use **`cmd=0x73`**, not Multi edit
+**`cmd=0x72`**. Whether any of them appear in **`DUMP_MULTI`** is **not
+confirmed** for most parameters.
+
+Host-specific capture notes (AURA plugin): [aura-notes.md](aura-notes.md).
 
 ```text
 F0 00 20 33 01 <device_id> 73 00 <param> <value> F7
@@ -11,12 +13,11 @@ F0 00 20 33 01 <device_id> 73 00 <param> <value> F7
 The byte **`<device_id>`** (immediately before **`0x73`**) is the SysEx
 **destination device ID**. The Virus only acts on the message when this
 matches its configured **MIDI Device ID** (CONFIG). Captures in this doc
-use **`00`** (device 1) unless noted. AURA may address other IDs when
-changing globals on a unit configured for a non-default ID.
+use **`00`** (device 1) unless noted.
 
-Most globals documented here were captured from **AURA → Virus** traffic
-only. At least **All Delays** (`0x1B`) is also **transmitted by the Virus**
-when changed on the front panel.
+At least **All Delays** (`0x1B`) is **transmitted by the Virus** when
+changed on the front panel. Other globals may need re-verification on the
+panel where **Hardware TX** is still blank below.
 
 ## Summary
 
@@ -30,7 +31,7 @@ when changed on the front panel.
 | `0x33`   | LED Lux                | See [LED Lux](#led-lux-0x33)                               | Unverified   | —           |
 | `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change-0x55)   | Unverified   | —           |
 | `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx-0x57)   | Unverified   | —           |
-| `0x5D`   | MIDI Device ID         | See [MIDI Device ID](#midi-device-id-0x5d)                 | Unverified   | AURA only   |
+| `0x5D`   | MIDI Device ID         | See [MIDI Device ID](#midi-device-id-0x5d)                 | Unverified   | —           |
 | `0x5E`   | MIDI Controller Page A | See [MIDI Controller Page A](#midi-controller-page-a-0x5e) | Unverified   | —           |
 | `0x5F`   | MIDI Controller Page B | See [MIDI Controller Page B](#midi-controller-page-b-0x5f) | Unverified   | —           |
 | `0x60`   | Global ARP Note Send   | See [Global ARP Note Send](#global-arp-note-send-0x60)     | Unverified   | —           |
@@ -205,12 +206,12 @@ F0 00 20 33 01 00 73 00 57 01 F7
 
 ### MIDI Device ID (`0x5D`)
 
-CONFIG **MIDI Device ID** (**1–16**, or **Omni**). Observed from **AURA
-→ Virus** only — not seen echoed when changed on the **Virus front panel**
-(may be normal: the SysEx **`<device_id>`** byte must match the unit’s
-configured ID, so mis-addressed traffic is ignored).
+CONFIG **MIDI Device ID** (**1–16**, or **Omni**). Not yet confirmed from
+**Virus front panel** edits (the SysEx **`<device_id>`** byte must match
+the unit’s configured ID). First captures were from a host plugin — see
+[aura-notes.md](aura-notes.md).
 
-| UI ID | `<device_id>` | `<value>` | Full message (AURA)                             |
+| UI ID | `<device_id>` | `<value>` | Full message                                    |
 | ----- | ------------- | --------- | ----------------------------------------------- |
 | 1     | `00`          | `00`      | `F0 … 01 00 73 00 5D 00 F7`                     |
 | 2     | *(TBD)*       | *(TBD)*   | Capture matched ID 1 in one session — re-verify |
@@ -287,7 +288,7 @@ F0 00 20 33 01 00 73 00 60 01 F7
 
 ### MIDI Clock (`0x6A`)
 
-| Value | Mode (AURA / LCD)                        |
+| Value | Mode (LCD)                               |
 | ----- | ---------------------------------------- |
 | `00`  | Internal sync                            |
 | `01`  | Sync to External                         |

@@ -34,7 +34,7 @@ F0 00 20 33 01 <device> 7x <part> <param> <value> F7
 
 Non-part-sensitive params ignore `part` (any value may be sent).
 
-**TI correlation (mk2 desktop, AURA 26.05.17):**
+**TI correlation (mk2 desktop):**
 
 | Observation                    | Classic map                                              |
 | ------------------------------ | -------------------------------------------------------- |
@@ -210,7 +210,7 @@ channel and are **not** stored in the Single sound.
 | 66      | p       | Sostenuto Pedal         |                                          |
 | 67–78   | a       | Lfo1 Rate..FiltGain Amt |                                          |
 | 79–90   | a       | Lfo2 Rate..Pan Lfo2 Amt |                                          |
-| **91**  | **a**   | **Patch Volume**        | **0–127** (TI: CC-only from AURA Common) |
+| **91**  | **a**   | **Patch Volume**        | **0–127** (TI: CC-only live edit)        |
 | 93      | a       | Transpose               | −64..+63                                 |
 | **94**  | **a**   | **Key Mode**            | **0–4** Poly / Mono1–4 (TI: CC-only)     |
 | 97      | a       | Unison Mode             | 0/1                                      |

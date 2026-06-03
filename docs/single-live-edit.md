@@ -20,8 +20,9 @@ under different `cmd` bytes (e.g. **`0x73` / `0x19`** = All EQs global,
 
 ## Common (Edit Single)
 
-Per-part **Common** page settings (AURA). Not stored in **`DUMP_MULTI`**
-(hardware-tested for Bend Up/Down — see [multis-live-edit.md](multis-live-edit.md)).
+Per-part **Common** page settings (Edit Single). Not stored in
+**`DUMP_MULTI`** (hardware-tested for Bend Up/Down — see
+[multis-live-edit.md](multis-live-edit.md)).
 
 ### Patch Transpose (CC 93)
 
@@ -31,19 +32,18 @@ Edit Single → Common → **Patch Transpose**. **CC 93** only on live edit
 
 ### Key Mode (`0x5E`, `cmd=0x70` / CC 94)
 
-**Key Mode** (Page A param **94** / `0x5E`). AURA: Edit Single → Common →
-**Oscillator Section Keyboard Mode**. Virus panel: **Oscillators** section →
-**EDIT** → Common → **Key Mode**; also a **MONO** shortcut button on the
+**Key Mode** (Page A param **94** / `0x5E`). Virus panel: **Oscillators** →
+**EDIT** → Common → **Key Mode**; also a **MONO** shortcut on the
 oscillator section (see below).
 
-| Value | Mode   | CC 94 (AURA) | SysEx (`Page A` = SysEx) |
-| ----- | ------ | ------------ | ------------------------ |
-| `00`  | Poly   | `0`          | `F0 … 70 40 5E 00 F7`    |
-| `01`  | Mono 1 | `1`          | `F0 … 70 40 5E 01 F7`    |
-| `02`  | Mono 2 | `2`          | `F0 … 70 40 5E 02 F7`    |
-| `03`  | Mono 3 | `3`          | `F0 … 70 40 5E 03 F7`    |
-| `04`  | Mono 4 | `4`          | `F0 … 70 40 5E 04 F7`    |
-| `05`  | Hold   | `5`          | `F0 … 70 40 5E 05 F7`    |
+| Value | Mode   | CC 94 | SysEx (`Page A` = SysEx) |
+| ----- | ------ | ----- | ------------------------ |
+| `00`  | Poly   | `0`   | `F0 … 70 40 5E 00 F7`    |
+| `01`  | Mono 1 | `1`   | `F0 … 70 40 5E 01 F7`    |
+| `02`  | Mono 2 | `2`   | `F0 … 70 40 5E 02 F7`    |
+| `03`  | Mono 3 | `3`   | `F0 … 70 40 5E 03 F7`    |
+| `04`  | Mono 4 | `4`   | `F0 … 70 40 5E 04 F7`    |
+| `05`  | Hold   | `5`   | `F0 … 70 40 5E 05 F7`    |
 
 Scope byte **`0x40`** on hardware TX (verify). Global **MIDI Controller Page A**
 = **Controller Data** → **CC 94** on the part channel instead; **SysEx** →
@@ -63,29 +63,29 @@ message — may correlate with another osc/common field).
 
 Arpeggiator / note **Smooth Mode** (Edit Single → Common).
 
-| Value | Mode          | Confirmed                                                         |
-| ----- | ------------- | ----------------------------------------------------------------- |
-| `00`  | Off           | ✓ (AURA 26.05.17 cannot set Off — [aura-notes.md](aura-notes.md)) |
-| `01`  | On            | ✓                                                                 |
-| `02`  | Auto          | ✓                                                                 |
-| `03`  | Note          | ✓                                                                 |
-| `04`  | Quantise 1/64 | ✓                                                                 |
-| `05`  | Quantise 1/32 | ✓                                                                 |
-| `06`  | Quantise 1/16 | inferred                                                          |
-| `07`  | Quantise 1/8  | inferred                                                          |
-| `08`  | Quantise 1/4  | inferred                                                          |
-| `09`  | Quantise 1/2  | ✓                                                                 |
-| `0A`  | Quantise 3/64 | ✓                                                                 |
-| `0B`  | Quantise 3/32 | inferred                                                          |
-| `0C`  | Quantise 3/16 | inferred                                                          |
-| `0D`  | Quantise 3/8  | inferred                                                          |
-| `0E`  | Quantise 1/24 | inferred                                                          |
-| `0F`  | Quantise 1/12 | inferred                                                          |
-| `10`  | Quantise 1/6  | inferred                                                          |
-| `11`  | Quantise 1/3  | inferred                                                          |
-| `12`  | Quantise 2/3  | inferred                                                          |
-| `13`  | Quantise 3/4  | inferred                                                          |
-| `14`  | Quantise 1/1  | inferred                                                          |
+| Value | Mode          | Confirmed                                                                 |
+| ----- | ------------- | ------------------------------------------------------------------------- |
+| `00`  | Off           | ✓ (hardware); some hosts cannot send Off — [aura-notes.md](aura-notes.md) |
+| `01`  | On            | ✓                                                                         |
+| `02`  | Auto          | ✓                                                                         |
+| `03`  | Note          | ✓                                                                         |
+| `04`  | Quantise 1/64 | ✓                                                                         |
+| `05`  | Quantise 1/32 | ✓                                                                         |
+| `06`  | Quantise 1/16 | inferred                                                                  |
+| `07`  | Quantise 1/8  | inferred                                                                  |
+| `08`  | Quantise 1/4  | inferred                                                                  |
+| `09`  | Quantise 1/2  | ✓                                                                         |
+| `0A`  | Quantise 3/64 | ✓                                                                         |
+| `0B`  | Quantise 3/32 | inferred                                                                  |
+| `0C`  | Quantise 3/16 | inferred                                                                  |
+| `0D`  | Quantise 3/8  | inferred                                                                  |
+| `0E`  | Quantise 1/24 | inferred                                                                  |
+| `0F`  | Quantise 1/12 | inferred                                                                  |
+| `10`  | Quantise 1/6  | inferred                                                                  |
+| `11`  | Quantise 1/3  | inferred                                                                  |
+| `12`  | Quantise 2/3  | inferred                                                                  |
+| `13`  | Quantise 3/4  | inferred                                                                  |
+| `14`  | Quantise 1/1  | inferred                                                                  |
 
 ```text
 F0 00 20 33 01 00 71 00 19 00 F7   # Off
@@ -217,10 +217,3 @@ Reverb Send is **not** in the 267-byte `DUMP_MULTI`.
 Unlisted values are piecewise / non-linear. Approximations:
 **`41`–`95`** ≈ **`−0.25 × (96 − value)`** dB; **`1`–`40`** steeper;
 **`97`–`126`** larger steps toward max.
-
-### Related: AURA `DUMP_SINGLE` on part enable
-
-When a part is disabled then re-enabled in AURA, a **524-byte**
-`cmd=0x10` (`DUMP_SINGLE`) loads that part’s single into the edit
-buffer. Multi context details are documented in
-[multis-dump.md](multis-dump.md#aura-behavior-part-enable-sends-dump_single).

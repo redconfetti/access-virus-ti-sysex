@@ -1,7 +1,7 @@
 # Parameter option lists
 
-Enumerated UI options for Virus TI Single parameters (Access Virus Control /
-AURA reference). **Index** is zero-based list position (`0` = first row);
+Enumerated UI options for Virus TI Single parameters. **Index** is
+zero-based list position (`0` = first row);
 confirm against hardware before relying on SysEx encoding.
 
 See [waf80.md](waf80.md) for classic Page A/B parameter indices.

@@ -100,7 +100,8 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
 
 ## Single parameter map
 
-Worksheet from Virus Control / AURA / OsTIrus control inventory.
+Parameter inventory (control names and categories). Host availability
+matrices: [aura-notes.md](aura-notes.md#control-inventory-source).
 **Excluded:** Flash ROM banks,
 Assignable X/Y Pad, and Browser (Patch Saving / Patch Browsing).
 

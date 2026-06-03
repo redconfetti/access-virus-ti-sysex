@@ -1,7 +1,8 @@
 # MIDI Control Change
 
 MIDI **CC** parameters on the **part MIDI channel** (Multi / Edit Single).
-Observed from **AURA** (**26.05.17**) and **Virus hardware panel**.
+Observed from the **Virus hardware panel** (and MIDI CC when Page A =
+**Controller Data**).
 These are **not** Access SysEx.
 
 Whether a CC is stored in **`DUMP_MULTI`** / **`DUMP_SINGLE`** is noted per
@@ -12,7 +13,7 @@ SysEx on wire during mapping sessions — see
 
 ## Summary
 
-| CC  | Scope         | Parameter             | Transport   | `DUMP_MULTI` | Menu (AURA / VC)     |
+| CC  | Scope         | Parameter             | Transport   | `DUMP_MULTI` | Menu path            |
 | --- | ------------- | --------------------- | ----------- | ------------ | -------------------- |
 | 34  | Part-specific | Sub Oscillator Volume | **CC only** | Unverified   | Oscillators → Mixer  |
 | 91  | Part-specific | Patch Volume          | **CC only** | **No**       | Edit Single → Common |
@@ -39,7 +40,7 @@ in [waf80.md](waf80.md).
 
 ### Patch Transpose (CC 93)
 
-**Edit Single → Common → Patch Transpose** (AURA / VC). Live edit is
+**Edit Single → Common → Patch Transpose**. Live edit is
 **MIDI CC 93** only — no Access SysEx (hardware-tested). Distinct from
 Edit Multi **Transpose** (SysEx `0x72` / `0x25`, dump `0x79 + part`).
 Page **A** param **93** in [waf80.md](waf80.md).
@@ -55,12 +56,12 @@ Page **A** param **93** in [waf80.md](waf80.md).
 
 ### Patch Volume (CC 91)
 
-**Edit Single → Common → Patch Volume** (AURA **26.05.17**). Moving the
-control sends **MIDI CC 91 only** — no Access SysEx observed on the wire.
+**Edit Single → Common → Patch Volume**. Moving the control on the Virus
+panel sends **MIDI CC 91 only** — no Access SysEx on the wire
+(hardware-tested).
 
-Distinct from Edit Multi **Volume** / **Part Level** (`0x99 + part` in
-`DUMP_MULTI`, live `0x72` / `0x27`; AURA label “Part Level” on the Multi
-page).
+Distinct from Edit Multi **Volume** (`0x99 + part` in `DUMP_MULTI`, live
+`0x72` / `0x27`). Host UI label “Part Level”: [aura-notes.md](aura-notes.md).
 
 | Field        | Status                         |
 | ------------ | ------------------------------ |
@@ -73,7 +74,7 @@ page).
 ### Key Mode (CC 94)
 
 **Key Mode** — Page **A** param **94** (`0x5E`). Full enum confirmed via
-AURA (CC) and Virus panel (SysEx with Page A = SysEx).
+**CC 94** and **`cmd=0x70`** / `0x5E` on the Virus panel (Page A = SysEx).
 
 | CC / value | Mode   |
 | ---------- | ------ |
