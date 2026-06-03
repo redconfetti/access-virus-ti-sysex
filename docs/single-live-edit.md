@@ -4,7 +4,7 @@ Single-related SysEx notes for Virus TI mk2.
 
 Full control inventory and **`cmd` / param** worksheet:
 [single-dump.md — Single parameter map](single-dump.md#single-parameter-map)
-(435 Single-program controls; Multi parameters →
+(415 Single-program controls; Multi parameters →
 [multis-dump.md — Multi parameter map](multis-dump.md#multi-parameter-map)).
 
 ```text
@@ -123,14 +123,14 @@ Same Edit Single **Common** context; not in **`DUMP_MULTI`**.
 See [control-change.md — Patch Volume](control-change.md#patch-volume-cc-91).
 Distinct from Multi **Part Level** (`0x99 + part` / live `0x27`).
 
-## Easy / Quick Edit
+## Oscillators
 
 Panel captures (Virus → host, Edit Single). Knob turns may emit a **burst**
 of messages — use the **last** message for the landing value.
 
 ### Oscillator Section Volume (`cmd=0x71`, param `0x7F`)
 
-Easy page → **Oscillator Section Volume** (main osc mixer level).
+**Oscillators → Mixer → Oscillator Section Volume** (main osc mixer level).
 
 | Item                    | Value                                           |
 | ----------------------- | ----------------------------------------------- |
@@ -146,8 +146,8 @@ F0 00 20 33 01 00 71 40 7F 00 F7   # Oscillator Section Volume −64
 
 ### Sub Oscillator Volume (CC 34)
 
-Easy page → **Sub Oscillator Volume**. Live edit is **CC 34 only** (no
-SysEx); may still appear in **`DUMP_SINGLE`**. See
+**Oscillators → Mixer → Sub Oscillator Volume**. Live edit is **CC 34 only**
+(no SysEx); may still appear in **`DUMP_SINGLE`**. See
 [control-change.md — Sub Oscillator Volume](control-change.md#sub-oscillator-volume-cc-34).
 
 ## Live Edit

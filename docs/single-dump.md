@@ -112,147 +112,117 @@ Most rows are **Single-program** parameters to correlate with
 Multi edit parameters are in
 [multis-dump.md — Multi parameter map](multis-dump.md#multi-parameter-map).
 
-**435** controls in **12** categories.
-
-### Easy / Quick Edit
-
-**Virus Control UI only** — shortcuts to parameters that live under
-**Oscillators**, **Filters**, **Common**, etc. Skip this block for
-hardware mapping; use the canonical category below (and note CC-only
-live edit where applicable).
-
-| Control                    | SubCategory | Dump offset | Live edit                             |
-| -------------------------- | ----------- | ----------- | ------------------------------------- |
-| Oscillator Section Volume  | Edit        |             | `71` / `0x7F`                         |
-| Sub Oscillator Volume      | Edit        | TBD         | CC 34 (no live SysEx; likely in dump) |
-| Ring Modulator Volume      | Edit        |             |                                       |
-| Filter 1 Cutoff            | Edit        |             |                                       |
-| Filter 1 Resonance         | Edit        |             |                                       |
-| Amplifier Envelope Attack  | Edit        |             |                                       |
-| Amplifier Envelope Decay   | Edit        |             |                                       |
-| Amplifier Envelope Release | Edit        |             |                                       |
-| Soft Knob 1 Amount         | Soft Knob   |             |                                       |
-| Soft Knob 1 Name           | Soft Knob   |             |                                       |
-| Soft Knob 1 Assignment     | Soft Knob   |             |                                       |
-| Soft Knob 2 Amount         | Soft Knob   |             |                                       |
-| Soft Knob 2 Name           | Soft Knob   |             |                                       |
-| Soft Knob 2 Assignment     | Soft Knob   |             |                                       |
-| Soft Knob 3 Amount         | Soft Knob   |             |                                       |
-| Soft Knob 3 Name           | Soft Knob   |             |                                       |
-| Soft Knob 3 Assignment     | Soft Knob   |             |                                       |
-| Delay Send                 | Effects     |             |                                       |
-| Reverb Send                | Effects     |             | `6E` / `0x02`                         |
-| Chorus Mix                 | Effects     |             |                                       |
+**415** controls in **11** categories.
 
 ### Oscillators
 
-| Control                                | SubCategory                  | Dump offset | Live edit |
-| -------------------------------------- | ---------------------------- | ----------- | --------- |
-| Sub Oscillator Waveform Shape          | Sub-Osc                      |             |           |
-| Oscillator 1 Model / Mode              | Oscillator 1                 |             |           |
-| Oscillator 1 Detune in Semitone        | Oscillator 1                 |             |           |
-| Oscillator 1 Keyfollow                 | Oscillator 1                 |             |           |
-| Velocity --> Osc1 Waveform Shape       | Oscillator 1                 |             |           |
-| Oscillator 1 Waveform Shape            | Oscillator 1 Classic         |             |           |
-| Oscillator 1 Wave Select               | Oscillator 1 Classic         |             |           |
-| Oscillator 1 Pulsewidth                | Oscillator 1 Classic         |             |           |
-| Oscillator 1 Density                   | Oscillator 1 Hypersaw        |             |           |
-| Oscillator 1 Local Detune              | Oscillator 1 Hypersaw        |             |           |
-| Oscillator 1+2 X-Sync Frequency        | Oscillator 1 Hypersaw        |             |           |
-| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Wavetable       |             |           |
-| Oscillator 1 Wavetable Index           | Oscillator 1 Wavetable       |             |           |
-| Oscillator 1 Interpolation             | Oscillator 1 Wavetable       |             |           |
-| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Wavetable PWM   |             |           |
-| Oscillator 1 Wavetable Index           | Oscillator 1 Wavetable PWM   |             |           |
-| Oscillator 1 Pulsewidth                | Oscillator 1 Wavetable PWM   |             |           |
-| Oscillator 1 Local Detune              | Oscillator 1 Wavetable PWM   |             |           |
-| Oscillator 1 Interpolation             | Oscillator 1 Wavetable PWM   |             |           |
-| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Grain Simple    |             |           |
-| Oscillator 1 Wavetable Index           | Oscillator 1 Grain Simple    |             |           |
-| Oscillator 1 Formant Shift             | Oscillator 1 Grain Simple    |             |           |
-| Oscillator 1 Interpolation             | Oscillator 1 Grain Simple    |             |           |
-| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Grain Complex   |             |           |
-| Oscillator 1 Wavetable Index           | Oscillator 1 Grain Complex   |             |           |
-| Oscillator 1 Formant Shift             | Oscillator 1 Grain Complex   |             |           |
-| Oscillator 1 Formant Spread            | Oscillator 1 Grain Complex   |             |           |
-| Oscillator 1 Local Detune              | Oscillator 1 Grain Complex   |             |           |
-| Oscillator 1 Interpolation             | Oscillator 1 Grain Complex   |             |           |
-| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Formant Simple  |             |           |
-| Oscillator 1 Wavetable Index           | Oscillator 1 Formant Simple  |             |           |
-| Oscillator 1 Formant Shift             | Oscillator 1 Formant Simple  |             |           |
-| Oscillator 1 Interpolation             | Oscillator 1 Formant Simple  |             |           |
-| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Formant Complex |             |           |
-| Oscillator 1 Wavetable Index           | Oscillator 1 Formant Complex |             |           |
-| Oscillator 1 Formant Shift             | Oscillator 1 Formant Complex |             |           |
-| Oscillator 1 Formant Spread            | Oscillator 1 Formant Complex |             |           |
-| Oscillator 1 Local Detune              | Oscillator 1 Formant Complex |             |           |
-| Oscillator 1 Interpolation             | Oscillator 1 Formant Complex |             |           |
-| Oscillator 2 Model / Mode              | Oscillator 2                 |             |           |
-| Oscillator 2 Detune in Semitone        | Oscillator 2                 |             |           |
-| Oscillator 2 Fine Detune               | Oscillator 2                 |             |           |
-| Oscillator 2 Keyfollow                 | Oscillator 2                 |             |           |
-| Velocity --> Osc2 Waveform Shape       | Oscillator 2                 |             |           |
-| Oscillator 2 Waveform Shape            | Oscillator 2 Classic         |             |           |
-| Oscillator 2 Wave Select               | Oscillator 2 Classic         |             |           |
-| Oscillator 2 Pulsewidth                | Oscillator 2 Classic         |             |           |
-| Oscillator 2 Density                   | Oscillator 2 Hypersaw        |             |           |
-| Oscillator 2 Local Detune              | Oscillator 2 Hypersaw        |             |           |
-| Oscillator 1+2 X-Sync Frequency        | Oscillator 2 Hypersaw        |             |           |
-| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Wavetable       |             |           |
-| Oscillator 2 Wavetable Index           | Oscillator 2 Wavetable       |             |           |
-| Oscillator 2 Interpolation             | Oscillator 2 Wavetable       |             |           |
-| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Wavetable PWM   |             |           |
-| Oscillator 2 Wavetable Index           | Oscillator 2 Wavetable PWM   |             |           |
-| Oscillator 2 Pulsewidth                | Oscillator 2 Wavetable PWM   |             |           |
-| Oscillator 2 Local Detune              | Oscillator 2 Wavetable PWM   |             |           |
-| Oscillator 2 Interpolation             | Oscillator 2 Wavetable PWM   |             |           |
-| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Grain Simple    |             |           |
-| Oscillator 2 Wavetable Index           | Oscillator 2 Grain Simple    |             |           |
-| Oscillator 2 Formant Shift             | Oscillator 2 Grain Simple    |             |           |
-| Oscillator 2 Interpolation             | Oscillator 2 Grain Simple    |             |           |
-| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Grain Complex   |             |           |
-| Oscillator 2 Wavetable Index           | Oscillator 2 Grain Complex   |             |           |
-| Oscillator 2 Formant Shift             | Oscillator 2 Grain Complex   |             |           |
-| Oscillator 2 Formant Spread            | Oscillator 2 Grain Complex   |             |           |
-| Oscillator 2 Local Detune              | Oscillator 2 Grain Complex   |             |           |
-| Oscillator 2 Interpolation             | Oscillator 2 Grain Complex   |             |           |
-| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Formant Simple  |             |           |
-| Oscillator 2 Wavetable Index           | Oscillator 2 Formant Simple  |             |           |
-| Oscillator 2 Formant Shift             | Oscillator 2 Formant Simple  |             |           |
-| Oscillator 2 Interpolation             | Oscillator 2 Formant Simple  |             |           |
-| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Formant Complex |             |           |
-| Oscillator 2 Wavetable Index           | Oscillator 2 Formant Complex |             |           |
-| Oscillator 2 Formant Shift             | Oscillator 2 Formant Complex |             |           |
-| Oscillator 2 Formant Spread            | Oscillator 2 Formant Complex |             |           |
-| Oscillator 2 Local Detune              | Oscillator 2 Formant Complex |             |           |
-| Oscillator 2 Interpolation             | Oscillator 2 Formant Complex |             |           |
-| Oscillator 3 Model                     | Oscillator 3                 |             |           |
-| Oscillator 3 Detune in Semitone        | Oscillator 3                 |             |           |
-| Oscillator 3 Fine Detune               | Oscillator 3                 |             |           |
-| Oscillator 1 Sync (2>1)                | Oscillator Common            |             |           |
-| Filter Envelope --> Oscillator 2 Pitch | Oscillator Common            |             |           |
-| Oscillator Section Initial Phase       | Oscillator Common            |             |           |
-| Velocity --> Pulsewidth                | Oscillator Common            |             |           |
-| Patch Common Portamento                | Oscillator Common            |             |           |
-| Oscillator 2 FM Amount                 | Oscillator Common FM         |             |           |
-| Filter Envelope --> FM                 | Oscillator Common FM         |             |           |
-| Velocity --> FM Amount                 | Oscillator Common FM         |             |           |
-| Oscillator 2 FM Mode                   | Oscillator Common FM         |             |           |
-| Sync Amount / X-Sync Frequency         | Oscillator Common Sync       |             |           |
-| Velocity --> FM / Sync                 | Oscillator Common Sync       |             |           |
-| Filter Envelope --> X-Sync             | Oscillator Common Sync       |             |           |
-| Unison Mode                            | Unison                       |             |           |
-| Unison Detune                          | Unison                       |             |           |
-| Unison Panorama Spread                 | Unison                       |             |           |
-| Unison LFO Phase Offset                | Unison                       |             |           |
-| Noise Oscillator Volume                | Noise                        |             |           |
-| Noise Color                            | Noise                        |             |           |
-| Oscillator Punch Intensity             | Punch                        |             |           |
-| Oscillator 1/2 Balance                 | Mixer                        |             |           |
-| Oscillator 3 Volume                    | Mixer                        |             |           |
-| Sub Oscillator Volume                  | Mixer                        |             |           |
-| Oscillator Section Volume / Saturation | Mixer                        |             |           |
-| Ring Modulator Volume                  | Mixer                        |             |           |
+| Control                                | SubCategory                  | Dump offset | Live edit             |
+| -------------------------------------- | ---------------------------- | ----------- | --------------------- |
+| Sub Oscillator Waveform Shape          | Sub-Osc                      |             |                       |
+| Oscillator 1 Model / Mode              | Oscillator 1                 |             |                       |
+| Oscillator 1 Detune in Semitone        | Oscillator 1                 |             |                       |
+| Oscillator 1 Keyfollow                 | Oscillator 1                 |             |                       |
+| Velocity --> Osc1 Waveform Shape       | Oscillator 1                 |             |                       |
+| Oscillator 1 Waveform Shape            | Oscillator 1 Classic         |             |                       |
+| Oscillator 1 Wave Select               | Oscillator 1 Classic         |             |                       |
+| Oscillator 1 Pulsewidth                | Oscillator 1 Classic         |             |                       |
+| Oscillator 1 Density                   | Oscillator 1 Hypersaw        |             |                       |
+| Oscillator 1 Local Detune              | Oscillator 1 Hypersaw        |             |                       |
+| Oscillator 1+2 X-Sync Frequency        | Oscillator 1 Hypersaw        |             |                       |
+| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Wavetable       |             |                       |
+| Oscillator 1 Wavetable Index           | Oscillator 1 Wavetable       |             |                       |
+| Oscillator 1 Interpolation             | Oscillator 1 Wavetable       |             |                       |
+| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Wavetable PWM   |             |                       |
+| Oscillator 1 Wavetable Index           | Oscillator 1 Wavetable PWM   |             |                       |
+| Oscillator 1 Pulsewidth                | Oscillator 1 Wavetable PWM   |             |                       |
+| Oscillator 1 Local Detune              | Oscillator 1 Wavetable PWM   |             |                       |
+| Oscillator 1 Interpolation             | Oscillator 1 Wavetable PWM   |             |                       |
+| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Grain Simple    |             |                       |
+| Oscillator 1 Wavetable Index           | Oscillator 1 Grain Simple    |             |                       |
+| Oscillator 1 Formant Shift             | Oscillator 1 Grain Simple    |             |                       |
+| Oscillator 1 Interpolation             | Oscillator 1 Grain Simple    |             |                       |
+| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Grain Complex   |             |                       |
+| Oscillator 1 Wavetable Index           | Oscillator 1 Grain Complex   |             |                       |
+| Oscillator 1 Formant Shift             | Oscillator 1 Grain Complex   |             |                       |
+| Oscillator 1 Formant Spread            | Oscillator 1 Grain Complex   |             |                       |
+| Oscillator 1 Local Detune              | Oscillator 1 Grain Complex   |             |                       |
+| Oscillator 1 Interpolation             | Oscillator 1 Grain Complex   |             |                       |
+| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Formant Simple  |             |                       |
+| Oscillator 1 Wavetable Index           | Oscillator 1 Formant Simple  |             |                       |
+| Oscillator 1 Formant Shift             | Oscillator 1 Formant Simple  |             |                       |
+| Oscillator 1 Interpolation             | Oscillator 1 Formant Simple  |             |                       |
+| Oscillator 1 Wavetable / Waveform      | Oscillator 1 Formant Complex |             |                       |
+| Oscillator 1 Wavetable Index           | Oscillator 1 Formant Complex |             |                       |
+| Oscillator 1 Formant Shift             | Oscillator 1 Formant Complex |             |                       |
+| Oscillator 1 Formant Spread            | Oscillator 1 Formant Complex |             |                       |
+| Oscillator 1 Local Detune              | Oscillator 1 Formant Complex |             |                       |
+| Oscillator 1 Interpolation             | Oscillator 1 Formant Complex |             |                       |
+| Oscillator 2 Model / Mode              | Oscillator 2                 |             |                       |
+| Oscillator 2 Detune in Semitone        | Oscillator 2                 |             |                       |
+| Oscillator 2 Fine Detune               | Oscillator 2                 |             |                       |
+| Oscillator 2 Keyfollow                 | Oscillator 2                 |             |                       |
+| Velocity --> Osc2 Waveform Shape       | Oscillator 2                 |             |                       |
+| Oscillator 2 Waveform Shape            | Oscillator 2 Classic         |             |                       |
+| Oscillator 2 Wave Select               | Oscillator 2 Classic         |             |                       |
+| Oscillator 2 Pulsewidth                | Oscillator 2 Classic         |             |                       |
+| Oscillator 2 Density                   | Oscillator 2 Hypersaw        |             |                       |
+| Oscillator 2 Local Detune              | Oscillator 2 Hypersaw        |             |                       |
+| Oscillator 1+2 X-Sync Frequency        | Oscillator 2 Hypersaw        |             |                       |
+| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Wavetable       |             |                       |
+| Oscillator 2 Wavetable Index           | Oscillator 2 Wavetable       |             |                       |
+| Oscillator 2 Interpolation             | Oscillator 2 Wavetable       |             |                       |
+| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Wavetable PWM   |             |                       |
+| Oscillator 2 Wavetable Index           | Oscillator 2 Wavetable PWM   |             |                       |
+| Oscillator 2 Pulsewidth                | Oscillator 2 Wavetable PWM   |             |                       |
+| Oscillator 2 Local Detune              | Oscillator 2 Wavetable PWM   |             |                       |
+| Oscillator 2 Interpolation             | Oscillator 2 Wavetable PWM   |             |                       |
+| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Grain Simple    |             |                       |
+| Oscillator 2 Wavetable Index           | Oscillator 2 Grain Simple    |             |                       |
+| Oscillator 2 Formant Shift             | Oscillator 2 Grain Simple    |             |                       |
+| Oscillator 2 Interpolation             | Oscillator 2 Grain Simple    |             |                       |
+| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Grain Complex   |             |                       |
+| Oscillator 2 Wavetable Index           | Oscillator 2 Grain Complex   |             |                       |
+| Oscillator 2 Formant Shift             | Oscillator 2 Grain Complex   |             |                       |
+| Oscillator 2 Formant Spread            | Oscillator 2 Grain Complex   |             |                       |
+| Oscillator 2 Local Detune              | Oscillator 2 Grain Complex   |             |                       |
+| Oscillator 2 Interpolation             | Oscillator 2 Grain Complex   |             |                       |
+| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Formant Simple  |             |                       |
+| Oscillator 2 Wavetable Index           | Oscillator 2 Formant Simple  |             |                       |
+| Oscillator 2 Formant Shift             | Oscillator 2 Formant Simple  |             |                       |
+| Oscillator 2 Interpolation             | Oscillator 2 Formant Simple  |             |                       |
+| Oscillator 2 Wavetable / Waveform      | Oscillator 2 Formant Complex |             |                       |
+| Oscillator 2 Wavetable Index           | Oscillator 2 Formant Complex |             |                       |
+| Oscillator 2 Formant Shift             | Oscillator 2 Formant Complex |             |                       |
+| Oscillator 2 Formant Spread            | Oscillator 2 Formant Complex |             |                       |
+| Oscillator 2 Local Detune              | Oscillator 2 Formant Complex |             |                       |
+| Oscillator 2 Interpolation             | Oscillator 2 Formant Complex |             |                       |
+| Oscillator 3 Model                     | Oscillator 3                 |             |                       |
+| Oscillator 3 Detune in Semitone        | Oscillator 3                 |             |                       |
+| Oscillator 3 Fine Detune               | Oscillator 3                 |             |                       |
+| Oscillator 1 Sync (2>1)                | Oscillator Common            |             |                       |
+| Filter Envelope --> Oscillator 2 Pitch | Oscillator Common            |             |                       |
+| Oscillator Section Initial Phase       | Oscillator Common            |             |                       |
+| Velocity --> Pulsewidth                | Oscillator Common            |             |                       |
+| Patch Common Portamento                | Oscillator Common            |             |                       |
+| Oscillator 2 FM Amount                 | Oscillator Common FM         |             |                       |
+| Filter Envelope --> FM                 | Oscillator Common FM         |             |                       |
+| Velocity --> FM Amount                 | Oscillator Common FM         |             |                       |
+| Oscillator 2 FM Mode                   | Oscillator Common FM         |             |                       |
+| Sync Amount / X-Sync Frequency         | Oscillator Common Sync       |             |                       |
+| Velocity --> FM / Sync                 | Oscillator Common Sync       |             |                       |
+| Filter Envelope --> X-Sync             | Oscillator Common Sync       |             |                       |
+| Unison Mode                            | Unison                       |             |                       |
+| Unison Detune                          | Unison                       |             |                       |
+| Unison Panorama Spread                 | Unison                       |             |                       |
+| Unison LFO Phase Offset                | Unison                       |             |                       |
+| Noise Oscillator Volume                | Noise                        |             |                       |
+| Noise Color                            | Noise                        |             |                       |
+| Oscillator Punch Intensity             | Punch                        |             |                       |
+| Oscillator 1/2 Balance                 | Mixer                        |             |                       |
+| Oscillator 3 Volume                    | Mixer                        |             |                       |
+| Sub Oscillator Volume                  | Mixer                        | TBD         | CC 34 (no live SysEx) |
+| Oscillator Section Volume / Saturation | Mixer                        |             | `71` / `0x7F`         |
+| Ring Modulator Volume                  | Mixer                        |             |                       |
 
 ### Filters
 
@@ -632,7 +602,7 @@ in `DUMP_SINGLE`.
   - The **patch name** appears as an ASCII sequence near offset 0xFA, padded to
     a fixed length with spaces.
   - The final byte before `F7` behaves like a **checksum byte**.
-  - **435** UI controls are listed in [Single parameter map](#single-parameter-map)
+  - **415** UI controls are listed in [Single parameter map](#single-parameter-map)
     for byte /
     live-edit correlation (Multi parameters →
     [multis-dump.md](multis-dump.md#multi-parameter-map); excluding Flash ROM,

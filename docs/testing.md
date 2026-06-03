@@ -112,8 +112,6 @@ receivemidi dev "$VIRUS_DEV" syx 2>&1 | tee /tmp/virus-live-capture.txt
 
 Run with `required_permissions: ["all"]`. Work **one parameter at a time**
 from [single-dump.md — Single parameter map](single-dump.md#single-parameter-map).
-Skip **Easy / Quick Edit** — those are VC panel shortcuts to parameters listed
-under other categories.
 
 ### User / agent rules
 
@@ -127,8 +125,8 @@ under other categories.
    from the last message and updates docs.
 5. Toggle/switch controls may send a single message; knobs and sliders may
    send a stream.
-6. Some Easy-page controls send **MIDI CC only** (no SysEx) — e.g. **Sub
-   Oscillator Volume** = **CC 34**; see [control-change.md](control-change.md).
+6. Some controls send **MIDI CC only** (no SysEx) — e.g. **Sub Oscillator
+   Volume** = **CC 34**; see [control-change.md](control-change.md).
 7. **Before a SysEx mapping session**, set globals **MIDI Controller Page A**
    and **Page B** to **SysEx** (not Controller Data) so panel edits emit
    Access SysEx instead of CC — see

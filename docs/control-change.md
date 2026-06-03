@@ -1,7 +1,7 @@
 # MIDI Control Change
 
 MIDI **CC** parameters on the **part MIDI channel** (Multi / Edit Single).
-Observed from **AURA** (**26.05.17**) and **Virus hardware panel** (Easy page).
+Observed from **AURA** (**26.05.17**) and **Virus hardware panel**.
 These are **not** Access SysEx.
 
 Whether a CC is stored in **`DUMP_MULTI`** / **`DUMP_SINGLE`** is noted per
@@ -14,7 +14,7 @@ SysEx on wire during mapping sessions — see
 
 | CC  | Scope         | Parameter             | Transport   | `DUMP_MULTI` | Menu (AURA / VC)     |
 | --- | ------------- | --------------------- | ----------- | ------------ | -------------------- |
-| 34  | Part-specific | Sub Oscillator Volume | **CC only** | Unverified   | Easy / Quick Edit    |
+| 34  | Part-specific | Sub Oscillator Volume | **CC only** | Unverified   | Oscillators → Mixer  |
 | 91  | Part-specific | Patch Volume          | **CC only** | **No**       | Edit Single → Common |
 | 93  | Part-specific | Patch Transpose       | **CC only** | Unverified   | Edit Single → Common |
 | 94  | Part-specific | Key Mode              | **CC only** | Unverified   | Edit Single → Common |
@@ -23,7 +23,7 @@ SysEx on wire during mapping sessions — see
 
 ### Sub Oscillator Volume (CC 34)
 
-**Easy / Quick Edit → Sub Oscillator Volume**. Live edit from the Virus
+**Oscillators → Mixer → Sub Oscillator Volume**. Live edit from the Virus
 panel uses **MIDI CC 34 only** — no Access SysEx on
 **`Virus TI USB Plugin I/O`** (hardware-tested). Value may still be stored
 in **`DUMP_SINGLE`** (byte offset not yet mapped). Page **A** param **34**
