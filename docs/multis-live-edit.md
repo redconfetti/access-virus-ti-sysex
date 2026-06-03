@@ -21,29 +21,29 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 
 ## Summary
 
-| Param ID | Memory / Target               | Parameter        | Description                                  |
-| -------- | ----------------------------- | ---------------- | -------------------------------------------- |
-| `0x0F`   | Global (`0x17` in dump)       | Master Clock     | Global Multi tempo                           |
-| `0x23`   | `0x59 + part`                 | Low Key          | Part low key limit                           |
-| `0x24`   | `0x69 + part`                 | High Key         | Part high key limit                          |
-| `0x25`   | `0x79 + part`                 | Transpose        | Part transposition                           |
-| `0x26`   | `0x89 + part`                 | Detune           | Part detune                                  |
-| `0x1A`   | **Not in dump**               | Bend Up          | Pitch bend up limit (`cmd=0x71`)             |
-| `0x1B`   | **Not in dump**               | Bend Down        | Pitch bend down limit (`cmd=0x71`)           |
-| `0x27`   | `0x99 + (part−1)`             | Volume           | Part level (Part 16 at `0xA8`)               |
-| `0x20`   | `0x29 + (part−1)`             | Bank             | Single bank index (P1 at `0x29`)             |
-| `0x21`   | `0x39 + (part−1)`             | Program          | Single program 0–127 (P1 at `0x39`)          |
-| `0x22`   | `0x49 + (part−1)`             | MIDI Channel     | Part MIDI channel 1–16 (P1 at `0x49`)        |
-| `0x28`   | `0xA9 + (part−1)`             | Init Volume      | MIDI volume on multi select (Part 16 `0xB8`) |
-| `0x29`   | `0xC8 + part`                 | Output Routing   | Part output bus and channel                  |
-| `0x2D`   | **Not in dump** (`cmd=0x73`)  | Secondary Output | Second output bus (`cmd=0x73`)               |
-| `0x2B`   | `0xD8 + part`                 | Panorama         | Part pan position                            |
-| `0x40`   | **Not in dump** (desktop)     | Keyboard-related | Keyboard global behavior control             |
-| `0x48`   | `0xF8 + part` (packed flags)  | Enable           | Part on/off                                  |
-| `0x49`   | `0xF8 + part` (packed flags)  | Volume RX        | Receive MIDI CC#7                            |
-| `0x4A`   | `0xF8 + part` (packed flags)  | Hold Pedal       | Sustain pedal behavior                       |
-| `0x4D`   | `0xF8 + part` (packed flags)  | Priority         | Note-steal priority                          |
-| `0x4E`   | `0xF8 + part` (packed flags)  | Program Change   | Program Change response                      |
+| Param ID | Memory / Target              | Parameter        | Description                                  |
+| -------- | ---------------------------- | ---------------- | -------------------------------------------- |
+| `0x0F`   | Global (`0x17` in dump)      | Master Clock     | Global Multi tempo                           |
+| `0x23`   | `0x59 + part`                | Low Key          | Part low key limit                           |
+| `0x24`   | `0x69 + part`                | High Key         | Part high key limit                          |
+| `0x25`   | `0x79 + part`                | Transpose        | Part transposition                           |
+| `0x26`   | `0x89 + part`                | Detune           | Part detune                                  |
+| `0x1A`   | **Not in dump**              | Bend Up          | Pitch bend up limit (`cmd=0x71`)             |
+| `0x1B`   | **Not in dump**              | Bend Down        | Pitch bend down limit (`cmd=0x71`)           |
+| `0x27`   | `0x99 + (part−1)`            | Volume           | Part level (Part 16 at `0xA8`)               |
+| `0x20`   | `0x29 + (part−1)`            | Bank             | Single bank index (P1 at `0x29`)             |
+| `0x21`   | `0x39 + (part−1)`            | Program          | Single program 0–127 (P1 at `0x39`)          |
+| `0x22`   | `0x49 + (part−1)`            | MIDI Channel     | Part MIDI channel 1–16 (P1 at `0x49`)        |
+| `0x28`   | `0xA9 + (part−1)`            | Init Volume      | MIDI volume on multi select (Part 16 `0xB8`) |
+| `0x29`   | `0xC8 + part`                | Output Routing   | Part output bus and channel                  |
+| `0x2D`   | **Not in dump** (`cmd=0x73`) | Secondary Output | Second output bus (`cmd=0x73`)               |
+| `0x2B`   | `0xD8 + part`                | Panorama         | Part pan position                            |
+| `0x40`   | **Not in dump** (desktop)    | Keyboard-related | Keyboard global behavior control             |
+| `0x48`   | `0xF8 + part` (packed flags) | Enable           | Part on/off                                  |
+| `0x49`   | `0xF8 + part` (packed flags) | Volume RX        | Receive MIDI CC#7                            |
+| `0x4A`   | `0xF8 + part` (packed flags) | Hold Pedal       | Sustain pedal behavior                       |
+| `0x4D`   | `0xF8 + part` (packed flags) | Priority         | Note-steal priority                          |
+| `0x4E`   | `0xF8 + part` (packed flags) | Program Change   | Program Change response                      |
 
 **Not in this table:** **Direct Monitoring** (VC-only; dump byte
 unmapped — [multis-dump.md](multis-dump.md#direct-monitoring)).

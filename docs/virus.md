@@ -51,3 +51,19 @@ Message-level layouts:
 ## Multi bank (TI series)
 
 See [multis-dump.md — Embedded vs Reference Multis](multis-dump.md#embedded-vs-reference-multis).
+
+## Front-panel modes (observed SysEx)
+
+The TI desktop exposes **Multi**, **Single**, and **Sequencer** (combined
+**MULTI+SINGLE**) play/edit modes. Mode changes can emit global SysEx
+(**`cmd=0x73`**, param **`0x10`**) — see
+[global-live-edit.md — Edit mode 0x10](global-live-edit.md#edit-mode-0x10-tentative).
+
+| Panel action                 | Typical SysEx from Virus          |
+| ---------------------------- | --------------------------------- |
+| Select multi from bank       | `73 00 10 00` (often twice)       |
+| Press **SINGLE**             | `73 40 10 00`                     |
+| **MULTI+SINGLE** / Sequencer | Empty `F0 F7` frames (no payload) |
+
+This is separate from **parameter edits** (e.g. Filter Cutoff uses
+**`cmd=0x70`** while editing a Single on Part 1).

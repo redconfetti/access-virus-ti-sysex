@@ -23,6 +23,7 @@ panel where **Hardware TX** is still blank below.
 
 | Param ID | Parameter              | Value encoding                                             | `DUMP_MULTI` | Hardware TX |
 | -------- | ---------------------- | ---------------------------------------------------------- | ------------ | ----------- |
+| `0x10`   | Edit mode / focus      | See [Edit mode 0x10](#edit-mode-0x10-tentative)            | Unverified   | Yes (panel) |
 | `0x19`   | All EQs                | See [All EQs](#all-eqs-0x19)                               | Unverified   | —           |
 | `0x1A`   | All Arpeggiators       | See [All Arpeggiators](#all-arpeggiators-0x1a)             | Unverified   | —           |
 | `0x1B`   | All Delays             | See [All Delays](#all-delays-0x1b)                         | Unverified   | Yes         |
@@ -42,6 +43,28 @@ panel where **Hardware TX** is still blank below.
 | `0x7E`   | LCD Contrast           | See [LCD Contrast](#lcd-contrast-0x7e)                     | Unverified   | —           |
 
 ## Parameters
+
+### Edit mode 0x10 tentative
+
+**Not** a sound parameter. The Virus sends **`cmd=0x73`**, param **`0x10`**
+when the **front-panel mode** or **multi program selection** changes. The
+byte after **`0x73`** mirrors live-edit **scope** (`0x00` vs **`0x40`**
+Single buffer) used on **`0x70`** / **`0x72`** / **`0x6E`**.
+
+| Message (hex body)   | Observed when                                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------------------------- |
+| `… 73 00 10 00`      | Selecting multis from **Multi bank** (e.g. #31, then **#32 INIT MULTI**) — sent **twice** on one load |
+| `… 73 40 10 00`      | Pressing **SINGLE** (leave Multi-focused UI for Single edit)                                          |
+| `F0 F7` only (empty) | **MULTI+SINGLE** (Sequencer) and some **MULTI** presses — no data bytes                               |
+
+```text
+F0 00 20 33 01 00 73 00 10 00 F7   # Multi / multi-bank context (tentative)
+F0 00 20 33 01 00 73 40 10 00 F7   # Single-buffer scope 0x40 (tentative)
+```
+
+**Not confirmed:** exact meaning of value **`0x00`**; whether **`0x10`**
+is “enter Multi mode” or a broader **edit focus** indicator. Sequencer
+transitions did **not** repeat the `73 … 10` message.
 
 ### All EQs (`0x19`)
 

@@ -98,20 +98,101 @@ Re-enable:
 sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 72 00 4a 01
 ```
 
+## Confirmation queue (WAF80 → TI)
+
+Use [waf80.md](waf80.md) as the **1999 hypothesis**. Confirm on the **Virus TI
+mk2 desktop**, record in the TI docs, then trim the matching WAF80 rows.
+
+**Work by LCD menu**, aligned with [single-dump.md](single-dump.md) categories
+— finish one menu before switching (e.g. all **Filters** controls, then
+**Oscillators**).
+
+| Status          | Category    | Virus LCD (typical)                 | Doc section                                        |
+| --------------- | ----------- | ----------------------------------- | -------------------------------------------------- |
+| Done            | **Filters** | **FILTERS** (F1/F2/Common/F1 ADSR)  | [single-dump.md — Filters](single-dump.md#filters) |
+| Done            | **Amplifier** | **Amp Envelope** ADSR             | [single-live-edit.md — Amplifier envelope](single-live-edit.md#amplifier-envelope-adsr) |
+| **In progress** | **Oscillator 1** | **OSCILLATORS** → Osc 1 — panel order | [single-dump.md — Oscillators](single-dump.md#oscillators) |
+
+### Filters — order (Filter 1 first)
+
+Confirm in this order (stay on the **FILTERS** menu):
+
+| #   | Parameter                              | SubCategory | WAF80 Page A # (hypothesis) |
+| --- | -------------------------------------- | ----------- | --------------------------- |
+| 1   | ~~Filter 1 Cutoff~~                    | Filter 1    | **40** — ✓ `70 00 28`       |
+| 2   | ~~Filter 1 Resonance~~                 | Filter 1    | **42** — ✓ `70 00 2A`       |
+| 3   | ~~Filter 1 Mode~~                      | Filter 1    | **51** — ✓ 8 modes `00`–`07` |
+| 4   | ~~Filter 1 Envelope Amount~~           | Filter 1    | **44** — ✓ linear %         |
+| 5   | ~~Filter 1 Keyfollow~~                 | Filter 1    | **46** — ✓ `ui + 64`        |
+| …   | (remaining Filter 1 / 2 / Common rows) |             | see parameter map           |
+
+**Current step:** **OSCILLATORS → Oscillator 1**. Osc params are a **nested tree**:
+
+1. **Mode** (Classic, Wavetable, Grain Simple, …) — changes which sub-menus exist
+   (Classic **1–2**, Wavetable/Grain Simple/Formant Simple **1–3**, Grain/Formant
+   Complex **1–4**).
+2. **Shape** (within many modes) — changes which controls appear on those menus.
+
+Report captures as **`Mode: …` / `Shape: …` / `Control: …` → LCD value** so session
+notes stay unambiguous. Use **+/−** for single steps when possible (cleaner log than
+long knob sweeps). Session notes until Osc 1 is done; then Osc 2, Common, Mixer.
+
+**Shape / Saw>Pulse:** Value byte is **hex** on the `70 00 11` line (`0x44`…`0x5A`…`0x7E`).
+`receivemidi`’s trailing **`dec`** is decimal equivalent only (e.g. `5A` hex = 90 dec).
+Do not use a decimal **44–66** index column — use **hex `44`–`5A`** (see live-edit table).
+
+**WAF80 Page A hypotheses (Osc 1, `cmd=0x70` unless capture says otherwise):**
+
+| A# | `param` | Classic name | Range (WAF80) |
+| -- | ------- | ------------ | ------------- |
+| 17 | `11` | Shape | TI: **enum** on `70`/`11` (not classic bipolar) |
+| 18 | `12` | Pulsewidth | 0–127 |
+| 19 | `13` | Wave Select | 0–64 |
+| 20 | `14` | Semitone | −64..+63 |
+| 21 | `15` | Keyfollow | −64..+63 |
+
+**Mode:** `6E`/`1E` — Classic = `00` ✓. **Classic / Spectral Wave** in progress.
+See [single-live-edit.md — Oscillator 1](single-live-edit.md#oscillators).
+
+**Key Follow “Norm” (done):** Stored Single with Key Follow **−21**; after reload,
+**Norm** still = **+32** / wire **`0x60`** — fixed scale marker, not per-patch default.
+
+| Status | Category | Notes |
+| ------ | -------- | ----- |
+| Done | Filter 1 | Cutoff, Resonance, Mode (8), Env Amt, Keyfollow, Env Polarity (`1E`) |
+| Done | Filter 2 | Offset, Resonance, Mode (4), Env Amt, Keyfollow, Env Polarity (`1F`); Cutoff **N/A** |
+| Done | Filter Common | Routing, Balance, Cutoff Link, Key Follow Base, Pan Spread (Split only) |
+| Done | Filter 1 envelope | `36`–`3A` ADSR (FILTERS → Filter Envelope menu) |
+| Done | Amp Envelope | `3B`–`3F` ADSR (same encodings as Filter 1 env) |
+| Done | Saturation (Filters) | Osc Volume `70`/`24`; knob target `71`/`7A` |
+
 ## Interactive single-parameter capture (panel → host)
 
 Use this loop when the **user** turns a control on the Virus and the agent
 listens with `receivemidi syx`.
 
-### Agent setup
+### Agent setup (persistent log)
+
+The **agent** keeps **`receivemidi`** running for the whole mapping session and
+**tails** the log after each user edit — the user does **not** paste SysEx hex.
 
 ```bash
 VIRUS_DEV='Virus TI USB Plugin I/O'
-receivemidi dev "$VIRUS_DEV" syx 2>&1 | tee /tmp/virus-live-capture.txt
+LOG=/tmp/virus-live-capture.txt
+: > "$LOG"
+receivemidi dev "$VIRUS_DEV" syx 2>&1 | tee -a "$LOG"
 ```
 
-Run with `required_permissions: ["all"]`. Work **one parameter at a time**
-from [single-dump.md — Single parameter map](single-dump.md#single-parameter-map).
+Run with `required_permissions: ["all"]`. Leave this process running in a
+background shell until the session ends; then `pkill -f 'receivemidi dev'`.
+
+After the user reports a landing UI value, the agent reads the **last**
+non-empty line from **`$LOG`** (e.g. `tail -n 20 "$LOG"`). Ignore empty
+`F0 F7`-only lines unless that is the only traffic for that action.
+
+Follow [Confirmation queue](#confirmation-queue-waf80--ti)
+when doing WAF80-driven mapping; otherwise pick one row from
+[single-dump.md — Single parameter map](single-dump.md#single-parameter-map).
 
 ### User / agent rules
 
@@ -119,15 +200,22 @@ from [single-dump.md — Single parameter map](single-dump.md#single-parameter-m
 2. User edits that control on the Virus (Edit Single context, Part 1 unless
    noted).
 3. **Knob turns** often produce **many SysEx messages** — use the **last
-   message** in the burst as the landing value. The user states the **final
-   UI value** they landed on (not every intermediate step).
-4. After capture, agent records **`cmd`**, **param**, **value** encoding
-   from the last message and updates docs.
-5. Toggle/switch controls may send a single message; knobs and sliders may
+   message** in the burst as the landing value.
+4. The **user** reports only the **final UI value** (not every intermediate
+   step). The **agent** tails **`/tmp/virus-live-capture.txt`** and uses the
+   last relevant SysEx line — no need to copy hex from a MIDI monitor.
+5. **Ranged parameters** (percent, bipolar, tempo, etc.): the agent prompts for
+   **several LCD landing values** (e.g. **0 %**, **50 %**, **100 %**) until the
+   encoding is clear — not only one endpoint.
+6. Agent records **`cmd`**, **param**, **value** encoding in **session notes**
+   (chat) as captures arrive; **flush to markdown only when a menu group is
+   done** (e.g. all Filter 2 rows, or Filters complete) — not after every
+   single landing.
+7. Toggle/switch controls may send a single message; knobs and sliders may
    send a stream.
-6. Some controls send **MIDI CC only** (no SysEx) — e.g. **Sub Oscillator
+8. Some controls send **MIDI CC only** (no SysEx) — e.g. **Sub Oscillator
    Volume** = **CC 34**; see [control-change.md](control-change.md).
-7. **Before a SysEx mapping session**, set globals **MIDI Controller Page A**
+9. **Before a SysEx mapping session**, set globals **MIDI Controller Page A**
    and **Page B** to **SysEx** (not Controller Data) so panel edits emit
    Access SysEx instead of CC — see
    [global-live-edit.md — Page A / B](global-live-edit.md#midi-controller-page-a-0x5e).
@@ -271,12 +359,14 @@ Change on, Vol RX off, Priority low. See
 
 ## Running `receivemidi` as an agent
 
-`receivemidi dump` runs until killed. Typical pattern:
+**Parameter mapping (panel → host):** one long-running `receivemidi syx` →
+`/tmp/virus-live-capture.txt`; tail the log per step (see [Agent setup](#agent-setup-persistent-log)).
 
-1. Start capture in a **background** shell writing to `/tmp/virus-midi.txt`.
-2. Send live edit (and/or user triggers panel dump).
-3. Wait 2–5 s, stop `receivemidi` (`pkill -f 'receivemidi dev'` or kill the
-   background job).
+**One-shot dump capture** (`receivemidi dump` for `DUMP_MULTI`):
+
+1. Start `receivemidi dump` in a background shell → `/tmp/virus-midi.txt`.
+2. User triggers panel dump or agent sends `REQUEST_MULTI`.
+3. Wait 2–5 s, stop `receivemidi` (`pkill -f 'receivemidi dev'`).
 4. Inspect `/tmp/virus-midi.txt` for `F0 00 20 33 … 11 …`.
 
 macOS may not have `timeout`; do not rely on it.
