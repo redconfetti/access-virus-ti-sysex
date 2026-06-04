@@ -28,12 +28,22 @@ See [waf80.md](waf80.md) for classic Page A/B parameter indices.
 | [Control Smooth Mode / clock quantize](#control-smooth-mode--clock-quantize) | Common **Smooth Mode** (`71`/`19`); same grid as LFO/Delay **Clock** (WAF80) |
 | [Bender Scale](#bender-scale) | Common **Bender Scale** (`71`/`1C`) |
 | [Delay Type](#delay-type) | Edit FX → Delay **Type** |
+| [Delay panel visibility](#delay-panel-visibility) | **Send** Off vs on; controls per **Type** |
 | [Delay Mode](#delay-mode) | Edit FX → Delay **Mode** (Classic; **`01`–`16`**) |
 | [Delay Clock](#delay-clock) | Edit FX → Delay **Clock** (Simple Delay / Ping Pong modes) |
+| [Delay Coloration](#delay-coloration) | Edit FX → Delay **Coloration** (Classic; **−64..+63**) |
 | [Delay LFO Rate](#delay-lfo-rate) | Edit FX → Delay **Rate** (`0`–`127`) |
 | [Delay LFO Depth](#delay-lfo-depth) | Edit FX → Delay **Depth** (`0.0`–`100.0 %`) |
 | [Delay LFO Wave](#delay-lfo-wave) | Edit FX → Delay **LFO Wave** (`00`–`05`) |
-| [Delay Send (LCD)](#delay-send-lcd) | Edit FX → Delay **Send** (`stored` = index `00`–`7F`) |
+| [Delay Tape Left Clock](#delay-tape-left-clock) | Tape Clocked **Left Clock** (`6E`/`0D`; `00`–`05`) |
+| [Delay Tape Right Clock](#delay-tape-right-clock) | Tape Clocked **Right Clock** (`6E`/`0E`; `00`–`05`) |
+| [Delay Tape Frequency](#delay-tape-frequency) | Tape **Frequency** (`70`/`77`; `0`–`127`) |
+| [Delay Tape Bandwidth](#delay-tape-bandwidth) | Tape **Bandwidth** (`6E`/`11`; `0`–`127`) |
+| [Delay Tape Modulation](#delay-tape-modulation) | Tape **Modulation** (`70`/`75`; `0`–`100 %`) |
+| [Delay Time (ms)](#delay-tape-time) | **Delay Time** (Classic) / **Time** (Tape Free, Doppler) — same `70`/`72`, `0.0`–`693.6 ms |
+| [Delay Tape Ratio](#delay-tape-ratio) | **Tape Free** / **Doppler** **Ratio** (`6E`/`0C`; `00`–`06`) |
+| [Delay Tape Feedback](#delay-tape-feedback) | Tape types **Feedback** **0..200 %** (`70`/`73`) |
+| [Delay Send (LCD)](#delay-send-lcd) | Edit FX → Delay **Send** (`stored` = index `00`–`7F`; `70`/`71`) |
 | [Reverb Send (LCD)](#reverb-send-lcd) | Edit FX → Reverb **Send** (`6E`/`02`; sparse captures) |
 | [Mod Matrix Sources](#mod-matrix-sources) | Mod matrix **Source** |
 | [Mod Matrix Destinations](#mod-matrix-destinations) | Mod matrix **Destination** |
@@ -151,9 +161,224 @@ panel **2**–**16** → **`02`–`10`**.
 
 ---
 
+## Delay panel visibility {#delay-panel-visibility}
+
+**Edit FX → Delay**. Panel-confirmed (TI mk2). **Type** is always available.
+
+### Send = Off (`00`)
+
+For every **Type**, when **Send** = **Off** (`00` in [Delay Send](#delay-send-lcd)),
+the menu shows **Feedback** only (**Classic** **0.0..100.0 %**; **Tape** types
+**0.0..200.0 %** — [Tape Feedback](#delay-tape-feedback)). **Mode**, **Clock**,
+**Coloration**, **Rate**, **Depth**, **LFO Wave**, tape rows, etc. are **hidden**.
+
+Set **Send** to any value **other than Off** to reveal the type-specific controls
+below ( **Send** and **Feedback** stay available).
+
+### Type = Classic (`00`) — Send not Off
+
+| Control      | Visible | Panel range / notes |
+| ------------ | ------- | ------------------- |
+| Send         | Yes     | [Delay Send (LCD)](#delay-send-lcd) |
+| Feedback     | Yes     | **0.0..100.0 %** — [Classic Feedback](single-live-edit.md#delay-feedback-classic-cmd0x70-param-0x75) |
+| Mode         | Yes     | [Delay Mode](#delay-mode) — **`01`–`16`** |
+| Coloration   | Yes     | [Delay Coloration](#delay-coloration) — **−64..+63** (panel-confirmed) |
+| Rate         | Yes     | [Delay LFO Rate](#delay-lfo-rate) — **`0`–`127`** |
+| Depth        | Yes     | [Delay LFO Depth](#delay-lfo-depth) — **0.0..100.0 %** |
+| LFO Wave     | Yes     | [Delay LFO Wave](#delay-lfo-wave) — **`00`–`05`** |
+| Clock        | Simple Delay / Ping Pong … only | [Delay Clock](#delay-clock) — **`00`–`10`**; **`00`** = **Off** |
+| Delay Time   | **Clock** = **Off** only | [Delay Time (ms)](#delay-tape-time) — **0.0..693.6 ms** (panel-confirmed) |
+
+When **Clock** is a tempo division (**not** **Off**), **Delay Time** is **hidden**
+(synced delay). When **Clock** = **Off** (`00`), **Delay Time** replaces it on the
+panel.
+
+**Pattern …** modes (`06`–`16`): no **Clock** — see [Delay Mode](#delay-mode).
+**Coloration** and LFO rows stay visible; **Delay Time** on Pattern modes **TBD**.
+
+### Type = Tape Clocked (`01`) — Send not Off
+
+| Control     | Visible | Notes |
+| ----------- | ------- | ----- |
+| Send        | Yes     | [Delay Send (LCD)](#delay-send-lcd) — same curve all **Types** |
+| Feedback    | Yes     | **0.0..200.0 %** — [Tape Feedback](#delay-tape-feedback) |
+| Left Clock  | Yes     | [Delay Tape Left Clock](#delay-tape-left-clock) |
+| Right Clock | Yes     | [Delay Tape Right Clock](#delay-tape-right-clock) |
+| Frequency   | Yes     | [Tape Frequency](#delay-tape-frequency) |
+| Bandwidth   | Yes     | [Tape Bandwidth](#delay-tape-bandwidth) |
+| Modulation  | Yes     | [Tape Modulation](#delay-tape-modulation) |
+
+No **Mode**, **Clock**, **Coloration**, **Rate**, **Depth**, **LFO Wave**, **Time**,
+or **Ratio**.
+
+### Type = Tape Free (`02`) or Tape Doppler (`03`) — Send not Off
+
+| Control    | Visible | Panel range (Free = Doppler) |
+| ---------- | ------- | ---------------------------- |
+| Send       | Yes     | [Delay Send (LCD)](#delay-send-lcd) — **Off**, −46.2 dB … **0/−24.0 dB**, **Effect** (`00`–`7F`) |
+| Feedback   | Yes     | [Tape Feedback](#delay-tape-feedback) — **0.0..200.0 %** |
+| Time       | Yes     | [Delay Time (ms)](#delay-tape-time) — panel **Time** = Classic **Delay Time**; **0.0..693.6 ms** |
+| Ratio      | Yes     | [Delay Tape Ratio](#delay-tape-ratio) — **1/4** … **4/1** (`00`–`06`) |
+| Frequency  | Yes     | [Tape Frequency](#delay-tape-frequency) — **`0`–`127`** |
+| Bandwidth  | Yes     | [Tape Bandwidth](#delay-tape-bandwidth) — **`0`–`127`** |
+| Modulation | Yes     | [Tape Modulation](#delay-tape-modulation) — **0.0..100.0 %** |
+
+Same panel set and ranges for **Tape Free** (`02`) and **Tape Doppler** (`03`).
+All seven type-specific rows above panel-confirmed on **Tape Doppler** (`6E`/`0A`/`03`).
+No **Left Clock** / **Right Clock** (Tape Clocked only). No Classic rows.
+
+---
+
+## Delay Tape Left Clock {#delay-tape-left-clock}
+
+**Edit FX → Delay → Left Clock** (**Type** = Tape Clocked, **Send** ≠ Off).
+Live edit: **`cmd=0x6E`**, param **`0x0D`**. **`stored = <value>`** (wire byte).
+
+| `<value>` | Option |
+| --------- | ------ |
+| `00`      | 1/32   |
+| `01`      | 1/16   |
+| `02`      | 2/16   |
+| `03`      | 3/16   |
+| `04`      | 4/16   |
+| `05`      | 5/16   |
+
+---
+
+## Delay Tape Right Clock {#delay-tape-right-clock}
+
+**Edit FX → Delay → Right Clock** (**Type** = Tape Clocked, **Send** ≠ Off).
+Live edit: **`cmd=0x6E`**, param **`0x0E`**. Same options as
+[Left Clock](#delay-tape-left-clock).
+
+| `<value>` | Option |
+| --------- | ------ |
+| `00`      | 1/32   |
+| `01`      | 1/16   |
+| `02`      | 2/16   |
+| `03`      | 3/16   |
+| `04`      | 4/16   |
+| `05`      | 5/16   |
+
+---
+
+## Delay Tape Frequency {#delay-tape-frequency}
+
+**Edit FX → Delay → Frequency** (**Tape Clocked**, **Tape Free**, **Tape Doppler**
+— not Classic). **No** **Time** / **Ratio** on Tape Clocked.
+Live edit: **`cmd=0x70`**, param **`0x77`** (Page **A#119**). **`stored = lcd`**
+(**`0`–`127`**). Panel **0..127** on **Tape Doppler** (`03`).
+
+---
+
+## Delay Tape Bandwidth {#delay-tape-bandwidth}
+
+**Edit FX → Delay → Bandwidth** (all three **Tape** types when **Send** ≠ Off).
+Live edit:
+**`cmd=0x6E`**, param **`0x11`**. **`stored = lcd`** (**`0`–`127`**). Panel **0..127**
+on **Tape Doppler** (`03`).
+
+---
+
+## Delay Tape Modulation {#delay-tape-modulation}
+
+**Edit FX → Delay → Modulation** (all three **Tape** types when **Send** ≠ Off).
+Live edit:
+**`cmd=0x70`**, param **`0x75`** (same param byte as Classic delay
+[Feedback](single-live-edit.md#delay-feedback-classic-cmd0x70-param-0x75); tape
+**Feedback** uses **`73`** instead).
+
+**0.0..100.0 %**:
+
+```text
+stored = round(pct × 127 / 100)
+```
+
+**`00`** = 0 %, **`7F`** = 100.0 %. Panel **0.0..100.0 %** on **Tape Doppler** (`03`).
+
+---
+
+## Delay Time (ms) {#delay-tape-time}
+
+One control, two panel labels: **Delay Time** (**Classic**) and **Time** (**Tape
+Free** / **Tape Doppler**). Same live edit, scale, and wire map.
+
+Live edit: **`cmd=0x70`**, param **`0x72`** (Page **A#114**). Panel **0.0..693.6 ms**
+(one decimal on LCD). **`stored = lcd`** (direct byte **`00`–`7F`**). Hardware TX
+confirmed (**Tape Free** `6E`/`0A`/`02`, **Time** sweep `70`/`72` **`00`–`7F`**).
+
+| Context | Panel label | When visible |
+| ------- | ----------- | ------------ |
+| **Classic** | **Delay Time** | **Send** ≠ Off, **Mode** = Simple Delay or Ping Pong …, **[Clock](#delay-clock) = Off** (`00`) |
+| **Tape Free** / **Tape Doppler** | **Time** | **Send** ≠ Off (no **Clock** row) |
+
+Approximate scale (intermediate rows not all spot-checked):
+
+```text
+lcd_ms ≈ stored × 693.6 / 127    # round display to 0.1 ms
+```
+
+| `<value>` | dec | LCD (ms) | Confirmed |
+| --------- | --- | -------- | --------- |
+| `00` | 0 | 0.0 | ✓ |
+| `20` | 32 | 174.8 | ✓ |
+| `28` | 40 | 218.5 | ✓ |
+| `40` | 64 | 349.5 | ✓ |
+| `50` | 80 | 436.9 | ✓ |
+| `60` | 96 | 524.3 | ✓ |
+| `64` | 100 | 546.1 | ✓ |
+| `70` | 112 | 611.7 | ✓ |
+| `7F` | 127 | 693.6 | ✓ |
+
+Wire **`40`** is hex (**decimal 64**), not decimal 40.
+
+---
+
+## Delay Tape Ratio {#delay-tape-ratio}
+
+**Edit FX → Delay → Ratio** (**Tape Free** or **Tape Doppler**, **Send** ≠ Off).
+Live edit: **`cmd=0x6E`**, param **`0x0C`**. **`stored = <value>`** (wire byte).
+
+| `<value>` | Option |
+| --------- | ------ |
+| `00` | 1/4 |
+| `01` | 2/4 |
+| `02` | 3/4 |
+| `03` | 4/4 |
+| `04` | 4/3 |
+| `05` | 4/2 |
+| `06` | 4/1 |
+
+Same seven options on **Tape Doppler** (`03`). Panel-confirmed (`6E`/`0C` stepped).
+
+---
+
+## Delay Tape Feedback {#delay-tape-feedback}
+
+**Edit FX → Delay → Feedback** when **Type** = **Tape Clocked**, **Tape Free**, or
+**Tape Doppler** (also the only control when **Send** = Off on those types).
+Live edit: **`cmd=0x70`**, param **`0x73`** (Page **A#115**).
+
+Panel **0.0..200.0 %** (not the Classic **0..100 %** range):
+
+```text
+stored = round(pct × 127 / 200)
+```
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| 0 % | `00` | ✓ (capture) |
+| 100.0 % | `40` | ✓ (panel + Tape Clocked capture) |
+| 200.0 % | `7F` | ✓ (capture sweep; Tape Clocked + **Tape Free** `6E`/`0A`/`02`) |
+
+**Classic** delay **Feedback** stays **0.0..100.0 %** on **`70`/`75`** — see
+[single-live-edit.md — Delay](single-live-edit.md#delay).
+
+---
+
 ## Delay Mode
 
-**Edit FX → Delay → Mode** (with **Type** = Classic). **`stored = <value>`**
+**Edit FX → Delay → Mode** ( **Type** = Classic, **Send** ≠ Off). **`stored = <value>`**
 (wire byte; first option is **`01`**, not **`00`**).
 
 | `<value>` | Option           |
@@ -181,15 +406,32 @@ panel **2**–**16** → **`02`–`10`**.
 | `15`      | Pattern 5+4      |
 | `16`      | Pattern 5+5      |
 
-**Pattern …** modes (`06`–`16`): no extra Delay rows (**Clock** / **Delay Time** /
-**Coloration**) on the panel. **Simple Delay** and **Ping Pong …** modes show those
-controls.
+**Pattern …** modes (`06`–`16`): **Clock** hidden. **Coloration**, **Rate**,
+**Depth**, and **LFO Wave** stay on the panel.
+
+**Simple Delay** and **Ping Pong …** modes: **Clock** + **Delay Time** when
+**Clock** = **Off** — see [Delay Clock](#delay-clock) and [Delay Time (ms)](#delay-tape-time).
+
+---
+
+## Delay Coloration {#delay-coloration}
+
+**Edit FX → Delay → Coloration** (**Type** = Classic, **Send** ≠ Off). Panel
+**−64..+63** (signed UI). Wire byte (expected, like other **±64** controls):
+
+```text
+stored = ui + 64    # ui −64 → 00, ui 0 → 40, ui +63 → 7F
+ui     = stored − 64
+```
+
+Live edit SysEx **TBD** (mod-matrix destination id **`0x54`** — suspected
+**`cmd=0x70`**, param **`0x54`**; not confirmed on hardware TX yet).
 
 ---
 
 ## Delay Clock
 
-**Edit FX → Delay → Clock** (when **Mode** = Simple Delay or Ping Pong …).
+**Edit FX → Delay → Clock** ( **Type** = Classic, **Send** ≠ Off, **Mode** = Simple Delay or Ping Pong …).
 Live edit: **`F0 … 71 00 14 <value> F7`** (WAF80 Page **B#20**). **`stored = <value>`**
 (wire byte). Table order = **panel menu** (slow → fast). Distinct from Common
 **Smooth Mode** (`71`/`19`); same division labels as
@@ -219,18 +461,22 @@ quantize rows but **different** wire map.
 Valid wire values **`00`–`10`** only (every byte in that range is used; no gaps).
 **`11`**, **`12`** probed via SysEx → **ignored**. **`13`–`7F`** not in menu.
 
+**Panel visibility:** **`00` Off** shows [Delay Time (ms)](#delay-tape-time)
+(**0.0..693.6 ms**). Any synced division **hides** **Delay Time** (tempo-locked
+delay length).
+
 ---
 
 ## Delay LFO Rate {#delay-lfo-rate}
 
-**Edit FX → Delay → Rate**. Live edit: **`cmd=0x70`**, param **`0x70`**
+**Edit FX → Delay → Rate** (Classic, **Send** ≠ Off). Live edit: **`cmd=0x70`**, param **`0x70`**
 (WAF80 Page **A#112**). **`stored = lcd`** (**`0`–`127`**).
 
 ---
 
 ## Delay LFO Depth {#delay-lfo-depth}
 
-**Edit FX → Delay → Depth**. Live edit: **`cmd=0x70`**, param **`0x74`**
+**Edit FX → Delay → Depth** (Classic, **Send** ≠ Off). Live edit: **`cmd=0x70`**, param **`0x74`**
 (Page **A#116**). Panel **0.0..100.0 %**:
 
 ```text
@@ -243,7 +489,7 @@ stored = round(pct × 127 / 100)
 
 ## Delay LFO Wave {#delay-lfo-wave}
 
-**Edit FX → Delay → LFO Wave**. Live edit: **`cmd=0x70`**, param **`0x76`**
+**Edit FX → Delay → LFO Wave** (Classic, **Send** ≠ Off). Live edit: **`cmd=0x70`**, param **`0x76`**
 (Page **A#118**). **`stored = <value>`** (wire byte).
 
 | `<value>` | Option    | Notes |
@@ -259,7 +505,8 @@ stored = round(pct × 127 / 100)
 
 ## Delay Send (LCD) {#delay-send-lcd}
 
-**Edit FX → Delay → Send**. **`stored = index`** (`00`–`7F`). Panel-confirmed on
+**Edit FX → Delay → Send** (all **Types**). **`stored = index`** (`00`–`7F`).
+Live edit: **`cmd=0x70`**, param **`0x71`** (Page **A#113**). Panel-confirmed on
 TI mk2 (see table). Rows **`19`–`1D`**, **`1F`–`27`**, **`29`–`3F`** are
 **amplitude-interpolated** (not yet spot-checked).
 

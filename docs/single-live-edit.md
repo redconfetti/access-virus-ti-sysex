@@ -2585,22 +2585,227 @@ capture as you step through sub-menus.
 
 ### Delay
 
+Panel layout: [Delay panel visibility](parameter-option-lists.md#delay-panel-visibility).
+
+**Send = Off (`00`)** — all **Types**: **Feedback** only (**0.0..100.0 %**). **Send**
+must be non-**Off** before type-specific rows appear.
+
 | Control | Notes |
 | ------- | ----- |
-| **Type** | [Delay Type](parameter-option-lists.md#delay-type) — Classic `00`, Tape Clocked `01`, Tape Free `02`, Tape Doppler `03` |
-| **Mode** | [Delay Mode](parameter-option-lists.md#delay-mode) — Classic only; **`01`–`16`**; **Pattern …** = no Clock/Time/Coloration |
-| **Clock** | [Delay Clock](parameter-option-lists.md#delay-clock) — Simple Delay / Ping Pong only; **`71`/`14`** (WAF80 Page **B#20**); wire **`00`–`10`** only (`11`+ ignored) |
-| **Delay Time** | TBD |
-| **Coloration** | **−64..+63** → `stored = ui + 64` (`00` / `40` / `7F`); Simple Delay / Ping Pong only; SysEx TBD |
-| **Rate** | **`0`–`127`** — [`70`/`70`](#delay-lfo-rate-cmd0x70-param-0x70) |
-| **Depth** | **0.0..100.0 %** — [`70`/`74`](#delay-lfo-depth-cmd0x70-param-0x74) |
-| **LFO Wave** | [Delay LFO Wave](parameter-option-lists.md#delay-lfo-wave) — **`00`–`05`**; [`70`/`76`](#delay-lfo-wave-cmd0x70-param-0x76) |
-| **Send** | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd) — **`00`–`7F`** (gaps **`19`–`3F`** ≈) |
-| **Feedback** | **0.0..100.0 %** → `stored = round(pct × 127 / 100)`; **`00`** = 0 %, **`7F`** = 100.0 % (panel); SysEx TBD |
+| **Type** | [Delay Type](parameter-option-lists.md#delay-type) — [`6E`/`0A`](#delay-type-cmd0x6e) |
+| **Send** | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd) — [`70`/`71`](#delay-send-cmd0x70-param-0x71); **`00`** = Off |
+| **Feedback** | **Classic** **0..100 %** → [`70`/`75`](#delay-feedback-classic-cmd0x70-param-0x75); **Tape** **0..200 %** → [`70`/`73`](#delay-feedback-tape-cmd0x70-param-0x73) |
+
+#### Classic (`00`) — Send ≠ Off
+
+| Control | Notes |
+| ------- | ----- |
+| **Send** | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd); [`70`/`71`](#delay-send-cmd0x70-param-0x71) |
+| **Feedback** | **0.0..100.0 %** — [`70`/`75`](#delay-feedback-classic-cmd0x70-param-0x75) |
+| **Mode** | [Delay Mode](parameter-option-lists.md#delay-mode) — **`01`–`16`**; **Pattern …** = no **Clock** |
+| **Coloration** | **−64..+63** → `stored = ui + 64` — [Delay Coloration](parameter-option-lists.md#delay-coloration); panel-confirmed; SysEx TBD |
+| **Clock** | [Delay Clock](parameter-option-lists.md#delay-clock) — Simple/Ping Pong only; **`71`/`14`**; **`00`** = Off |
+| **Delay Time** | Same as tape **Time** — **0.0..693.6 ms** when **Clock** = **Off**; [`70`/`72`](#delay-tape-time-cmd0x70-param-0x72); hidden when **Clock** synced |
+| **Rate** | [`70`/`70`](#delay-lfo-rate-cmd0x70-param-0x70) |
+| **Depth** | [`70`/`74`](#delay-lfo-depth-cmd0x70-param-0x74) |
+| **LFO Wave** | [`70`/`76`](#delay-lfo-wave-cmd0x70-param-0x76) — [options](parameter-option-lists.md#delay-lfo-wave) |
+
+#### Tape Clocked (`01`) — Send ≠ Off
+
+| Control | Notes |
+| ------- | ----- |
+| **Send** | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd) — Off, −46.2 dB … **0/−24.0 dB**, Effect; [`70`/`71`](#delay-send-cmd0x70-param-0x71) |
+| **Feedback** | **0.0..200.0 %** — [`70`/`73`](#delay-feedback-tape-cmd0x70-param-0x73); **`40`** = 100.0 % |
+| **Left Clock** | [Delay Tape Left Clock](parameter-option-lists.md#delay-tape-left-clock) — **`6E`/`0D`**; `00`–`05` |
+| **Right Clock** | [Delay Tape Right Clock](parameter-option-lists.md#delay-tape-right-clock) — **`6E`/`0E`**; same menu |
+| **Frequency** | **`0`–`127`** — [`70`/`77`](#delay-tape-frequency-cmd0x70-param-0x77) |
+| **Bandwidth** | **`0`–`127`** — [`6E`/`11`](#delay-tape-bandwidth-cmd0x6e-param-0x11) |
+| **Modulation** | **0.0..100.0 %** — [`70`/`75`](#delay-tape-modulation-cmd0x70-param-0x75) |
+
+No **Time** or **Ratio** on **Tape Clocked**.
+
+#### Tape Free (`02`) / Tape Doppler (`03`) — Send ≠ Off
+
+| Control | Notes |
+| ------- | ----- |
+| **Send** | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd); [`70`/`71`](#delay-send-cmd0x70-param-0x71) — same curve all **Types** (panel: **Tape Doppler** `03`) |
+| **Feedback** | **0.0..200.0 %** — [`70`/`73`](#delay-feedback-tape-cmd0x70-param-0x73); same as Tape Clocked (panel: **Tape Doppler** `03`) |
+| **Time** | Same as Classic **Delay Time** — **0.0..693.6 ms**, [`70`/`72`](#delay-tape-time-cmd0x70-param-0x72); [LCD table](parameter-option-lists.md#delay-tape-time) |
+| **Ratio** | [Delay Tape Ratio](parameter-option-lists.md#delay-tape-ratio) — **`6E`/`0C`**; `00`–`06` (panel: **Tape Doppler** `03`) |
+| **Frequency** | **`0`–`127`** — [`70`/`77`](#delay-tape-frequency-cmd0x70-param-0x77) (panel: **Tape Doppler** `03`) |
+| **Bandwidth** | **`0`–`127`** — [`6E`/`11`](#delay-tape-bandwidth-cmd0x6e-param-0x11) (panel: **Tape Doppler** `03`) |
+| **Modulation** | **0.0..100.0 %** — [`70`/`75`](#delay-tape-modulation-cmd0x70-param-0x75) (panel: **Tape Doppler** `03`) |
+
+No **Left Clock** / **Right Clock** (Tape Clocked only).
+
+### Delay Type (`cmd=0x6E`, param `0x0A`) {#delay-type-cmd0x6e}
+
+**EDIT FX → Delay → Type**. Part-sound buffer (**`6E`**, not Page A).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 0A <value> F7` |
+| Value encoding | [Delay Type](parameter-option-lists.md#delay-type) — **`00`–`03`** |
+| Confirmed | Hardware TX |
 
 ```text
-# Delay Feedback (encoding only — cmd/param TBD)
-# 00 = 0 %, 7F = 100.0 %
+F0 00 20 33 01 00 6E 00 0A 00 F7   # Classic
+F0 00 20 33 01 00 6E 00 0A 01 F7   # Tape Clocked
+F0 00 20 33 01 00 6E 00 0A 02 F7   # Tape Free
+F0 00 20 33 01 00 6E 00 0A 03 F7   # Tape Doppler
+```
+
+### Delay Send (`cmd=0x70`, param `0x71`) {#delay-send-cmd0x70-param-0x71}
+
+**EDIT FX → Delay → Send** (all types). Page **A#113** = **`0x71`**. LCD index =
+wire byte — [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 70 <part> 71 <value> F7` |
+| Confirmed | Hardware TX (send sweep, Tape Clocked session) |
+
+```text
+F0 00 20 33 01 00 70 00 71 00 F7   # Off
+F0 00 20 33 01 00 70 00 71 7F F7   # Effect
+```
+
+### Delay Feedback — Classic (`cmd=0x70`, param `0x75`) {#delay-feedback-classic-cmd0x70-param-0x75}
+
+**Type** = Classic. **0.0..100.0 %** → `stored = round(pct × 127 / 100)`.
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 70 <part> 75 <value> F7` |
+| Confirmed | Hardware TX (prior capture) |
+
+```text
+F0 00 20 33 01 00 70 00 75 00 F7   # 0 %
+F0 00 20 33 01 00 70 00 75 7F F7   # 100.0 %
+```
+
+### Delay Tape Left Clock (`cmd=0x6E`, param `0x0D`) {#delay-tape-left-clock-cmd0x6e}
+
+**Tape Clocked → Left Clock**. Options:
+[Delay Tape Left Clock](parameter-option-lists.md#delay-tape-left-clock).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 0D <value> F7` |
+| Confirmed | Hardware TX (`00`–`05` stepped) |
+
+```text
+F0 00 20 33 01 00 6E 00 0D 00 F7   # 1/32
+F0 00 20 33 01 00 6E 00 0D 05 F7   # 5/16
+```
+
+### Delay Time (`cmd=0x70`, param `0x72`) {#delay-tape-time-cmd0x70-param-0x72}
+
+**Classic → Delay Time** (**Clock** Off), **Tape Free / Doppler → Time** — same
+param. **0.0..693.6 ms** — [Delay Time (ms)](parameter-option-lists.md#delay-tape-time).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 70 <part> 72 <value> F7` |
+| Confirmed | Hardware TX — **Tape Free** full sweep (`00`–`7F`); LCD anchors in option list |
+
+```text
+F0 00 20 33 01 00 70 00 72 00 F7   # 0.0 ms
+F0 00 20 33 01 00 70 00 72 40 F7   # 349.5 ms
+F0 00 20 33 01 00 70 00 72 7F F7   # 693.6 ms
+```
+
+### Delay Tape Ratio (`cmd=0x6E`, param `0x0C`) {#delay-tape-ratio-cmd0x6e}
+
+**Tape Free / Tape Doppler → Ratio**. Options:
+[Delay Tape Ratio](parameter-option-lists.md#delay-tape-ratio).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 0C <value> F7` |
+| Confirmed | Hardware TX (`00`–`06` stepped) |
+
+```text
+F0 00 20 33 01 00 6E 00 0C 00 F7   # 1/4
+F0 00 20 33 01 00 6E 00 0C 06 F7   # 4/1
+```
+
+### Delay Tape Frequency (`cmd=0x70`, param `0x77`) {#delay-tape-frequency-cmd0x70-param-0x77}
+
+**Tape Clocked**, **Tape Free**, **Tape Doppler** — not Classic. Panel **`0`–`127`**
+(**Tape Doppler** `03` confirmed).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 70 <part> 77 <value> F7` |
+| Confirmed | Hardware TX (sweep); panel **Tape Doppler** |
+
+```text
+F0 00 20 33 01 00 70 00 77 00 F7
+F0 00 20 33 01 00 70 00 77 7F F7
+```
+
+### Delay Tape Bandwidth (`cmd=0x6E`, param `0x11`) {#delay-tape-bandwidth-cmd0x6e-param-0x11}
+
+**Tape** types (**Clocked** / **Free** / **Doppler**). Panel **`0`–`127`**
+(**Tape Doppler** `03` confirmed).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 11 <value> F7` |
+| Confirmed | Hardware TX (sweep to `7F`); panel **Tape Doppler** |
+
+```text
+F0 00 20 33 01 00 6E 00 11 00 F7
+F0 00 20 33 01 00 6E 00 11 7F F7
+```
+
+### Delay Tape Modulation (`cmd=0x70`, param `0x75`) {#delay-tape-modulation-cmd0x70-param-0x75}
+
+**Tape** types (**Clocked** / **Free** / **Doppler**). **0.0..100.0 %** — same encoding as
+[Classic Feedback](#delay-feedback-classic-cmd0x70-param-0x75); distinct from
+[Tape Feedback](#delay-feedback-tape-cmd0x70-param-0x73) (**0..200 %** on **`73`**).
+Panel **Tape Doppler** (`03`) confirmed.
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 70 <part> 75 <value> F7` |
+| Confirmed | Hardware TX (modulation sweep); panel **Tape Doppler** |
+
+```text
+F0 00 20 33 01 00 70 00 75 00 F7   # 0 %
+F0 00 20 33 01 00 70 00 75 7F F7   # 100.0 %
+```
+
+### Delay Tape Right Clock (`cmd=0x6E`, param `0x0E`) {#delay-tape-right-clock-cmd0x6e}
+
+**Tape Clocked → Right Clock**. Same labels as Left — param **`0x0E`**.
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 0E <value> F7` |
+| Confirmed | Hardware TX (`00`–`05` stepped) |
+
+```text
+F0 00 20 33 01 00 6E 00 0E 00 F7   # 1/32
+F0 00 20 33 01 00 6E 00 0E 05 F7   # 5/16
+```
+
+### Delay Feedback — Tape (`cmd=0x70`, param `0x73`) {#delay-feedback-tape-cmd0x70-param-0x73}
+
+**Tape Clocked / Free / Doppler**. **0.0..200.0 %** →
+`stored = round(pct × 127 / 200)` — see
+[Delay Tape Feedback](parameter-option-lists.md#delay-tape-feedback).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 70 <part> 73 <value> F7` |
+| Endpoints | **`00`** = 0 %, **`40`** = 100.0 %, **`7F`** = 200.0 % |
+| Confirmed | Hardware TX (Tape Clocked session) |
+
+```text
+F0 00 20 33 01 00 70 00 73 40 F7   # 100.0 %
+F0 00 20 33 01 00 70 00 73 7F F7   # 200.0 %
 ```
 
 ### Delay LFO Rate (`cmd=0x70`, param `0x70`) {#delay-lfo-rate-cmd0x70-param-0x70}

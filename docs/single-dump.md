@@ -450,34 +450,34 @@ Multi edit parameters are in
 | Control                                 | SubCategory        | Dump offset | Live edit     |
 | --------------------------------------- | ------------------ | ----------- | ------------- |
 | FX Delay Switch                         | Delay              |             |               |
-| Delay Send                              | Delay              |             | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd) |
-| Delay Type                              | Delay              |             | [Delay Type](parameter-option-lists.md#delay-type) — Classic `00` … Tape Doppler `03` |
-| Delay Mode                              | Delay              |             | [Delay Mode](parameter-option-lists.md#delay-mode) — Classic; `01`–`16` |
+| Delay Send                              | Delay              |             | `70` / `0x71` — [Delay Send](single-live-edit.md#delay-send-cmd0x70-param-0x71) + [LCD](parameter-option-lists.md#delay-send-lcd) |
+| Delay Type                              | Delay              |             | `6E` / `0x0A` — [Delay Type](single-live-edit.md#delay-type-cmd0x6e) |
+| Delay Mode                              | Delay              |             | [Delay Mode](parameter-option-lists.md#delay-mode) — Classic; **Send** ≠ Off; `01`–`16` |
 | Delay Clock                             | Delay              |             | [Delay Clock](parameter-option-lists.md#delay-clock) — Simple/Ping Pong modes |
-| Delay Time (ms)                         | Delay              |             |               |
-| Delay Feedback                          | Delay              |             | **0.0..100.0 %** — `round(pct×127/100)`; `00`/`7F` — [Delay Feedback](single-live-edit.md#delay) |
-| Delay Coloration                        | Delay              |             | **−64..+63** → `ui+64` — [Delay](single-live-edit.md#delay) |
+| Delay Time (ms)                         | Delay              |             | `70` / `0x72` — [Delay Time (ms)](parameter-option-lists.md#delay-tape-time); Classic when [Clock](parameter-option-lists.md#delay-clock) **Off**; same as tape **Time** |
+| Delay Feedback                          | Delay              |             | Classic `70`/`75` **0..100 %**; Tape `70`/`73` **0..200 %** — [live edit](single-live-edit.md#delay) |
+| Delay Coloration                        | Delay              |             | Classic panel **−64..+63** → `ui+64` — [Coloration](parameter-option-lists.md#delay-coloration); SysEx TBD |
 | Delay LFO Rate                          | Delay              |             | `70` / `0x70` — [Rate](single-live-edit.md#delay-lfo-rate-cmd0x70-param-0x70) |
 | Delay LFO Depth                         | Delay              |             | `70` / `0x74` — [Depth](single-live-edit.md#delay-lfo-depth-cmd0x70-param-0x74) |
 | Delay LFO Shape                         | Delay              |             | `70` / `0x76` — [LFO Wave](single-live-edit.md#delay-lfo-wave-cmd0x70-param-0x76) |
-| Delay Tape Delay Clock Left             | Delay Tape Clocked |             |               |
-| Delay Tape Delay Clock Right            | Delay Tape Clocked |             |               |
+| Delay Tape Delay Clock Left             | Delay Tape Clocked |             | `6E` / `0x0D` — [Left Clock](parameter-option-lists.md#delay-tape-left-clock) |
+| Delay Tape Delay Clock Right            | Delay Tape Clocked |             | `6E` / `0x0E` — [Right Clock](parameter-option-lists.md#delay-tape-right-clock) |
 | Delay Tape Delay Feedback               | Delay Tape Clocked |             |               |
-| Delay Tape Delay Center Frequency       | Delay Tape Clocked |             |               |
-| Delay Tape Delay Bandwidth              | Delay Tape Clocked |             |               |
-| Delay Tape Delay Modulation             | Delay Tape Clocked |             |               |
-| Delay Tape Delay Ratio                  | Delay Tape Free    |             |               |
-| Delay Tape Delay Time (ms)              | Delay Tape Free    |             |               |
+| Delay Tape Delay Center Frequency       | Delay Tape Clocked |             | `70` / `0x77` — [Frequency](single-live-edit.md#delay-tape-frequency-cmd0x70-param-0x77) |
+| Delay Tape Delay Bandwidth              | Delay Tape Clocked |             | `6E` / `0x11` — [Bandwidth](single-live-edit.md#delay-tape-bandwidth-cmd0x6e-param-0x11) |
+| Delay Tape Delay Modulation             | Delay Tape Clocked |             | `70` / `0x75` — [Modulation](single-live-edit.md#delay-tape-modulation-cmd0x70-param-0x75) |
+| Delay Tape Delay Ratio                  | Delay Tape Free    |             | `6E` / `0x0C` — [Ratio](parameter-option-lists.md#delay-tape-ratio) |
+| Delay Tape Delay Time (ms)              | Delay Tape Free    |             | `70` / `0x72` — panel **Time** = [Delay Time (ms)](parameter-option-lists.md#delay-tape-time) |
 | Delay Tape Delay Feedback               | Delay Tape Free    |             |               |
 | Delay Tape Delay Center Frequency       | Delay Tape Free    |             |               |
 | Delay Tape Delay Bandwidth              | Delay Tape Free    |             |               |
 | Delay Tape Delay Modulation             | Delay Tape Free    |             |               |
-| Delay Tape Delay Ratio                  | Delay Tape Doppler |             |               |
-| Delay Tape Delay Time (ms)              | Delay Tape Doppler |             |               |
-| Delay Tape Delay Feedback               | Delay Tape Doppler |             |               |
-| Delay Tape Delay Center Frequency       | Delay Tape Doppler |             |               |
-| Delay Tape Delay Bandwidth              | Delay Tape Doppler |             |               |
-| Delay Tape Delay Modulation             | Delay Tape Doppler |             |               |
+| Delay Tape Delay Ratio                  | Delay Tape Doppler |             | `6E` / `0x0C` — same as [Tape Free](parameter-option-lists.md#delay-tape-ratio) |
+| Delay Tape Delay Time (ms)              | Delay Tape Doppler |             | `70` / `0x72` — panel **Time** = [Delay Time (ms)](parameter-option-lists.md#delay-tape-time) |
+| Delay Tape Delay Feedback               | Delay Tape Doppler |             | `70` / `0x73` — **0..200 %**; same as Tape Clocked / Free |
+| Delay Tape Delay Center Frequency       | Delay Tape Doppler |             | `70` / `0x77` — **`0`–`127`** — [Frequency](parameter-option-lists.md#delay-tape-frequency) |
+| Delay Tape Delay Bandwidth              | Delay Tape Doppler |             | `6E` / `0x11` — **`0`–`127`** — [Bandwidth](parameter-option-lists.md#delay-tape-bandwidth) |
+| Delay Tape Delay Modulation             | Delay Tape Doppler |             | `70` / `0x75` — **0..100 %** — [Modulation](parameter-option-lists.md#delay-tape-modulation) |
 | FX Reverb Switch                        | Reverb             |             |               |
 | Reverb Send                             | Reverb             |             | `6E` / `0x02` — [Reverb Send (LCD)](parameter-option-lists.md#reverb-send-lcd) |
 | Reverb Mode                             | Reverb             |             |               |
