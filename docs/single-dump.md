@@ -452,13 +452,13 @@ Multi edit parameters are in
 | FX Delay Switch                         | Delay              |             |               |
 | Delay Send                              | Delay              |             | `70` / `0x71` — [Delay Send](single-live-edit.md#delay-send-cmd0x70-param-0x71) + [LCD](parameter-option-lists.md#delay-send-lcd) |
 | Delay Type                              | Delay              |             | `6E` / `0x0A` — [Delay Type](single-live-edit.md#delay-type-cmd0x6e) |
-| Delay Mode                              | Delay              |             | [Delay Mode](parameter-option-lists.md#delay-mode) — Classic; **Send** ≠ Off; `01`–`16` |
+| Delay Mode                              | Delay              |             | `70` / `0x70` — [Mode](parameter-option-lists.md#delay-mode); **`01`–`16`** |
 | Delay Clock                             | Delay              |             | [Delay Clock](parameter-option-lists.md#delay-clock) — Simple/Ping Pong modes |
-| Delay Time (ms)                         | Delay              |             | `70` / `0x72` — [Delay Time (ms)](parameter-option-lists.md#delay-tape-time); Classic when [Clock](parameter-option-lists.md#delay-clock) **Off**; same as tape **Time** |
-| Delay Feedback                          | Delay              |             | Classic `70`/`75` **0..100 %**; Tape `70`/`73` **0..200 %** — [live edit](single-live-edit.md#delay) |
-| Delay Coloration                        | Delay              |             | Classic panel **−64..+63** → `ui+64` — [Coloration](parameter-option-lists.md#delay-coloration); SysEx TBD |
-| Delay LFO Rate                          | Delay              |             | `70` / `0x70` — [Rate](single-live-edit.md#delay-lfo-rate-cmd0x70-param-0x70) |
-| Delay LFO Depth                         | Delay              |             | `70` / `0x74` — [Depth](single-live-edit.md#delay-lfo-depth-cmd0x70-param-0x74) |
+| Delay Time (ms)                         | Delay              |             | `70` / `0x72` — Classic Simple/Ping Pong + [Clock](parameter-option-lists.md#delay-clock) **Off** only; **not** on Pattern modes; tape **Time** |
+| Delay Feedback                          | Delay              |             | `70` / `0x73` — [Feedback](single-live-edit.md#delay-feedback); Classic **0..100 %** (TX on **Pattern 5+5**), Tape **0..200 %** |
+| Delay Coloration                        | Delay              |             | `70` / `0x77` — [Coloration](parameter-option-lists.md#delay-coloration); TX on **Pattern 5+5**; mod-matrix id **`0x54`** |
+| Delay LFO Rate                          | Delay              |             | `70` / `0x74` — [Rate](single-live-edit.md#delay-lfo-rate-cmd0x70-param-0x74) |
+| Delay LFO Depth                         | Delay              |             | `70` / `0x75` — [Depth](single-live-edit.md#delay-lfo-depth-cmd0x70-param-0x75) |
 | Delay LFO Shape                         | Delay              |             | `70` / `0x76` — [LFO Wave](single-live-edit.md#delay-lfo-wave-cmd0x70-param-0x76) |
 | Delay Tape Delay Clock Left             | Delay Tape Clocked |             | `6E` / `0x0D` — [Left Clock](parameter-option-lists.md#delay-tape-left-clock) |
 | Delay Tape Delay Clock Right            | Delay Tape Clocked |             | `6E` / `0x0E` — [Right Clock](parameter-option-lists.md#delay-tape-right-clock) |
@@ -480,14 +480,14 @@ Multi edit parameters are in
 | Delay Tape Delay Modulation             | Delay Tape Doppler |             | `70` / `0x75` — **0..100 %** — [Modulation](parameter-option-lists.md#delay-tape-modulation) |
 | FX Reverb Switch                        | Reverb             |             |               |
 | Reverb Send                             | Reverb             |             | `6E` / `0x02` — [Reverb Send (LCD)](parameter-option-lists.md#reverb-send-lcd) |
-| Reverb Mode                             | Reverb             |             |               |
-| Reverb Type                             | Reverb             |             |               |
-| Reverb Time / Decay                     | Reverb             |             |               |
-| Reverb Damping                          | Reverb             |             |               |
-| Reverb Color                            | Reverb             |             |               |
-| Reverb Predelay / Time                  | Reverb             |             |               |
-| Reverb Feedback                         | Reverb             |             |               |
-| Reverb Clock                            | Reverb             |             |               |
+| Reverb Mode                             | Reverb             |             | `6E` / `0x01` — [Mode](single-live-edit.md#reverb-mode-cmd0x6e); **`00`–`03`** |
+| Reverb Type                             | Reverb             |             | `6E` / `0x03` — [Type](single-live-edit.md#reverb-type-cmd0x6e) |
+| Reverb Time                             | Reverb             |             | `6E` / `0x04` — [Time](single-live-edit.md#reverb-time-cmd0x6e); **0..127** |
+| Reverb Damping                          | Reverb             |             | `6E` / `0x05` — [Damping](single-live-edit.md#reverb-damping-cmd0x6e); **0..100.0 %** |
+| Reverb Coloration                       | Reverb             |             | `6E` / `0x06` — [Coloration](single-live-edit.md#reverb-coloration-cmd0x6e); **−64..+63** |
+| Reverb Predelay                         | Reverb             |             | `6E` / `0x07` — [Predelay](single-live-edit.md#reverb-predelay-cmd0x6e); **0.0..500.0 ms**; **Clock** Off |
+| Reverb Feedback                         | Reverb             |             | `6E` / `0x09` — [Feedback](single-live-edit.md#reverb-feedback-cmd0x6e); **Feedback 1/2** only |
+| Reverb Clock                            | Reverb             |             | `6E` / `0x08` — [Clock](single-live-edit.md#reverb-clock-cmd0x6e); same map as Delay Clock |
 | Vocoder Mode                            | Vocoder            |             |               |
 | Vocoder Amount of Synthesis Bands       | Vocoder            |             |               |
 | Vocoder Balance (Dry-Wet)               | Vocoder            |             |               |

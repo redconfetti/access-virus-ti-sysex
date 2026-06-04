@@ -2587,35 +2587,34 @@ capture as you step through sub-menus.
 
 Panel layout: [Delay panel visibility](parameter-option-lists.md#delay-panel-visibility).
 
-**Send = Off (`00`)** — all **Types**: **Feedback** only (**0.0..100.0 %**). **Send**
-must be non-**Off** before type-specific rows appear.
+**Send = Off (`00`)** — all **Types**: panel shows **Type**, **Send**, and
+**Feedback** only (no **Delay Time** / **Time**, **Mode**, etc.). Set **Send** to a
+non-**Off** value before type-specific rows appear.
 
 | Control | Notes |
 | ------- | ----- |
 | **Type** | [Delay Type](parameter-option-lists.md#delay-type) — [`6E`/`0A`](#delay-type-cmd0x6e) |
 | **Send** | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd) — [`70`/`71`](#delay-send-cmd0x70-param-0x71); **`00`** = Off |
-| **Feedback** | **Classic** **0..100 %** → [`70`/`75`](#delay-feedback-classic-cmd0x70-param-0x75); **Tape** **0..200 %** → [`70`/`73`](#delay-feedback-tape-cmd0x70-param-0x73) |
+| **Feedback** | [`70`/`73`](#delay-feedback) — **Classic** **0..100 %** / **Tape** **0..200 %** |
 
 #### Classic (`00`) — Send ≠ Off
 
 | Control | Notes |
 | ------- | ----- |
 | **Send** | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd); [`70`/`71`](#delay-send-cmd0x70-param-0x71) |
-| **Feedback** | **0.0..100.0 %** — [`70`/`75`](#delay-feedback-classic-cmd0x70-param-0x75) |
-| **Mode** | [Delay Mode](parameter-option-lists.md#delay-mode) — **`01`–`16`**; **Pattern …** = no **Clock** |
-| **Coloration** | **−64..+63** → `stored = ui + 64` — [Delay Coloration](parameter-option-lists.md#delay-coloration); panel-confirmed; SysEx TBD |
+| **Feedback** | **0.0..100.0 %** — [`70`/`73`](#delay-feedback) |
+| **Mode** | [Delay Mode](parameter-option-lists.md#delay-mode) — **`01`–`16`**; [`70`/`70`](#delay-mode-cmd0x70-param-0x70); **Pattern …** = no **Clock** |
+| **Coloration** | **−64..+63** → `stored = ui + 64` — [`70`/`77`](#delay-tape-frequency-cmd0x70-param-0x77); [anchors](parameter-option-lists.md#delay-coloration) |
 | **Clock** | [Delay Clock](parameter-option-lists.md#delay-clock) — Simple/Ping Pong only; **`71`/`14`**; **`00`** = Off |
-| **Delay Time** | Same as tape **Time** — **0.0..693.6 ms** when **Clock** = **Off**; [`70`/`72`](#delay-tape-time-cmd0x70-param-0x72); hidden when **Clock** synced |
-| **Rate** | [`70`/`70`](#delay-lfo-rate-cmd0x70-param-0x70) |
-| **Depth** | [`70`/`74`](#delay-lfo-depth-cmd0x70-param-0x74) |
-| **LFO Wave** | [`70`/`76`](#delay-lfo-wave-cmd0x70-param-0x76) — [options](parameter-option-lists.md#delay-lfo-wave) |
+| **Delay Time** | Simple/Ping Pong + **Clock** Off only — [`70`/`72`](#delay-tape-time-cmd0x70-param-0x72); **not** on **Pattern** (`06`–`16`; panel **Pattern 5+5**) |
+| **LFO** | [Delay LFO](parameter-option-lists.md#delay-lfo) — **Rate** [`70`/`74`](#delay-lfo-rate-cmd0x70-param-0x74), **Depth** [`70`/`75`](#delay-lfo-depth-cmd0x70-param-0x75), **LFO Wave** [`70`/`76`](#delay-lfo-wave-cmd0x70-param-0x76) |
 
 #### Tape Clocked (`01`) — Send ≠ Off
 
 | Control | Notes |
 | ------- | ----- |
 | **Send** | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd) — Off, −46.2 dB … **0/−24.0 dB**, Effect; [`70`/`71`](#delay-send-cmd0x70-param-0x71) |
-| **Feedback** | **0.0..200.0 %** — [`70`/`73`](#delay-feedback-tape-cmd0x70-param-0x73); **`40`** = 100.0 % |
+| **Feedback** | **0.0..200.0 %** — [`70`/`73`](#delay-feedback); **`40`** = 100.0 % |
 | **Left Clock** | [Delay Tape Left Clock](parameter-option-lists.md#delay-tape-left-clock) — **`6E`/`0D`**; `00`–`05` |
 | **Right Clock** | [Delay Tape Right Clock](parameter-option-lists.md#delay-tape-right-clock) — **`6E`/`0E`**; same menu |
 | **Frequency** | **`0`–`127`** — [`70`/`77`](#delay-tape-frequency-cmd0x70-param-0x77) |
@@ -2655,6 +2654,24 @@ F0 00 20 33 01 00 6E 00 0A 02 F7   # Tape Free
 F0 00 20 33 01 00 6E 00 0A 03 F7   # Tape Doppler
 ```
 
+### Delay Mode (`cmd=0x70`, param `0x70`) {#delay-mode-cmd0x70-param-0x70}
+
+**EDIT FX → Delay → Mode** (**Type** = Classic). Enum:
+[Delay Mode](parameter-option-lists.md#delay-mode) — wire **`01`–`16`**, not **`00`**.
+Not `6E`/`0A` (**Type**).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 70 <part> 70 <value> F7` |
+| Confirmed | Hardware TX (**`05`–`16`** stepped; enum **`01`–`16`**) |
+
+```text
+F0 00 20 33 01 00 70 00 70 01 F7   # Simple Delay
+F0 00 20 33 01 00 70 00 70 05 F7   # Ping Pong 8:7
+F0 00 20 33 01 00 70 00 70 06 F7   # Pattern 1+1
+F0 00 20 33 01 00 70 00 70 16 F7   # Pattern 5+5
+```
+
 ### Delay Send (`cmd=0x70`, param `0x71`) {#delay-send-cmd0x70-param-0x71}
 
 **EDIT FX → Delay → Send** (all types). Page **A#113** = **`0x71`**. LCD index =
@@ -2670,18 +2687,35 @@ F0 00 20 33 01 00 70 00 71 00 F7   # Off
 F0 00 20 33 01 00 70 00 71 7F F7   # Effect
 ```
 
-### Delay Feedback — Classic (`cmd=0x70`, param `0x75`) {#delay-feedback-classic-cmd0x70-param-0x75}
+### Delay Feedback (`cmd=0x70`, param `0x73`) {#delay-feedback}
 
-**Type** = Classic. **0.0..100.0 %** → `stored = round(pct × 127 / 100)`.
+**EDIT FX → Delay → Feedback**. Page **A#115** = **`0x73`**. Same byte for all
+**Types**; scale depends on **Type** — see
+[Delay Feedback](parameter-option-lists.md#delay-feedback).
+
+#### Classic (`00`) — `stored = round(pct × 127 / 100)`
 
 | Item | Value |
 | ---- | ----- |
-| Message format | `F0 00 20 33 01 00 70 <part> 75 <value> F7` |
-| Confirmed | Hardware TX (prior capture) |
+| Message format | `F0 00 20 33 01 00 70 <part> 73 <value> F7` |
+| Confirmed | Hardware TX (Feedback sweep **`00`–`7F`**; panel **Mode** = **Pattern 5+5**, `70`/`70` = `16`) |
 
 ```text
-F0 00 20 33 01 00 70 00 75 00 F7   # 0 %
-F0 00 20 33 01 00 70 00 75 7F F7   # 100.0 %
+F0 00 20 33 01 00 70 00 73 00 F7   # 0.0 %
+F0 00 20 33 01 00 70 00 73 7F F7   # 100.0 %
+```
+
+#### Tape (`01`–`03`) — `stored = round(pct × 127 / 200)`
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 70 <part> 73 <value> F7` |
+| Endpoints | **`00`** = 0 %, **`40`** = 100.0 %, **`7F`** = 200.0 % |
+| Confirmed | Hardware TX (Tape Clocked / Free captures) |
+
+```text
+F0 00 20 33 01 00 70 00 73 40 F7   # 100.0 % (Tape)
+F0 00 20 33 01 00 70 00 73 7F F7   # 200.0 % (Tape)
 ```
 
 ### Delay Tape Left Clock (`cmd=0x6E`, param `0x0D`) {#delay-tape-left-clock-cmd0x6e}
@@ -2701,8 +2735,9 @@ F0 00 20 33 01 00 6E 00 0D 05 F7   # 5/16
 
 ### Delay Time (`cmd=0x70`, param `0x72`) {#delay-tape-time-cmd0x70-param-0x72}
 
-**Classic → Delay Time** (**Clock** Off), **Tape Free / Doppler → Time** — same
-param. **0.0..693.6 ms** — [Delay Time (ms)](parameter-option-lists.md#delay-tape-time).
+**Classic → Delay Time** (Simple/Ping Pong, **Clock** Off only — **not** Pattern
+modes), **Tape Free / Doppler → Time** — same param. **0.0..693.6 ms** — see
+[Delay Time (ms)](parameter-option-lists.md#delay-tape-time).
 
 | Item | Value |
 | ---- | ----- |
@@ -2730,7 +2765,27 @@ F0 00 20 33 01 00 6E 00 0C 00 F7   # 1/4
 F0 00 20 33 01 00 6E 00 0C 06 F7   # 4/1
 ```
 
-### Delay Tape Frequency (`cmd=0x70`, param `0x77`) {#delay-tape-frequency-cmd0x70-param-0x77}
+### Delay Coloration / Tape Frequency (`cmd=0x70`, param `0x77`) {#delay-tape-frequency-cmd0x70-param-0x77}
+
+Page **A#119** = **`0x77`**. Same wire byte; encoding depends on **Type** — see
+[Delay Coloration](parameter-option-lists.md#delay-coloration),
+[Tape Frequency](parameter-option-lists.md#delay-tape-frequency).
+
+#### Classic — Coloration (`stored = ui + 64`, **−64..+63**)
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 70 <part> 77 <value> F7` |
+| Endpoints | **`00`** = −64, **`40`** = +0, **`7F`** = +63 |
+| Confirmed | Hardware TX (Coloration sweep **`00`–`7F`**; panel **Mode** = **Pattern 5+5**, `70`/`70` = `16`) |
+
+```text
+F0 00 20 33 01 00 70 00 77 00 F7   # −64
+F0 00 20 33 01 00 70 00 77 40 F7   # +0
+F0 00 20 33 01 00 70 00 77 7F F7   # +63
+```
+
+#### Tape — Frequency (`stored = lcd`, **`0`–`127`**)
 
 **Tape Clocked**, **Tape Free**, **Tape Doppler** — not Classic. Panel **`0`–`127`**
 (**Tape Doppler** `03` confirmed).
@@ -2738,11 +2793,11 @@ F0 00 20 33 01 00 6E 00 0C 06 F7   # 4/1
 | Item | Value |
 | ---- | ----- |
 | Message format | `F0 00 20 33 01 00 70 <part> 77 <value> F7` |
-| Confirmed | Hardware TX (sweep); panel **Tape Doppler** |
+| Confirmed | Hardware TX (Frequency sweep); panel **Tape Doppler** |
 
 ```text
-F0 00 20 33 01 00 70 00 77 00 F7
-F0 00 20 33 01 00 70 00 77 7F F7
+F0 00 20 33 01 00 70 00 77 00 F7   # 0
+F0 00 20 33 01 00 70 00 77 7F F7   # 127
 ```
 
 ### Delay Tape Bandwidth (`cmd=0x6E`, param `0x11`) {#delay-tape-bandwidth-cmd0x6e-param-0x11}
@@ -2763,8 +2818,8 @@ F0 00 20 33 01 00 6E 00 11 7F F7
 ### Delay Tape Modulation (`cmd=0x70`, param `0x75`) {#delay-tape-modulation-cmd0x70-param-0x75}
 
 **Tape** types (**Clocked** / **Free** / **Doppler**). **0.0..100.0 %** — same encoding as
-[Classic Feedback](#delay-feedback-classic-cmd0x70-param-0x75); distinct from
-[Tape Feedback](#delay-feedback-tape-cmd0x70-param-0x73) (**0..200 %** on **`73`**).
+[Delay LFO Depth](#delay-lfo-depth-cmd0x70-param-0x75) (**`75`**, **Classic** LFO page);
+distinct from [Delay Feedback](#delay-feedback) on Tape (**0..200 %** on **`73`**).
 Panel **Tape Doppler** (`03`) confirmed.
 
 | Item | Value |
@@ -2791,53 +2846,44 @@ F0 00 20 33 01 00 6E 00 0E 00 F7   # 1/32
 F0 00 20 33 01 00 6E 00 0E 05 F7   # 5/16
 ```
 
-### Delay Feedback — Tape (`cmd=0x70`, param `0x73`) {#delay-feedback-tape-cmd0x70-param-0x73}
+### Delay LFO {#delay-lfo-live-edit}
 
-**Tape Clocked / Free / Doppler**. **0.0..200.0 %** →
-`stored = round(pct × 127 / 200)` — see
-[Delay Tape Feedback](parameter-option-lists.md#delay-tape-feedback).
+**Rate**, **Depth**, and **LFO Wave** — one panel page; see
+[Delay LFO](parameter-option-lists.md#delay-lfo).
 
-| Item | Value |
-| ---- | ----- |
-| Message format | `F0 00 20 33 01 00 70 <part> 73 <value> F7` |
-| Endpoints | **`00`** = 0 %, **`40`** = 100.0 %, **`7F`** = 200.0 % |
-| Confirmed | Hardware TX (Tape Clocked session) |
+### Delay LFO Rate (`cmd=0x70`, param `0x74`) {#delay-lfo-rate-cmd0x70-param-0x74}
 
-```text
-F0 00 20 33 01 00 70 00 73 40 F7   # 100.0 %
-F0 00 20 33 01 00 70 00 73 7F F7   # 200.0 %
-```
-
-### Delay LFO Rate (`cmd=0x70`, param `0x70`) {#delay-lfo-rate-cmd0x70-param-0x70}
-
-**EDIT FX → Delay → Rate**. WAF80 Page **A#112** = **`0x70`**.
+**EDIT FX → Delay → Rate** ([Delay LFO](#delay-lfo)). Page **A#116** = **`0x74`**. Not **`0x70`** ([Mode](#delay-mode-cmd0x70-param-0x70)).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 70 <value> F7` |
+| Message format | `F0 00 20 33 01 00 70 <part> 74 <value> F7` |
 | Value encoding | Direct **`0`–`127`** (`stored = lcd`)       |
-| Confirmed      | Hardware TX (rate sweep)                    |
+| Confirmed      | Hardware TX (Rate sweep **`00`–`7F`**)      |
 
 ```text
-F0 00 20 33 01 00 70 00 70 00 F7   # Rate 0
-F0 00 20 33 01 00 70 00 70 7F F7   # Rate 127
+F0 00 20 33 01 00 70 00 74 00 F7   # Rate 0
+F0 00 20 33 01 00 70 00 74 7F F7   # Rate 127
 ```
 
-### Delay LFO Depth (`cmd=0x70`, param `0x74`) {#delay-lfo-depth-cmd0x70-param-0x74}
+### Delay LFO Depth (`cmd=0x70`, param `0x75`) {#delay-lfo-depth-cmd0x70-param-0x75}
 
-**EDIT FX → Delay → Depth**. Page **A#116** = **`0x74`**.
+**EDIT FX → Delay → Depth** ([Delay LFO](#delay-lfo)). Page **A#117** = **`0x75`**.
+Same param byte as [Tape Modulation](#delay-tape-modulation-cmd0x70-param-0x75) on
+**Tape** types only.
 
 | Item           | Value                                                    |
 | -------------- | -------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 74 <value> F7`              |
+| Message format | `F0 00 20 33 01 00 70 <part> 75 <value> F7`              |
 | Value encoding | **0.0..100.0 %** → `stored = round(pct × 127 / 100)`     |
 | Endpoints      | **`00`** = 0 %, **`7F`** = 100.0 %                       |
-| Confirmed      | Hardware TX (depth sweep)                                |
+| Confirmed      | Hardware TX (Depth sweep **`00`–`7F`**)                  |
 
 ```text
-F0 00 20 33 01 00 70 00 74 00 F7   # Depth 0 %
-F0 00 20 33 01 00 70 00 74 7F F7   # Depth 100.0 %
+F0 00 20 33 01 00 70 00 75 00 F7   # Depth 0 %
+F0 00 20 33 01 00 70 00 75 7F F7   # Depth 100.0 %
 ```
+
 
 ### Delay LFO Wave (`cmd=0x70`, param `0x76`) {#delay-lfo-wave-cmd0x70-param-0x76}
 
@@ -2857,13 +2903,167 @@ F0 00 20 33 01 00 70 00 76 05 F7   # S&G
 
 ### Reverb
 
+Panel layout: [Reverb panel visibility](parameter-option-lists.md#reverb-panel-visibility).
+
+**Mode = Off (`00`)** — **Mode** and **Send** only (TI reference).
+
+**Send = Off** — does **not** hide **Clock**, **Time**, **Damping**, **Coloration**,
+or **Predelay** (unlike Delay **Send**).
+
+#### Mode = Reverb, Feedback 1, or Feedback 2
+
+**Feedback 2** — same panel rows as **Feedback 1** (mk2 confirmed).
+
 | Control | Notes |
 | ------- | ----- |
-| **Send** | [Reverb Send (LCD)](parameter-option-lists.md#reverb-send-lcd) — sparse captures; SysEx [`6E`/`02`](#reverb-send-cmd0x6e) |
+| **Mode** | [`6E`/`01`](#reverb-mode-cmd0x6e) |
+| **Send** | [`6E`/`02`](#reverb-send-cmd0x6e) — **`00`** Off … **`7F`** Effect |
+| **Type** | [`6E`/`03`](#reverb-type-cmd0x6e) — all room types; does not hide other rows |
+| **Clock** | [`6E`/`08`](#reverb-clock-cmd0x6e) |
+| **Time** | [`6E`/`04`](#reverb-time-cmd0x6e) — **0..127** |
+| **Damping** | [`6E`/`05`](#reverb-damping-cmd0x6e) — **0..100.0 %** |
+| **Coloration** | [`6E`/`06`](#reverb-coloration-cmd0x6e) — **−64..+63** |
+| **Predelay** | [`6E`/`07`](#reverb-predelay-cmd0x6e) — **Clock** Off only |
+| **Feedback** | [`6E`/`09`](#reverb-feedback-cmd0x6e) — **Feedback 1/2** only; **0..127** |
 
 ---
 
 ## Live Edit
+
+### Reverb Mode (`cmd=0x6E`, param `0x01`) {#reverb-mode-cmd0x6e}
+
+**EDIT FX → Reverb → Mode**. Part-sound buffer (**`6E`**, like [Delay Type](#delay-type-cmd0x6e)).
+Enum: [Reverb Mode](parameter-option-lists.md#reverb-mode). **Not** param **`0x03`**
+(that is [Type](#reverb-type-cmd0x6e)).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 01 <value> F7` |
+| Value encoding | Wire byte **`00`–`03`** |
+| Confirmed | Hardware TX (**`01`–`03`** stepped) |
+
+```text
+F0 00 20 33 01 00 6E 00 01 01 F7   # Reverb
+F0 00 20 33 01 00 6E 00 01 02 F7   # Feedback 1
+F0 00 20 33 01 00 6E 00 01 03 F7   # Feedback 2
+```
+
+### Reverb Type (`cmd=0x6E`, param `0x03`) {#reverb-type-cmd0x6e}
+
+**EDIT FX → Reverb → Type** (**Mode** = Reverb). Enum:
+[Reverb Type](parameter-option-lists.md#reverb-type).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 03 <value> F7` |
+| Value encoding | Wire byte **`00`–`03`** |
+| Confirmed | Hardware TX (**`00`–`03`**; Hall → Ambience sweep) |
+
+```text
+F0 00 20 33 01 00 6E 00 03 00 F7   # Ambience
+F0 00 20 33 01 00 6E 00 03 01 F7   # Small Room
+F0 00 20 33 01 00 6E 00 03 02 F7   # Large Room
+F0 00 20 33 01 00 6E 00 03 03 F7   # Hall
+```
+
+### Reverb Clock (`cmd=0x6E`, param `0x08`) {#reverb-clock-cmd0x6e}
+
+**EDIT FX → Reverb → Clock**. Syncs **Predelay**. Same **`<value>`** map as
+[Delay Clock](parameter-option-lists.md#delay-clock) but **`6E`/`08`** (not `71`/`14`).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 08 <value> F7` |
+| Confirmed | Hardware TX (**Off** → **3/4** → **Off**) |
+
+```text
+F0 00 20 33 01 00 6E 00 08 00 F7   # Off
+F0 00 20 33 01 00 6E 00 08 10 F7   # 3/4
+```
+
+### Reverb Time (`cmd=0x6E`, param `0x04`) {#reverb-time-cmd0x6e}
+
+**EDIT FX → Reverb → Time** (**Mode** = Reverb). Tail length **0..127**.
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 04 <value> F7` |
+| Value encoding | **`stored = lcd`** |
+| Confirmed | Hardware TX (sweep **`00`–`7F`**) |
+
+```text
+F0 00 20 33 01 00 6E 00 04 00 F7   # 0
+F0 00 20 33 01 00 6E 00 04 44 F7   # 68
+F0 00 20 33 01 00 6E 00 04 7F F7   # 127
+```
+
+### Reverb Damping (`cmd=0x6E`, param `0x05`) {#reverb-damping-cmd0x6e}
+
+**EDIT FX → Reverb → Damping** (**Mode** = Reverb). **0.0..100.0 %** — see
+[Reverb Damping](parameter-option-lists.md#reverb-damping).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 05 <value> F7` |
+| Value encoding | `stored = round(pct × 127 / 100)` |
+| Confirmed | Hardware TX (sweep **`00`–`7F`**) |
+
+```text
+F0 00 20 33 01 00 6E 00 05 00 F7   # 0.0 %
+F0 00 20 33 01 00 6E 00 05 14 F7   # 15.6 % (panel)
+F0 00 20 33 01 00 6E 00 05 7F F7   # 100.0 %
+```
+
+### Reverb Coloration (`cmd=0x6E`, param `0x06`) {#reverb-coloration-cmd0x6e}
+
+**EDIT FX → Reverb → Coloration** (**Mode** = Reverb). **−64..+63** — see
+[Reverb Coloration](parameter-option-lists.md#reverb-coloration).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 06 <value> F7` |
+| Value encoding | `stored = ui + 64` |
+| Confirmed | Hardware TX (sweep **+63** → **−64**) |
+
+```text
+F0 00 20 33 01 00 6E 00 06 40 F7   # +0
+F0 00 20 33 01 00 6E 00 06 7F F7   # +63
+F0 00 20 33 01 00 6E 00 06 00 F7   # −64
+```
+
+### Reverb Predelay (`cmd=0x6E`, param `0x07`) {#reverb-predelay-cmd0x6e}
+
+**EDIT FX → Reverb → Predelay** (**Clock** = Off). **0.0..500.0 ms** — see
+[Reverb Predelay](parameter-option-lists.md#reverb-predelay).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 07 <value> F7` |
+| Value encoding | **`stored = lcd`**; valid **`00`–`5C`**; `lcd_ms ≈ stored × 500.0 / 92` |
+| Confirmed | Hardware TX (sweep **0.0** → **500.0** ms; max wire **`5C`**) |
+
+```text
+F0 00 20 33 01 00 6E 00 07 00 F7   # 0.0 ms
+F0 00 20 33 01 00 6E 00 07 20 F7   # 174.8 ms
+F0 00 20 33 01 00 6E 00 07 40 F7   # 349.5 ms
+F0 00 20 33 01 00 6E 00 07 5C F7   # 500.0 ms
+```
+
+### Reverb Feedback (`cmd=0x6E`, param `0x09`) {#reverb-feedback-cmd0x6e}
+
+**EDIT FX → Reverb → Feedback** (**Mode** = **Feedback 1** or **Feedback 2**).
+**0..127** — see [Reverb Feedback](parameter-option-lists.md#reverb-feedback).
+
+| Item | Value |
+| ---- | ----- |
+| Message format | `F0 00 20 33 01 00 6E <part> 09 <value> F7` |
+| Value encoding | **`stored = lcd`** |
+| Confirmed | Hardware TX (**Feedback 2** mode, sweep **`00`–`7F`**) |
+
+```text
+F0 00 20 33 01 00 6E 00 09 00 F7   # 0
+F0 00 20 33 01 00 6E 00 09 7F F7   # 127
+```
 
 ### Reverb Send (`cmd=0x6E`) {#reverb-send-cmd0x6e}
 
@@ -2880,8 +3080,14 @@ Reverb Send is **not** in the 267-byte `DUMP_MULTI`.
 | Message format | `F0 00 20 33 01 00 6E <part> 02 <value> F7`                 |
 | Scope          | Part edit / single edit buffer (not stored in `DUMP_MULTI`) |
 | Value range    | Direct byte `0..127`                                        |
-| Key points     | `0` = Off, `96` (`0x60`) = `0/0 dB`, `127` (`0x7F`) = Effect |
-| Status         | Mapping confirmed for Reverb Send on TI mk2                 |
+| Key points     | **`00`** = Off, **`60`** = 0/0 dB, **`7F`** = Effect |
+| Confirmed      | Hardware TX (**Send** sweep **`00`–`7F`**; endpoints + sparse steps) |
 
-LCD ↔ **`stored`** index: [Reverb Send (LCD)](parameter-option-lists.md#reverb-send-lcd)
-(sparse hardware-confirmed rows; full table TBD on panel).
+```text
+F0 00 20 33 01 00 6E 00 02 00 F7   # Off
+F0 00 20 33 01 00 6E 00 02 60 F7   # 0/0 dB (unity)
+F0 00 20 33 01 00 6E 00 02 7F F7   # Effect
+```
+
+LCD ↔ **`stored`**: [Reverb Send (LCD)](parameter-option-lists.md#reverb-send-lcd)
+(sparse panel rows; full label table still open).
