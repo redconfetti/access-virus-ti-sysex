@@ -215,8 +215,10 @@ when doing WAF80-driven mapping; otherwise pick one row from
    single landing.
 7. Toggle/switch controls may send a single message; knobs and sliders may
    send a stream.
-8. Some controls send **MIDI CC only** (no SysEx) — e.g. **Sub Oscillator
-   Volume** = **CC 34**; see [control-change.md](control-change.md).
+8. Some controls use **CC** when Page A = **Controller Data** and **SysEx**
+   when Page A = **SysEx** — e.g. **Sub Oscillator Volume** = CC **34** or
+   **`70` / `0x22`**; see [control-change.md](control-change.md) and
+   [Sub Oscillator](single-live-edit.md#sub-oscillator).
 9. **Duplicate LCD on adjacent wire bytes** is normal — the wire still advances
    **`00`–`7F`** every detent while the readout may stay fixed for **2–3** steps.
    That is for human **landing zones** (e.g. **0**, **Norm**), not slow stepping;
@@ -229,6 +231,10 @@ when doing WAF80-driven mapping; otherwise pick one row from
    With Page A = **SysEx**, Page A parameters use **`cmd=0x70`** (see
    [waf80.md](waf80.md)); with **Controller Data**, they use **MIDI CC**
    (CC number = Page A index).
+11. **Spurious Noise Volume** (`70`/`25`) while stepping other parameters with
+   **VALUE +** / **VALUE −**: the **Noise Volume** knob sits next to those
+   buttons — ignore those lines in capture logs; do not treat them as the
+   parameter under test.
 
 ### Parse template (11-byte live edit)
 

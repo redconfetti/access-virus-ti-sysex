@@ -7,6 +7,9 @@ Full control inventory and **`cmd` / param** worksheet:
 (415 Single-program controls; Multi parameters →
 [multis-dump.md — Multi parameter map](multis-dump.md#multi-parameter-map)).
 
+Enumerated panel options (category names, routing labels, mod matrix lists, …):
+[parameter-option-lists.md](parameter-option-lists.md).
+
 ```text
 F0 00 20 33 01 00 72 <part> <param> <value> F7   # multi / common (some params)
 F0 00 20 33 01 00 71 <part> <param> <value> F7   # Page B single (some params)
@@ -36,31 +39,125 @@ Edit Single → Common → **Patch Transpose**. **CC 93** only on live edit
 **EDIT** → Common → **Key Mode**; also a **MONO** shortcut on the
 oscillator section (see below).
 
-| Value | Mode   | CC 94 | SysEx (`Page A` = SysEx) |
-| ----- | ------ | ----- | ------------------------ |
-| `00`  | Poly   | `0`   | `F0 … 70 40 5E 00 F7`    |
-| `01`  | Mono 1 | `1`   | `F0 … 70 40 5E 01 F7`    |
-| `02`  | Mono 2 | `2`   | `F0 … 70 40 5E 02 F7`    |
-| `03`  | Mono 3 | `3`   | `F0 … 70 40 5E 03 F7`    |
-| `04`  | Mono 4 | `4`   | `F0 … 70 40 5E 04 F7`    |
-| `05`  | Hold   | `5`   | `F0 … 70 40 5E 05 F7`    |
+| Value | Mode   | CC 94 | SysEx (`Page A` = SysEx)  |
+| ----- | ------ | ----- | ------------------------- |
+| `00`  | Poly   | `0`   | `F0 … 70 <part> 5E 00 F7` |
+| `01`  | Mono 1 | `1`   | `F0 … 70 <part> 5E 01 F7` |
+| `02`  | Mono 2 | `2`   | `F0 … 70 <part> 5E 02 F7` |
+| `03`  | Mono 3 | `3`   | `F0 … 70 <part> 5E 03 F7` |
+| `04`  | Mono 4 | `4`   | `F0 … 70 <part> 5E 04 F7` |
+| `05`  | Hold   | `5`   | `F0 … 70 <part> 5E 05 F7` |
 
-Scope byte **`0x40`** on hardware TX (verify). Global **MIDI Controller Page A**
-= **Controller Data** → **CC 94** on the part channel instead; **SysEx** →
-**`cmd=0x70`** as above. See [control-change.md — Key Mode](control-change.md#key-mode-cc-94).
+Scope byte is the edited **part** (`00` for Part 1 in captures). Global
+**MIDI Controller Page A** = **Controller Data** → **CC 94** on the part
+channel instead; **SysEx** → **`cmd=0x70`** as above. See
+[control-change.md — Key Mode](control-change.md#key-mode-cc-94).
 
 **MONO button (hardware shortcut)**
 
-| Action       | Messages                                                    |
-| ------------ | ----------------------------------------------------------- |
-| MONO **on**  | `F0 … 70 40 5E 02 F7` only → **Mono 2** (not Mono 1)        |
-| MONO **off** | `F0 … 6E 40 7A 02 F7` then `F0 … 70 40 5E 00 F7` → **Poly** |
+| Action       | Messages                                                                  |
+| ------------ | ------------------------------------------------------------------------- |
+| MONO **on**  | `F0 … 70 <part> 5E <last-mono> F7` → last selected **Mono 1..4**          |
+| MONO **off** | `F0 … 6E <part> 7A <last-mono> F7`, then `F0 … 70 <part> 5E 00 F7` → Poly |
 
-MONO **off** also sends **`F0 … 6E … 7A 02 F7`** before Key Mode Poly. Param
-**`0x7A`** on **`cmd=0x6E`** is **Pan Spread** (Filters → Common) when
-**Routing** = **Split Mode** — see Filter Common notes in
-[testing.md](testing.md#confirmation-queue-waf80--ti). The **`02`** on MONO off
-may be unrelated; re-verify if routing is not Split.
+The MONO shortcut remembers the last selected mono mode. Example capture:
+after selecting **Mono 4** (`5E 04`), MONO off sent **`6E/7A 04`** followed
+by **`70/5E 00`** (Poly), and MONO on restored **`70/5E 04`**. Treat
+**`6E` / `0x7A`** here as companion shortcut state for the remembered mono
+mode; the actual Key Mode value is still **`70` / `0x5E`**.
+
+### Phase Init (`0x23`, `cmd=0x71`)
+
+**Oscillators → EDIT → Common → Phase Init**. Page B parameter **`0x23`**.
+Panel **Off**, then **1..127**.
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| Off | `00`      | ✓         |
+| 1   | `01`      | ✓         |
+| 127 | `7F`      | ✓         |
+
+```text
+F0 00 20 33 01 00 71 00 23 00 F7   # Phase Init Off
+F0 00 20 33 01 00 71 00 23 01 F7   # Phase Init 1
+F0 00 20 33 01 00 71 00 23 7F F7   # Phase Init 127
+```
+
+### Portamento (`0x05`, `cmd=0x70` / CC 5)
+
+**Oscillators → EDIT → Common → Portamento**. Page A param **`0x05`** (WAF80 CC
+**5** — Portamento Time). Panel **Off**, then **1..127**; wire matches the
+numeric value (**not** a percent curve).
+
+| LCD  | `<value>` | Confirmed |
+| ---- | --------- | --------- |
+| Off  | `00`      | ✓         |
+| 1    | `01`      | ✓         |
+| 2    | `02`      | ✓         |
+| 127  | `7F`      | ✓         |
+
+```text
+stored = lcd    # 1..127; 00 = Off
+```
+
+```text
+F0 00 20 33 01 00 70 00 05 00 F7   # Portamento Off
+F0 00 20 33 01 00 70 00 05 01 F7   # Portamento 1
+F0 00 20 33 01 00 70 00 05 7F F7   # Portamento 127
+```
+
+### Punch Intensity (`0x24`, `cmd=0x71`)
+
+**Oscillators → Punch → Punch Intensity**. Page B param **`0x24`** (WAF80 Page
+B **#36**). Panel **0.0..100.0 %** — **not** the same byte as
+[Osc Volume](#osc-volume-0x24-cmd0x70) (`cmd=0x70`).
+
+```text
+for 00h..7Eh: pct = stored × 100 / 128
+for 7Fh:      pct = 100.0 %
+stored       = round(pct × 128 / 100)   # cap at 7Fh for 100.0 %
+```
+
+Eighth-step anchors (hardware LCD, 2026-06):
+
+| Wire | LCD %  | Wire | LCD %  |
+| ---- | ------ | ---- | ------ |
+| `00` | 0.0 %  | `20` | 25.0 % |
+| `03` | 2.3 %  | `30` | 37.5 % |
+| `09` | 7.0 %  | `40` | 50.0 % |
+| `10` | 12.5 % | `50` | 62.5 % |
+| `11` | 13.4 % | `60` | 75.0 % |
+| `1C` | 21.9 % | `70` | 87.5 % |
+| `1A` | 20.3 % | `78` | 93.8 % |
+| `7E` | 98.4 % | `7F` | 100.0 % |
+
+**LCD quirk:** at **`04`** the panel showed **3.9 %** (expected **3.1 %** from
+`× 100 / 128`); at **`05`** it showed **3.1 %** (expected **3.9 %**) — labels
+appear **swapped** for that pair only; wire bytes still follow the `/128` curve.
+
+```text
+F0 00 20 33 01 00 71 00 24 00 F7   # Punch 0.0 %
+F0 00 20 33 01 00 71 00 24 40 F7   # Punch 50.0 %
+F0 00 20 33 01 00 71 00 24 7F F7   # Punch 100.0 %
+```
+
+### Osc Volume (`0x24`, `cmd=0x70`)
+
+**Oscillators → EDIT → Common → Osc Volume**. Same parameter as
+[Saturation — Osc Volume](#saturation--osc-volume-cmd0x70-param-0x24):
+panel **−64..+63**, wire **`stored = ui + 64`**.
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| −64 | `00`      | ✓         |
+| 0   | `40`      | ✓         |
+| +63 | `7F`      | ✓         |
+
+```text
+F0 00 20 33 01 00 70 00 24 00 F7   # Osc Volume −64
+F0 00 20 33 01 00 70 00 24 40 F7   # Osc Volume 0
+F0 00 20 33 01 00 70 00 24 7F F7   # Osc Volume +63
+```
 
 ### Smooth Mode (`0x19`, `cmd=0x71`)
 
@@ -316,7 +413,6 @@ A label list keyed as decimal **44–66** was wrong; the wire run was
 All rows are **`cmd=0x70` `param=0x11` (Shape)** on Osc 1 Classic.
 **+1** hex per **+/−** from **`41`** through **`7E`** (61 steps,
 LCD **2 %→98 %**), then **`7F`** = pure Pulse.
-Stray **`70 00 25`** during sweeps = **Noise Volume** (accidental knob).
 
 #### LCD % vs wire
 
@@ -496,6 +592,10 @@ F0 00 20 33 01 00 70 00 1B 00 F7   # Sync Frequency 0
 F0 00 20 33 01 00 70 00 1B 40 F7   # Sync Frequency 64
 F0 00 20 33 01 00 70 00 1B 7F F7   # Sync Frequency 127
 ```
+
+**FilterEnv>Sync** (`1E` when **Sync On**): same wire and **−100..+100 %**
+curve as Osc 2 **FilterEnv>FM** / **FilterEnv>Sync** (see
+[Oscillator 2 — Classic](#oscillator-2--classic)).
 
 **Semitone**, **Key Follow**, **Balance** — same **`14` / `15` / `21`**
 and encodings as Classic (verified in **Mode `01`** sweeps: Semitone
@@ -757,10 +857,10 @@ hardware before copying Osc 1 formulas.
 | Semitone        | `70`  | `19`    | **−48..+48** → `stored = ui + 64`                    | ✓         |
 | Detune          | `70`  | `1A`    | **0..127** → `stored = lcd`                          | ✓         |
 | FM Mode         | `71`  | `22`    | Enum; see below                                      | partial   |
-| FM Amount       | `70`  | `1B`    | **0.0..100.0 %** → `stored = round(pct × 127 / 100)` | ✓         |
+| FM Amount       | `70`  | `1B`    | **Sync Off:** **0.0..100.0 %**; **Sync On:** **Sync Frequency** **0..127** | ✓         |
 | FilterEnv>Pitch | `70`  | `1D`    | **−100..+100 %**; see formula below                  | ✓         |
 | Sync            | `70`  | `1C`    | Off **`00`** / On **`01`**                           | ✓         |
-| FilterEnv>FM    | `70`  | `1E`    | **−100..+100 %**; same as FilterEnv>Pitch            | ✓         |
+| FilterEnv>FM    | `70`  | `1E`    | **Sync Off:** **FilterEnv>FM**; **Sync On:** **FilterEnv>Sync** (same wire) | ✓         |
 | Key Follow      | `70`  | `1F`    | **−64..+63** → `stored = ui + 64`                    | ✓         |
 | Balance         | `70`  | `21`    | **−100..+100 %** → see Osc 1 Balance                 | ✓         |
 
@@ -832,16 +932,18 @@ F0 00 20 33 01 00 71 00 22 05 F7   # FM Mode In L+R
 F0 00 20 33 01 00 71 00 22 06 F7   # FM Mode In R
 ```
 
-**FM Amount** (`1B`): panel **0.0..100.0 %**, wire **`00..7F`**.
+**FM Amount / Sync Frequency** (`1B`): panel label depends on **Sync** (`1C`).
+
+| **Sync** | Panel control   | Encoding                                              |
+| -------- | --------------- | ----------------------------------------------------- |
+| Off      | **FM Amount**   | **0.0..100.0 %** → `stored = round(pct × 127 / 100)` |
+| On       | **Sync Frequency** | **0..127** → `stored = lcd`                        |
 
 ```text
-stored = round(pct × 127 / 100)
-pct    = stored × 100 / 127
-```
-
-```text
-F0 00 20 33 01 00 70 00 1B 00 F7   # FM Amount 0 %
-F0 00 20 33 01 00 70 00 1B 7F F7   # FM Amount 100.0 %
+F0 00 20 33 01 00 70 00 1B 00 F7   # FM Amount 0 % (Sync Off)
+F0 00 20 33 01 00 70 00 1B 7F F7   # FM Amount 100.0 % (Sync Off)
+F0 00 20 33 01 00 70 00 1B 00 F7   # Sync Frequency 0 (Sync On)
+F0 00 20 33 01 00 70 00 1B 7F F7   # Sync Frequency 127 (Sync On)
 ```
 
 **FilterEnv>Pitch** (`1D`): panel **−100.0..+100.0 %**, wire **`00..7F`**.
@@ -880,7 +982,14 @@ Button-step anchors:
 7Fh -> +100.0 %
 ```
 
-**FilterEnv>FM** (`1E`): same panel percent curve as **FilterEnv>Pitch**.
+**FilterEnv>FM / FilterEnv>Sync** (`1E`): one wire slot; LCD relabels with **Sync**
+(same pattern as **`1B`**). Panel **−100.0..+100.0 %** in both cases — same curve
+as **FilterEnv>Pitch** (`1D`). WAF80 Page A **30** = *FM Filt Env Amt*.
+
+| **Sync** | Panel control      |
+| -------- | ------------------ |
+| Off      | **FilterEnv>FM**   |
+| On       | **FilterEnv>Sync** |
 
 ```text
 for 00h..7Eh: pct = (stored - 64) × 100 / 64
@@ -888,9 +997,9 @@ for 7Fh:      pct = +100.0 %
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 1E 00 F7   # FilterEnv>FM −100.0 %
-F0 00 20 33 01 00 70 00 1E 40 F7   # FilterEnv>FM 0 %
-F0 00 20 33 01 00 70 00 1E 7F F7   # FilterEnv>FM +100.0 %
+F0 00 20 33 01 00 70 00 1E 00 F7   # FilterEnv>FM or FilterEnv>Sync −100.0 %
+F0 00 20 33 01 00 70 00 1E 40 F7   # FilterEnv>FM or FilterEnv>Sync 0 %
+F0 00 20 33 01 00 70 00 1E 7F F7   # FilterEnv>FM or FilterEnv>Sync +100.0 %
 ```
 
 **Sync** (`1C`): boolean toggle.
@@ -915,6 +1024,7 @@ F0 00 20 33 01 00 70 00 1C 01 F7   # Sync On
 | Sync Frequency  | `70`  | `1B`    | **0..127** when **Sync On**; `stored = lcd`        | ✓         |
 | Sync            | `70`  | `1C`    | Off **`00`** / On **`01`**                         | ✓         |
 | FilterEnv>Pitch | `70`  | `1D`    | Same as Osc 2 Classic FilterEnv>Pitch              | ✓         |
+| FilterEnv>Sync  | `70`  | `1E`    | When **Sync On**; same wire/curve as FilterEnv>FM  | ✓         |
 | Key Follow      | `70`  | `1F`    | Same as Osc 2 Classic                              | ✓         |
 | Balance         | `70`  | `21`    | Same as Osc 2 Classic                              | ✓         |
 
@@ -932,6 +1042,9 @@ F0 00 20 33 01 00 70 00 1C 01 F7   # Sync On
 F0 00 20 33 01 00 70 00 1D 00 F7   # FilterEnv>Pitch −100.0 %
 F0 00 20 33 01 00 70 00 1D 40 F7   # FilterEnv>Pitch 0 %
 F0 00 20 33 01 00 70 00 1D 7F F7   # FilterEnv>Pitch +100.0 %
+F0 00 20 33 01 00 70 00 1E 00 F7   # FilterEnv>Sync −100.0 % (Sync On)
+F0 00 20 33 01 00 70 00 1E 40 F7   # FilterEnv>Sync 0 % (Sync On)
+F0 00 20 33 01 00 70 00 1E 7F F7   # FilterEnv>Sync +100.0 % (Sync On)
 ```
 
 ### Oscillator 2 — Wavetable
@@ -1259,6 +1372,250 @@ F0 00 20 33 01 00 70 00 21 40 F7   # Balance 0 %
 F0 00 20 33 01 00 70 00 21 7F F7   # Balance +100 %
 ```
 
+### Oscillator 3
+
+**Mode/Wave** (`71`/`29`): enum. Values **`06`–`43`** are the Wave
+choices **Wave 3** through **Wave 64**:
+
+```text
+stored = wave_number + 3        # Wave 3 -> 06, Wave 64 -> 43
+wave_number = stored - 3        # for stored 06h..43h
+```
+
+| LCD             | `<value>` | Confirmed               |
+| --------------- | --------- | ----------------------- |
+| Off             | `00`      | ✓                       |
+| Slave           | `01`      | ✓                       |
+| Saw             | `02`      | ✓                       |
+| Pulse           | `03`      | ✓                       |
+| Sine            | `04`      | ✓                       |
+| Triangle        | `05`      | ✓                       |
+| Wave 3          | `06`      | ✓                       |
+| Wave 4          | `07`      | ✓                       |
+| Wave 5..Wave 64 | `08`–`43` | inferred contiguous run |
+
+```text
+F0 00 20 33 01 00 71 00 29 00 F7   # Oscillator 3 Mode/Wave Off
+F0 00 20 33 01 00 71 00 29 01 F7   # Oscillator 3 Mode/Wave Slave
+F0 00 20 33 01 00 71 00 29 02 F7   # Oscillator 3 Mode/Wave Saw
+F0 00 20 33 01 00 71 00 29 03 F7   # Oscillator 3 Mode/Wave Pulse
+F0 00 20 33 01 00 71 00 29 04 F7   # Oscillator 3 Mode/Wave Sine
+F0 00 20 33 01 00 71 00 29 05 F7   # Oscillator 3 Mode/Wave Triangle
+F0 00 20 33 01 00 71 00 29 06 F7   # Oscillator 3 Mode/Wave Wave 3
+F0 00 20 33 01 00 71 00 29 43 F7   # Oscillator 3 Mode/Wave Wave 64
+```
+
+**Visible controls by Mode/Wave:**
+
+| Mode/Wave             | Controls shown           | Confirmed |
+| --------------------- | ------------------------ | --------- |
+| Off                   | none                     | ✓         |
+| Slave                 | none                     | ✓         |
+| Saw / Pulse / Sine    | Semitone, Volume, Detune | ✓         |
+| Triangle / Wave 3..64 | Semitone, Volume, Detune | ✓         |
+
+For **Saw** through **Wave 64** (`02`–`43`), these controls share the same
+Page B parameter IDs:
+
+| Control  | `cmd` | `param` | Encoding                          | Confirmed |
+| -------- | ----- | ------- | --------------------------------- | --------- |
+| Semitone | `71`  | `2B`    | **−48..+48** → `stored = ui + 64` | ✓         |
+| Volume   | `71`  | `2A`    | **0..127** → `stored = lcd`       | ✓         |
+| Detune   | `71`  | `2C`    | **0..−127** → `stored = −ui`      | ✓         |
+
+```text
+F0 00 20 33 01 00 71 00 2B 10 F7   # Oscillator 3 Semitone −48
+F0 00 20 33 01 00 71 00 2B 40 F7   # Oscillator 3 Semitone +0
+F0 00 20 33 01 00 71 00 2B 70 F7   # Oscillator 3 Semitone +48
+F0 00 20 33 01 00 71 00 2A 00 F7   # Oscillator 3 Volume 0
+F0 00 20 33 01 00 71 00 2A 7F F7   # Oscillator 3 Volume 127
+F0 00 20 33 01 00 71 00 2C 00 F7   # Oscillator 3 Detune 0
+F0 00 20 33 01 00 71 00 2C 7F F7   # Oscillator 3 Detune −127
+```
+
+## Unison
+
+**Edit Single → Unison** (top-level sub-menu, not under Osc 1 / Osc 2 / Osc 3).
+Stacks **extra voices** for the patch (detuned copies of the oscillator section),
+not a per-oscillator mode like **Sync** on Osc 2. WAF80 Page A **97–100** →
+**`0x61`–`0x64`** on **`cmd=0x70`**.
+
+### Voices (`0x61`, `cmd=0x70` / CC 97)
+
+Panel **Voices** (WAF80 *Unison Mode* was **0/1** only; TI adds voice count).
+
+| LCD   | `<value>` | Confirmed |
+| ----- | --------- | --------- |
+| Off   | `00`      | ✓         |
+| Twin  | `01`      | ✓         |
+| 3     | `02`      | ✓         |
+| 4     | `03`      | ✓         |
+| 5     | `04`      | inferred  |
+| 6     | `05`      | inferred  |
+| 7     | `06`      | inferred  |
+| 8     | `07`      | ✓         |
+
+```text
+F0 00 20 33 01 00 70 00 61 00 F7   # Voices Off
+F0 00 20 33 01 00 70 00 61 01 F7   # Voices Twin
+F0 00 20 33 01 00 70 00 61 07 F7   # Voices 8
+```
+
+When **Voices** is **Twin** (`01`) or higher, **Detune** appears on the panel.
+When **Off**, **Detune** is hidden (wire value may still be stored).
+
+### Detune (`0x62`, `cmd=0x70` / CC 98)
+
+**0..127** → `stored = lcd`. Panel visible only when **Voices** ≥ **Twin**.
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| 0   | `00`      | ✓         |
+| 127 | `7F`      | partial   |
+
+```text
+F0 00 20 33 01 00 70 00 62 00 F7   # Detune 0
+F0 00 20 33 01 00 70 00 62 7F F7   # Detune 127
+```
+
+### Pan Spread (`0x63`, `cmd=0x70` / CC 99)
+
+Panel **0.0..100.0 %** — always visible (even when **Voices** = **Off**).
+WAF80 lists **0–127** on the wire; treat percent curve as **Punch-like** until
+hardware anchors confirm otherwise:
+
+```text
+for 00h..7Eh: pct = stored × 100 / 128
+for 7Fh:      pct = 100.0 %
+```
+
+```text
+F0 00 20 33 01 00 70 00 63 00 F7   # Pan Spread 0.0 %
+F0 00 20 33 01 00 70 00 63 7F F7   # Pan Spread 100.0 %
+```
+
+### LFO Phase Offset (`0x64`, `cmd=0x70` / CC 100)
+
+WAF80 **−64..+63** → `stored = ui + 64`. Panel control **Unison LFO Phase**
+(not reported in latest sweep — confirm on hardware).
+
+```text
+F0 00 20 33 01 00 70 00 64 00 F7   # LFO Phase −64 (expected)
+F0 00 20 33 01 00 70 00 64 40 F7   # LFO Phase 0 (expected)
+F0 00 20 33 01 00 70 00 64 7F F7   # LFO Phase +63 (expected)
+```
+
+## Noise
+
+**Oscillators → Noise**. Page A parameters (WAF80 CC **37** = Volume; TI adds
+**Color** at index **39** / **`0x27`** between Ring Mod and Cutoff).
+
+### Noise Volume (`0x25`, `cmd=0x70` / CC 37)
+
+Panel **Off**, then **1..127**; wire matches the numeric value (**`00`** = Off).
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| Off | `00`      | ✓         |
+| 1   | `01`      | ✓         |
+| 127 | `7F`      | ✓         |
+
+```text
+stored = lcd    # 1..127; 00 = Off
+```
+
+```text
+F0 00 20 33 01 00 70 00 25 00 F7   # Noise Volume Off
+F0 00 20 33 01 00 70 00 25 01 F7   # Noise Volume 1
+F0 00 20 33 01 00 70 00 25 7F F7   # Noise Volume 127
+```
+
+### Noise Color (`0x27`, `cmd=0x70`)
+
+Panel **−64..+63** → **`stored = ui + 64`** (same bipolar pattern as
+[Key Follow](#oscillator-2--classic) / [Osc Volume](#osc-volume-0x24-cmd0x70)).
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| −64 | `00`      | ✓         |
+| 0   | `40`      | ✓         |
+| +63 | `7F`      | ✓         |
+
+```text
+F0 00 20 33 01 00 70 00 27 00 F7   # Noise Color −64
+F0 00 20 33 01 00 70 00 27 40 F7   # Noise Color 0
+F0 00 20 33 01 00 70 00 27 7F F7   # Noise Color +63
+```
+
+## Ring Modulator
+
+**Oscillators → Ring Modulator**. Page A param **`0x26`** (WAF80 CC **38** —
+Ringmodulator Volume).
+
+### Ring Modulator Volume (`0x26`, `cmd=0x70` / CC 38)
+
+Panel **Off**, then **1..127**; wire matches the numeric value (**`00`** = Off).
+Same encoding as [Noise Volume](#noise-volume-0x25-cmd0x70--cc-37).
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| Off | `00`      | ✓         |
+| 1   | `01`      | ✓         |
+| 2   | `02`      | ✓         |
+| 127 | `7F`      | ✓         |
+
+```text
+stored = lcd    # 1..127; 00 = Off
+```
+
+```text
+F0 00 20 33 01 00 70 00 26 00 F7   # Ring Modulator Volume Off
+F0 00 20 33 01 00 70 00 26 01 F7   # Ring Modulator Volume 1
+F0 00 20 33 01 00 70 00 26 02 F7   # Ring Modulator Volume 2
+F0 00 20 33 01 00 70 00 26 7F F7   # Ring Modulator Volume 127
+```
+
+## Sub Oscillator
+
+**Oscillators → Sub Oscillator**. Page A **`0x22`** (Volume, WAF80 CC **34**)
+and **`0x23`** (Shape, CC **35**). **Not** Page B **`71` / `0x23`** (that is
+[Phase Init](#phase-init-0x23-cmd0x71)).
+
+### Sub Oscillator Volume (`0x22`, `cmd=0x70` / CC 34)
+
+Panel **0..127**; wire matches the numeric value (**`00`** = **0**, not “Off”).
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| 0   | `00`      | ✓         |
+| 127 | `7F`      | ✓         |
+
+```text
+stored = lcd    # 0..127
+```
+
+```text
+F0 00 20 33 01 00 70 00 22 00 F7   # Sub Oscillator Volume 0
+F0 00 20 33 01 00 70 00 22 7F F7   # Sub Oscillator Volume 127
+```
+
+Also available as **MIDI CC 34** when Page A = **Controller Data** — see
+[control-change.md](control-change.md#sub-oscillator-volume-cc-34).
+
+### Sub Oscillator Shape (`0x23`, `cmd=0x70` / CC 35)
+
+Two shapes only; no further values on the panel.
+
+| LCD       | `<value>` | Confirmed |
+| --------- | --------- | --------- |
+| Square    | `00`      | ✓         |
+| Triangle  | `01`      | ✓         |
+
+```text
+F0 00 20 33 01 00 70 00 23 00 F7   # Shape Square
+F0 00 20 33 01 00 70 00 23 01 F7   # Shape Triangle
+```
+
 ### Mixer (Oscillators menu)
 
 ### Oscillator Section Volume (`cmd=0x71`, param `0x7F`)
@@ -1279,17 +1636,14 @@ but edited via **Page B** SysEx here, not **`70` / `24`**.
 F0 00 20 33 01 00 71 40 7F 00 F7   # Oscillator Section Volume −64
 ```
 
-### Sub Oscillator Volume (CC 34)
-
-**Oscillators → Mixer → Sub Oscillator Volume**. Live edit is **CC 34 only**
-(no SysEx); may still appear in **`DUMP_SINGLE`**. See
-[control-change.md — Sub Oscillator Volume](control-change.md#sub-oscillator-volume-cc-34).
+**Sub Oscillator Volume** — see [Sub Oscillator](#sub-oscillator) (`70` / `0x22`
+or CC 34).
 
 ## Filters
 
 **LCD:** **FILTERS** → **Filter 1** / **Filter 2** / **Common** / **Filter 1
 envelope**. Filter 1, Filter 2, **Common**, and **Filter 1 ADSR** confirmed on
-TI mk2 desktop; remaining **FILTERS** rows (e.g. Env 3/4, modulation) — see
+TI mk2 desktop; remaining **FILTERS** rows (e.g. modulation, velocity targets) — see
 [testing.md — Filters queue](testing.md#filters--order-filter-1-first).
 
 ### Filter 1 Cutoff (`cmd=0x70`, param `0x28`)
@@ -1750,6 +2104,349 @@ Bipolar **−64..+63**: `stored = ui + 64`.
 F0 00 20 33 01 00 70 00 3B 7F F7   # Attack 127
 F0 00 20 33 01 00 70 00 3D 40 F7   # Sustain 50 %
 F0 00 20 33 01 00 70 00 3F 00 F7   # Release 0
+```
+
+## Envelope 3 (ADSR)
+
+**Edit Single → Envelope 3**. Same encodings as
+[Filter 1 envelope](#filter-1-envelope-adsr) / [Amplifier envelope](#amplifier-envelope-adsr),
+but on the **part edit buffer** — **`cmd=0x6E`**, not **`cmd=0x70`**.
+
+| Control       | `cmd` | `param` | Encoding                                      | Confirmed |
+| ------------- | ----- | ------- | --------------------------------------------- | --------- |
+| Attack        | `6E`  | `50`    | **0..127** → `stored = lcd`                   | ✓         |
+| Decay         | `6E`  | `51`    | **0..127** → `stored = lcd`                   | ✓         |
+| Sustain       | `6E`  | `52`    | **0.0..100.0 %** → `round(pct × 127 / 100)` | ✓         |
+| Sustain Slope | `6E`  | `53`    | **−64..+63** → `stored = ui + 64`             | ✓         |
+| Release       | `6E`  | `54`    | **0..127** → `stored = lcd`                   | ✓         |
+
+### Attack (`0x50`) / Decay (`0x51`) / Release (`0x54`)
+
+Direct **0–127** (UI matches wire).
+
+```text
+F0 00 20 33 01 00 6E 00 50 00 F7   # Attack 0
+F0 00 20 33 01 00 6E 00 50 7F F7   # Attack 127
+F0 00 20 33 01 00 6E 00 51 00 F7   # Decay 0
+F0 00 20 33 01 00 6E 00 51 7F F7   # Decay 127
+F0 00 20 33 01 00 6E 00 54 00 F7   # Release 0
+F0 00 20 33 01 00 6E 00 54 7F F7   # Release 127
+```
+
+### Sustain (`0x52`)
+
+**Linear percent:** `stored = round(percent × 127 / 100)`.
+
+| LCD     | `<value>` |
+| ------- | --------- |
+| 0 %     | `00`      |
+| 50.0 %  | `40`      |
+| 100.0 % | `7F`      |
+
+### Sustain Slope (`0x53`)
+
+Bipolar **−64..+63**: `stored = ui + 64`.
+
+| LCD | `<value>` |
+| --- | --------- |
+| −64 | `00`      |
+| +0  | `40`      |
+| +63 | `7F`      |
+
+```text
+F0 00 20 33 01 00 6E 00 52 00 F7   # Sustain 0 %
+F0 00 20 33 01 00 6E 00 52 40 F7   # Sustain 50.0 %
+F0 00 20 33 01 00 6E 00 52 7F F7   # Sustain 100.0 %
+F0 00 20 33 01 00 6E 00 53 00 F7   # Sustain Slope −64
+F0 00 20 33 01 00 6E 00 53 40 F7   # Sustain Slope +0
+F0 00 20 33 01 00 6E 00 53 7F F7   # Sustain Slope +63
+```
+
+## Envelope 4 (ADSR)
+
+**Edit Single → Envelope 4**. Same encodings and **`cmd=0x6E`** part-buffer
+layout as [Envelope 3](#envelope-3-adsr), next param block **`0x55`–`0x59`**.
+
+| Control       | `cmd` | `param` | Encoding                                      | Confirmed |
+| ------------- | ----- | ------- | --------------------------------------------- | --------- |
+| Attack        | `6E`  | `55`    | **0..127** → `stored = lcd`                   | ✓         |
+| Decay         | `6E`  | `56`    | **0..127** → `stored = lcd`                   | ✓         |
+| Sustain       | `6E`  | `57`    | **0.0..100.0 %** → `round(pct × 127 / 100)` | ✓         |
+| Sustain Slope | `6E`  | `58`    | **−64..+63** → `stored = ui + 64`             | ✓         |
+| Release       | `6E`  | `59`    | **0..127** → `stored = lcd`                   | ✓         |
+
+### Attack (`0x55`) / Decay (`0x56`) / Release (`0x59`)
+
+Direct **0–127** (UI matches wire).
+
+```text
+F0 00 20 33 01 00 6E 00 55 00 F7   # Attack 0
+F0 00 20 33 01 00 6E 00 55 7F F7   # Attack 127
+F0 00 20 33 01 00 6E 00 56 00 F7   # Decay 0
+F0 00 20 33 01 00 6E 00 56 7F F7   # Decay 127
+F0 00 20 33 01 00 6E 00 59 00 F7   # Release 0
+F0 00 20 33 01 00 6E 00 59 7F F7   # Release 127
+```
+
+### Sustain (`0x57`)
+
+**Linear percent:** `stored = round(percent × 127 / 100)`.
+
+| LCD     | `<value>` |
+| ------- | --------- |
+| 0 %     | `00`      |
+| 50.0 %  | `40`      |
+| 100.0 % | `7F`      |
+
+### Sustain Slope (`0x58`)
+
+Bipolar **−64..+63**: `stored = ui + 64`.
+
+| LCD | `<value>` |
+| --- | --------- |
+| −64 | `00`      |
+| +0  | `40`      |
+| +63 | `7F`      |
+
+```text
+F0 00 20 33 01 00 6E 00 57 00 F7   # Sustain 0 %
+F0 00 20 33 01 00 6E 00 57 40 F7   # Sustain 50.0 %
+F0 00 20 33 01 00 6E 00 57 7F F7   # Sustain 100.0 %
+F0 00 20 33 01 00 6E 00 58 00 F7   # Sustain Slope −64
+F0 00 20 33 01 00 6E 00 58 40 F7   # Sustain Slope +0
+F0 00 20 33 01 00 6E 00 58 7F F7   # Sustain Slope +63
+```
+
+**Note:** **`cmd=0x6F`** **`7C`/`7D`/`7E`** are **Inputs** (see
+[Inputs](#inputs-edit-single)). Other **`6F`** params (e.g. **`78`/`79`/`7A`**)
+appear in some captures but are **unconfirmed** for Envelope 4 — the
+**`6E` `55`–`59`** block matches full ADSR sweeps on hardware.
+
+## Velocity Map (Edit Single)
+
+**Edit Single → Velocity Map.** All targets use **`cmd=0x71`** (Page B), part
+**`00`**, and the same **±100.0 %** bipolar curve as Osc 2 **FilterEnv>Pitch** (`70`/`1D`)
+and **FilterEnv>FM** (`70`/`1E`):
+
+```text
+for 00h..7Eh: pct = (stored - 64) × 100 / 64
+for 7Fh:      pct = +100.0 %
+```
+
+| LCD label              | `cmd` | `param` | WAF80 B# | Confirmed |
+| ---------------------- | ----- | ------- | -------- | --------- |
+| Volume                 | `71`  | `3C`    | 60       | ✓         |
+| Panorama               | `71`  | `3D`    | 61       | ✓         |
+| FM Amount              | `71`  | `32`    | 50       | ✓         |
+| Osc 1 Shape            | `71`  | `2F`    | 47       | ✓         |
+| Osc 2 Shape            | `71`  | `30`    | 48       | ✓         |
+| Pulse Width            | `71`  | `31`    | 49       | ✓         |
+| Filter1 Env Amount     | `71`  | `36`    | 54       | ✓         |
+| Resonance 1            | `71`  | `38`    | 56       | ✓         |
+| Filter2 Env Amount     | `71`  | `37`    | 55       | ✓         |
+| Resonance 2            | `71`  | `39`    | 57       | ✓         |
+
+WAF80 lists **B#47–57** as “velocity amounts” (11 slots). On TI mk2 the
+**Velocity Map** menu exposes the **10** rows above; **`71`/`33`–`35`**
+(B#51–53) were not swept in capture and may be unused or reserved on this
+firmware.
+
+```text
+F0 00 20 33 01 00 71 00 3C 00 F7   # Volume −100.0 %
+F0 00 20 33 01 00 71 00 3C 40 F7   # Volume 0 %
+F0 00 20 33 01 00 71 00 3C 7F F7   # Volume +100.0 %
+F0 00 20 33 01 00 71 00 32 00 F7   # FM Amount −100.0 %
+F0 00 20 33 01 00 71 00 32 40 F7   # FM Amount 0 %
+F0 00 20 33 01 00 71 00 32 7F F7   # FM Amount +100.0 %
+F0 00 20 33 01 00 71 00 2F 00 F7   # Osc 1 Shape −100.0 %
+F0 00 20 33 01 00 71 00 2F 40 F7   # Osc 1 Shape 0 %
+F0 00 20 33 01 00 71 00 2F 7F F7   # Osc 1 Shape +100.0 %
+```
+
+The same **`00` / `40` / `7F`** anchors apply to every row in the table.
+
+## Inputs (Edit Single)
+
+**Edit Single → Inputs.** TI mk2 live edit uses **`cmd=0x6F`** (extended page,
+same family as part buffer **`0x6E`**), part **`00`**. Classic WAF80 puts
+**Input Mode** / **Input Select** on Page A (**CC 101** / **102** → **`70`/`65`**
+/ **`66`**); those CCs may still apply when **MIDI Controller Page A** =
+**Controller Data** — not re-verified here.
+
+**Panel visibility**
+
+| Control       | Visible when                                      |
+| ------------- | ------------------------------------------------- |
+| **Atomizer**  | Always                                            |
+| **Input Mode**| **Atomizer** = **Off** (`7E` = `00`)              |
+| **Input Select** | **Input Mode** = **Dynamic** or **Static** (`7C` = `01` or `02`) |
+
+### Atomizer (`0x7E`, `cmd=0x6F`)
+
+TI manual (Atomizer tutorial): **Atomizer** is a **beat-synced instant looper** on
+external audio at the Virus inputs. Incoming audio passes **dry** to the outputs
+until you trigger a **loop/buffer key**; a slice captured at that moment is
+**looped** at the rate for the key you hold. While the key is down you hear only
+the loop; on release you hear **dry** again. The source stream keeps running in
+real time underneath — you are **replacing stretches of the input with looped
+slices of itself**. Loop lengths run from about **½ note** (shortest named
+division) down through **1/32** and smaller slices that can sound like pitched
+tones.
+
+The **Inputs → Atomizer** menu value selects the feature state / preset index on
+the wire (not individual loop keys — those are played on the keyboard). Panel
+labels **2**–**16** are stored **`02`–`10`**; exact musical length per index is
+not yet correlated to SysEx here (see Atomizer manual for performance detail).
+
+Enum: [Atomizer preset](parameter-option-lists.md#atomizer-preset) (`00`–`10`).
+
+```text
+F0 00 20 33 01 00 6F 00 7E 00 F7   # Atomizer Off
+F0 00 20 33 01 00 6F 00 7E 01 F7   # Atomizer On
+F0 00 20 33 01 00 6F 00 7E 10 F7   # Atomizer 16
+```
+
+### Input Mode (`0x7C`, `cmd=0x6F`)
+
+Enum: [Input Mode](parameter-option-lists.md#input-mode).
+
+```text
+F0 00 20 33 01 00 6F 00 7C 00 F7   # Input Mode Off
+F0 00 20 33 01 00 6F 00 7C 01 F7   # Input Mode Dynamic
+F0 00 20 33 01 00 6F 00 7C 02 F7   # Input Mode Static
+```
+
+### Input Select (`0x7D`, `cmd=0x6F`)
+
+Enum: [Input Select](parameter-option-lists.md#input-select).
+
+```text
+F0 00 20 33 01 00 6F 00 7D 00 F7   # Input Select Left
+F0 00 20 33 01 00 6F 00 7D 01 F7   # Input Select L + R
+F0 00 20 33 01 00 6F 00 7D 02 F7   # Input Select Right
+```
+
+## Surround (Edit Single)
+
+**Edit Single → Surround.** On TI mk2 this is the patch **secondary output**
+bus (rear/surround send in a multi-output setup — separate from the main
+**Output Routing** path on **`72`/`29`** in Multi mode). Same wire as
+**Edit Multi → Secondary Output** and AURA’s “Secondary Output”:
+**`cmd=0x73`**, param **`0x2D`**, part **`00`** in Single captures. Enum:
+[Secondary output routing](parameter-option-lists.md#secondary-output-routing).
+**Not in `DUMP_MULTI`** / **`DUMP_SINGLE` offset TBD** (edit-buffer only in
+hardware tests so far).
+
+### Output (`0x2D`, `cmd=0x73`)
+
+Enum: [Secondary output routing](parameter-option-lists.md#secondary-output-routing)
+(**Off** … **Out 3 R** = `00`–`09`; USB through `12`).
+
+```text
+F0 00 20 33 01 00 73 00 2D 00 F7   # Output Off
+F0 00 20 33 01 00 73 00 2D 01 F7   # Out 1 L
+F0 00 20 33 01 00 73 00 2D 09 F7   # Out 3 R
+```
+
+### Balance (`0x3A`, `cmd=0x71`)
+
+**Surround → Balance** (rear/surround channel placement). Bipolar
+**−64..+63**: `stored = ui + 64` (same family as Filter Keyfollow).
+
+| LCD | `<value>` |
+| --- | --------- |
+| −64 | `00`      |
+| +0  | `40`      |
+| +63 | `7F`      |
+
+```text
+F0 00 20 33 01 00 71 00 3A 00 F7   # Balance −64
+F0 00 20 33 01 00 71 00 3A 40 F7   # Balance +0
+F0 00 20 33 01 00 71 00 3A 7F F7   # Balance +63
+```
+
+Mod matrix destination **116** / **118** = **Surround Balance** (amount
+modulation) — same parameter family, different UI path.
+
+## Categories (Edit Single)
+
+**Edit Single → Categories.** Patch **search/filter tags** for Virus Control
+browser (**Search by Category**). **`cmd=0x71`**, part **`00`**.
+
+| Panel       | `param` | Confirmed |
+| ----------- | ------- | --------- |
+| Name Cat 1  | `7B`    | ✓         |
+| Name Cat 2  | `7C`    | ✓         |
+
+Both use [Patch name categories](parameter-option-lists.md#patch-name-categories)
+(**Off** … **Favourites 3**, `00`–`16`).
+
+```text
+F0 00 20 33 01 00 71 00 7B 00 F7   # Name Cat 1 Off
+F0 00 20 33 01 00 71 00 7B 01 F7   # Name Cat 1 Acid
+F0 00 20 33 01 00 71 00 7C 16 F7   # Name Cat 2 Favourites 3
+```
+
+## Soft Knobs (Edit Single)
+
+All three soft knobs share the same **Function As…** destination list and **Name**
+label list; each knob has its own **`param`** for destination, name, and amount.
+
+| Knob | **Function As…** `param` | **Name** `param` |
+| ---- | ------------------------ | ---------------- |
+| 1    | `3E`                     | `33`             |
+| 2    | `3F`                     | `34`             |
+| 3    | `40`                     | `35`             |
+
+### Soft Knob 1
+
+| Control          | `cmd` | `param` | Notes |
+| ---------------- | ----- | ------- | ----- |
+| **Function As…** | `71`  | `3E`    | Wire byte per [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) (not list index) |
+| **Name**         | `71`  | `33`    | Wire byte per [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (not list index); visible when **Function As…** ≠ Off |
+| **Amount**       |       |         | TBD |
+
+```text
+F0 00 20 33 01 00 71 00 3E 00 F7   # Knob 1 Function As Off
+F0 00 20 33 01 00 71 00 3E 40 F7   # Aftertouch
+F0 00 20 33 01 00 71 00 3E 7F F7   # Freq Shifter Mix (index 59)
+F0 00 20 33 01 00 71 00 3E 58 F7   # FreqShifter Frequency (index 61)
+F0 00 20 33 01 00 71 00 3E 46 F7   # Velo > Volume (index 127)
+F0 00 20 33 01 00 71 00 33 00 F7   # Name >Para
+F0 00 20 33 01 00 71 00 33 01 F7   # Name +3rds
+F0 00 20 33 01 00 71 00 33 47 F7   # Name Width (wire 47)
+F0 00 20 33 01 00 71 00 33 57 F7   # Name Speaker (wire 57)
+```
+
+### Soft Knob 2
+
+| Control          | `cmd` | `param` | Notes |
+| ---------------- | ----- | ------- | ----- |
+| **Function As…** | `71`  | `3F`    | Same destination list as Knob 1 (WAF80 **B#63** *Definable2 Single*) |
+| **Name**         | `71`  | `34`    | Wire byte per [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (not list index); visible when **Function As…** ≠ Off |
+| **Amount**       |       |         | TBD |
+
+```text
+F0 00 20 33 01 00 71 00 3F 00 F7   # Knob 2 Function As Off
+F0 00 20 33 01 00 71 00 3F 46 F7   # Velo > Volume (index 127)
+F0 00 20 33 01 00 71 00 34 00 F7   # Name >Para
+F0 00 20 33 01 00 71 00 34 01 F7   # Name +3rds
+F0 00 20 33 01 00 71 00 34 47 F7   # Name Width
+```
+
+### Soft Knob 3
+
+| Control          | `cmd` | `param` | Notes |
+| ---------------- | ----- | ------- | ----- |
+| **Function As…** | `71`  | `40`    | Same destination list as Knob 1 |
+| **Name**         | `71`  | `35`    | Wire byte per [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (not list index); visible when **Function As…** ≠ Off |
+| **Amount**       |       |         | TBD |
+
+```text
+F0 00 20 33 01 00 71 00 40 00 F7   # Knob 3 Function As Off
+F0 00 20 33 01 00 71 00 40 46 F7   # Velo > Volume (index 127)
+F0 00 20 33 01 00 71 00 35 00 F7   # Name >Para
+F0 00 20 33 01 00 71 00 35 47 F7   # Name Width
 ```
 
 ## Live Edit

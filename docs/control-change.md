@@ -15,7 +15,7 @@ SysEx on wire during mapping sessions — see
 
 | CC  | Scope         | Parameter             | Transport   | `DUMP_MULTI` | Menu path            |
 | --- | ------------- | --------------------- | ----------- | ------------ | -------------------- |
-| 34  | Part-specific | Sub Oscillator Volume | **CC only** | Unverified   | Oscillators → Mixer  |
+| 34  | Part-specific | Sub Oscillator Volume | CC or SysEx | Unverified   | Sub Oscillator menu  |
 | 91  | Part-specific | Patch Volume          | **CC only** | **No**       | Edit Single → Common |
 | 93  | Part-specific | Patch Transpose       | **CC only** | Unverified   | Edit Single → Common |
 | 94  | Part-specific | Key Mode              | **CC only** | Unverified   | Edit Single → Common |
@@ -24,19 +24,21 @@ SysEx on wire during mapping sessions — see
 
 ### Sub Oscillator Volume (CC 34)
 
-**Oscillators → Mixer → Sub Oscillator Volume**. Live edit from the Virus
-panel uses **MIDI CC 34 only** — no Access SysEx on
-**`Virus TI USB Plugin I/O`** (hardware-tested). Value may still be stored
-in **`DUMP_SINGLE`** (byte offset not yet mapped). Page **A** param **34**
-in [waf80.md](waf80.md).
+**Oscillators → Sub Oscillator → Volume**. When global **MIDI Controller Page
+A** = **Controller Data**, live edit uses **MIDI CC 34** on the part channel.
+When Page A = **SysEx**, the same parameter is **`70` / `0x22`** — see
+[Sub Oscillator Volume](single-live-edit.md#sub-oscillator-volume-0x22-cmd0x70--cc-34).
 
-| Field         | Status                                     |
-| ------------- | ------------------------------------------ |
-| Scope         | Part-specific                              |
-| Channel       | Part MIDI channel                          |
-| SysEx         | **None on live edit**                      |
-| `DUMP_SINGLE` | **Likely yes** (offset TBD; no live SysEx) |
-| Value range   | `0`–`127` (UI **0** → CC **0**)            |
+| Field         | Status                          |
+| ------------- | ------------------------------- |
+| Scope         | Part-specific                   |
+| Channel       | Part MIDI channel (CC path)     |
+| SysEx         | **`F0 … 70 <part> 22 <val> F7`** (Page A = SysEx) |
+| `DUMP_SINGLE` | **Likely yes** (offset TBD)     |
+| Value range   | **0**–**127** (`stored = lcd`)  |
+
+**Sub Oscillator Shape** (CC **35** / SysEx **`70` / `0x23`**): Square **`00`**,
+Triangle **`01`** only — [Sub Oscillator Shape](single-live-edit.md#sub-oscillator-shape-0x23-cmd0x70--cc-35).
 
 ### Patch Transpose (CC 93)
 
@@ -85,10 +87,11 @@ Distinct from Edit Multi **Volume** (`0x99 + part` in `DUMP_MULTI`, live
 | `4`        | Mono 4 |
 | `5`        | Hold   |
 
-| Transport | When                         | Message                                                                                              |
-| --------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **CC 94** | Page A = **Controller Data** | On part MIDI channel                                                                                 |
-| **SysEx** | Page A = **SysEx**           | `F0 … 70 40 5E <value> F7` — [single-live-edit.md](single-live-edit.md#key-mode-0x5e-cmd0x70--cc-94) |
+| Transport | When                         | Message                                                                                                  |
+| --------- | ---------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **CC 94** | Page A = **Controller Data** | On part MIDI channel                                                                                     |
+| **SysEx** | Page A = **SysEx**           | `F0 … 70 <part> 5E <value> F7` — [single-live-edit.md](single-live-edit.md#key-mode-0x5e-cmd0x70--cc-94) |
 
-Virus **MONO** button: **on** → SysEx value **`2`** (Mono 2); **off** → Poly
-(`0`) plus an extra `6E` / `0x7A` message (see single-live-edit doc).
+Virus **MONO** button: **on** restores the last selected **Mono 1..4** value;
+**off** switches to **Poly** (`0`) and may send companion `6E` / `0x7A`
+state first (see single-live-edit doc).

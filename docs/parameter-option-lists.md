@@ -1,244 +1,398 @@
 # Parameter option lists
 
-Enumerated UI options for Virus TI Single parameters. **Index** is
-zero-based list position (`0` = first row);
-confirm against hardware before relying on SysEx encoding.
+Enumerated UI options for Virus TI parameters. **Index** is the zero-based
+list position; for most panel enums **`stored = index`** (exceptions: [Soft Knob Destinations](#soft-knob-destinations), [Soft Knob Names](#soft-knob-names) use per-row **`<value>`**) (hex in tables as
+**`<value>`**).
+
+Live-edit docs ([single-live-edit.md](single-live-edit.md),
+[multis-live-edit.md](multis-live-edit.md)) record **`cmd` / `param` / encoding**
+only — **option names live here**. Link with:
+
+```markdown
+See [Option name](parameter-option-lists.md#anchor).
+```
 
 See [waf80.md](waf80.md) for classic Page A/B parameter indices.
 
+## Index
+
+| Section | Used by |
+| ------- | ------- |
+| [Secondary output routing](#secondary-output-routing) | Edit Single → Surround → **Output**; Edit Multi → **Secondary Output** (`73`/`2D`) |
+| [Input Mode](#input-mode) | Edit Single → Inputs (`6F`/`7C`) |
+| [Input Select](#input-select) | Edit Single → Inputs (`6F`/`7D`) |
+| [Atomizer preset](#atomizer-preset) | Edit Single → Inputs → **Atomizer** (`6F`/`7E`) |
+| [Patch name categories](#patch-name-categories) | Edit Single → Categories → **Name Cat 1** / **Name Cat 2** (`71`/`7B`, `71`/`7C`) |
+| [Soft Knob Destinations](#soft-knob-destinations) | Soft Knob **Function As…** — `71`/`3E`, `3F`, `40` (wire `<value>` per row) |
+| [Soft Knob Names](#soft-knob-names) | Soft Knob **Name** — `71`/`33`, `34`, `35` (wire `<value>` per row) |
+| [Mod Matrix Sources](#mod-matrix-sources) | Mod matrix **Source** |
+| [Mod Matrix Destinations](#mod-matrix-destinations) | Mod matrix **Destination** |
+| [Wavetable Names](#wavetable-names) | Osc wavetable wave select |
+
+LCD↔wire curves (not simple enums): [Osc 1 Classic Pulse Width](#osc-1-classic--pulse-width-lcd),
+[Osc 1 Hypersaw Density](#osc-1-hypersaw--density-lcd).
+
+---
+
+## Secondary output routing
+
+**Off** plus **Out 1 L** … **USB 3 R**. **`00`** = Off; otherwise
+**primary routing index + 1** (see [Output routing (primary)](multis-live-edit.md#output-routing-enum-0x29)).
+
+Analog **Out 1**–**Out 3**: **`00`–`09`**; USB outs through **`12`**.
+
+| Index | `<value>` | Option    |
+| ----- | --------- | --------- |
+| 0     | `00`      | Off       |
+| 1     | `01`      | Out 1 L   |
+| 2     | `02`      | Out 1 L+R |
+| 3     | `03`      | Out 1 R   |
+| 4     | `04`      | Out 2 L   |
+| 5     | `05`      | Out 2 L+R |
+| 6     | `06`      | Out 2 R   |
+| 7     | `07`      | Out 3 L   |
+| 8     | `08`      | Out 3 L+R |
+| 9     | `09`      | Out 3 R   |
+| 10    | `0A`      | USB 1 L   |
+| 11    | `0B`      | USB 1 L+R |
+| 12    | `0C`      | USB 1 R   |
+| 13    | `0D`      | USB 2 L   |
+| 14    | `0E`      | USB 2 L+R |
+| 15    | `0F`      | USB 2 R   |
+| 16    | `10`      | USB 3 L   |
+| 17    | `11`      | USB 3 L+R |
+| 18    | `12`      | USB 3 R   |
+
+---
+
+## Input Mode
+
+3 options (`00`–`02`).
+
+| Index | `<value>` | Option  |
+| ----- | --------- | ------- |
+| 0     | `00`      | Off     |
+| 1     | `01`      | Dynamic |
+| 2     | `02`      | Static  |
+
+---
+
+## Input Select
+
+3 options (`00`–`02`). Panel visible when [Input Mode](#input-mode) is **Dynamic** or **Static**.
+
+| Index | `<value>` | Option  |
+| ----- | --------- | ------- |
+| 0     | `00`      | Left    |
+| 1     | `01`      | L + R   |
+| 2     | `02`      | Right   |
+
+---
+
+## Atomizer preset
+
+**Inputs → Atomizer** menu index (not loop trigger keys). **Off** / **On** /
+panel **2**–**16** → **`02`–`10`**.
+
+| Index | `<value>` | Option |
+| ----- | --------- | ------ |
+| 0     | `00`      | Off    |
+| 1     | `01`      | On     |
+| 2     | `02`      | 2      |
+| 3     | `03`      | 3      |
+| 4     | `04`      | 4      |
+| 5     | `05`      | 5      |
+| 6     | `06`      | 6      |
+| 7     | `07`      | 7      |
+| 8     | `08`      | 8      |
+| 9     | `09`      | 9      |
+| 10    | `0A`      | 10     |
+| 11    | `0B`      | 11     |
+| 12    | `0C`      | 12     |
+| 13    | `0D`      | 13     |
+| 14    | `0E`      | 14     |
+| 15    | `0F`      | 15     |
+| 16    | `10`      | 16     |
+
+---
+
+## Patch name categories
+
+**Edit Single → Categories → Name Cat 1** / **Name Cat 2** (same list on both).
+Virus TI **Search by Category** / browser filter names; **`stored = index`**.
+
+23 options (`0`–`22`).
+
+| Index | `<value>` | Option        |
+| ----- | --------- | ------------- |
+| 0     | `00`      | Off           |
+| 1     | `01`      | Acid          |
+| 2     | `02`      | Arpeggiator   |
+| 3     | `03`      | Atomizer      |
+| 4     | `04`      | Bass          |
+| 5     | `05`      | Classic       |
+| 6     | `06`      | Decay         |
+| 7     | `07`      | Digital       |
+| 8     | `08`      | Drums         |
+| 9     | `09`      | EFX           |
+| 10    | `0A`      | FM            |
+| 11    | `0B`      | Input         |
+| 12    | `0C`      | Lead          |
+| 13    | `0D`      | Organ         |
+| 14    | `0E`      | Pad           |
+| 15    | `0F`      | Percussion    |
+| 16    | `10`      | Piano         |
+| 17    | `11`      | Pluck         |
+| 18    | `12`      | String        |
+| 19    | `13`      | Vocoder       |
+| 20    | `14`      | Favourites 1  |
+| 21    | `15`      | Favourites 2  |
+| 22    | `16`      | Favourites 3  |
+
+---
+
 ## Soft Knob Destinations
 
-Soft Knob 1/2/3 **Function As…** (assignment).
+Soft Knob 1/2/3 **Function As…** — panel menu order (**128** names).
+**`<value>`** is the SysEx destination byte (not the table index).
+TI mk2 capture: **`cmd=0x71`** — **Function As…** Knob 1 **`3E`** (WAF80 **B#62** *Definable1 Single*),
+Knob 2 **`3F`** (**B#63** *Definable2 Single*), Knob 3 **`40`**.
+Indices **59** / **61** use LCD names **Freq Shifter Mix** / **FreqShifter Frequency**.
 
-128 options (`0`–`127`).
+| Index | `<value>` | Option |
+| ----- | --------- | ------ |
+| 0 | `00` | Off |
+| 1 | `40` | Aftertouch |
+| 2 | `55` | Analog Boost Int |
+| 3 | `56` | Analog Boost Tune |
+| 4 | `6F` | Arp Hold |
+| 5 | `69` | Arp Mode |
+| 6 | `6C` | Arp Note Length |
+| 7 | `6E` | Arp Octaves |
+| 8 | `6A` | Arp Pattern |
+| 9 | `6B` | Arp Resolution |
+| 10 | `6D` | Arp Swing |
+| 11 | `48` | Assign 1 Amount 1 |
+| 12 | `49` | Assign 2 Amount 1 |
+| 13 | `4A` | Assign 2 Amount 2 |
+| 14 | `4B` | Assign 3 Amount 1 |
+| 15 | `4C` | Assign 3 Amount 2 |
+| 16 | `4D` | Assign 3 Amount 3 |
+| 17 | `73` | Assign 4 Amount 1 |
+| 18 | `74` | Assign 5 Amount 1 |
+| 19 | `75` | Assign 6 Amount 1 |
+| 20 | `06` | Balance |
+| 21 | `3E` | Bend Up |
+| 22 | `3F` | Bend Down |
+| 23 | `02` | Breath |
+| 24 | `0F` | Channel Volume |
+| 25 | `19` | Chorus Delay |
+| 26 | `18` | Chorus Depth |
+| 27 | `1A` | Chorus Feedback |
+| 28 | `16` | Chorus Mix |
+| 29 | `17` | Chorus Rate |
+| 30 | `4E` | Clock Tempo |
+| 31 | `03` | Control 03 |
+| 32 | `07` | Control 09 |
+| 33 | `09` | Control 12 |
+| 34 | `0A` | Control 13 |
+| 35 | `0B` | Control 14 |
+| 36 | `0C` | Control 15 |
+| 37 | `0D` | Control 16 |
+| 38 | `05` | Data Entry |
+| 39 | `54` | Delay Coloration |
+| 40 | `1F` | Delay Depth |
+| 41 | `1D` | Delay Feedback |
+| 42 | `1E` | Delay Rate |
+| 43 | `1C` | Delay Time |
+| 44 | `57` | Distortion Intensity |
+| 45 | `71` | EQ Mid Frequency |
+| 46 | `70` | EQ Mid Gain |
+| 47 | `72` | EQ Mid Q-Factor |
+| 48 | `1B` | Effect Send (Delay) |
+| 49 | `76` | Effect Send (Reverb) |
+| 50 | `08` | Expression |
+| 51 | `27` | Filter Env > FM Amount |
+| 52 | `26` | Filter Env > Osc 2 Pitch |
+| 53 | `2C` | Filter 1 Env Amount |
+| 54 | `2E` | Filter 1 Key Follow |
+| 55 | `2A` | Filter 1 Resonance |
+| 56 | `2D` | Filter 2 Env Amount |
+| 57 | `2F` | Filter 2 Key Follow |
+| 58 | `2B` | Filter 2 Resonance |
+| 59 | `7F` | Freq Shifter Mix *(LCD name)* |
+| 60 | `04` | Foot Pedal |
+| 61 | `58` | FreqShifter Frequency *(LCD name)* |
+| 62 | `4F` | Input Thru |
+| 63 | `30` | LFO 1 Contour |
+| 64 | `5C` | LFO 1 > Assign Amount |
+| 65 | `35` | LFO 1 > Filter Gain |
+| 66 | `31` | LFO 1 > Osc 1 |
+| 67 | `32` | LFO 1 > Osc 2 |
+| 68 | `33` | LFO 1 > Pulse Width |
+| 69 | `34` | LFO 1 > Resonance |
+| 70 | `36` | LFO 2 Contour |
+| 71 | `5D` | LFO 2 > Assign Amount |
+| 72 | `39` | LFO 2 > Cutoff 1 |
+| 73 | `3A` | LFO 2 > Cutoff 2 |
+| 74 | `38` | LFO 2 > FM Amount |
+| 75 | `3B` | LFO 2 > Panorama |
+| 76 | `37` | LFO 2 > Shape |
+| 77 | `3C` | LFO 3 Rate |
+| 78 | `3D` | LFO 3 > Assign Amount |
+| 79 | `01` | Modulation Wheel |
+| 80 | `53` | Noise Color |
+| 81 | `29` | Noise Volume |
+| 82 | `50` | Osc Initial Phase |
+| 83 | `79` | Osc 1 F-Shift |
+| 84 | `7B` | Osc 1 F-Spread |
+| 85 | `7D` | Osc 1 Interpolation |
+| 86 | `23` | Osc 1 Key Follow |
+| 87 | `77` | Osc 1 Local Detune |
+| 88 | `22` | Osc 1 Pitch |
+| 89 | `21` | Osc 1 Pulse Width |
+| 90 | `20` | Osc 1 Wave Select |
+| 91 | `7A` | Osc 2 F-Shift |
+| 92 | `7C` | Osc 2 F-Spread |
+| 93 | `7E` | Osc 2 Interpolation |
+| 94 | `28` | Osc 2 Key Follow |
+| 95 | `78` | Osc 2 Local Detune |
+| 96 | `25` | Osc 2 Pulse Width |
+| 97 | `24` | Osc 2 Wave Select |
+| 98 | `5B` | Osc 3 Detune |
+| 99 | `5A` | Osc 3 Pitch |
+| 100 | `59` | Osc 3 Volume |
+| 101 | `10` | Panorama |
+| 102 | `0E` | Patch Volume |
+| 103 | `60` | Phaser Depth |
+| 104 | `62` | Phaser Feedback |
+| 105 | `61` | Phaser Frequency |
+| 106 | `5E` | Phaser Mix |
+| 107 | `5F` | Phaser Rate |
+| 108 | `63` | Phaser Spread |
+| 109 | `12` | Portamento |
+| 110 | `51` | Punch Intensity |
+| 111 | `66` | Reverb Coloration |
+| 112 | `65` | Reverb Dampening |
+| 113 | `64` | Reverb Decay |
+| 114 | `67` | Reverb Feedback |
+| 115 | `52` | Ring Modulator |
+| 116 | `68` | Surround Balance |
+| 117 | `11` | Transpose |
+| 118 | `13` | Unison Detune |
+| 119 | `15` | Unison LFO Phase |
+| 120 | `14` | Unison Spread |
+| 121 | `41` | Velo > FM Amount |
+| 122 | `42` | Velo > Filt 1 Env Amount |
+| 123 | `43` | Velo > Filt 2 Env Amount |
+| 124 | `47` | Velo > Panorama |
+| 125 | `44` | Velo > Resonance 1 |
+| 126 | `45` | Velo > Resonance 2 |
+| 127 | `46` | Velo > Volume |
 
-| Index | Option                   |
-| ----- | ------------------------ |
-| 0     | Off                      |
-| 1     | Aftertouch               |
-| 2     | Analog Boost Int         |
-| 3     | Analog Boost Tune        |
-| 4     | Arp Hold                 |
-| 5     | Arp Mode                 |
-| 6     | Arp Note Length          |
-| 7     | Arp Octaves              |
-| 8     | Arp Pattern              |
-| 9     | Arp Resolution           |
-| 10    | Arp Swing                |
-| 11    | Assign 1 Amount 1        |
-| 12    | Assign 2 Amount 1        |
-| 13    | Assign 2 Amount 2        |
-| 14    | Assign 3 Amount 1        |
-| 15    | Assign 3 Amount 2        |
-| 16    | Assign 3 Amount 3        |
-| 17    | Assign 4 Amount 1        |
-| 18    | Assign 5 Amount 1        |
-| 19    | Assign 6 Amount 1        |
-| 20    | Balance                  |
-| 21    | Bend Up                  |
-| 22    | Bend Down                |
-| 23    | Breath                   |
-| 24    | Channel Volume           |
-| 25    | Chorus Delay             |
-| 26    | Chorus Depth             |
-| 27    | Chorus Feedback          |
-| 28    | Chorus Mix               |
-| 29    | Chorus Rate              |
-| 30    | Clock Tempo              |
-| 31    | Control 03               |
-| 32    | Control 09               |
-| 33    | Control 12               |
-| 34    | Control 13               |
-| 35    | Control 14               |
-| 36    | Control 15               |
-| 37    | Control 16               |
-| 38    | Data Entry               |
-| 39    | Delay Coloration         |
-| 40    | Delay Depth              |
-| 41    | Delay Feedback           |
-| 42    | Delay Rate               |
-| 43    | Delay Time               |
-| 44    | Distortion Intensity     |
-| 45    | EQ Mid Frequency         |
-| 46    | EQ Mid Gain              |
-| 47    | EQ Mid Q-Factor          |
-| 48    | Effect Send (Delay)      |
-| 49    | Effect Send (Reverb)     |
-| 50    | Expression               |
-| 51    | Filter Env > FM Amount   |
-| 52    | Filter Env > Osc 2 Pitch |
-| 53    | Filter 1 Env Amount      |
-| 54    | Filter 1 Key Follow      |
-| 55    | Filter 1 Resonance       |
-| 56    | Filter 2 Env Amount      |
-| 57    | Filter 2 Key Follow      |
-| 58    | Filter 2 Resonance       |
-| 59    | Filter Bank Mix          |
-| 60    | Foot Pedal               |
-| 61    | Filterbank Frequency     |
-| 62    | Input Thru               |
-| 63    | LFO 1 Contour            |
-| 64    | LFO 1 > Assign Amount    |
-| 65    | LFO 1 > Filter Gain      |
-| 66    | LFO 1 > Osc 1            |
-| 67    | LFO 1 > Osc 2            |
-| 68    | LFO 1 > Pulse Width      |
-| 69    | LFO 1 > Resonance        |
-| 70    | LFO 2 Contour            |
-| 71    | LFO 2 > Assign Amount    |
-| 72    | LFO 2 > Cutoff 1         |
-| 73    | LFO 2 > Cutoff 2         |
-| 74    | LFO 2 > FM Amount        |
-| 75    | LFO 2 > Panorama         |
-| 76    | LFO 2 > Shape            |
-| 77    | LFO 3 Rate               |
-| 78    | LFO 3 > Assign Amount    |
-| 79    | Modulation Wheel         |
-| 80    | Noise Color              |
-| 81    | Noise Volume             |
-| 82    | Osc Initial Phase        |
-| 83    | Osc 1 F-Shift            |
-| 84    | Osc 1 F-Spread           |
-| 85    | Osc 1 Interpolation      |
-| 86    | Osc 1 Key Follow         |
-| 87    | Osc 1 Local Detune       |
-| 88    | Osc 1 Pitch              |
-| 89    | Osc 1 Pulse Width        |
-| 90    | Osc 1 Wave Select        |
-| 91    | Osc 2 F-Shift            |
-| 92    | Osc 2 F-Spread           |
-| 93    | Osc 2 Interpolation      |
-| 94    | Osc 2 Key Follow         |
-| 95    | Osc 2 Local Detune       |
-| 96    | Osc 2 Pulse Width        |
-| 97    | Osc 2 Wave Select        |
-| 98    | Osc 3 Detune             |
-| 99    | Osc 3 Pitch              |
-| 100   | Osc 3 Volume             |
-| 101   | Panorama                 |
-| 102   | Patch Volume             |
-| 103   | Phaser Depth             |
-| 104   | Phaser Feedback          |
-| 105   | Phaser Frequency         |
-| 106   | Phaser Mix               |
-| 107   | Phaser Rate              |
-| 108   | Phaser Spread            |
-| 109   | Portamento               |
-| 110   | Punch Intensity          |
-| 111   | Reverb Coloration        |
-| 112   | Reverb Dampening         |
-| 113   | Reverb Decay             |
-| 114   | Reverb Feedback          |
-| 115   | Ring Modulator           |
-| 116   | Surround Balance         |
-| 117   | Transpose                |
-| 118   | Unison Detune            |
-| 119   | Unison LFO Phase         |
-| 120   | Unison Spread            |
-| 121   | Velo > FM Amount         |
-| 122   | Velo > Filt 1 Env Amount |
-| 123   | Velo > Filt 2 Env Amount |
-| 124   | Velo > Panorama          |
-| 125   | Velo > Resonance 1       |
-| 126   | Velo > Resonance 2       |
-| 127   | Velo > Volume            |
+---
 
 ## Soft Knob Names
 
-Soft Knob 1/2/3 **Name** display label.
+Soft Knob 1/2/3 **Name** LCD label — **`71`/`33`**, **`34`**, **`35`**.
 
-88 options (`0`–`87`).
+88 panel options. **Index** is the **alphabetical** menu order on the Virus (e.g.
+**>Para** … **Width**); **`<value>`** is the firmware wire byte — **not**
+alphabetical and **not** the index (e.g. **Soften** `39`, **Speaker** `57`,
+**Speed** `3A`, **Width** `47`).
 
-| Index | Option        |
-| ----- | ------------- |
-| 0     | >Para         |
-| 1     | +3rds         |
-| 2     | +4ths         |
-| 3     | +5ths         |
-| 4     | +7ths         |
-| 5     | +Octave       |
-| 6     | Access        |
-| 7     | ArpMode       |
-| 8     | ArpOct        |
-| 9     | Attack        |
-| 10    | Balance       |
-| 11    | Bite          |
-| 12    | Bush          |
-| 13    | Chorus        |
-| 14    | Comb          |
-| 15    | Cutoff        |
-| 16    | Decay         |
-| 17    | Delay         |
-| 18    | Depth         |
-| 19    | Destroy       |
-| 20    | Detune        |
-| 21    | Disolve       |
-| 22    | Distort       |
-| 23    | Dive          |
-| 24    | Effects       |
-| 25    | Elevate       |
-| 26    | Energy        |
-| 27    | EqHigh        |
-| 28    | EqLow         |
-| 29    | EqMid         |
-| 30    | FM            |
-| 31    | Fast          |
-| 32    | Fear          |
-| 33    | Filter        |
-| 34    | Flanger       |
-| 35    | Fuzz          |
-| 36    | F-Shift       |
-| 37    | F-Spread      |
-| 38    | Glide         |
-| 39    | Hold          |
-| 40    | Hype          |
-| 41    | Infect        |
-| 42    | Interpolation |
-| 43    | Length        |
-| 44    | Mix           |
-| 45    | Modulate      |
-| 46    | Morph         |
-| 47    | Muscle        |
-| 48    | Mutate        |
-| 49    | Noise         |
-| 50    | Open          |
-| 51    | Orbit         |
-| 52    | PWM           |
-| 53    | Pan           |
-| 54    | Party!        |
-| 55    | Phaser        |
-| 56    | Phatter       |
-| 57    | Pitch         |
-| 58    | Pulsate       |
-| 59    | Punch         |
-| 60    | Push          |
-| 61    | Rate          |
-| 62    | Release       |
-| 63    | Reso          |
-| 64    | Reverb        |
-| 65    | RingMod       |
-| 66    | Sack          |
-| 67    | Scream        |
-| 68    | Shape         |
-| 69    | Sharpen       |
-| 70    | Slow          |
-| 71    | Soften        |
-| 72    | Speaker       |
-| 73    | Speed         |
-| 74    | SubOsc        |
-| 75    | Sustain       |
-| 76    | Sweep         |
-| 77    | Swing         |
-| 78    | Tempo         |
-| 79    | Thinner       |
-| 80    | Tone          |
-| 81    | Tremolo       |
-| 82    | Vibrato       |
-| 83    | Vowel         |
-| 84    | WahWah        |
-| 85    | Warmth        |
-| 86    | Warp          |
-| 87    | Width         |
+Panel **Name** appears when **Function As…** ≠ Off.
+
+| Index | `<value>` | Option        |
+| ----- | --------- | ------------- |
+| 0     | `00`      | >Para         |
+| 1     | `01`      | +3rds         |
+| 2     | `02`      | +4ths         |
+| 3     | `03`      | +5ths         |
+| 4     | `04`      | +7ths         |
+| 5     | `05`      | +Octave       |
+| 6     | `06`      | Access        |
+| 7     | `07`      | ArpMode       |
+| 8     | `08`      | ArpOct        |
+| 9     | `09`      | Attack        |
+| 10    | `0A`      | Balance       |
+| 11    | `0B`      | Bite          |
+| 12    | `0C`      | Bush          |
+| 13    | `0D`      | Chorus        |
+| 14    | `0E`      | Comb          |
+| 15    | `0F`      | Cutoff        |
+| 16    | `10`      | Decay         |
+| 17    | `11`      | Delay         |
+| 18    | `12`      | Depth         |
+| 19    | `13`      | Destroy       |
+| 20    | `14`      | Detune        |
+| 21    | `15`      | Disolve       |
+| 22    | `16`      | Distort       |
+| 23    | `17`      | Dive          |
+| 24    | `18`      | Effects       |
+| 25    | `19`      | Elevate       |
+| 26    | `1A`      | Energy        |
+| 27    | `1B`      | EqHigh        |
+| 28    | `1C`      | EqLow         |
+| 29    | `1D`      | EqMid         |
+| 30    | `1E`      | FM            |
+| 31    | `1F`      | Fast          |
+| 32    | `20`      | Fear          |
+| 33    | `21`      | Filter        |
+| 34    | `22`      | Flanger       |
+| 35    | `23`      | Fuzz          |
+| 36    | `24`      | F-Shift       |
+| 37    | `25`      | F-Spread      |
+| 38    | `26`      | Glide         |
+| 39    | `27`      | Hold          |
+| 40    | `28`      | Hype          |
+| 41    | `29`      | Infect        |
+| 42    | `2A`      | Interpolation |
+| 43    | `2B`      | Length        |
+| 44    | `2C`      | Mix           |
+| 45    | `2D`      | Modulate      |
+| 46    | `2E`      | Morph         |
+| 47    | `2F`      | Muscle        |
+| 48    | `30`      | Mutate        |
+| 49    | `31`      | Noise         |
+| 50    | `32`      | Open          |
+| 51    | `33`      | Orbit         |
+| 52    | `34`      | PWM           |
+| 53    | `35`      | Pan           |
+| 54    | `36`      | Party!        |
+| 55    | `37`      | Phaser        |
+| 56    | `38`      | Phatter       |
+| 57    | `39`      | Pitch         |
+| 58    | `3A`      | Pulsate       |
+| 59    | `3B`      | Punch         |
+| 60    | `3C`      | Push          |
+| 61    | `3D`      | Rate          |
+| 62    | `3E`      | Release       |
+| 63    | `3F`      | Reso          |
+| 64    | `40`      | Reverb        |
+| 65    | `41`      | RingMod       |
+| 66    | `42`      | Sack          |
+| 67    | `43`      | Scream        |
+| 68    | `44`      | Shape         |
+| 69    | `45`      | Sharpen       |
+| 70    | `46`      | Slow          |
+| 71    | `39`      | Soften        |
+| 72    | `57`      | Speaker       |
+| 73    | `3A`      | Speed         |
+| 74    | `4A`      | SubOsc        |
+| 75    | `4B`      | Sustain       |
+| 76    | `4C`      | Sweep         |
+| 77    | `4D`      | Swing         |
+| 78    | `4E`      | Tempo         |
+| 79    | `4F`      | Thinner       |
+| 80    | `50`      | Tone          |
+| 81    | `51`      | Tremolo       |
+| 82    | `52`      | Vibrato       |
+| 83    | `53`      | Vowel         |
+| 84    | `54`      | WahWah        |
+| 85    | `55`      | Warmth        |
+| 86    | `56`      | Warp          |
+| 87    | `47`      | Width         |
 
 ## Mod Matrix Sources
 

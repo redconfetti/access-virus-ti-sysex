@@ -119,11 +119,11 @@ Multi edit parameters are in
 
 | Control                                | SubCategory                  | Dump offset   | Live edit                                                                                                                                                                |
 | -------------------------------------- | ---------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Sub Oscillator Waveform Shape          | Sub-Osc                      |               |                                                                                                                                                                          |
+| Sub Oscillator Waveform Shape          | Sub-Osc                      |               | `70` / `0x23` (CC 35; Square `00`, Triangle `01` only)                                                                                                                  |
 | Oscillator 1 Model / Mode              | Oscillator 1                 |               | `6E` / `0x1E` (see live-edit by mode)                                                                                                                                    |
 | Oscillator 1 Detune in Semitone        | Oscillator 1                 |               | `70` / `0x14` (−48..+48, `ui+64`)                                                                                                                                        |
 | Oscillator 1 Keyfollow                 | Oscillator 1                 |               | `70` / `0x15` (Classic; Norm @ +32)                                                                                                                                      |
-| Velocity --> Osc1 Waveform Shape       | Oscillator 1                 |               |                                                                                                                                                                          |
+| Velocity --> Osc1 Waveform Shape       | Oscillator 1                 |               | `71` / `0x2F` (Velocity Map **Osc 1 Shape**; ±100 % — [single-live-edit.md](single-live-edit.md#velocity-map-edit-single))                                              |
 | Oscillator 1 Waveform Shape            | Oscillator 1 Classic         |               | `70` / `0x11` (`00`–`7F`; see live-edit)                                                                                                                                 |
 | Oscillator 1 Wave Select               | Oscillator 1 Classic         |               | `70` / `0x13` (64 waves `00`–`3F`)                                                                                                                                       |
 | Oscillator 1 Pulsewidth                | Oscillator 1 Classic         |               |                                                                                                                                                                          |
@@ -162,13 +162,13 @@ Multi edit parameters are in
 | Oscillator 2 Detune in Semitone        | Oscillator 2                 |               | `70` / `0x19` (−48..+48, `ui+64`)                                                                                                                                        |
 | Oscillator 2 Fine Detune               | Oscillator 2                 |               | `70` / `0x1A` (Detune **0..127**, `stored = lcd`)                                                                                                                        |
 | Oscillator 2 Keyfollow                 | Oscillator 2                 |               | `70` / `0x1F` (−64..+63, Norm @ +32)                                                                                                                                     |
-| Velocity --> Osc2 Waveform Shape       | Oscillator 2                 |               |                                                                                                                                                                          |
+| Velocity --> Osc2 Waveform Shape       | Oscillator 2                 |               | `71` / `0x30` (Velocity Map **Osc 2 Shape**; ±100 %)                                                                                                                      |
 | Oscillator 2 Waveform Shape            | Oscillator 2 Classic         |               | `70` / `0x16` (Spectral Wave `00`; expected Classic Shape table)                                                                                                         |
 | Oscillator 2 Wave Select               | Oscillator 2 Classic         |               | `70` / `0x18` (Sine `00`; expected 64 waves `00`–`3F`)                                                                                                                   |
 | Oscillator 2 Pulsewidth                | Oscillator 2 Classic         |               | `70` / `0x17` (expected Classic PW when Shape ≥ `40`)                                                                                                                    |
 | Oscillator 2 Density                   | Oscillator 2 Hypersaw        |               | `70` / `0x16` (Hypersaw; **1.0..9.0**, same curve as Osc 1 Hypersaw Density)                                                                                             |
 | Oscillator 2 Local Detune              | Oscillator 2 Hypersaw        |               | `70` / `0x17` (Hypersaw; **0..127** `stored = lcd`)                                                                                                                      |
-| Oscillator 1+2 X-Sync Frequency        | Oscillator 2 Hypersaw        |               | `70` / `0x1B` (**0..127** when Sync On; `stored = lcd`)                                                                                                                  |
+| Oscillator 1+2 X-Sync Frequency        | Oscillator 2 Hypersaw        |               | `70` / `0x1B` (**0..127** when Sync On; `stored = lcd`; same slot as Classic FM Amount)                                                                                  |
 | Oscillator 2 Wavetable / Waveform      | Oscillator 2 Wavetable       |               | `70` / `0x18` (**`00`–`63`** enum; Sine..Domina7rix)                                                                                                                     |
 | Oscillator 2 Wavetable Index           | Oscillator 2 Wavetable       |               | `70` / `0x16` (**0..127** `stored = lcd`)                                                                                                                                |
 | Oscillator 2 Interpolation             | Oscillator 2 Wavetable       |               | `6E` / `0x40` (**0..127** `stored = lcd`)                                                                                                                                |
@@ -197,33 +197,33 @@ Multi edit parameters are in
 | Oscillator 2 Formant Spread            | Oscillator 2 Formant Complex |               | `6E` / `0x39` (**0..127** `stored = lcd`)                                                                                                                                |
 | Oscillator 2 Local Detune              | Oscillator 2 Formant Complex |               | `6E` / `0x3F` (**0..127** `stored = lcd`)                                                                                                                                |
 | Oscillator 2 Interpolation             | Oscillator 2 Formant Complex |               | `6E` / `0x40` (**0..127** `stored = lcd`)                                                                                                                                |
-| Oscillator 3 Model                     | Oscillator 3                 |               |                                                                                                                                                                          |
-| Oscillator 3 Detune in Semitone        | Oscillator 3                 |               |                                                                                                                                                                          |
-| Oscillator 3 Fine Detune               | Oscillator 3                 |               |                                                                                                                                                                          |
+| Oscillator 3 Model                     | Oscillator 3                 |               | `71` / `0x29` (Mode/Wave; Off `00`, Slave `01`, Saw `02`, Pulse `03`, Sine `04`, Triangle `05`, Wave 3..64 `06`–`43`)                                                    |
+| Oscillator 3 Detune in Semitone        | Oscillator 3                 |               | `71` / `0x2B` (visible for Mode/Wave `02`–`43`; **−48..+48**, `ui+64`)                                                                                                   |
+| Oscillator 3 Fine Detune               | Oscillator 3                 |               | `71` / `0x2C` (visible for Mode/Wave `02`–`43`; panel **0..−127**, `stored = −ui`)                                                                                       |
 | Oscillator 1 Sync (2>1)                | Oscillator Common            |               | `70` / `0x1C` (Osc 2 Classic Sync; Off `00`, On `01`)                                                                                                                    |
 | Filter Envelope --> Oscillator 2 Pitch | Oscillator Common            |               | `70` / `0x1D` (Osc 2 Classic/Hypersaw/Wavetable/Wavetable PWM/Grain Simple/Grain Complex/Formant Simple/Formant Complex; **−100 %** `00`, **0 %** `40`, **+100 %** `7F`) |
-| Oscillator Section Initial Phase       | Oscillator Common            |               |                                                                                                                                                                          |
-| Velocity --> Pulsewidth                | Oscillator Common            |               |                                                                                                                                                                          |
-| Patch Common Portamento                | Oscillator Common            |               |                                                                                                                                                                          |
-| Oscillator 2 FM Amount                 | Oscillator Common FM         |               | `70` / `0x1B` (Classic 0.0..100.0 %, Wavetable/Wavetable PWM/Grain Simple/Grain Complex/Formant Simple/Formant Complex **0..127** direct; wire `00`–`7F`)                |
-| Filter Envelope --> FM                 | Oscillator Common FM         |               | `70` / `0x1E` (Osc 2 Classic/Wavetable/Wavetable PWM/Grain Simple/Grain Complex/Formant Simple/Formant Complex; same percent curve as FilterEnv>Pitch)                   |
-| Velocity --> FM Amount                 | Oscillator Common FM         |               |                                                                                                                                                                          |
+| Oscillator Section Initial Phase       | Oscillator Common            |               | `71` / `0x23` (Phase Init; Off `00`, **1..127** direct)                                                                                                                  |
+| Velocity --> Pulsewidth                | Oscillator Common            |               | `71` / `0x31` (Velocity Map **Pulse Width**; ±100 %)                                                                                                                    |
+| Patch Common Portamento                | Oscillator Common            |               | `70` / `0x05` (CC 5; Off `00`, **1..127** direct `stored = lcd`)                                                                                                        |
+| Oscillator 2 FM Amount                 | Oscillator Common FM         |               | `70` / `0x1B` (Classic **Sync Off:** 0.0..100.0 %; **Sync On:** Sync Frequency **0..127**; other modes **0..127** direct)                                                  |
+| Filter Envelope --> FM                 | Oscillator Common FM         |               | `70` / `0x1E` (**Sync Off** / no Sync: **FilterEnv>FM**; Classic/Hypersaw **Sync On:** same wire = **FilterEnv>Sync**; **−100..+100 %** like `1D`)                      |
+| Velocity --> FM Amount                 | Oscillator Common FM         |               | `71` / `0x32` (Velocity Map **FM Amount**; ±100 %)                                                                                                                      |
 | Oscillator 2 FM Mode                   | Oscillator Common FM         |               | `71` / `0x22` enum; Classic `00`–`06`, Wavetable/Wavetable PWM/Grain Simple/Grain Complex/Formant Simple/Formant Complex **FreqMod** `00`, **PhaseMod** `01`             |
 | Sync Amount / X-Sync Frequency         | Oscillator Common Sync       |               |                                                                                                                                                                          |
 | Velocity --> FM / Sync                 | Oscillator Common Sync       |               |                                                                                                                                                                          |
-| Filter Envelope --> X-Sync             | Oscillator Common Sync       |               |                                                                                                                                                                          |
-| Unison Mode                            | Unison                       |               |                                                                                                                                                                          |
-| Unison Detune                          | Unison                       |               |                                                                                                                                                                          |
-| Unison Panorama Spread                 | Unison                       |               |                                                                                                                                                                          |
-| Unison LFO Phase Offset                | Unison                       |               |                                                                                                                                                                          |
-| Noise Oscillator Volume                | Noise                        |               |                                                                                                                                                                          |
-| Noise Color                            | Noise                        |               |                                                                                                                                                                          |
-| Oscillator Punch Intensity             | Punch                        |               |                                                                                                                                                                          |
+| Filter Envelope --> X-Sync             | Oscillator Common Sync       |               | `70` / `0x1E` when **Sync On** (panel **FilterEnv>Sync**; same wire as FilterEnv>FM)                                                                                     |
+| Unison Mode                            | Unison                       |               | `70` / `0x61` (CC 97 **Voices**; Off `00`, Twin `01`, **3**–**8** `02`–`07`)                                                                                            |
+| Unison Detune                          | Unison                       |               | `70` / `0x62` (CC 98; **0..127** when Voices ≥ Twin; `stored = lcd`)                                                                                                      |
+| Unison Panorama Spread                 | Unison                       |               | `70` / `0x63` (CC 99 **Pan Spread**; **0.0..100.0 %**, always visible; likely `× 100 / 128`, `7F` → 100 %)                                                               |
+| Unison LFO Phase Offset                | Unison                       |               | `70` / `0x64` (CC 100; **−64..+63** → `ui+64`; panel TBD)                                                                                                                 |
+| Noise Oscillator Volume                | Noise                        |               | `70` / `0x25` (CC 37; Off `00`, **1..127** direct `stored = lcd`)                                                                                                        |
+| Noise Color                            | Noise                        |               | `70` / `0x27` (**−64..+63** → `stored = ui + 64`)                                                                                                                       |
+| Oscillator Punch Intensity             | Punch                        |               | `71` / `0x24` (**0.0..100.0 %**; `pct = stored × 100 / 128`, `7F` → 100.0 %; LCD swap at `04`/`05`)                                                                  |
 | Oscillator 1/2 Balance                 | Mixer                        |               | `70` / `0x21` (−100..+100 %)                                                                                                                                             |
-| Oscillator 3 Volume                    | Mixer                        |               |                                                                                                                                                                          |
-| Sub Oscillator Volume                  | Mixer                        | TBD           | CC 34 (no live SysEx)                                                                                                                                                    |
-| Oscillator Section Volume / Saturation | Mixer                        |               | `71` / `0x7F`                                                                                                                                                            |
-| Ring Modulator Volume                  | Mixer                        |               |                                                                                                                                                                          |
+| Oscillator 3 Volume                    | Mixer                        |               | `71` / `0x2A` (visible for Osc 3 Mode/Wave `02`–`43`; **0..127** `stored = lcd`)                                                                                         |
+| Sub Oscillator Volume                  | Sub-Osc                      |               | `70` / `0x22` (CC 34; **0..127** direct `stored = lcd`)                                                                                                                  |
+| Oscillator Section Volume / Saturation | Mixer                        |               | `70` / `0x24` (Osc Volume / Saturation menu, **−64..+63**); Mixer section volume uses `71` / `0x7F`                                                                      |
+| Ring Modulator Volume                  | Mixer                        |               | `70` / `0x26` (CC 38; Off `00`, **1..127** direct `stored = lcd`)                                                                                                        |
 
 ### Filters
 
@@ -258,27 +258,27 @@ Multi edit parameters are in
 | Filter Envelope Sustain               | Filter / Aux Envelopes     |             | `70` / `0x38` (linear %)                                                      |
 | Filter Envelope Sustain Slope         | Filter / Aux Envelopes     |             | `70` / `0x39` (bipolar `ui+64`)                                               |
 | Filter Envelope Release               | Filter / Aux Envelopes     |             | `70` / `0x3A`                                                                 |
-| Envelope 3 Attack                     | Filter / Aux Envelopes     |             |                                                                               |
-| Envelope 3 Decay                      | Filter / Aux Envelopes     |             |                                                                               |
-| Envelope 3 Sustain                    | Filter / Aux Envelopes     |             |                                                                               |
-| Envelope 3 Sustain Slope              | Filter / Aux Envelopes     |             |                                                                               |
-| Envelope 3 Release                    | Filter / Aux Envelopes     |             |                                                                               |
-| Envelope 4 Attack                     | Filter / Aux Envelopes     |             |                                                                               |
-| Envelope 4 Decay                      | Filter / Aux Envelopes     |             |                                                                               |
-| Envelope 4 Sustain                    | Filter / Aux Envelopes     |             |                                                                               |
-| Envelope 4 Sustain Slope              | Filter / Aux Envelopes     |             |                                                                               |
-| Envelope 4 Release                    | Filter / Aux Envelopes     |             |                                                                               |
+| Envelope 3 Attack                     | Filter / Aux Envelopes     |             | `6E` / `0x50` (**0..127** `stored = lcd`)                                     |
+| Envelope 3 Decay                      | Filter / Aux Envelopes     |             | `6E` / `0x51` (**0..127** `stored = lcd`)                                     |
+| Envelope 3 Sustain                    | Filter / Aux Envelopes     |             | `6E` / `0x52` (**0..100.0 %** → `round(pct × 127 / 100)`)                    |
+| Envelope 3 Sustain Slope              | Filter / Aux Envelopes     |             | `6E` / `0x53` (**−64..+63** → `ui + 64`)                                     |
+| Envelope 3 Release                    | Filter / Aux Envelopes     |             | `6E` / `0x54` (**0..127** `stored = lcd`)                                     |
+| Envelope 4 Attack                     | Filter / Aux Envelopes     |             | `6E` / `0x55` (**0..127** `stored = lcd`)                                     |
+| Envelope 4 Decay                      | Filter / Aux Envelopes     |             | `6E` / `0x56` (**0..127** `stored = lcd`)                                     |
+| Envelope 4 Sustain                    | Filter / Aux Envelopes     |             | `6E` / `0x57` (**0..100.0 %** → `round(pct × 127 / 100)`)                    |
+| Envelope 4 Sustain Slope              | Filter / Aux Envelopes     |             | `6E` / `0x58` (**−64..+63** → `ui + 64`)                                     |
+| Envelope 4 Release                    | Filter / Aux Envelopes     |             | `6E` / `0x59` (**0..127** `stored = lcd`)                                     |
 | Amplifier Envelope Attack             | Amplifier Envelope         |             | `70` / `0x3B`                                                                 |
 | Amplifier Envelope Decay              | Amplifier Envelope         |             | `70` / `0x3C`                                                                 |
 | Amplifier Envelope Sustain            | Amplifier Envelope         |             | `70` / `0x3D` (linear %)                                                      |
 | Amplifier Envelope Sustain Slope      | Amplifier Envelope         |             | `70` / `0x3E` (bipolar `ui+64`)                                               |
 | Amplifier Envelope Release            | Amplifier Envelope         |             | `70` / `0x3F`                                                                 |
-| Velocity --> Filter 1 Envelope Amount | Velocity / Filter Envelope |             |                                                                               |
-| Velocity --> Filter 1 Resonance       | Velocity / Filter Envelope |             |                                                                               |
-| Velocity --> Filter 2 Envelope Amount | Velocity / Filter Envelope |             |                                                                               |
-| Velocity --> Filter 2 Resonance       | Velocity / Filter Envelope |             |                                                                               |
-| Velocity --> Volume                   | Velocity / Amplifier       |             |                                                                               |
-| Velocity --> Panorama                 | Velocity / Amplifier       |             |                                                                               |
+| Velocity --> Filter 1 Envelope Amount | Velocity / Filter Envelope |             | `71` / `0x36` (±100 % — [Velocity Map](single-live-edit.md#velocity-map-edit-single))                       |
+| Velocity --> Filter 1 Resonance       | Velocity / Filter Envelope |             | `71` / `0x38` (±100 %)                                                                                      |
+| Velocity --> Filter 2 Envelope Amount | Velocity / Filter Envelope |             | `71` / `0x37` (±100 %)                                                                                      |
+| Velocity --> Filter 2 Resonance       | Velocity / Filter Envelope |             | `71` / `0x39` (±100 %)                                                                                      |
+| Velocity --> Volume                   | Velocity / Amplifier       |             | `71` / `0x3C` (±100 %)                                                                                      |
+| Velocity --> Panorama                 | Velocity / Amplifier       |             | `71` / `0x3D` (±100 %)                                                                                      |
 | Patch Volume                          | Amplifier                  |             | CC 91                                                                         |
 | Patch Panorama                        | Amplifier                  |             |                                                                               |
 | Reverb Send                           | Amplifier                  |             | `6E` / `0x02`                                                                 |
@@ -441,9 +441,9 @@ Multi edit parameters are in
 | Input Follower Level            | Envelope Follower             |             |           |
 | Input Follower Envelope Attack  | Envelope Follower             |             |           |
 | Input Follower Envelope Release | Envelope Follower             |             |           |
-| Input Mode                      | Input                         |             |           |
-| Input Select                    | Input                         |             |           |
-| Input Atomizer                  | Input                         |             |           |
+| Input Mode                      | Input                         |             | `6F` / `0x7C` (Off `00`, Dynamic `01`, Static `02`; visible when Atomizer Off) |
+| Input Select                    | Input                         |             | `6F` / `0x7D` (Left `00`, L+R `01`, Right `02`; when Mode Dynamic/Static)       |
+| Input Atomizer                  | Input                         |             | `6F` / `0x7E` (beat-synced input looper preset; Off `00`, On `01`, **2**–**16** `02`–`10`) — [Inputs](single-live-edit.md#inputs-edit-single) |
 
 ### FX 2
 
@@ -515,18 +515,18 @@ Multi edit parameters are in
 | Bender Down Range                  | Pitch Bender      | **Not in dump** | `71` / `0x1A`                                                                       |
 | Bender Up Range                    | Pitch Bender      | **Not in dump** | `71` / `0x1B`                                                                       |
 | Patch Common Bender Scale          | Pitch Bender      | **Not in dump** | `72`/`0x1D` Linear; `71`/`0x1C` Exp                                                 |
-| Patch Category 1                   | Category          |                 |                                                                                     |
-| Patch Category 2                   | Category          |                 |                                                                                     |
-| Surround Channel Balance           | Output            |                 |                                                                                     |
-| Multi Part Parameter Output Select | Output            |                 |                                                                                     |
-| Soft Knob 1 Destination            | Soft Knobs        |                 |                                                                                     |
-| Soft Knob 1 Name                   | Soft Knobs        |                 |                                                                                     |
+| Patch Category 1                   | Category          |                 | `71` / `0x7B` — [Patch name categories](parameter-option-lists.md#patch-name-categories) (**Name Cat 1**) |
+| Patch Category 2                   | Category          |                 | `71` / `0x7C` — same list (**Name Cat 2**) — [Categories](single-live-edit.md#categories-edit-single) |
+| Surround Channel Balance           | Output            |                 | `71` / `0x3A` (−64..+63, `ui+64`) — [Surround Balance](single-live-edit.md#balance-0x3a-cmd0x71); also mod dest **116** |
+| Multi Part Parameter Output Select | Output            | **Not in dump** | **`73` / `0x2D`** — **Edit Single → Surround → Output** — [Secondary output routing](parameter-option-lists.md#secondary-output-routing) |
+| Soft Knob 1 Destination            | Soft Knobs        |                 | `71` / `0x3E` — [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) (wire `<value>` ≠ index) |
+| Soft Knob 1 Name                   | Soft Knobs        |                 | `71` / `0x33` — [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (wire `<value>` per row) |
 | Soft Knob 1 Amount                 | Soft Knobs        |                 |                                                                                     |
-| Soft Knob 2 Destination            | Soft Knobs        |                 |                                                                                     |
-| Soft Knob 2 Name                   | Soft Knobs        |                 |                                                                                     |
+| Soft Knob 2 Destination            | Soft Knobs        |                 | `71` / `0x3F` — same list as Knob 1 — [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) |
+| Soft Knob 2 Name                   | Soft Knobs        |                 | `71` / `0x34` — [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (wire `<value>` per row) |
 | Soft Knob 2 Amount                 | Soft Knobs        |                 |                                                                                     |
-| Soft Knob 3 Destination            | Soft Knobs        |                 |                                                                                     |
-| Soft Knob 3 Name                   | Soft Knobs        |                 |                                                                                     |
+| Soft Knob 3 Destination            | Soft Knobs        |                 | `71` / `0x40` — same list as Knob 1 — [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) |
+| Soft Knob 3 Name                   | Soft Knobs        |                 | `71` / `0x35` — [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (wire `<value>` per row) |
 | Soft Knob 3 Amount                 | Soft Knobs        |                 |                                                                                     |
 
 ### Patch Utility - Config

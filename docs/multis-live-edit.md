@@ -19,6 +19,8 @@ F0 00 20 33 01 00 71 <part> <param> <value> F7
 Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 [single-live-edit.md](single-live-edit.md).
 
+Enumerated options: [parameter-option-lists.md](parameter-option-lists.md).
+
 ## Summary
 
 | Param ID | Memory / Target              | Parameter        | Description                                  |
@@ -184,7 +186,9 @@ F0 00 20 33 01 00 71 00 1B 7F F7   # +63
 
 ### Secondary Output (`0x2D`)
 
-- Per-part **secondary** output routing (Edit Multi).
+- Per-part **secondary** output routing (Edit Multi). On TI mk2 the same
+  setting appears as **Edit Single → Surround → Output** (rear/surround bus);
+  see [Surround (Edit Single)](single-live-edit.md#surround-edit-single).
 - Sent via **`cmd=0x73`**, not `0x72`:
 
   ```text
@@ -351,22 +355,10 @@ Used by: `0x29`.
 
 ### Secondary Output Enum (`0x2D`)
 
-**`00`** = Off. Otherwise same routes as
-[primary output](#output-routing-enum-0x29), offset by **+1**:
-
-| Value     | Routing          |
-| --------- | ---------------- |
-| `00`      | Off              |
-| `01`      | Out 1 L          |
-| `02`      | Out 1 L+R        |
-| `03`      | Out 1 R          |
-| `04`–`06` | Out 2: L, L+R, R |
-| `07`–`09` | Out 3: L, L+R, R |
-| `0A`–`0C` | USB 1: L, L+R, R |
-| `0D`–`0F` | USB 2: L, L+R, R |
-| `10`–`12` | USB 3: L, L+R, R |
-
-(`stored = primary_enum + 1`, or `00` = Off.)
+Full panel labels: [Secondary output routing](parameter-option-lists.md#secondary-output-routing).
+**`00`** = Off; otherwise same routes as
+[primary output](#output-routing-enum-0x29), **`stored = primary_index + 1`**
+(through **`12`** = USB 3 R).
 
 Part 1 captures (`cmd=0x73`):
 
