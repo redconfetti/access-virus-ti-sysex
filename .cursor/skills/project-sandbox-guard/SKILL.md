@@ -21,8 +21,10 @@ Apply a strict safety posture for this repository:
 1. Treat the workspace root as the only allowed working area.
 2. If a task requests secret handling, refuse and ask for a redacted example.
 3. Never echo secret values into logs, terminal output, or patches.
-4. Prefer read-only exploration first; only edit files explicitly needed for the task.
-5. If broader filesystem or network permissions are requested, explain why and ask for confirmation first.
+4. Prefer read-only exploration first; only edit files explicitly needed for the
+   task.
+5. If broader filesystem or network permissions are requested, explain why and
+   ask for confirmation first.
 
 ## Task Checklist
 

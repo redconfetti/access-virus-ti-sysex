@@ -151,75 +151,75 @@ Bc  nn  vv     — status (channel c), CC number = Page A index, value 0–127
 channel. **Performance controllers** (class `p`) go to **all** parts on that
 channel and are **not** stored in the Single sound.
 
-| CC / A# | Class   | Name                    | Range / values                                                                        |
-| ------- | ------- | ----------------------- | ------------------------------------------------------------------------------------- |
-| 0       | p       | Bank Select             | 0–3 Bank A–D                                                                          |
-| 1       | p       | Modulation Wheel        |                                                                                       |
-| 2       | p       | Breath Controller       |                                                                                       |
-| 3       | p       | Contr 3                 |                                                                                       |
-| 4       | p       | Foot Controller         |                                                                                       |
-| 5       | a       | Portamento Time         | 0–127                                                                                 |
-| 6       | p       | Data Slider             |                                                                                       |
-| 7       | p       | Channel Volume          | 0–127                                                                                 |
-| 8       | p       | Balance                 |                                                                                       |
-| 9       | p       | Contr 9                 |                                                                                       |
-| 10      | a       | Panorama                | 0–127 (−64..+63)                                                                      |
-| 11      | p       | Expression              |                                                                                       |
-| 12–16   | p       | Contr 12–16             |                                                                                       |
+| CC / A# | Class   | Name                    | Range / values                                                                                                                                                    |
+| ------- | ------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0       | p       | Bank Select             | 0–3 Bank A–D                                                                                                                                                      |
+| 1       | p       | Modulation Wheel        |                                                                                                                                                                   |
+| 2       | p       | Breath Controller       |                                                                                                                                                                   |
+| 3       | p       | Contr 3                 |                                                                                                                                                                   |
+| 4       | p       | Foot Controller         |                                                                                                                                                                   |
+| 5       | a       | Portamento Time         | 0–127                                                                                                                                                             |
+| 6       | p       | Data Slider             |                                                                                                                                                                   |
+| 7       | p       | Channel Volume          | 0–127                                                                                                                                                             |
+| 8       | p       | Balance                 |                                                                                                                                                                   |
+| 9       | p       | Contr 9                 |                                                                                                                                                                   |
+| 10      | a       | Panorama                | 0–127 (−64..+63)                                                                                                                                                  |
+| 11      | p       | Expression              |                                                                                                                                                                   |
+| 12–16   | p       | Contr 12–16             |                                                                                                                                                                   |
 | 17      | a       | Osc1 Shape              | TI Classic: `00` wave, `01`–`3F` Wave>Saw, `40` Saw, `41`–`7E` Saw>Pulse, `7F` Pulse — [Osc 1 Classic](single-live-edit.md#shape-0x11--wave--saw-blend--pure-saw) |
-| 18      | a       | Osc1 Pulsewidth         | 0–127                                                                                 |
-| 19      | a       | Osc1 Wave Select        | 64 waves `00`–`3F` — TI: [Osc 1 Classic / Spectral Wave](single-live-edit.md#shape-spectral-wave) |
-| 20      | a       | Osc1 Semitone           | −64..+63                                                                              |
-| 21      | a       | Osc1 Keyfollow          | −64..+63; **Norm** = +32 → `60` — [Osc 1 Classic](single-live-edit.md#shape-spectral-wave) |
-| 22      | a       | Osc2 Shape              | −64..+63                                                                              |
-| 23      | a       | Osc2 Pulsewidth         | 0–127                                                                                 |
-| 24      | a       | Osc2 Wave Select        | 0–64                                                                                  |
-| 25      | a       | Osc2 Semitone           | −64..+63                                                                              |
-| 26      | a       | Osc2 Detune             | 0–127                                                                                 |
-| 27      | a       | Osc2 FM Amount          | 0–127                                                                                 |
-| 28      | a       | Osc2 Sync               | 0/1                                                                                   |
-| 29      | a       | Osc2 Filt Env Amt       | −64..+63                                                                              |
-| 30      | a       | FM Filt Env Amt         | −64..+63                                                                              |
-| 31      | a       | Osc2 Keyfollow          | −64..+63 (default 32)                                                                 |
-| 32      | p       | Bank Select             | 0–3                                                                                   |
-| 33      | a       | Osc Balance             | −100..+100 % — [Osc 1 Classic](single-live-edit.md#shape-spectral-wave) |
-| 34      | a       | Suboscillator Volume    | 0–127                                                                                 |
-| 35      | a       | Suboscillator Shape     | 0 Square / 1 Triangle                                                                 |
-| 36      | a       | Osc Mainvolume          | TI Saturation **Osc Volume**: bipolar −64..+63 — [Saturation — Osc Volume](single-live-edit.md#saturation--osc-volume-cmd0x70-param-0x24) |
-| 37      | a       | Noise Volume            | 0–127                                                                                 |
-| 38      | a       | Ringmodulator Volume    | 0–127                                                                                 |
-| 40      | a       | Cutoff                  | 0–127 — TI: [Filter 1 Cutoff](single-live-edit.md#filter-1-cutoff-cmd0x70-param-0x28) |
-| 41      | a       | Cutoff2                 | −64..+63 — TI: [Filter 2 Offset](single-live-edit.md#filter-2-offset-cmd0x70-param-0x29) |
-| 42      | a       | Filter1 Resonance       | 0–127 — TI: [Filter 1 Resonance](single-live-edit.md#filter-1-resonance-cmd0x70-param-0x2a) |
-| 43      | a       | Filter2 Resonance       | 0–127 — TI: [Filter 2 Resonance](single-live-edit.md#filter-2-resonance-cmd0x70-param-0x2b) |
-| 44      | a       | Filter1 Env Amt         | 0–127 — TI: [Filter 1 Envelope Amount](single-live-edit.md#filter-1-envelope-amount-cmd0x70-param-0x2c) |
-| 45      | a       | Filter2 Env Amt         | 0–127 — TI: [Filter 2 Envelope Amount](single-live-edit.md#filter-2-envelope-amount-cmd0x70-param-0x2d) |
-| 46      | a       | Filter1 Keyfollow       | −64..+63 — TI: [Filter 1 Keyfollow](single-live-edit.md#filter-1-keyfollow-cmd0x70-param-0x2e) |
-| 47      | a       | Filter2 Keyfollow       | −64..+63 — TI: [Filter 2 Keyfollow](single-live-edit.md#filter-2-keyfollow-cmd0x70-param-0x2f) |
-| 48      | a       | Filter Balance          | −64..+63 — TI: [Filter Balance](single-live-edit.md#filter-balance-cmd0x70-param-0x30) |
-| 49      | a       | Saturation Curve        | 0–6 Off..Shaper                                                                       |
-| 51      | a       | Filter1 Mode            | 0–3 classic; TI **8** modes `00`–`07` — [Filter 1 Mode](single-live-edit.md#filter-1-mode-cmd0x70-param-0x33) |
-| 52      | a       | Filter2 Mode            | 0 LP / 1 HP / 2 BP / 3 BS — TI: [Filter 2 Mode](single-live-edit.md#filter-2-mode-cmd0x70-param-0x34) (4 only) |
-| 53      | a       | Filter Routing          | 0 Ser4 / 1 Ser6 / 2 Par4 / 3 Split — TI: [Filter Routing](single-live-edit.md#filter-routing-cmd0x70-param-0x35) |
-| 54–58   | a       | Filter Env A/D/S/ST/R   | TI Filter 1 ADSR: `36`–`3A` — [Filter 1 envelope](single-live-edit.md#filter-1-envelope-adsr) |
-| 59–63   | a       | Amp Env A/D/S/ST/R      | TI: `3B`–`3F` — [Amplifier envelope](single-live-edit.md#amplifier-envelope-adsr) |
-| 64      | p       | Hold Pedal              |                                                                                       |
-| 65      | p       | Portamento Pedal        |                                                                                       |
-| 66      | p       | Sostenuto Pedal         |                                                                                       |
-| 67–78   | a       | Lfo1 Rate..FiltGain Amt |                                                                                       |
-| 79–90   | a       | Lfo2 Rate..Pan Lfo2 Amt |                                                                                       |
-| 91      | a       | Patch Volume            | 0–127 — TI: [control-change.md](control-change.md)                                    |
-| 93      | a       | Transpose               | −64..+63 — TI: [control-change.md](control-change.md)                                 |
-| 94      | a       | Key Mode                | 0–4 Poly / Mono1–4 — TI: [control-change.md](control-change.md)                       |
-| 97      | a       | Unison Mode             | 0/1                                                                                   |
-| 98      | a       | Unison Detune           | 0–127                                                                                 |
-| 99      | a       | Unison Panorama Spread  | 0–127                                                                                 |
-| 100     | a       | Unison Lfo Phase        | −64..+63                                                                              |
-| 101     | a       | Input Mode              | 0 Off / 1 Dynamic / 2 Static                                                          |
-| 102     | a       | Input Select            | 0–8 In1L..                                                                            |
-| 105–110 | a       | Chorus Mix..Shape       |                                                                                       |
-| 113–118 | a,ms,np | Effect Send, Delay *    |                                                                                       |
-| 123     | p       | All Notes Off           |                                                                                       |
+| 18      | a       | Osc1 Pulsewidth         | 0–127                                                                                                                                                             |
+| 19      | a       | Osc1 Wave Select        | 64 waves `00`–`3F` — TI: [Osc 1 Classic / Spectral Wave](single-live-edit.md#shape-spectral-wave)                                                                 |
+| 20      | a       | Osc1 Semitone           | −64..+63                                                                                                                                                          |
+| 21      | a       | Osc1 Keyfollow          | −64..+63; **Norm** = +32 → `60` — [Osc 1 Classic](single-live-edit.md#shape-spectral-wave)                                                                        |
+| 22      | a       | Osc2 Shape              | −64..+63                                                                                                                                                          |
+| 23      | a       | Osc2 Pulsewidth         | 0–127                                                                                                                                                             |
+| 24      | a       | Osc2 Wave Select        | 0–64                                                                                                                                                              |
+| 25      | a       | Osc2 Semitone           | −64..+63                                                                                                                                                          |
+| 26      | a       | Osc2 Detune             | 0–127                                                                                                                                                             |
+| 27      | a       | Osc2 FM Amount          | 0–127                                                                                                                                                             |
+| 28      | a       | Osc2 Sync               | 0/1                                                                                                                                                               |
+| 29      | a       | Osc2 Filt Env Amt       | −64..+63                                                                                                                                                          |
+| 30      | a       | FM Filt Env Amt         | −64..+63                                                                                                                                                          |
+| 31      | a       | Osc2 Keyfollow          | −64..+63 (default 32)                                                                                                                                             |
+| 32      | p       | Bank Select             | 0–3                                                                                                                                                               |
+| 33      | a       | Osc Balance             | −100..+100 % — [Osc 1 Classic](single-live-edit.md#shape-spectral-wave)                                                                                           |
+| 34      | a       | Suboscillator Volume    | 0–127                                                                                                                                                             |
+| 35      | a       | Suboscillator Shape     | 0 Square / 1 Triangle                                                                                                                                             |
+| 36      | a       | Osc Mainvolume          | TI Saturation **Osc Volume**: bipolar −64..+63 — [Saturation — Osc Volume](single-live-edit.md#saturation--osc-volume-cmd0x70-param-0x24)                         |
+| 37      | a       | Noise Volume            | 0–127                                                                                                                                                             |
+| 38      | a       | Ringmodulator Volume    | 0–127                                                                                                                                                             |
+| 40      | a       | Cutoff                  | 0–127 — TI: [Filter 1 Cutoff](single-live-edit.md#filter-1-cutoff-cmd0x70-param-0x28)                                                                             |
+| 41      | a       | Cutoff2                 | −64..+63 — TI: [Filter 2 Offset](single-live-edit.md#filter-2-offset-cmd0x70-param-0x29)                                                                          |
+| 42      | a       | Filter1 Resonance       | 0–127 — TI: [Filter 1 Resonance](single-live-edit.md#filter-1-resonance-cmd0x70-param-0x2a)                                                                       |
+| 43      | a       | Filter2 Resonance       | 0–127 — TI: [Filter 2 Resonance](single-live-edit.md#filter-2-resonance-cmd0x70-param-0x2b)                                                                       |
+| 44      | a       | Filter1 Env Amt         | 0–127 — TI: [Filter 1 Envelope Amount](single-live-edit.md#filter-1-envelope-amount-cmd0x70-param-0x2c)                                                           |
+| 45      | a       | Filter2 Env Amt         | 0–127 — TI: [Filter 2 Envelope Amount](single-live-edit.md#filter-2-envelope-amount-cmd0x70-param-0x2d)                                                           |
+| 46      | a       | Filter1 Keyfollow       | −64..+63 — TI: [Filter 1 Keyfollow](single-live-edit.md#filter-1-keyfollow-cmd0x70-param-0x2e)                                                                    |
+| 47      | a       | Filter2 Keyfollow       | −64..+63 — TI: [Filter 2 Keyfollow](single-live-edit.md#filter-2-keyfollow-cmd0x70-param-0x2f)                                                                    |
+| 48      | a       | Filter Balance          | −64..+63 — TI: [Filter Balance](single-live-edit.md#filter-balance-cmd0x70-param-0x30)                                                                            |
+| 49      | a       | Saturation Curve        | 0–6 Off..Shaper                                                                                                                                                   |
+| 51      | a       | Filter1 Mode            | 0–3 classic; TI **8** modes `00`–`07` — [Filter 1 Mode](single-live-edit.md#filter-1-mode-cmd0x70-param-0x33)                                                     |
+| 52      | a       | Filter2 Mode            | 0 LP / 1 HP / 2 BP / 3 BS — TI: [Filter 2 Mode](single-live-edit.md#filter-2-mode-cmd0x70-param-0x34) (4 only)                                                    |
+| 53      | a       | Filter Routing          | 0 Ser4 / 1 Ser6 / 2 Par4 / 3 Split — TI: [Filter Routing](single-live-edit.md#filter-routing-cmd0x70-param-0x35)                                                  |
+| 54–58   | a       | Filter Env A/D/S/ST/R   | TI Filter 1 ADSR: `36`–`3A` — [Filter 1 envelope](single-live-edit.md#filter-1-envelope-adsr)                                                                     |
+| 59–63   | a       | Amp Env A/D/S/ST/R      | TI: `3B`–`3F` — [Amplifier envelope](single-live-edit.md#amplifier-envelope-adsr)                                                                                 |
+| 64      | p       | Hold Pedal              |                                                                                                                                                                   |
+| 65      | p       | Portamento Pedal        |                                                                                                                                                                   |
+| 66      | p       | Sostenuto Pedal         |                                                                                                                                                                   |
+| 67–78   | a       | Lfo1 Rate..FiltGain Amt |                                                                                                                                                                   |
+| 79–90   | a       | Lfo2 Rate..Pan Lfo2 Amt |                                                                                                                                                                   |
+| 91      | a       | Patch Volume            | 0–127 — TI: [control-change.md](control-change.md)                                                                                                                |
+| 93      | a       | Transpose               | −64..+63 — TI: [control-change.md](control-change.md)                                                                                                             |
+| 94      | a       | Key Mode                | 0–4 Poly / Mono1–4 — TI: [control-change.md](control-change.md)                                                                                                   |
+| 97      | a       | Unison Mode             | 0/1                                                                                                                                                               |
+| 98      | a       | Unison Detune           | 0–127                                                                                                                                                             |
+| 99      | a       | Unison Panorama Spread  | 0–127                                                                                                                                                             |
+| 100     | a       | Unison Lfo Phase        | −64..+63                                                                                                                                                          |
+| 101     | a       | Input Mode              | 0 Off / 1 Dynamic / 2 Static                                                                                                                                      |
+| 102     | a       | Input Select            | 0–8 In1L..                                                                                                                                                        |
+| 105–110 | a       | Chorus Mix..Shape       |                                                                                                                                                                   |
+| 113–118 | a,ms,np | Effect Send, Delay *    |                                                                                                                                                                   |
+| 123     | p       | All Notes Off           |                                                                                                                                                                   |
 
 Example: `B0 21 40` — CC **33** (Osc Balance) = 64 on channel 1.
 
@@ -227,35 +227,35 @@ Example: `B0 21 40` — CC **33** (Osc Balance) = 64 on channel 1.
 
 ## Single parameters — Page B (`cmd=0x71`)
 
-| B#      | Name                                            | Range / values                                                                  |
-| ------- | ----------------------------------------------- | ------------------------------------------------------------------------------- |
-| 1       | Arp Mode                                        | 0–6 Off, Up, Down, Up&Down, AsPlayed, Random, Chord                             |
-| 3       | Arp Octave Range                                | 0–3                                                                             |
-| 4       | Arp Hold Enable                                 | 0/1                                                                             |
-| 7       | Lfo3 Rate                                       | 0–127                                                                           |
-| 8       | Lfo3 Shape                                      | 0–5                                                                             |
-| 9       | Lfo3 Mode                                       | 0 Poly / 1 Mono                                                                 |
-| 10      | Lfo3 Keyfollow                                  | 0–127                                                                           |
-| 11      | Lfo3 Destination                                | 0–5                                                                             |
-| 12      | Osc Lfo3 Amount                                 | 0–127                                                                           |
-| 13      | Lfo3 Fade-In Time                               | 0–127                                                                           |
-| 16      | Clock Tempo                                     | 63–190 BPM                                                                      |
-| 17      | Arp Clock                                       | 1–17                                                                            |
-| 18–21   | Lfo1/2/3/Delay Clock                            | Off, 1/64..                                                                     |
-| 25      | Control Smooth Mode                             | 0 Off / 1 On / 2 Auto / 3 Note — TI: [single-live-edit.md](single-live-edit.md) |
-| 26      | Bender Range Up                                 | −64..+63 — TI: [multis-live-edit.md](multis-live-edit.md)                       |
-| 27      | Bender Range Down                               | −64..+63 — TI: [multis-live-edit.md](multis-live-edit.md)                       |
-| 28      | Bender Scale                                    | 0 Linear / 1 Exponential — TI: [single-live-edit.md](single-live-edit.md)       |
+| B#      | Name                                            | Range / values                                                                                                                                                                                                                          |
+| ------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1       | Arp Mode                                        | 0–6 Off, Up, Down, Up&Down, AsPlayed, Random, Chord                                                                                                                                                                                     |
+| 3       | Arp Octave Range                                | 0–3                                                                                                                                                                                                                                     |
+| 4       | Arp Hold Enable                                 | 0/1                                                                                                                                                                                                                                     |
+| 7       | Lfo3 Rate                                       | 0–127                                                                                                                                                                                                                                   |
+| 8       | Lfo3 Shape                                      | 0–5                                                                                                                                                                                                                                     |
+| 9       | Lfo3 Mode                                       | 0 Poly / 1 Mono                                                                                                                                                                                                                         |
+| 10      | Lfo3 Keyfollow                                  | 0–127                                                                                                                                                                                                                                   |
+| 11      | Lfo3 Destination                                | 0–5                                                                                                                                                                                                                                     |
+| 12      | Osc Lfo3 Amount                                 | 0–127                                                                                                                                                                                                                                   |
+| 13      | Lfo3 Fade-In Time                               | 0–127                                                                                                                                                                                                                                   |
+| 16      | Clock Tempo                                     | 63–190 BPM                                                                                                                                                                                                                              |
+| 17      | Arp Clock                                       | 1–17                                                                                                                                                                                                                                    |
+| 18–21   | Lfo1/2/3/Delay Clock                            | Off, 1/64..                                                                                                                                                                                                                             |
+| 25      | Control Smooth Mode                             | 0 Off / 1 On / 2 Auto / 3 Note — TI: [single-live-edit.md](single-live-edit.md)                                                                                                                                                         |
+| 26      | Bender Range Up                                 | −64..+63 — TI: [multis-live-edit.md](multis-live-edit.md)                                                                                                                                                                               |
+| 27      | Bender Range Down                               | −64..+63 — TI: [multis-live-edit.md](multis-live-edit.md)                                                                                                                                                                               |
+| 28      | Bender Scale                                    | 0 Linear / 1 Exponential — TI: [single-live-edit.md](single-live-edit.md)                                                                                                                                                               |
 | 30–33   | Filter env polarity, cutoff link, keytrack base | F1 **`0x1E`**, F2 **`0x1F`**; cutoff link **`0x20`** — [Cutoff Link](single-live-edit.md#filter-cutoff-link-cmd0x71-param-0x20); key base **`0x21`** — [Key Follow Base](single-live-edit.md#filter-key-follow-base-cmd0x71-param-0x21) |
-| 35      | Osc Init Phase                                  |                                                                                 |
-| 36      | Punch Intensity                                 |                                                                                 |
-| 39      | Vocoder Mode                                    | 0–12                                                                            |
-| 47–57   | Velocity amounts                                |                                                                                 |
-| 60–61   | Amp / Pan velocity                              |                                                                                 |
-| 62–63   | Definable1/2 Single                             |                                                                                 |
-| 64–78   | Assign 1–3 sources/destinations/amounts         |                                                                                 |
-| 112     | Filter Select                                   | 0 Filt1 / 1 Filt2 / 2 Filt1*2                                                   |
-| 113–122 | Single Name Char 1–10                           | ASCII 32–127                                                                    |
+| 35      | Osc Init Phase                                  |                                                                                                                                                                                                                                         |
+| 36      | Punch Intensity                                 |                                                                                                                                                                                                                                         |
+| 39      | Vocoder Mode                                    | 0–12                                                                                                                                                                                                                                    |
+| 47–57   | Velocity amounts                                |                                                                                                                                                                                                                                         |
+| 60–61   | Amp / Pan velocity                              |                                                                                                                                                                                                                                         |
+| 62–63   | Definable1/2 Single                             |                                                                                                                                                                                                                                         |
+| 64–78   | Assign 1–3 sources/destinations/amounts         |                                                                                                                                                                                                                                         |
+| 112     | Filter Select                                   | 0 Filt1 / 1 Filt2 / 2 Filt1*2                                                                                                                                                                                                           |
+| 113–122 | Single Name Char 1–10                           | ASCII 32–127                                                                                                                                                                                                                            |
 
 ---
 

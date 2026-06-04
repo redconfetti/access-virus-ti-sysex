@@ -107,24 +107,24 @@ mk2 desktop**, record in the TI docs, then trim the matching WAF80 rows.
 — finish one menu before switching (e.g. all **Filters** controls, then
 **Oscillators**).
 
-| Status          | Category    | Virus LCD (typical)                 | Doc section                                        |
-| --------------- | ----------- | ----------------------------------- | -------------------------------------------------- |
-| Done            | **Filters** | **FILTERS** (F1/F2/Common/F1 ADSR)  | [single-dump.md — Filters](single-dump.md#filters) |
-| Done            | **Amplifier** | **Amp Envelope** ADSR             | [single-live-edit.md — Amplifier envelope](single-live-edit.md#amplifier-envelope-adsr) |
-| **In progress** | **Oscillator 1** | **OSCILLATORS** → Osc 1 — panel order | [single-dump.md — Oscillators](single-dump.md#oscillators) |
+| Status          | Category         | Virus LCD (typical)                   | Doc section                                                                             |
+| --------------- | ---------------- | ------------------------------------- | --------------------------------------------------------------------------------------- |
+| Done            | **Filters**      | **FILTERS** (F1/F2/Common/F1 ADSR)    | [single-dump.md — Filters](single-dump.md#filters)                                      |
+| Done            | **Amplifier**    | **Amp Envelope** ADSR                 | [single-live-edit.md — Amplifier envelope](single-live-edit.md#amplifier-envelope-adsr) |
+| **In progress** | **Oscillator 1** | **OSCILLATORS** → Osc 1 — panel order | [single-dump.md — Oscillators](single-dump.md#oscillators)                              |
 
 ### Filters — order (Filter 1 first)
 
 Confirm in this order (stay on the **FILTERS** menu):
 
-| #   | Parameter                              | SubCategory | WAF80 Page A # (hypothesis) |
-| --- | -------------------------------------- | ----------- | --------------------------- |
-| 1   | ~~Filter 1 Cutoff~~                    | Filter 1    | **40** — ✓ `70 00 28`       |
-| 2   | ~~Filter 1 Resonance~~                 | Filter 1    | **42** — ✓ `70 00 2A`       |
+| #   | Parameter                              | SubCategory | WAF80 Page A # (hypothesis)  |
+| --- | -------------------------------------- | ----------- | ---------------------------- |
+| 1   | ~~Filter 1 Cutoff~~                    | Filter 1    | **40** — ✓ `70 00 28`        |
+| 2   | ~~Filter 1 Resonance~~                 | Filter 1    | **42** — ✓ `70 00 2A`        |
 | 3   | ~~Filter 1 Mode~~                      | Filter 1    | **51** — ✓ 8 modes `00`–`07` |
-| 4   | ~~Filter 1 Envelope Amount~~           | Filter 1    | **44** — ✓ linear %         |
-| 5   | ~~Filter 1 Keyfollow~~                 | Filter 1    | **46** — ✓ `ui + 64`        |
-| …   | (remaining Filter 1 / 2 / Common rows) |             | see parameter map           |
+| 4   | ~~Filter 1 Envelope Amount~~           | Filter 1    | **44** — ✓ linear %          |
+| 5   | ~~Filter 1 Keyfollow~~                 | Filter 1    | **46** — ✓ `ui + 64`         |
+| …   | (remaining Filter 1 / 2 / Common rows) |             | see parameter map            |
 
 **Current step:** **OSCILLATORS → Oscillator 1**. Osc params are a **nested tree**:
 
@@ -133,23 +133,25 @@ Confirm in this order (stay on the **FILTERS** menu):
    Complex **1–4**).
 2. **Shape** (within many modes) — changes which controls appear on those menus.
 
-Report captures as **`Mode: …` / `Shape: …` / `Control: …` → LCD value** so session
-notes stay unambiguous. Use **+/−** for single steps when possible (cleaner log than
-long knob sweeps). Session notes until Osc 1 is done; then Osc 2, Common, Mixer.
+Report captures as **`Mode: …` / `Shape: …` / `Control: …` → LCD value** so
+session notes stay unambiguous. Use **+/−** for single steps when possible
+(cleaner log than long knob sweeps). Session notes until Osc 1 is done; then
+Osc 2, Common, Mixer.
 
-**Shape / Saw>Pulse:** Value byte is **hex** on the `70 00 11` line (`0x44`…`0x5A`…`0x7E`).
-`receivemidi`’s trailing **`dec`** is decimal equivalent only (e.g. `5A` hex = 90 dec).
-Do not use a decimal **44–66** index column — use **hex `44`–`5A`** (see live-edit table).
+**Shape / Saw>Pulse:** Value byte is **hex** on the `70 00 11` line
+(`0x44`…`0x5A`…`0x7E`). `receivemidi`’s trailing **`dec`** is decimal
+equivalent only (e.g. `5A` hex = 90 dec). Do not use a decimal **44–66**
+index column — use **hex `44`–`5A`** (see live-edit table).
 
 **WAF80 Page A hypotheses (Osc 1, `cmd=0x70` unless capture says otherwise):**
 
-| A# | `param` | Classic name | Range (WAF80) |
-| -- | ------- | ------------ | ------------- |
-| 17 | `11` | Shape | TI: **enum** on `70`/`11` (not classic bipolar) |
-| 18 | `12` | Pulsewidth | 0–127 |
-| 19 | `13` | Wave Select | 0–64 |
-| 20 | `14` | Semitone | −64..+63 |
-| 21 | `15` | Keyfollow | −64..+63 |
+| A#  | `param` | Classic name | Range (WAF80)                                     |
+| --- | ------- | ------------ | ------------------------------------------------- |
+| 17  | `11`    | Shape        | TI: **enum** on `70`/`11` (not classic bipolar)   |
+| 18  | `12`    | Pulsewidth   | 0–127                                             |
+| 19  | `13`    | Wave Select  | 0–64                                              |
+| 20  | `14`    | Semitone     | −64..+63                                          |
+| 21  | `15`    | Keyfollow    | −64..+63                                          |
 
 **Mode:** `6E`/`1E` — Classic = `00` ✓. **Classic / Spectral Wave** in progress.
 See [single-live-edit.md — Oscillator 1](single-live-edit.md#oscillators).
@@ -157,14 +159,14 @@ See [single-live-edit.md — Oscillator 1](single-live-edit.md#oscillators).
 **Key Follow “Norm” (done):** Stored Single with Key Follow **−21**; after reload,
 **Norm** still = **+32** / wire **`0x60`** — fixed scale marker, not per-patch default.
 
-| Status | Category | Notes |
-| ------ | -------- | ----- |
-| Done | Filter 1 | Cutoff, Resonance, Mode (8), Env Amt, Keyfollow, Env Polarity (`1E`) |
-| Done | Filter 2 | Offset, Resonance, Mode (4), Env Amt, Keyfollow, Env Polarity (`1F`); Cutoff **N/A** |
-| Done | Filter Common | Routing, Balance, Cutoff Link, Key Follow Base, Pan Spread (Split only) |
-| Done | Filter 1 envelope | `36`–`3A` ADSR (FILTERS → Filter Envelope menu) |
-| Done | Amp Envelope | `3B`–`3F` ADSR (same encodings as Filter 1 env) |
-| Done | Saturation (Filters) | Osc Volume `70`/`24`; knob target `71`/`7A` |
+| Status | Category             | Notes                                                                                |
+| ------ | -------------------- | ------------------------------------------------------------------------------------ |
+| Done   | Filter 1             | Cutoff, Resonance, Mode (8), Env Amt, Keyfollow, Env Polarity (`1E`)                 |
+| Done   | Filter 2             | Offset, Resonance, Mode (4), Env Amt, Keyfollow, Env Polarity (`1F`); Cutoff **N/A** |
+| Done   | Filter Common        | Routing, Balance, Cutoff Link, Key Follow Base, Pan Spread (Split only)              |
+| Done   | Filter 1 envelope    | `36`–`3A` ADSR (FILTERS → Filter Envelope menu)                                      |
+| Done   | Amp Envelope         | `3B`–`3F` ADSR (same encodings as Filter 1 env)                                      |
+| Done   | Saturation (Filters) | Osc Volume `70`/`24`; knob target `71`/`7A`                                          |
 
 ## Interactive single-parameter capture (panel → host)
 
