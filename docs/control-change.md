@@ -15,8 +15,9 @@ SysEx on wire during mapping sessions — see
 
 | CC  | Scope         | Parameter             | Transport   | `DUMP_MULTI` | Menu path            |
 | --- | ------------- | --------------------- | ----------- | ------------ | -------------------- |
+| 10  | Part-specific | Panorama              | CC or SysEx | Unverified   | Edit Single → Common |
 | 34  | Part-specific | Sub Oscillator Volume | CC or SysEx | Unverified   | Sub Oscillator menu  |
-| 91  | Part-specific | Patch Volume          | **CC only** | **No**       | Edit Single → Common |
+| 91  | Part-specific | Patch Volume          | CC or SysEx | **No**       | Edit Single → Common |
 | 93  | Part-specific | Patch Transpose       | **CC only** | Unverified   | Edit Single → Common |
 | 94  | Part-specific | Key Mode              | **CC only** | Unverified   | Edit Single → Common |
 
@@ -42,9 +43,11 @@ Triangle **`01`** only — [Sub Oscillator Shape](single-live-edit.md#sub-oscill
 
 ### Patch Transpose (CC 93)
 
-**Edit Single → Common → Patch Transpose**. Live edit is
-**MIDI CC 93** only — no Access SysEx (hardware-tested). Distinct from
-Edit Multi **Transpose** (SysEx `0x72` / `0x25`, dump `0x79 + part`).
+**Edit Single → Common → Transpose** (Patch Transpose). With **Page A = SysEx**,
+**`cmd=0x70` `param=0x5D`** (**−64..+63** → `ui+64`) — see
+[Transpose](single-live-edit.md#transpose--patch-transpose-0x5d-cmd0x70--cc-93).
+With **Controller Data**, **CC 93** only. Distinct from Edit Multi **Transpose**
+(SysEx `0x72` / `0x25`, dump `0x79 + part`).
 Page **A** param **93** in [waf80.md](waf80.md).
 
 | Field          | Status                         |
@@ -56,11 +59,19 @@ Page **A** param **93** in [waf80.md](waf80.md).
 | Value encoding | Bipolar **`stored = ui + 64`** |
 | Confirmed      | UI **+1** → CC **65** (`0x41`) |
 
+### Panorama (CC 10)
+
+**Edit Single → Common → Panorama**. With **Page A = Controller Data**, the
+panel sends **CC 10**. With **Page A = SysEx**, live edit is **`cmd=0x70`**
+**`param=0x0A`** — see
+[Panorama](single-live-edit.md#panorama-0x0a-cmd0x70--cc-10).
+
 ### Patch Volume (CC 91)
 
-**Edit Single → Common → Patch Volume**. Moving the control on the Virus
-panel sends **MIDI CC 91 only** — no Access SysEx on the wire
-(hardware-tested).
+**Edit Single → Common → Patch Volume**. With **Page A = Controller Data**,
+the panel sends **CC 91**. With **Page A = SysEx**, live edit is
+**`cmd=0x70` `param=0x5B`** (**0..127** direct) — see
+[Patch Volume](single-live-edit.md#patch-volume-0x5b-cmd0x70--cc-91).
 
 Distinct from Edit Multi **Volume** (`0x99 + part` in `DUMP_MULTI`, live
 `0x72` / `0x27`). Host UI label “Part Level”: [aura-notes.md](aura-notes.md).
@@ -69,9 +80,9 @@ Distinct from Edit Multi **Volume** (`0x99 + part` in `DUMP_MULTI`, live
 | ------------ | ------------------------------ |
 | Scope        | Part-specific                  |
 | Channel      | Part MIDI channel              |
-| SysEx        | **None observed** (CC 91 only) |
+| SysEx        | **`70`/`5B`** when Page A SysEx |
 | `DUMP_MULTI` | **No**                         |
-| Value range  | Not yet captured               |
+| Value range  | **0..127** (`stored = lcd`)    |
 
 ### Key Mode (CC 94)
 

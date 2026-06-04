@@ -165,7 +165,7 @@ channel and are **not** stored in the Single sound.
 | 7       | p       | Channel Volume          | 0–127                                                                                                                                                             |
 | 8       | p       | Balance                 |                                                                                                                                                                   |
 | 9       | p       | Contr 9                 |                                                                                                                                                                   |
-| 10      | a       | Panorama                | 0–127 (−64..+63)                                                                                                                                                  |
+| 10      | a       | Panorama                | 0–127 (−64..+63) — TI: `70` / `0x0A` — [Panorama](single-live-edit.md#panorama-0x0a-cmd0x70--cc-10) (`stored = ui + 64`)                                        |
 | 11      | p       | Expression              |                                                                                                                                                                   |
 | 12–16   | p       | Contr 12–16             |                                                                                                                                                                   |
 | 17      | a       | Osc1 Shape              | TI Classic: `00` wave, `01`–`3F` Wave>Saw, `40` Saw, `41`–`7E` Saw>Pulse, `7F` Pulse — [Osc 1 Classic](single-live-edit.md#shape-0x11--wave--saw-blend--pure-saw) |
@@ -211,8 +211,8 @@ channel and are **not** stored in the Single sound.
 | 66      | p       | Sostenuto Pedal         |                                                                                                                                                                   |
 | 67–78   | a       | Lfo1 Rate..FiltGain Amt |                                                                                                                                                                   |
 | 79–90   | a       | Lfo2 Rate..Pan Lfo2 Amt |                                                                                                                                                                   |
-| 91      | a       | Patch Volume            | 0–127 — TI: [control-change.md](control-change.md)                                                                                                                |
-| 93      | a       | Transpose               | −64..+63 — TI: [control-change.md](control-change.md)                                                                                                             |
+| 91      | a       | Patch Volume            | 0–127 — TI: `70` / `0x5B` — [Patch Volume](single-live-edit.md#patch-volume-0x5b-cmd0x70--cc-91) (`stored = lcd`)                                               |
+| 93      | a       | Transpose               | −64..+63 — TI: `70` / `0x5D` — [Transpose](single-live-edit.md#transpose--patch-transpose-0x5d-cmd0x70--cc-93) (`stored = ui + 64`)                              |
 | 94      | a       | Key Mode                | 0–4 Poly / Mono1–4 — TI: [control-change.md](control-change.md)                                                                                                   |
 | 97      | a       | Unison Mode             | TI **Voices**: `70` / `0x61` — [Unison](single-live-edit.md#unison) (Off `00`, Twin `01`, **3**–**8** `02`–`07`)                                                  |
 | 98      | a       | Unison Detune           | TI: `70` / `0x62` (**0..127**; panel when Voices ≥ Twin)                                                                                                          |
@@ -245,7 +245,7 @@ Example: `B0 21 40` — CC **33** (Osc Balance) = 64 on channel 1.
 | 16      | Clock Tempo                                     | 63–190 BPM                                                                                                                                                                                                                              |
 | 17      | Arp Clock                                       | 1–17                                                                                                                                                                                                                                    |
 | 18–21   | Lfo1/2/3/Delay Clock                            | Off, 1/64..                                                                                                                                                                                                                             |
-| 25      | Control Smooth Mode                             | 0 Off / 1 On / 2 Auto / 3 Note — TI: [single-live-edit.md](single-live-edit.md)                                                                                                                                                         |
+| 25      | Control Smooth Mode                             | TI: `71` / `0x19` — [Smooth Mode list](parameter-option-lists.md#control-smooth-mode--clock-quantize) (`00`–`14`, quantize grid + Off/On/Auto/Note)                                                                                   |
 | 26      | Bender Range Up                                 | −64..+63 — TI: [multis-live-edit.md](multis-live-edit.md)                                                                                                                                                                               |
 | 27      | Bender Range Down                               | −64..+63 — TI: [multis-live-edit.md](multis-live-edit.md)                                                                                                                                                                               |
 | 28      | Bender Scale                                    | 0 Linear / 1 Exponential — TI: [single-live-edit.md](single-live-edit.md)                                                                                                                                                               |
@@ -312,7 +312,7 @@ Payload byte indices for **1999 Multi dump** (not TI 267-byte layout):
 | 0–3     | Internal                                                       |
 | 4–13    | Multi name (10 × ASCII)                                        |
 | 14      | Internal                                                       |
-| 15      | Multi Clock Tempo (63–190 BPM)                                 |
+| 15      | Multi Clock Tempo (63–190 BPM) — TI `72`/`0F` ([Multi Tempo](single-live-edit.md#multi-tempo--master-clock-0x0f-cmd0x72), `stored = bpm - 63`) |
 | 16      | Internal                                                       |
 | 17–22   | Multi delay time/feedback/rate/depth/shape/output              |
 | 23      | Multi delay clock                                              |

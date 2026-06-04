@@ -280,9 +280,9 @@ Multi edit parameters are in
 | Velocity --> Volume                   | Velocity / Amplifier       |             | `71` / `0x3C` (±100 %)                                                                                      |
 | Velocity --> Panorama                 | Velocity / Amplifier       |             | `71` / `0x3D` (±100 %)                                                                                      |
 | Patch Volume                          | Amplifier                  |             | CC 91                                                                         |
-| Patch Panorama                        | Amplifier                  |             |                                                                               |
+| Patch Panorama                        | Amplifier                  |             | Same as Common **Panorama** — `70` / `0x0A` |
 | Reverb Send                           | Amplifier                  |             | `6E` / `0x02`                                                                 |
-| Delay Send                            | Amplifier                  |             |                                                                               |
+| Delay Send                            | Amplifier                  |             | TBD (may differ from FX Delay Send) |
 
 ### LFO
 
@@ -396,7 +396,7 @@ Multi edit parameters are in
 | Chorus Distance                 | Chorus Rotary Speaker         |             |           |
 | Distortion Type                 | Distortion                    |             |           |
 | Distortion Mix                  | Distortion                    |             |           |
-| Distortion Intensity / Drive    | Distortion                    |             |           |
+| Distortion Intensity            | Distortion                    |             | Effects module TBD; soft-knob sweep `71`/`65` (`00`/`7F`) — [runtime only](single-live-edit.md#soft-knob-runtime-distortion-intensity) |
 | Distortion Treble Booster       | Distortion                    |             |           |
 | Distortion High Cut             | Distortion                    |             |           |
 | Distortion Quality              | Distortion                    |             |           |
@@ -450,16 +450,16 @@ Multi edit parameters are in
 | Control                                 | SubCategory        | Dump offset | Live edit     |
 | --------------------------------------- | ------------------ | ----------- | ------------- |
 | FX Delay Switch                         | Delay              |             |               |
-| Delay Send / Mix                        | Delay              |             |               |
-| Delay Type                              | Delay              |             |               |
-| Delay Mode                              | Delay              |             |               |
-| Delay Clock                             | Delay              |             |               |
+| Delay Send                              | Delay              |             | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd) |
+| Delay Type                              | Delay              |             | [Delay Type](parameter-option-lists.md#delay-type) — Classic `00` … Tape Doppler `03` |
+| Delay Mode                              | Delay              |             | [Delay Mode](parameter-option-lists.md#delay-mode) — Classic; `01`–`16` |
+| Delay Clock                             | Delay              |             | [Delay Clock](parameter-option-lists.md#delay-clock) — Simple/Ping Pong modes |
 | Delay Time (ms)                         | Delay              |             |               |
-| Delay Feedback                          | Delay              |             |               |
-| Delay Color                             | Delay              |             |               |
-| Delay LFO Rate                          | Delay              |             |               |
-| Delay LFO Depth                         | Delay              |             |               |
-| Delay LFO Shape                         | Delay              |             |               |
+| Delay Feedback                          | Delay              |             | **0.0..100.0 %** — `round(pct×127/100)`; `00`/`7F` — [Delay Feedback](single-live-edit.md#delay) |
+| Delay Coloration                        | Delay              |             | **−64..+63** → `ui+64` — [Delay](single-live-edit.md#delay) |
+| Delay LFO Rate                          | Delay              |             | `70` / `0x70` — [Rate](single-live-edit.md#delay-lfo-rate-cmd0x70-param-0x70) |
+| Delay LFO Depth                         | Delay              |             | `70` / `0x74` — [Depth](single-live-edit.md#delay-lfo-depth-cmd0x70-param-0x74) |
+| Delay LFO Shape                         | Delay              |             | `70` / `0x76` — [LFO Wave](single-live-edit.md#delay-lfo-wave-cmd0x70-param-0x76) |
 | Delay Tape Delay Clock Left             | Delay Tape Clocked |             |               |
 | Delay Tape Delay Clock Right            | Delay Tape Clocked |             |               |
 | Delay Tape Delay Feedback               | Delay Tape Clocked |             |               |
@@ -479,7 +479,7 @@ Multi edit parameters are in
 | Delay Tape Delay Bandwidth              | Delay Tape Doppler |             |               |
 | Delay Tape Delay Modulation             | Delay Tape Doppler |             |               |
 | FX Reverb Switch                        | Reverb             |             |               |
-| Reverb Send                             | Reverb             |             | `6E` / `0x02` |
+| Reverb Send                             | Reverb             |             | `6E` / `0x02` — [Reverb Send (LCD)](parameter-option-lists.md#reverb-send-lcd) |
 | Reverb Mode                             | Reverb             |             |               |
 | Reverb Type                             | Reverb             |             |               |
 | Reverb Time / Decay                     | Reverb             |             |               |
@@ -507,27 +507,26 @@ Multi edit parameters are in
 
 | Control                            | SubCategory       | Dump offset     | Live edit                                                                           |
 | ---------------------------------- | ----------------- | --------------- | ----------------------------------------------------------------------------------- |
-| Patch Transpose                    | Common Parameters |                 | CC 93                                                                               |
+| Transpose / Patch Transpose        | Common Parameters |                 | `70` / `0x5D` (CC 93) — **−64..+63** → `ui+64` — [Transpose](single-live-edit.md#transpose--patch-transpose-0x5d-cmd0x70--cc-93) |
 | ~~Part Detune~~                    | —                 | —               | **Multi** detune (`0x72`/`0x26`) — not Edit Single; CSV lists VC Common access only |
-| Parameter Smooth Mode              | Common Parameters | **Not in dump** | `71` / `0x19`                                                                       |
+| Multi Tempo / Master Clock         | Common Parameters | `0x17` in `DUMP_MULTI` | `72` / `0x0F` — **63..190** bpm → `stored = bpm - 63` — [Multi Tempo](single-live-edit.md#multi-tempo--master-clock-0x0f-cmd0x72) |
+| Parameter Smooth Mode              | Common Parameters | **Not in dump** | `71` / `0x19` — [Control Smooth Mode / clock quantize](parameter-option-lists.md#control-smooth-mode--clock-quantize) |
 | Oscillator Section Keyboard Mode   | Common Parameters |                 | `70`/`0x5E` or CC 94                                                                |
-| Patch Volume                       | Common Parameters |                 | CC 91                                                                               |
-| Bender Down Range                  | Pitch Bender      | **Not in dump** | `71` / `0x1A`                                                                       |
-| Bender Up Range                    | Pitch Bender      | **Not in dump** | `71` / `0x1B`                                                                       |
-| Patch Common Bender Scale          | Pitch Bender      | **Not in dump** | `72`/`0x1D` Linear; `71`/`0x1C` Exp                                                 |
+| Patch Volume                       | Common Parameters |                 | `70` / `0x5B` (CC 91) — **0..127** direct — [Patch Volume](single-live-edit.md#patch-volume-0x5b-cmd0x70--cc-91) |
+| Panorama                           | Common Parameters |                 | `70` / `0x0A` (CC 10) — **−64..+63** → `ui+64` — [Panorama](single-live-edit.md#panorama-0x0a-cmd0x70--cc-10) |
+| Bend Down                          | Pitch Bender      | **Not in dump** | `71` / `0x1B` — **−64..+63** → `ui+64` — [Bend Down](single-live-edit.md#bend-down-0x1b-cmd0x71) |
+| Bend Up                            | Pitch Bender      | **Not in dump** | `71` / `0x1A` — same encoding — [Bend Up](single-live-edit.md#bend-up-0x1a-cmd0x71) |
+| Bender Scale                       | Pitch Bender      | **Not in dump** | `71` / `0x1C` — [Bender Scale](parameter-option-lists.md#bender-scale) — [live](single-live-edit.md#bender-scale-0x1c-cmd0x71) |
 | Patch Category 1                   | Category          |                 | `71` / `0x7B` — [Patch name categories](parameter-option-lists.md#patch-name-categories) (**Name Cat 1**) |
 | Patch Category 2                   | Category          |                 | `71` / `0x7C` — same list (**Name Cat 2**) — [Categories](single-live-edit.md#categories-edit-single) |
 | Surround Channel Balance           | Output            |                 | `71` / `0x3A` (−64..+63, `ui+64`) — [Surround Balance](single-live-edit.md#balance-0x3a-cmd0x71); also mod dest **116** |
 | Multi Part Parameter Output Select | Output            | **Not in dump** | **`73` / `0x2D`** — **Edit Single → Surround → Output** — [Secondary output routing](parameter-option-lists.md#secondary-output-routing) |
-| Soft Knob 1 Destination            | Soft Knobs        |                 | `71` / `0x3E` — [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) (wire `<value>` ≠ index) |
-| Soft Knob 1 Name                   | Soft Knobs        |                 | `71` / `0x33` — [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (wire `<value>` per row) |
-| Soft Knob 1 Amount                 | Soft Knobs        |                 |                                                                                     |
-| Soft Knob 2 Destination            | Soft Knobs        |                 | `71` / `0x3F` — same list as Knob 1 — [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) |
-| Soft Knob 2 Name                   | Soft Knobs        |                 | `71` / `0x34` — [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (wire `<value>` per row) |
-| Soft Knob 2 Amount                 | Soft Knobs        |                 |                                                                                     |
-| Soft Knob 3 Destination            | Soft Knobs        |                 | `71` / `0x40` — same list as Knob 1 — [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) |
-| Soft Knob 3 Name                   | Soft Knobs        |                 | `71` / `0x35` — [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (wire `<value>` per row) |
-| Soft Knob 3 Amount                 | Soft Knobs        |                 |                                                                                     |
+| Soft Knob 1 Function As…           | Soft Knobs        |                 | `71` / `0x3E` — [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) (wire `<value>` ≠ index) |
+| Soft Knob 1 Name                   | Soft Knobs        |                 | `71` / `0x33` — [Soft Knob Names](parameter-option-lists.md#soft-knob-names); LCD label above knob 1 |
+| Soft Knob 2 Function As…           | Soft Knobs        |                 | `71` / `0x3F` — same destination list — [Soft Knobs](single-live-edit.md#soft-knobs-edit-single) |
+| Soft Knob 2 Name                   | Soft Knobs        |                 | `71` / `0x34` — [Soft Knob Names](parameter-option-lists.md#soft-knob-names) |
+| Soft Knob 3 Function As…           | Soft Knobs        |                 | `71` / `0x40` — same destination list |
+| Soft Knob 3 Name                   | Soft Knobs        |                 | `71` / `0x35` — [Soft Knob Names](parameter-option-lists.md#soft-knob-names) |
 
 ### Patch Utility - Config
 

@@ -1,7 +1,9 @@
 # Access Virus SysEx
 
 Reverse engineered **Access Virus TI mk2** SysEx specifications with assistance
-from Cursor AI.
+from Cursor AI. The same messages apply in principle to **[OsTIrus](docs/ostirus.md)**
+(TI/TI2/Snow firmware emulation in a DAW) — no hardware required for MIDI/SysEx
+control, only a suitable host port.
 
 ## Setup
 
@@ -18,9 +20,12 @@ sendmidi list
 receivemidi list
 ```
 
-Use **`Virus TI USB Plugin I/O`** for both directions (VST/plugin path). Use
-`Virus TI USB External I/O` only when controlling the synth from a standalone
-keyboard rig, not through the plugin.
+Use **`Virus TI USB Plugin I/O`** for both directions when using the **Access
+Virus TI plugin** with hardware. Use `Virus TI USB External I/O` only when
+controlling the synth from a standalone keyboard rig, not through the plugin.
+
+**[OsTIrus](docs/ostirus.md)** users: route MIDI/SysEx from your DAW or a
+virtual port into the plugin; port names are host-specific (`sendmidi list`).
 
 Send SysEx with **`hex`** before **`syx`**, and **omit `F0`/`F7`** (sendmidi
 adds them). Bare decimals are wrong (`20` → `0x14`); `0x20` parses as **0**:
@@ -159,6 +164,7 @@ Volume = CC 91). See [docs/control-change.md](docs/control-change.md).
 | Live Single / part sound edits              | [docs/single-live-edit.md](docs/single-live-edit.md)                                   |
 | Banks, arrangement, architecture            | [docs/virus.md](docs/virus.md)                                                         |
 | AURA plugin / host quirks (not Virus SysEx) | [docs/aura-notes.md](docs/aura-notes.md)                                               |
+| OsTIrus (TI2 firmware in a DAW, no hardware)  | [docs/ostirus.md](docs/ostirus.md)                                                     |
 
 ## Documentation
 
@@ -175,3 +181,4 @@ Volume = CC 91). See [docs/control-change.md](docs/control-change.md).
 | Single Live Edit                       | [docs/single-live-edit.md](docs/single-live-edit.md)             |
 | Single parameter option lists          | [docs/parameter-option-lists.md](docs/parameter-option-lists.md) |
 | AURA plugin / host quirks (not Virus)  | [docs/aura-notes.md](docs/aura-notes.md)                         |
+| OsTIrus (DSP56300 TI/TI2 emulation)    | [docs/ostirus.md](docs/ostirus.md)                               |

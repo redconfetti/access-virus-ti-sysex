@@ -49,7 +49,7 @@ export does not reflect the change.
 | AURA label       | Synth parameter                                                               |
 | ---------------- | ----------------------------------------------------------------------------- |
 | **Part Level**   | Multi **Volume** (`0x99 + part`, live `0x27`) on Edit Multi page              |
-| **Patch Volume** | Edit Single → Common; **CC 91 only** — [control-change.md](control-change.md) |
+| **Patch Volume** | Edit Single → Common; CC 91 or `70`/`5B` — [single-live-edit.md](single-live-edit.md#patch-volume-0x5b-cmd0x70--cc-91) |
 
 AURA may display the **stored** byte value (e.g. `100` = `0x64`)
 while the Virus panel shows **bipolar** UI (e.g. `+36` where `0x64`

@@ -25,11 +25,22 @@ See [waf80.md](waf80.md) for classic Page A/B parameter indices.
 | [Patch name categories](#patch-name-categories) | Edit Single → Categories → **Name Cat 1** / **Name Cat 2** (`71`/`7B`, `71`/`7C`) |
 | [Soft Knob Destinations](#soft-knob-destinations) | Soft Knob **Function As…** — `71`/`3E`, `3F`, `40` (wire `<value>` per row) |
 | [Soft Knob Names](#soft-knob-names) | Soft Knob **Name** — `71`/`33`, `34`, `35` (wire `<value>` per row) |
+| [Control Smooth Mode / clock quantize](#control-smooth-mode--clock-quantize) | Common **Smooth Mode** (`71`/`19`); same grid as LFO/Delay **Clock** (WAF80) |
+| [Bender Scale](#bender-scale) | Common **Bender Scale** (`71`/`1C`) |
+| [Delay Type](#delay-type) | Edit FX → Delay **Type** |
+| [Delay Mode](#delay-mode) | Edit FX → Delay **Mode** (Classic; **`01`–`16`**) |
+| [Delay Clock](#delay-clock) | Edit FX → Delay **Clock** (Simple Delay / Ping Pong modes) |
+| [Delay LFO Rate](#delay-lfo-rate) | Edit FX → Delay **Rate** (`0`–`127`) |
+| [Delay LFO Depth](#delay-lfo-depth) | Edit FX → Delay **Depth** (`0.0`–`100.0 %`) |
+| [Delay LFO Wave](#delay-lfo-wave) | Edit FX → Delay **LFO Wave** (`00`–`05`) |
+| [Delay Send (LCD)](#delay-send-lcd) | Edit FX → Delay **Send** (`stored` = index `00`–`7F`) |
+| [Reverb Send (LCD)](#reverb-send-lcd) | Edit FX → Reverb **Send** (`6E`/`02`; sparse captures) |
 | [Mod Matrix Sources](#mod-matrix-sources) | Mod matrix **Source** |
 | [Mod Matrix Destinations](#mod-matrix-destinations) | Mod matrix **Destination** |
 | [Wavetable Names](#wavetable-names) | Osc wavetable wave select |
 
-LCD↔wire curves (not simple enums): [Osc 1 Classic Pulse Width](#osc-1-classic--pulse-width-lcd),
+LCD↔wire curves (not simple enums): [Edit Single Panorama](#edit-single--panorama-lcd),
+[Osc 1 Classic Pulse Width](#osc-1-classic--pulse-width-lcd),
 [Osc 1 Hypersaw Density](#osc-1-hypersaw--density-lcd).
 
 ---
@@ -113,6 +124,349 @@ panel **2**–**16** → **`02`–`10`**.
 | 14    | `0E`      | 14     |
 | 15    | `0F`      | 15     |
 | 16    | `10`      | 16     |
+
+---
+
+## Bender Scale
+
+**Edit Single → Common → Bender Scale** (`71` / `0x1C`). **`stored = index`**.
+
+| Index | `<value>` | Option        |
+| ----- | --------- | ------------- |
+| 0     | `00`      | Linear        |
+| 1     | `01`      | Exponential   |
+
+---
+
+## Delay Type
+
+**Edit FX → Delay → Type**. **`stored = index`**.
+
+| Index | `<value>` | Option         |
+| ----- | --------- | -------------- |
+| 0     | `00`      | Classic        |
+| 1     | `01`      | Tape Clocked   |
+| 2     | `02`      | Tape Free      |
+| 3     | `03`      | Tape Doppler   |
+
+---
+
+## Delay Mode
+
+**Edit FX → Delay → Mode** (with **Type** = Classic). **`stored = <value>`**
+(wire byte; first option is **`01`**, not **`00`**).
+
+| `<value>` | Option           |
+| --------- | ---------------- |
+| `01`      | Simple Delay     |
+| `02`      | Ping Pong 2:1    |
+| `03`      | Ping Pong 4:3    |
+| `04`      | Ping Pong 4:1    |
+| `05`      | Ping Pong 8:7    |
+| `06`      | Pattern 1+1      |
+| `07`      | Pattern 2+1      |
+| `08`      | Pattern 3+1      |
+| `09`      | Pattern 4+1      |
+| `0A`      | Pattern 5+1      |
+| `0B`      | Pattern 2+3      |
+| `0C`      | Pattern 2+5      |
+| `0D`      | Pattern 3+2      |
+| `0E`      | Pattern 3+3      |
+| `0F`      | Pattern 3+4      |
+| `10`      | Pattern 3+5      |
+| `11`      | Pattern 4+3      |
+| `12`      | Pattern 4+5      |
+| `13`      | Pattern 5+2      |
+| `14`      | Pattern 5+3      |
+| `15`      | Pattern 5+4      |
+| `16`      | Pattern 5+5      |
+
+**Pattern …** modes (`06`–`16`): no extra Delay rows (**Clock** / **Delay Time** /
+**Coloration**) on the panel. **Simple Delay** and **Ping Pong …** modes show those
+controls.
+
+---
+
+## Delay Clock
+
+**Edit FX → Delay → Clock** (when **Mode** = Simple Delay or Ping Pong …).
+Live edit: **`F0 … 71 00 14 <value> F7`** (WAF80 Page **B#20**). **`stored = <value>`**
+(wire byte). Table order = **panel menu** (slow → fast). Distinct from Common
+**Smooth Mode** (`71`/`19`); same division labels as
+[Control Smooth Mode / clock quantize](#control-smooth-mode--clock-quantize)
+quantize rows but **different** wire map.
+
+| `<value>` | Option |
+| --------- | ------ |
+| `00`      | Off    |
+| `01`      | 1/64   |
+| `02`      | 1/32   |
+| `0B`      | 1/24   |
+| `07`      | 3/64   |
+| `03`      | 1/16   |
+| `0C`      | 1/12   |
+| `08`      | 3/32   |
+| `04`      | 1/8    |
+| `0D`      | 1/6    |
+| `09`      | 3/16   |
+| `05`      | 1/4    |
+| `0E`      | 1/3    |
+| `0A`      | 3/8    |
+| `06`      | 1/2    |
+| `0F`      | 2/3    |
+| `10`      | 3/4    |
+
+Valid wire values **`00`–`10`** only (every byte in that range is used; no gaps).
+**`11`**, **`12`** probed via SysEx → **ignored**. **`13`–`7F`** not in menu.
+
+---
+
+## Delay LFO Rate {#delay-lfo-rate}
+
+**Edit FX → Delay → Rate**. Live edit: **`cmd=0x70`**, param **`0x70`**
+(WAF80 Page **A#112**). **`stored = lcd`** (**`0`–`127`**).
+
+---
+
+## Delay LFO Depth {#delay-lfo-depth}
+
+**Edit FX → Delay → Depth**. Live edit: **`cmd=0x70`**, param **`0x74`**
+(Page **A#116**). Panel **0.0..100.0 %**:
+
+```text
+stored = round(pct × 127 / 100)
+```
+
+**`00`** = 0 %, **`7F`** = 100.0 %.
+
+---
+
+## Delay LFO Wave {#delay-lfo-wave}
+
+**Edit FX → Delay → LFO Wave**. Live edit: **`cmd=0x70`**, param **`0x76`**
+(Page **A#118**). **`stored = <value>`** (wire byte).
+
+| `<value>` | Option    | Notes |
+| --------- | --------- | ----- |
+| `00`      | Sine      |       |
+| `01`      | Triangle  |       |
+| `02`      | Sawtooth  |       |
+| `03`      | Square    |       |
+| `04`      | S&H       | **Sample and Hold** |
+| `05`      | S&G       | **Sample and Glide** — S&H through a slew limiter |
+
+---
+
+## Delay Send (LCD) {#delay-send-lcd}
+
+**Edit FX → Delay → Send**. **`stored = index`** (`00`–`7F`). Panel-confirmed on
+TI mk2 (see table). Rows **`19`–`1D`**, **`1F`–`27`**, **`29`–`3F`** are
+**amplitude-interpolated** (not yet spot-checked).
+
+| Region | Rule |
+| ------ | ---- |
+| `00` | **Off** |
+| `01`–`40` | Piecewise attenuation — see table |
+| `41`–`95` (`29`–`5F`) | **`−0.25 × (96 − index)`** dB; wholes show **`.0`** (**`−9.0 dB`**) |
+| `96`–`103` (`60`–`67`) | **`0/−0.3 × (index − 96)`** dB |
+| `104`–`107` (`68`–`6B`) | Increasing steps — see table |
+| `108`–`126` (`6C`–`7E`) | **`0/−X dB`** headroom |
+| `127` (`7F`) | **Effect** (max send) |
+
+| Index | `<value>` | LCD | |
+| ----- | --------- | --- | --- |
+| 0 | `00` | Off | |
+| 1 | `01` | −46.2 dB | ✓ |
+| 2 | `02` | −40.2 dB | ✓ |
+| 3 | `03` | −36.6 dB | ✓ |
+| 4 | `04` | −34.1 dB | ✓ |
+| 5 | `05` | −32.2 dB | ✓ |
+| 6 | `06` | −30.6 dB | ✓ |
+| 7 | `07` | −29.3 dB | ✓ |
+| 8 | `08` | −28.1 dB | ✓ |
+| 9 | `09` | −27.1 dB | ✓ |
+| 10 | `0A` | −26.2 dB | ✓ |
+| 11 | `0B` | −25.4 dB | ✓ |
+| 12 | `0C` | −24.6 dB | ✓ |
+| 13 | `0D` | −23.9 dB | ✓ |
+| 14 | `0E` | −23.3 dB | ✓ |
+| 15 | `0F` | −22.7 dB | ✓ |
+| 16 | `10` | −22.1 dB | ✓ |
+| 17 | `11` | −21.6 dB | ✓ |
+| 18 | `12` | −21.1 dB | ✓ |
+| 19 | `13` | −20.6 dB | ✓ |
+| 20 | `14` | −20.6 dB | ✓ |
+| 21 | `15` | −19.7 dB | ✓ |
+| 22 | `16` | −19.3 dB | ✓ |
+| 23 | `17` | −18.9 dB | ✓ |
+| 24 | `18` | −18.6 dB | ✓ |
+| 25 | `19` | −18.2 dB | ≈ |
+| 26 | `1A` | −17.8 dB | ≈ |
+| 27 | `1B` | −17.5 dB | ≈ |
+| 28 | `1C` | −17.2 dB | ≈ |
+| 29 | `1D` | −16.9 dB | ≈ |
+| 30 | `1E` | −16.6 dB | ✓ |
+| 31 | `1F` | −16.3 dB | ≈ |
+| 32 | `20` | −16.0 dB | ≈ |
+| 33 | `21` | −15.7 dB | ≈ |
+| 34 | `22` | −15.5 dB | ≈ |
+| 35 | `23` | −15.2 dB | ≈ |
+| 36 | `24` | −14.9 dB | ≈ |
+| 37 | `25` | −14.7 dB | ≈ |
+| 38 | `26` | −14.5 dB | ≈ |
+| 39 | `27` | −14.2 dB | ≈ |
+| 40 | `28` | −14.0 dB | ✓ |
+| 41 | `29` | −13.75 dB | ✓ |
+| 42 | `2A` | −13.5 dB | ✓ |
+| 43 | `2B` | −13.25 dB | ✓ |
+| 44 | `2C` | −13.0 dB | ✓ |
+| 45 | `2D` | −12.75 dB | ✓ |
+| 46 | `2E` | −12.5 dB | ✓ |
+| 47 | `2F` | −12.25 dB | ✓ |
+| 48 | `30` | −12.0 dB | ✓ |
+| 49 | `31` | −11.75 dB | ✓ |
+| 50 | `32` | −11.5 dB | ✓ |
+| 51 | `33` | −11.25 dB | ✓ |
+| 52 | `34` | −11.0 dB | ✓ |
+| 53 | `35` | −10.75 dB | ✓ |
+| 54 | `36` | −10.5 dB | ✓ |
+| 55 | `37` | −10.25 dB | ✓ |
+| 56 | `38` | −10.0 dB | ✓ |
+| 57 | `39` | −9.75 dB | ✓ |
+| 58 | `3A` | −9.5 dB | ✓ |
+| 59 | `3B` | −9.25 dB | ✓ |
+| 60 | `3C` | −9.0 dB | ✓ |
+| 61 | `3D` | −8.75 dB | ✓ |
+| 62 | `3E` | −8.5 dB | ✓ |
+| 63 | `3F` | −8.25 dB | ✓ |
+| 64 | `40` | −8.0 dB | ✓ |
+| 65 | `41` | −7.75 dB | ✓ |
+| 66 | `42` | −7.5 dB | ✓ |
+| 67 | `43` | −7.25 dB | ✓ |
+| 68 | `44` | −7.0 dB | ✓ |
+| 69 | `45` | −6.75 dB | ✓ |
+| 70 | `46` | −6.5 dB | ✓ |
+| 71 | `47` | −6.25 dB | ✓ |
+| 72 | `48` | −6.0 dB | ✓ |
+| 73 | `49` | −5.75 dB | ✓ |
+| 74 | `4A` | −5.5 dB | ✓ |
+| 75 | `4B` | −5.25 dB | ✓ |
+| 76 | `4C` | −5.0 dB | ✓ |
+| 77 | `4D` | −4.75 dB | ✓ |
+| 78 | `4E` | −4.5 dB | ✓ |
+| 79 | `4F` | −4.25 dB | ✓ |
+| 80 | `50` | −4.0 dB | ✓ |
+| 81 | `51` | −3.75 dB | ✓ |
+| 82 | `52` | −3.5 dB | ✓ |
+| 83 | `53` | −3.25 dB | ✓ |
+| 84 | `54` | −3.0 dB | ✓ |
+| 85 | `55` | −2.75 dB | ✓ |
+| 86 | `56` | −2.5 dB | ✓ |
+| 87 | `57` | −2.25 dB | ✓ |
+| 88 | `58` | −2.0 dB | ✓ |
+| 89 | `59` | −1.75 dB | ✓ |
+| 90 | `5A` | −1.5 dB | ✓ |
+| 91 | `5B` | −1.25 dB | ✓ |
+| 92 | `5C` | −1.0 dB | ✓ |
+| 93 | `5D` | −0.75 dB | ✓ |
+| 94 | `5E` | −0.5 dB | ✓ |
+| 95 | `5F` | −0.25 dB | ✓ |
+| 96 | `60` | 0/0 dB | ✓ |
+| 97 | `61` | 0/−0.3 dB | ✓ |
+| 98 | `62` | 0/−0.6 dB | ✓ |
+| 99 | `63` | 0/−0.9 dB | ✓ |
+| 100 | `64` | 0/−1.2 dB | ✓ |
+| 101 | `65` | 0/−1.5 dB | ✓ |
+| 102 | `66` | 0/−1.8 dB | ✓ |
+| 103 | `67` | 0/−2.1 dB | ✓ |
+| 104 | `68` | 0/−2.5 dB | ✓ |
+| 105 | `69` | 0/−2.9 dB | ✓ |
+| 106 | `6A` | 0/−3.3 dB | ✓ |
+| 107 | `6B` | 0/−3.7 dB | ✓ |
+| 108 | `6C` | 0/−4.1 dB | ✓ |
+| 109 | `6D` | 0/−4.5 dB | ✓ |
+| 110 | `6E` | 0/−5.0 dB | ✓ |
+| 111 | `6F` | 0/−5.5 dB | ✓ |
+| 112 | `70` | 0/−6.0 dB | ✓ |
+| 113 | `71` | 0/−6.6 dB | ✓ |
+| 114 | `72` | 0/−7.2 dB | ✓ |
+| 115 | `73` | 0/−7.8 dB | ✓ |
+| 116 | `74` | 0/−8.5 dB | ✓ |
+| 117 | `75` | 0/−9.3 dB | ✓ |
+| 118 | `76` | 0/−10.1 dB | ✓ |
+| 119 | `77` | 0/−11.0 dB | ✓ |
+| 120 | `78` | 0/−12.0 dB | ✓ |
+| 121 | `79` | 0/−13.2 dB | ✓ |
+| 122 | `7A` | 0/−14.5 dB | ✓ |
+| 123 | `7B` | 0/−16.1 dB | ✓ |
+| 124 | `7C` | 0/−18.1 dB | ✓ |
+| 125 | `7D` | 0/−20.6 dB | ✓ |
+| 126 | `7E` | 0/−24.0 dB | ✓ |
+| 127 | `7F` | Effect | ✓ |
+
+**`60`–`67`:** **`0/−0.3 × (index − 96)`** dB. **`68`–`6B`:** larger steps
+(**`68`** **`−2.5`**, then **`−0.4`** through **`6A`**, **`6B`** **`−3.7`**).
+**`6C`–`7E`:** headroom ladder. **`7F`** = **Effect**.
+
+Legend: **✓** = panel-confirmed; **≈** = **`01`–`40`** gaps only (amp interp).
+
+---
+
+## Reverb Send (LCD) {#reverb-send-lcd}
+
+**Edit FX → Reverb → Send** (live edit **`6E`/`02`** — see
+[single-live-edit.md](single-live-edit.md#reverb-send-cmd0x6e)). **`stored = index`**
+(`00`–`7F`). **Not the same LCD curve as [Delay Send](#delay-send-lcd)** — capture
+remaining indices on the **Reverb Send** control.
+
+Hardware-confirmed rows only (TI mk2); unlisted indices **TBD**:
+
+| Index | `<value>` | LCD |
+| ----- | --------- | --- |
+| 0 | `00` | Off |
+| 1 | `01` | −46.2 dB |
+| 2 | `02` | −40.2 dB |
+| 10 | `0A` | −26.2 dB |
+| 20 | `14` | −20.6 dB |
+| 30 | `1E` | −16.6 dB |
+| 40 | `28` | −14.0 dB |
+| 41 | `29` | −13.75 dB |
+| 45 | `2D` | −12.75 dB |
+| 54 | `36` | −10.5 dB |
+| 57 | `39` | −9.75 dB |
+| 90 | `5A` | −1.5 dB |
+| 91 | `5B` | −1.25 dB |
+| 92 | `5C` | −1.0 dB |
+| 93 | `5D` | −0.75 dB |
+| 94 | `5E` | −0.5 dB |
+| 95 | `5F` | −0.25 dB |
+| 96 | `60` | 0/0 dB |
+| 97 | `61` | 0/−0.3 dB |
+| 98 | `62` | 0/−0.6 dB |
+| 99 | `63` | 0/−0.9 dB |
+| 100 | `64` | 0/−1.2 dB |
+| 108 | `6C` | 0/−4.1 dB |
+| 109 | `6D` | 0/−4.5 dB |
+| 110 | `6E` | 0/−5.0 dB |
+| 111 | `6F` | 0/−5.5 dB |
+| 112 | `70` | 0/−6.0 dB |
+| 114 | `72` | 0/−7.2 dB |
+| 115 | `73` | 0/−7.8 dB |
+| 116 | `74` | 0/−8.5 dB |
+| 117 | `75` | 0/−9.3 dB |
+| 118 | `76` | 0/−10.1 dB |
+| 119 | `77` | 0/−11.0 dB |
+| 120 | `78` | 0/−12.0 dB |
+| 121 | `79` | 0/−13.2 dB |
+| 122 | `7A` | 0/−14.5 dB |
+| 123 | `7B` | 0/−16.1 dB |
+| 124 | `7C` | 0/−18.1 dB |
+| 125 | `7D` | 0/−20.6 dB |
+| 126 | `7E` | 0/−24.0 dB |
+| 127 | `7F` | effect (max) |
+
+All indices not listed above: capture on **Reverb Send** (panel sweep, same
+workflow as Delay Send).
 
 ---
 
@@ -685,6 +1039,129 @@ on TI mk2 hardware (full **+** sweep).
 | 97    | Element 5    |
 | 98    | Bad Signs    |
 | 99    | Domina7rix   |
+
+## Control Smooth Mode / clock quantize
+
+**Edit Single → Common → Smooth Mode** (`cmd=0x71`, `param=0x19`). **`stored = index`**
+(`00`–`14`). The **Quantise …** rows (`04`–`14`, hardware-confirmed) use the same **clock division
+labels** Access documents for **LFO 1/2/3 / Delay Clock** (WAF80 Page B: *Off,
+1/64 …*) and the same naming as **Arpeggiator Clock / Resolution** on the panel
+— those parameters are **not yet wire-mapped** in this repo, so they do **not**
+share a second table here; expect the **quantize names and order** to match when
+captured.
+
+| Index | `<value>` | Option        |
+| ----- | --------- | ------------- |
+| 0     | `00`      | Off           |
+| 1     | `01`      | On            |
+| 2     | `02`      | Auto          |
+| 3     | `03`      | Note          |
+| 4     | `04`      | Quantise 1/64 |
+| 5     | `05`      | Quantise 1/32 |
+| 6     | `06`      | Quantise 1/16 |
+| 7     | `07`      | Quantise 1/8  |
+| 8     | `08`      | Quantise 1/4  |
+| 9     | `09`      | Quantise 1/2  |
+| 10    | `0A`      | Quantise 3/64 |
+| 11    | `0B`      | Quantise 3/32 |
+| 12    | `0C`      | Quantise 3/16 |
+| 13    | `0D`      | Quantise 3/8  |
+| 14    | `0E`      | Quantise 1/24 |
+| 15    | `0F`      | Quantise 1/12 |
+| 16    | `10`      | Quantise 1/6  |
+| 17    | `11`      | Quantise 1/3  |
+| 18    | `12`      | Quantise 2/3  |
+| 19    | `13`      | Quantise 3/4  |
+| 20    | `14`      | Quantise 1/1  |
+
+WAF80 *Control Smooth Mode* lists only **Off / On / Auto / Note** (vintage
+four-mode summary); the Virus TI panel exposes the full quantize grid above.
+
+---
+
+## Edit Single — Panorama (LCD)
+
+**Edit Single → Common → Panorama** (`cmd=0x70`, `param=0x0A`).
+Bipolar **`stored = ui + 64`** (`00` = full left, `40` = center, `7F` = full right).
+Panel readout is **not** linear in the wire byte; VALUE ± steps are mostly **1.5 %**
+or **1.6 %** in the displayed value.
+
+**Mirror rule** (hardware-confirmed **`41`–`7E`**): for right wire **`R`**, the label
+matches left wire **`0x80 − R`** with **`L<`** → **`% >R`**. Endpoints **`00`** /
+**`7F`** are both **100.0 %** (not mirrored).
+
+| `<value>` | LCD | `<value>` | LCD |
+| --------- | --- | --------- | --- |
+| `00` | L< 100.0 % | `01` | L< 98.4 % |
+| `02` | L< 96.9 % | `03` | L< 95.3 % |
+| `04` | L< 93.8 % | `05` | L< 92.2 % |
+| `06` | L< 90.6 % | `07` | L< 89.1 % |
+| `08` | L< 87.5 % | `09` | L< 85.9 % |
+| `0A` | L< 84.4 % | `0B` | L< 82.8 % |
+| `0C` | L< 81.3 % | `0D` | L< 79.7 % |
+| `0E` | L< 78.1 % | `0F` | L< 76.6 % |
+| `10` | L< 75.0 % | `11` | L< 73.4 % |
+| `12` | L< 71.9 % | `13` | L< 70.3 % |
+| `14` | L< 68.8 % | `15` | L< 67.2 % |
+| `16` | L< 65.6 % | `17` | L< 64.1 % |
+| `18` | L< 62.5 % | `19` | L< 60.9 % |
+| `1A` | L< 59.4 % | `1B` | L< 57.8 % |
+| `1C` | L< 56.3 % | `1D` | L< 54.7 % |
+| `1E` | L< 53.1 % | `1F` | L< 51.6 % |
+| `20` | L< 50.0 % | `21` | L< 48.4 % |
+| `22` | L< 46.9 % | `23` | L< 45.3 % |
+| `24` | L< 43.8 % | `25` | L< 42.2 % |
+| `26` | L< 40.6 % | `27` | L< 39.0 % |
+| `28` | L< 37.5 % | `29` | L< 35.9 % |
+| `2A` | L< 34.4 % | `2B` | L< 32.8 % |
+| `2C` | L< 31.3 % | `2D` | L< 29.7 % |
+| `2E` | L< 28.1 % | `2F` | L< 26.6 % |
+| `30` | L< 25.0 % | `31` | L< 23.4 % |
+| `32` | L< 21.9 % | `33` | L< 20.3 % |
+| `34` | L< 18.8 % | `35` | L< 17.2 % |
+| `36` | L< 15.6 % | `37` | L< 14.1 % |
+| `38` | L< 12.5 % | `39` | L< 10.9 % |
+| `3A` | L< 9.4 % | `3B` | L< 7.8 % |
+| `3C` | L< 6.3 % | `3D` | L< 4.7 % |
+| `3E` | L< 3.1 % | `3F` | L< 1.6 % |
+| `40` | <0> | | |
+
+Right of center (`41`–`7F`):
+
+| `<value>` | LCD | `<value>` | LCD |
+| --------- | --- | --------- | --- |
+| `41` | 1.6 % >R | `42` | 3.1 % >R |
+| `43` | 4.7 % >R | `44` | 6.3 % >R |
+| `45` | 7.8 % >R | `46` | 9.4 % >R |
+| `47` | 10.9 % >R | `48` | 12.5 % >R |
+| `49` | 14.1 % >R | `4A` | 15.6 % >R |
+| `4B` | 17.2 % >R | `4C` | 18.8 % >R |
+| `4D` | 20.3 % >R | `4E` | 21.9 % >R |
+| `4F` | 23.4 % >R | `50` | 25.0 % >R |
+| `51` | 26.6 % >R | `52` | 28.1 % >R |
+| `53` | 29.7 % >R | `54` | 31.3 % >R |
+| `55` | 32.8 % >R | `56` | 34.4 % >R |
+| `57` | 35.9 % >R | `58` | 37.5 % >R |
+| `59` | 39.0 % >R | `5A` | 40.6 % >R |
+| `5B` | 42.2 % >R | `5C` | 43.8 % >R |
+| `5D` | 45.3 % >R | `5E` | 46.9 % >R |
+| `5F` | 48.4 % >R | `60` | 50.0 % >R |
+| `61` | 51.6 % >R | `62` | 53.1 % >R |
+| `63` | 54.7 % >R | `64` | 56.3 % >R |
+| `65` | 57.8 % >R | `66` | 59.4 % >R |
+| `67` | 60.9 % >R | `68` | 62.5 % >R |
+| `69` | 64.1 % >R | `6A` | 65.6 % >R |
+| `6B` | 67.2 % >R | `6C` | 68.8 % >R |
+| `6D` | 70.3 % >R | `6E` | 71.9 % >R |
+| `6F` | 73.4 % >R | `70` | 75.0 % >R |
+| `71` | 76.6 % >R | `72` | 78.1 % >R |
+| `73` | 79.7 % >R | `74` | 81.3 % >R |
+| `75` | 82.8 % >R | `76` | 84.4 % >R |
+| `77` | 85.9 % >R | `78` | 87.5 % >R |
+| `79` | 89.1 % >R | `7A` | 90.6 % >R |
+| `7B` | 92.2 % >R | `7C` | 93.8 % >R |
+| `7D` | 95.3 % >R | `7E` | 96.9 % >R |
+| `7F` | 100.0 % >R | | |
 
 ## Osc 1 Classic — Pulse Width (LCD)
 

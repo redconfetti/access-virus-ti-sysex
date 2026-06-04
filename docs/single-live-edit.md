@@ -27,11 +27,26 @@ Per-part **Common** page settings (Edit Single). Not stored in
 **`DUMP_MULTI`** (hardware-tested for Bend Up/Down — see
 [multis-live-edit.md](multis-live-edit.md)).
 
-### Patch Transpose (CC 93)
+### Transpose / Patch Transpose (`0x5D`, `cmd=0x70` / CC 93)
 
-Edit Single → Common → **Patch Transpose**. **CC 93** only on live edit
-(`stored = ui + 64`; **+1** → CC **65**). See
+Edit Single → Common → **Transpose** (same as **Patch Transpose**). Page A param
+**`0x5D`** (decimal **93** = CC number). **−64..+63** → `stored = ui + 64`.
+
+| UI   | `<value>` | Confirmed |
+| ---- | --------- | --------- |
+| −64  | `00`      | ✓         |
+| +0   | `40`      | ✓         |
+| +63  | `7F`      | ✓         |
+
+With **Page A = Controller Data**, the panel sends **CC 93** instead of SysEx.
+Distinct from Edit Multi **Transpose** (`72` / `0x25`, dump `0x79 + part`). See
 [control-change.md — Patch Transpose](control-change.md#patch-transpose-cc-93).
+
+```text
+F0 00 20 33 01 00 70 00 5D 00 F7   # Transpose −64
+F0 00 20 33 01 00 70 00 5D 40 F7   # Transpose +0
+F0 00 20 33 01 00 70 00 5D 7F F7   # Transpose +63
+```
 
 ### Key Mode (`0x5E`, `cmd=0x70` / CC 94)
 
@@ -161,67 +176,143 @@ F0 00 20 33 01 00 70 00 24 7F F7   # Osc Volume +63
 
 ### Smooth Mode (`0x19`, `cmd=0x71`)
 
-Arpeggiator / note **Smooth Mode** (Edit Single → Common).
-
-| Value | Mode          | Confirmed                                                                 |
-| ----- | ------------- | ------------------------------------------------------------------------- |
-| `00`  | Off           | ✓ (hardware); some hosts cannot send Off — [aura-notes.md](aura-notes.md) |
-| `01`  | On            | ✓                                                                         |
-| `02`  | Auto          | ✓                                                                         |
-| `03`  | Note          | ✓                                                                         |
-| `04`  | Quantise 1/64 | ✓                                                                         |
-| `05`  | Quantise 1/32 | ✓                                                                         |
-| `06`  | Quantise 1/16 | inferred                                                                  |
-| `07`  | Quantise 1/8  | inferred                                                                  |
-| `08`  | Quantise 1/4  | inferred                                                                  |
-| `09`  | Quantise 1/2  | ✓                                                                         |
-| `0A`  | Quantise 3/64 | ✓                                                                         |
-| `0B`  | Quantise 3/32 | inferred                                                                  |
-| `0C`  | Quantise 3/16 | inferred                                                                  |
-| `0D`  | Quantise 3/8  | inferred                                                                  |
-| `0E`  | Quantise 1/24 | inferred                                                                  |
-| `0F`  | Quantise 1/12 | inferred                                                                  |
-| `10`  | Quantise 1/6  | inferred                                                                  |
-| `11`  | Quantise 1/3  | inferred                                                                  |
-| `12`  | Quantise 2/3  | inferred                                                                  |
-| `13`  | Quantise 3/4  | inferred                                                                  |
-| `14`  | Quantise 1/1  | inferred                                                                  |
+Edit Single → Common → **Smooth Mode** (Page B **#25** *Control Smooth Mode*).
+**`stored = index`** — full list in
+[Control Smooth Mode / clock quantize](parameter-option-lists.md#control-smooth-mode--clock-quantize).
 
 ```text
 F0 00 20 33 01 00 71 00 19 00 F7   # Off
-F0 00 20 33 01 00 71 00 19 01 F7   # On
-F0 00 20 33 01 00 71 00 19 02 F7   # Auto
-F0 00 20 33 01 00 71 00 19 03 F7   # Note
 F0 00 20 33 01 00 71 00 19 04 F7   # Quantise 1/64
-F0 00 20 33 01 00 71 00 19 05 F7   # Quantise 1/32
-F0 00 20 33 01 00 71 00 19 09 F7   # Quantise 1/2
-F0 00 20 33 01 00 71 00 19 0A F7   # Quantise 3/64
+F0 00 20 33 01 00 71 00 19 14 F7   # Quantise 1/1
 ```
 
-### Bender Scale (`0x1C` / `0x1D`)
+Some hosts cannot send **Off** (`00`) — [aura-notes.md](aura-notes.md). Do not
+confuse with global **All EQs** (`73` / `0x19`).
 
-**Pitch bender curve** (Edit Single → Common → Bender Scale).
+### Bend Down (`0x1B`, `cmd=0x71`)
 
-| Mode        | Message               | Confirmed |
-| ----------- | --------------------- | --------- |
-| Linear      | `F0 … 72 00 1D 00 F7` | ✓         |
-| Exponential | `F0 … 71 00 1C 01 F7` | ✓         |
+Edit Single → Common → **Bend Down** (Page B **#27**). **−64..+63** →
+`stored = ui + 64`. Not in **`DUMP_MULTI`**.
 
-Uses **mixed commands** (`0x72` for Linear / param **`0x1D`**, `0x71` for
-Exponential / param **`0x1C`**). Re-verify Exponential on hardware if a
-single param ID is expected.
+| UI  | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| −64 | `00`      | ✓         |
+| +0  | `40`      | ✓         |
+| +63 | `7F`      | ✓         |
 
-### Bend Up / Bend Down (`0x1A` / `0x1B`, `cmd=0x71`)
+```text
+F0 00 20 33 01 00 71 00 1B 00 F7   # Bend Down −64
+F0 00 20 33 01 00 71 00 1B 40 F7   # Bend Down +0
+F0 00 20 33 01 00 71 00 1B 7F F7   # Bend Down +63
+```
 
-Pitch bend **range** limits — documented in
-[multis-live-edit.md — Bend Up / Bend Down](multis-live-edit.md#bend-up-0x1a-cmd0x71).
-Same Edit Single **Common** context; not in **`DUMP_MULTI`**.
+### Bend Up (`0x1A`, `cmd=0x71`)
 
-### Patch Volume (CC 91)
+Edit Single → Common → **Bend Up** (Page B **#26**). Same encoding as Bend Down.
 
-**Edit Single → Common → Patch Volume** — **MIDI CC 91 only** (no SysEx).
+| UI  | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| −64 | `00`      | ✓         |
+| +0  | `40`      | ✓         |
+| +63 | `7F`      | ✓         |
+
+```text
+F0 00 20 33 01 00 71 00 1A 00 F7   # Bend Up −64
+F0 00 20 33 01 00 71 00 1A 40 F7   # Bend Up +0
+F0 00 20 33 01 00 71 00 1A 7F F7   # Bend Up +63
+```
+
+Also documented for Edit Multi: [multis-live-edit.md — Bend Up / Bend Down](multis-live-edit.md#bend-up-0x1a-cmd0x71).
+
+### Bender Scale (`0x1C`, `cmd=0x71`)
+
+Edit Single → Common → **Bender Scale** (Page B **#28**). **`stored = index`** —
+see [Bender Scale](parameter-option-lists.md#bender-scale).
+
+| Mode          | `<value>` | Confirmed |
+| ------------- | --------- | --------- |
+| Linear        | `00`      | ✓         |
+| Exponential   | `01`      | ✓         |
+
+```text
+F0 00 20 33 01 00 71 00 1C 00 F7   # Linear
+F0 00 20 33 01 00 71 00 1C 01 F7   # Exponential
+```
+
+### Multi Tempo / Master Clock (`0x0F`, `cmd=0x72`)
+
+**Edit Single → Common → Multi Tempo** (panel **Master Clock** for the loaded
+Multi). Same live edit as [Master Clock Tempo](multis-live-edit.md#master-clock-tempo-0x0f)
+in Edit Multi — global, not per-part.
+
+| BPM  | `<value>` | Confirmed |
+| ---- | --------- | --------- |
+| 63   | `00`      | ✓         |
+| 120  | `39`      | (INIT default in `DUMP_MULTI`) |
+| 190  | `7F`      | ✓         |
+
+```text
+stored = bpm - 63    # 63..190 → 00..7F
+```
+
+```text
+F0 00 20 33 01 00 72 00 0F 00 F7   # Multi Tempo 63 bpm
+F0 00 20 33 01 00 72 00 0F 39 F7   # Multi Tempo 120 bpm
+F0 00 20 33 01 00 72 00 0F 7F F7   # Multi Tempo 190 bpm
+```
+
+Dump offset in **`DUMP_MULTI`**: **`0x17`** (`stored` same).
+
+### Patch Volume (`0x5B`, `cmd=0x70` / CC 91)
+
+**Edit Single → Common → Patch Volume**. Page A param **`0x5B`** (decimal **91**
+= CC number). Panel **0..127**; wire matches LCD (**not** a percent curve).
+
+| LCD | `<value>` | Confirmed |
+| --- | --------- | --------- |
+| 0   | `00`      | ✓         |
+| 127 | `7F`      | ✓         |
+
+```text
+stored = lcd    # 0..127
+```
+
+With **Page A = Controller Data**, the panel sends **CC 91** instead of SysEx.
 See [control-change.md — Patch Volume](control-change.md#patch-volume-cc-91).
 Distinct from Multi **Part Level** (`0x99 + part` / live `0x27`).
+
+```text
+F0 00 20 33 01 00 70 00 5B 00 F7   # Patch Volume 0
+F0 00 20 33 01 00 70 00 5B 7F F7   # Patch Volume 127
+```
+
+### Panorama (`0x0A`, `cmd=0x70` / CC 10)
+
+**Edit Single → Common → Panorama**. Page A param **`0x0A`** (decimal **10** =
+CC number). Bipolar pan **−64..+63** (panel **L< 100.0 %** … **100.0 % >R**):
+`stored = ui + 64`.
+
+| LCD (reported) | `<value>` | Confirmed |
+| -------------- | --------- | --------- |
+| L< 100.0 %     | `00`      | ✓         |
+| `<0>`          | `40`      | ✓         |
+| 100.0 % >R     | `7F`      | ✓         |
+
+Full **wire → LCD** table (**`00`–`7F`**, hardware-confirmed): [Panorama LCD](parameter-option-lists.md#edit-single--panorama-lcd).
+Right **`41`–`7E`** mirrors left **`0x80 − R`** (`L<` → `% >R`); endpoints **`00`** /
+**`7F`** = **100.0 %**.
+
+```text
+F0 00 20 33 01 00 70 00 0A 00 F7   # Panorama L< 100.0 %
+F0 00 20 33 01 00 70 00 0A 01 F7   # Panorama L< 98.4 %
+F0 00 20 33 01 00 70 00 0A 40 F7   # Panorama <0>
+F0 00 20 33 01 00 70 00 0A 7E F7   # Panorama 96.9 % >R
+F0 00 20 33 01 00 70 00 0A 7F F7   # Panorama 100.0 % >R
+```
+
+With **Page A = Controller Data**, the panel sends **CC 10** instead of SysEx.
+Distinct from **Velocity → Panorama** (`71`/`3D`) and Edit Multi panorama
+(`72`/`2B`).
 
 ## Oscillators
 
@@ -2389,8 +2480,21 @@ F0 00 20 33 01 00 71 00 7C 16 F7   # Name Cat 2 Favourites 3
 
 ## Soft Knobs (Edit Single)
 
-All three soft knobs share the same **Function As…** destination list and **Name**
-label list; each knob has its own **`param`** for destination, name, and amount.
+Three hardware knobs under the LCD. **Edit Single** only configures them; there is
+**no separate “Amount” menu row** — turning a knob edits the **assigned
+destination** parameter in real time.
+
+**Function As…** uses a **destination wire byte** (see
+[Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations)).
+The **value** SysEx slot is usually a **different `param`** on **`cmd=0x71`**
+(see [soft-knob runtime example](#soft-knob-runtime-distortion-intensity) when
+**Function As…** = Distortion Intensity; full **EFFECTS → Distortion** mapping
+deferred until the Effects module pass).
+
+Example (Soft Knob 1): **Function As…** = Distortion Intensity (`71`/`3E`/`57`),
+**Name** = Distort (`71`/`33`/…). Outside Edit Single the LCD shows **Distort**
+above knob 1; sweeping the knob sends **`71`/`65`** (**0 %** → `00`,
+**100.0 %** → `7F`).
 
 | Knob | **Function As…** `param` | **Name** `param` |
 | ---- | ------------------------ | ---------------- |
@@ -2402,11 +2506,14 @@ label list; each knob has its own **`param`** for destination, name, and amount.
 
 | Control          | `cmd` | `param` | Notes |
 | ---------------- | ----- | ------- | ----- |
-| **Function As…** | `71`  | `3E`    | Wire byte per [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) (not list index) |
-| **Name**         | `71`  | `33`    | Wire byte per [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (not list index); visible when **Function As…** ≠ Off |
-| **Amount**       |       |         | TBD |
+| **Function As…** | `71`  | `3E`    | Wire byte per [Soft Knob Destinations](parameter-option-lists.md#soft-knob-destinations) (not list index); e.g. Distortion Intensity → `57` |
+| **Name**         | `71`  | `33`    | Wire byte per [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (≠ Function As wire); example → [`65`](#soft-knob-runtime-distortion-intensity) |
 
 ```text
+F0 00 20 33 01 00 71 00 3E 57 F7   # Knob 1 Function As Distortion Intensity
+F0 00 20 33 01 00 71 00 65 00 F7   # Distortion Intensity 0 % (knob sweep)
+F0 00 20 33 01 00 71 00 65 7F F7   # Distortion Intensity 100.0 % (knob sweep)
 F0 00 20 33 01 00 71 00 3E 00 F7   # Knob 1 Function As Off
 F0 00 20 33 01 00 71 00 3E 40 F7   # Aftertouch
 F0 00 20 33 01 00 71 00 3E 7F F7   # Freq Shifter Mix (index 59)
@@ -2423,8 +2530,8 @@ F0 00 20 33 01 00 71 00 33 57 F7   # Name Speaker (wire 57)
 | Control          | `cmd` | `param` | Notes |
 | ---------------- | ----- | ------- | ----- |
 | **Function As…** | `71`  | `3F`    | Same destination list as Knob 1 (WAF80 **B#63** *Definable2 Single*) |
-| **Name**         | `71`  | `34`    | Wire byte per [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (not list index); visible when **Function As…** ≠ Off |
-| **Amount**       |       |         | TBD |
+| **Name**         | `71`  | `34`    | Wire byte per [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination) |
 
 ```text
 F0 00 20 33 01 00 71 00 3F 00 F7   # Knob 2 Function As Off
@@ -2439,8 +2546,8 @@ F0 00 20 33 01 00 71 00 34 47 F7   # Name Width
 | Control          | `cmd` | `param` | Notes |
 | ---------------- | ----- | ------- | ----- |
 | **Function As…** | `71`  | `40`    | Same destination list as Knob 1 |
-| **Name**         | `71`  | `35`    | Wire byte per [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (not list index); visible when **Function As…** ≠ Off |
-| **Amount**       |       |         | TBD |
+| **Name**         | `71`  | `35`    | Wire byte per [Soft Knob Names](parameter-option-lists.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination) |
 
 ```text
 F0 00 20 33 01 00 71 00 40 00 F7   # Knob 3 Function As Off
@@ -2449,9 +2556,111 @@ F0 00 20 33 01 00 71 00 35 00 F7   # Name >Para
 F0 00 20 33 01 00 71 00 35 47 F7   # Name Width
 ```
 
+### Soft-knob runtime: Distortion Intensity {#soft-knob-runtime-distortion-intensity}
+
+Captured via **Soft Knob 1** sweep only — canonical **EFFECTS → Distortion**
+mapping comes later with the Effects module.
+
+When **Function As…** =
+[Distortion Intensity](parameter-option-lists.md#soft-knob-destinations) (wire
+**`57`** on `71`/`3E`/`3F`/`40`), the knob sends **`71`/`65`**:
+
+| UI        | `<value>` | Confirmed |
+| --------- | --------- | --------- |
+| 0 %       | `00`      | ✓         |
+| 100.0 %   | `7F`      | ✓         |
+
+**0.0..100.0 %** → `stored = round(pct × 127 / 100)` (endpoints **`00`** /
+**`7F`**). Destination wire **`57`** ≠ value param **`65`**.
+
+```text
+F0 00 20 33 01 00 71 00 65 00 F7   # 0 % (soft knob)
+F0 00 20 33 01 00 71 00 65 7F F7   # 100.0 % (soft knob)
+```
+
+## Edit FX (Effects)
+
+Panel **EDIT FX** (after **Common**). SysEx **`cmd` / `param`** per control —
+capture as you step through sub-menus.
+
+### Delay
+
+| Control | Notes |
+| ------- | ----- |
+| **Type** | [Delay Type](parameter-option-lists.md#delay-type) — Classic `00`, Tape Clocked `01`, Tape Free `02`, Tape Doppler `03` |
+| **Mode** | [Delay Mode](parameter-option-lists.md#delay-mode) — Classic only; **`01`–`16`**; **Pattern …** = no Clock/Time/Coloration |
+| **Clock** | [Delay Clock](parameter-option-lists.md#delay-clock) — Simple Delay / Ping Pong only; **`71`/`14`** (WAF80 Page **B#20**); wire **`00`–`10`** only (`11`+ ignored) |
+| **Delay Time** | TBD |
+| **Coloration** | **−64..+63** → `stored = ui + 64` (`00` / `40` / `7F`); Simple Delay / Ping Pong only; SysEx TBD |
+| **Rate** | **`0`–`127`** — [`70`/`70`](#delay-lfo-rate-cmd0x70-param-0x70) |
+| **Depth** | **0.0..100.0 %** — [`70`/`74`](#delay-lfo-depth-cmd0x70-param-0x74) |
+| **LFO Wave** | [Delay LFO Wave](parameter-option-lists.md#delay-lfo-wave) — **`00`–`05`**; [`70`/`76`](#delay-lfo-wave-cmd0x70-param-0x76) |
+| **Send** | [Delay Send (LCD)](parameter-option-lists.md#delay-send-lcd) — **`00`–`7F`** (gaps **`19`–`3F`** ≈) |
+| **Feedback** | **0.0..100.0 %** → `stored = round(pct × 127 / 100)`; **`00`** = 0 %, **`7F`** = 100.0 % (panel); SysEx TBD |
+
+```text
+# Delay Feedback (encoding only — cmd/param TBD)
+# 00 = 0 %, 7F = 100.0 %
+```
+
+### Delay LFO Rate (`cmd=0x70`, param `0x70`) {#delay-lfo-rate-cmd0x70-param-0x70}
+
+**EDIT FX → Delay → Rate**. WAF80 Page **A#112** = **`0x70`**.
+
+| Item           | Value                                       |
+| -------------- | ------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 70 <value> F7` |
+| Value encoding | Direct **`0`–`127`** (`stored = lcd`)       |
+| Confirmed      | Hardware TX (rate sweep)                    |
+
+```text
+F0 00 20 33 01 00 70 00 70 00 F7   # Rate 0
+F0 00 20 33 01 00 70 00 70 7F F7   # Rate 127
+```
+
+### Delay LFO Depth (`cmd=0x70`, param `0x74`) {#delay-lfo-depth-cmd0x70-param-0x74}
+
+**EDIT FX → Delay → Depth**. Page **A#116** = **`0x74`**.
+
+| Item           | Value                                                    |
+| -------------- | -------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 74 <value> F7`              |
+| Value encoding | **0.0..100.0 %** → `stored = round(pct × 127 / 100)`     |
+| Endpoints      | **`00`** = 0 %, **`7F`** = 100.0 %                       |
+| Confirmed      | Hardware TX (depth sweep)                                |
+
+```text
+F0 00 20 33 01 00 70 00 74 00 F7   # Depth 0 %
+F0 00 20 33 01 00 70 00 74 7F F7   # Depth 100.0 %
+```
+
+### Delay LFO Wave (`cmd=0x70`, param `0x76`) {#delay-lfo-wave-cmd0x70-param-0x76}
+
+**EDIT FX → Delay → LFO Wave**. Page **A#118** = **`0x76`**. Options:
+[Delay LFO Wave](parameter-option-lists.md#delay-lfo-wave).
+
+| Item           | Value                                       |
+| -------------- | ------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 76 <value> F7` |
+| Value encoding | Wire byte **`00`–`05`** (enum)              |
+| Confirmed      | Hardware TX (wave stepped **`00`–`05`**)    |
+
+```text
+F0 00 20 33 01 00 70 00 76 00 F7   # Sine
+F0 00 20 33 01 00 70 00 76 05 F7   # S&G
+```
+
+### Reverb
+
+| Control | Notes |
+| ------- | ----- |
+| **Send** | [Reverb Send (LCD)](parameter-option-lists.md#reverb-send-lcd) — sparse captures; SysEx [`6E`/`02`](#reverb-send-cmd0x6e) |
+
+---
+
 ## Live Edit
 
-### Reverb Send (`cmd=0x6E`)
+### Reverb Send (`cmd=0x6E`) {#reverb-send-cmd0x6e}
 
 `cmd=0x6E` is used while editing a **part’s sound** (part/single edit
 buffer), not while storing a full Multi program.
@@ -2466,53 +2675,8 @@ Reverb Send is **not** in the 267-byte `DUMP_MULTI`.
 | Message format | `F0 00 20 33 01 00 6E <part> 02 <value> F7`                 |
 | Scope          | Part edit / single edit buffer (not stored in `DUMP_MULTI`) |
 | Value range    | Direct byte `0..127`                                        |
-| Key points     | `0` = Off, `96` (`0x60`) = unity, `127` (`0x7F`) = max send |
+| Key points     | `0` = Off, `96` (`0x60`) = `0/0 dB`, `127` (`0x7F`) = Effect |
 | Status         | Mapping confirmed for Reverb Send on TI mk2                 |
 
-| Value | Hex  | Display        |
-| ----- | ---- | -------------- |
-| 0     | `00` | Off            |
-| 1     | `01` | −46.2 dB       |
-| 2     | `02` | −40.2 dB       |
-| 10    | `0A` | −26.2 dB       |
-| 20    | `14` | −20.6 dB       |
-| 30    | `1E` | −16.6 dB       |
-| 40    | `28` | −14.0 dB       |
-| 41    | `29` | −13.75 dB      |
-| 45    | `2D` | −12.75 dB      |
-| 54    | `36` | −10.5 dB       |
-| 57    | `39` | −9.75 dB       |
-| 90    | `5A` | −1.5 dB        |
-| 91    | `5B` | −1.25 dB       |
-| 92    | `5C` | −1.0 dB        |
-| 93    | `5D` | −0.75 dB       |
-| 94    | `5E` | −0.5 dB        |
-| 95    | `5F` | −0.25 dB       |
-| 96    | `60` | 0/0 dB (unity) |
-| 97    | `61` | 0/−0.3 dB      |
-| 98    | `62` | 0/−0.6 dB      |
-| 99    | `63` | 0/−0.9 dB      |
-| 100   | `64` | 0/−1.2 dB      |
-| 108   | `6C` | 0/−4.1 dB      |
-| 109   | `6D` | 0/−4.5 dB      |
-| 110   | `6E` | 0/−5.0 dB      |
-| 111   | `6F` | 0/−5.5 dB      |
-| 112   | `70` | 0/−6.0 dB      |
-| 114   | `72` | 0/−7.2 dB      |
-| 115   | `73` | 0/−7.8 dB      |
-| 116   | `74` | 0/−8.5 dB      |
-| 117   | `75` | 0/−9.3 dB      |
-| 118   | `76` | 0/−10.1 dB     |
-| 119   | `77` | 0/−11.0 dB     |
-| 120   | `78` | 0/−12.0 dB     |
-| 121   | `79` | 0/−13.2 dB     |
-| 122   | `7A` | 0/−14.5 dB     |
-| 123   | `7B` | 0/−16.1 dB     |
-| 124   | `7C` | 0/−18.1 dB     |
-| 125   | `7D` | 0/−20.6 dB     |
-| 126   | `7E` | 0/−24.0 dB     |
-| 127   | `7F` | effect (max)   |
-
-Unlisted values are piecewise / non-linear. Approximations:
-**`41`–`95`** ≈ **`−0.25 × (96 − value)`** dB; **`1`–`40`** steeper;
-**`97`–`126`** larger steps toward max.
+LCD ↔ **`stored`** index: [Reverb Send (LCD)](parameter-option-lists.md#reverb-send-lcd)
+(sparse hardware-confirmed rows; full table TBD on panel).

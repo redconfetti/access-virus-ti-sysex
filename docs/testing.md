@@ -6,6 +6,9 @@ real **Access Virus TI mk2 desktop** using `sendmidi` / `receivemidi`.
 Scope: **desktop module** via **`Virus TI USB Plugin I/O`**. Keyboard/Polar
 and **External I/O** routing are out of scope unless the user says otherwise.
 
+**OsTIrus** (TI firmware in a DAW, no hardware): same SysEx bytes; use your
+host’s MIDI port name — see [ostirus.md](ostirus.md).
+
 ## Prerequisites
 
 1. Virus TI mk2 powered on, USB connected, **Virus TI plugin** active so
