@@ -74,11 +74,11 @@ F0 00 20 33 01 00 72 00 4A 00 F7
 
 ## Message types
 
-| Purpose            | Cmd  | Length    | Doc                                                              |
-| ------------------ | ---- | --------- | ---------------------------------------------------------------- |
-| Live multi edit    | `72` | 11 bytes  | [multis-live-edit.md](multis-live-edit.md)                       |
-| Request multi dump | `31` | 11 bytes  | [multis-dump.md](multis-dump.md#request_multi-byte-table)        |
-| Multi dump reply   | `11` | 267 bytes | [multis-dump.md](multis-dump.md#dump_multi-byte-table-267-bytes) |
+| Purpose            | Cmd  | Length    | Doc                                                                     |
+| ------------------ | ---- | --------- | ----------------------------------------------------------------------- |
+| Live multi edit    | `72` | 11 bytes  | [multis-live-edit.md](live-edit/edit-multi.md)                          |
+| Request multi dump | `31` | 11 bytes  | [multis-dump.md](dumps/arrangements.md#request_multi-byte-table)        |
+| Multi dump reply   | `11` | 267 bytes | [multis-dump.md](dumps/arrangements.md#dump_multi-byte-table-267-bytes) |
 
 Live edit template:
 
@@ -101,20 +101,42 @@ Re-enable:
 sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 72 00 4a 01
 ```
 
+### EFFECTS focus (`6E` / `75` / `76`)
+
+Switches which effect the **EFFECTS** knobs target — see
+[single-live-edit — EFFECTS section
+focus](docs/live-edit/effects.md#effects-section-focus).
+The panel **LED** often updates **more than 0.5 s** after TX; use **`sleep 1`**
+(or longer) between probe values:
+
+```bash
+# Group 1 — Delay / Reverb / Low / Mid / High EQ
+for v in 00 01 02 03 04; do
+  sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 6E 00 75 "$v"
+  sleep 1
+done
+
+# Group 2 — Distortion / Character / Chorus / Phaser / Others
+for v in 00 01 02 03 04; do
+  sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 6E 00 76 "$v"
+  sleep 1
+done
+```
+
 ## Confirmation queue (WAF80 → TI)
 
 Use [waf80.md](waf80.md) as the **1999 hypothesis**. Confirm on the **Virus TI
 mk2 desktop**, record in the TI docs, then trim the matching WAF80 rows.
 
-**Work by LCD menu**, aligned with [single-dump.md](single-dump.md) categories
+**Work by LCD menu**, aligned with [single-dump.md](dumps/single.md) categories
 — finish one menu before switching (e.g. all **Filters** controls, then
 **Oscillators**).
 
-| Status          | Category         | Virus LCD (typical)                   | Doc section                                                                             |
-| --------------- | ---------------- | ------------------------------------- | --------------------------------------------------------------------------------------- |
-| Done            | **Filters**      | **FILTERS** (F1/F2/Common/F1 ADSR)    | [single-dump.md — Filters](single-dump.md#filters)                                      |
-| Done            | **Amplifier**    | **Amp Envelope** ADSR                 | [single-live-edit.md — Amplifier envelope](single-live-edit.md#amplifier-envelope-adsr) |
-| **In progress** | **Oscillator 1** | **OSCILLATORS** → Osc 1 — panel order | [single-dump.md — Oscillators](single-dump.md#oscillators)                              |
+| Status          | Category         | Virus LCD (typical)                   | Doc section                                                                                   |
+| --------------- | ---------------- | ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Done            | **Filters**      | **FILTERS** (F1/F2/Common/F1 ADSR)    | [single-dump.md — Filters](dumps/single.md#filters)                                           |
+| Done            | **Amplifier**    | **Amp Envelope** ADSR                 | [single-live-edit.md — Amplifier envelope](docs/live-edit/filters.md#amplifier-envelope-adsr) |
+| **In progress** | **Oscillator 1** | **OSCILLATORS** → Osc 1 — panel order | [single-dump.md — Oscillators](dumps/single.md#oscillators)                                   |
 
 ### Filters — order (Filter 1 first)
 
@@ -129,10 +151,13 @@ Confirm in this order (stay on the **FILTERS** menu):
 | 5   | ~~Filter 1 Keyfollow~~                 | Filter 1    | **46** — ✓ `ui + 64`         |
 | …   | (remaining Filter 1 / 2 / Common rows) |             | see parameter map            |
 
-**Current step:** **OSCILLATORS → Oscillator 1**. Osc params are a **nested tree**:
+**Current step:** **OSCILLATORS → Oscillator 1**. Osc params are a **nested
+tree**:
 
-1. **Mode** (Classic, Wavetable, Grain Simple, …) — changes which sub-menus exist
-   (Classic **1–2**, Wavetable/Grain Simple/Formant Simple **1–3**, Grain/Formant
+1. **Mode** (Classic, Wavetable, Grain Simple, …) — changes which sub-menus
+exist
+   (Classic **1–2**, Wavetable/Grain Simple/Formant Simple **1–3**,
+   Grain/Formant
    Complex **1–4**).
 2. **Shape** (within many modes) — changes which controls appear on those menus.
 
@@ -157,10 +182,13 @@ index column — use **hex `44`–`5A`** (see live-edit table).
 | 21  | `15`    | Keyfollow    | −64..+63                                          |
 
 **Mode:** `6E`/`1E` — Classic = `00` ✓. **Classic / Spectral Wave** in progress.
-See [single-live-edit.md — Oscillator 1](single-live-edit.md#oscillators).
+See [single-live-edit.md — Oscillator
+1](docs/live-edit/oscillators.md#oscillators).
 
-**Key Follow “Norm” (done):** Stored Single with Key Follow **−21**; after reload,
-**Norm** still = **+32** / wire **`0x60`** — fixed scale marker, not per-patch default.
+**Key Follow “Norm” (done):** Stored Single with Key Follow **−21**; after
+reload,
+**Norm** still = **+32** / wire **`0x60`** — fixed scale marker, not per-patch
+default.
 
 | Status | Category             | Notes                                                                                |
 | ------ | -------------------- | ------------------------------------------------------------------------------------ |
@@ -197,7 +225,7 @@ non-empty line from **`$LOG`** (e.g. `tail -n 20 "$LOG"`). Ignore empty
 
 Follow [Confirmation queue](#confirmation-queue-waf80--ti)
 when doing WAF80-driven mapping; otherwise pick one row from
-[single-dump.md — Single parameter map](single-dump.md#single-parameter-map).
+[single-dump.md — Single parameter map](dumps/single.md#single-parameter-map).
 
 ### User / agent rules
 
@@ -221,16 +249,19 @@ when doing WAF80-driven mapping; otherwise pick one row from
 8. Some controls use **CC** when Page A = **Controller Data** and **SysEx**
    when Page A = **SysEx** — e.g. **Sub Oscillator Volume** = CC **34** or
    **`70` / `0x22`**; see [control-change.md](control-change.md) and
-   [Sub Oscillator](single-live-edit.md#sub-oscillator).
+   [Sub Oscillator](docs/live-edit/oscillators.md#sub-oscillator).
 9. **Duplicate LCD on adjacent wire bytes** is normal — the wire still advances
-   **`00`–`7F`** every detent while the readout may stay fixed for **2–3** steps.
-   That is for human **landing zones** (e.g. **0**, **Norm**), not slow stepping;
+   **`00`–`7F`** every detent while the readout may stay fixed for **2–3**
+   steps.
+   That is for human **landing zones** (e.g. **0**, **Norm**), not slow
+   stepping;
    knob motion still feels continuous. Document every **wire** detent in lookup
    tables; do not assume one LCD value ↔ one byte.
 10. **Before a SysEx mapping session**, set globals **MIDI Controller Page A**
    and **Page B** to **SysEx** (not Controller Data) so panel edits emit
    Access SysEx instead of CC — see
-   [global-live-edit.md — Page A / B](global-live-edit.md#midi-controller-page-a-0x5e).
+   [global-live-edit.md — Page A /
+   B](live-edit/edit-config.md#midi-controller-page-a-0x5e).
    With Page A = **SysEx**, Page A parameters use **`cmd=0x70`** (see
    [waf80.md](waf80.md)); with **Controller Data**, they use **MIDI CC**
    (CC number = Page A index).
@@ -262,7 +293,7 @@ Tell the user which baseline you loaded if you cannot operate the panel.
 ### 2. Send one live edit
 
 Pick **one** parameter from
-[multis-live-edit.md](multis-live-edit.md). Send exactly one `hex syx`
+[multis-live-edit.md](live-edit/edit-multi.md). Send exactly one `hex syx`
 message (no `F0`/`F7` in the argument list).
 
 **Tell the user** which part, menu field, and value you set so they can
@@ -302,7 +333,8 @@ Replies with **`cmd=0x11`**, **267 bytes**, bank/slot **`00 7F`**. Checksum
 
 **Option C — Stored Multi bank slot**  
 Bank **`01`**, slot = slot number (`09`, `30`, …). **No checksum** on the
-request. See [multis-dump.md — Stored Multi bank request](multis-dump.md#request_multi-byte-table).
+request. See [multis-dump.md — Stored Multi bank
+request](dumps/arrangements.md#request_multi-byte-table).
 
 ### 5. Diff against baseline
 
@@ -314,7 +346,8 @@ Example — Part 1 Hold off should change **`0xF9`** only (`0x45` → `0x41`),
 plus often **`0x0A`** and the checksum byte **`0x109`**.
 
 When diffing against a host-plugin export baseline, see
-[aura-notes.md — Export and diff baselines](aura-notes.md#export-and-diff-baselines).
+[aura-notes.md — Export and diff
+baselines](aura-notes.md#export-and-diff-baselines).
 
 Python one-liner (two full messages as space-separated hex strings):
 
@@ -331,8 +364,8 @@ for i, (x, y) in enumerate(zip(a, b)):
 
 ### 6. Update documentation
 
-Record results in [multis-dump.md](multis-dump.md) and/or
-[multis-live-edit.md](multis-live-edit.md): offset, encoding, and example
+Record results in [multis-dump.md](dumps/arrangements.md) and/or
+[multis-live-edit.md](live-edit/edit-multi.md): offset, encoding, and example
 hex from **Virus hardware** captures.
 
 ## Suggested smoke tests
@@ -371,12 +404,14 @@ Expected single-byte dump changes: (1) `0xF9` `0x45` to `0x41`; (2) back to
 
 Packed-flag INIT byte **`0x45`** = `0b01000101`: enable, Hold on, Prog
 Change on, Vol RX off, Priority low. See
-[multis-dump.md — Packed flags](multis-dump.md#packed-flags-at-0xf8--part).
+[multis-dump.md — Packed
+flags](dumps/arrangements.md#packed-flags-at-0xf8--part).
 
 ## Running `receivemidi` as an agent
 
 **Parameter mapping (panel → host):** one long-running `receivemidi syx` →
-`/tmp/virus-live-capture.txt`; tail the log per step (see [Agent setup](#agent-setup-persistent-log)).
+`/tmp/virus-live-capture.txt`; tail the log per step (see [Agent
+setup](#agent-setup-persistent-log)).
 
 **One-shot dump capture** (`receivemidi dump` for `DUMP_MULTI`):
 
@@ -401,5 +436,5 @@ Host plugin quirks (export gaps, UI labels): [aura-notes.md](aura-notes.md).
 
 - [README Setup](../README.md#setup) — install and minimal examples
 - [virus.md](virus.md) — dump types and Multi bank slots
-- [multis-live-edit.md](multis-live-edit.md) — `0x72` param IDs
-- [multis-dump.md](multis-dump.md) — payload offsets and capture rules
+- [multis-live-edit.md](live-edit/edit-multi.md) — `0x72` param IDs
+- [multis-dump.md](dumps/arrangements.md) — payload offsets and capture rules

@@ -11,15 +11,15 @@ synth.
 You supply a **licensed firmware image** (the project cannot distribute ROMs).
 Preset sizes for TI singles are **512 bytes** in the emulator docs; this
 repository’s TI mk2 hardware work uses **`DUMP_SINGLE` 524-byte** SysEx
-(includes header/checksum — see [single-dump.md](single-dump.md)).
+(includes header/checksum — see [single-dump.md](dumps/single.md)).
 
 ## Who this documentation is for
 
-| User | MIDI path |
-| ---- | --------- |
-| **Virus TI mk2 desktop** (primary capture source here) | `Virus TI USB Plugin I/O` or hardware USB — [testing.md](testing.md) |
-| **Access Virus TI plugin** (legacy TI integration) | `Virus TI USB Plugin I/O` — [aura-notes.md](aura-notes.md) |
-| **OsTIrus in a DAW** (no hardware required) | Host MIDI → plugin instance on a **MIDI channel**; optional virtual port for `sendmidi` / agents |
+| User                                                   | MIDI path                                                                                        |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| **Virus TI mk2 desktop** (primary capture source here) | `Virus TI USB Plugin I/O` or hardware USB — [testing.md](testing.md)                             |
+| **Access Virus TI plugin** (legacy TI integration)     | `Virus TI USB Plugin I/O` — [aura-notes.md](aura-notes.md)                                       |
+| **OsTIrus in a DAW** (no hardware required)            | Host MIDI → plugin instance on a **MIDI channel**; optional virtual port for `sendmidi` / agents |
 
 If you only run OsTIrus, you can still use the same **Access SysEx** vocabulary
 documented in this repo (`00 20 33 01 00` …): **live edit** (`70`, `71`, `6E`,
@@ -55,17 +55,18 @@ DAW’s own virtual port are common.
 
 ## Relationship to this repository
 
-| Topic | Notes |
-| ----- | ----- |
-| **Protocol** | Captures on **Virus TI mk2** target TI2-family SysEx; OsTIrus is intended to run **TI/TI2/Snow ROM** — treat mappings here as the working hypothesis until confirmed on your ROM + host. |
-| **Verification** | Prefer a MIDI monitor on the OsTIrus track while stepping one control; compare to [single-live-edit.md](single-live-edit.md) / [multis-live-edit.md](multis-live-edit.md). |
+| Topic                | Notes                                                                                                                                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Protocol**         | Captures on **Virus TI mk2** target TI2-family SysEx; OsTIrus is intended to run **TI/TI2/Snow ROM** — treat mappings here as the working hypothesis until confirmed on your ROM + host.                 |
+| **Verification**     | Prefer a MIDI monitor on the OsTIrus track while stepping one control; compare to [single-live-edit.md](docs/live-edit/edit-single.md) / [multis-live-edit.md](live-edit/edit-multi.md).                 |
 | **Dumps & analysis** | Request/export singles and multis from OsTIrus (when the UI/ROM supports it), parse with the same dump docs — useful for **preset-pack analysis** and constrained randomization without owning hardware. |
-| **Composition** | Combine **MIDI sequences** (channel 1–16 per part) with **SysEx live edits** between notes — same pattern as hardware demos; only the port and host differ. |
+| **Composition**      | Combine **MIDI sequences** (channel 1–16 per part) with **SysEx live edits** between notes — same pattern as hardware demos; only the port and host differ.                                              |
 
 Host-specific export quirks for the **legacy Access AURA/TI plugin** are in
 [aura-notes.md](aura-notes.md). **OsTIrus-specific** dump/export differences
 are not fully inventoried here yet; file an issue or capture if bytes diverge
-from [multis-dump.md](multis-dump.md) / [single-dump.md](single-dump.md).
+from [multis-dump.md](dumps/arrangements.md) /
+[single-dump.md](dumps/single.md).
 
 ## Further reading
 

@@ -46,10 +46,10 @@ export does not reflect the change.
 
 ## UI naming (AURA)
 
-| AURA label       | Synth parameter                                                               |
-| ---------------- | ----------------------------------------------------------------------------- |
-| **Part Level**   | Multi **Volume** (`0x99 + part`, live `0x27`) on Edit Multi page              |
-| **Patch Volume** | Edit Single → Common; CC 91 or `70`/`5B` — [single-live-edit.md](single-live-edit.md#patch-volume-0x5b-cmd0x70--cc-91) |
+| AURA label       | Synth parameter                                                                                                                  |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Part Level**   | Multi **Volume** (`0x99 + part`, live `0x27`) on Edit Multi page                                                                 |
+| **Patch Volume** | Edit Single → Common; CC 91 or `70`/`5B` — [single-live-edit.md](docs/live-edit/edit-single.md#patch-volume-0x5b-cmd0x70--cc-91) |
 
 AURA may display the **stored** byte value (e.g. `100` = `0x64`)
 while the Virus panel shows **bipolar** UI (e.g. `+36` where `0x64`
@@ -66,15 +66,15 @@ while the Virus panel shows **bipolar** UI (e.g. `+36` where `0x64`
 
 Key Mode enum was confirmed via **CC 94** in AURA and **`cmd=0x70`** /
 `0x5E` on the Virus panel when Page A = SysEx — see
-[single-live-edit.md](single-live-edit.md#key-mode-0x5e-cmd0x70--cc-94).
+[single-live-edit.md](docs/live-edit/edit-single.md#key-mode-0x5e-cmd0x70--cc-94).
 
 ## Multi mixer UI (host software)
 
-| Control           | Virus Control | AURA | Notes                                                                                             |
-| ----------------- | ------------- | ---- | ------------------------------------------------------------------------------------------------- |
-| Direct Monitoring | Yes           | No   | Analog outs direct, bypassing USB/DAW return — [multis-dump.md](multis-dump.md#direct-monitoring) |
-| Solo              | No            | Yes  | UI-only: toggles **Enable** (`0x48`) on other parts — not a separate SysEx param                  |
-| Mute              | Yes           | Yes  | No dedicated dump byte (likely **Enable** off)                                                    |
+| Control           | Virus Control | AURA | Notes                                                                                                    |
+| ----------------- | ------------- | ---- | -------------------------------------------------------------------------------------------------------- |
+| Direct Monitoring | Yes           | No   | Analog outs direct, bypassing USB/DAW return — [multis-dump.md](dumps/arrangements.md#direct-monitoring) |
+| Solo              | No            | Yes  | UI-only: toggles **Enable** (`0x48`) on other parts — not a separate SysEx param                         |
+| Mute              | Yes           | Yes  | No dedicated dump byte (likely **Enable** off)                                                           |
 
 ## UI coupling (AURA)
 
@@ -96,7 +96,7 @@ hosts (or the Virus panel) may use the same or different `cmd` bytes.
 Some edits AURA sends on Multi pages use **`cmd=0x71`** (classic Page B)
 with the same `<part> <param> <value>` layout as **`0x72`**. The Virus
 panel uses **`0x71`** for Bend Up/Down on hardware as well — see
-[multis-live-edit.md](multis-live-edit.md#bend-up-0x1a-cmd0x71).
+[multis-live-edit.md](live-edit/edit-multi.md#bend-up-0x1a-cmd0x71).
 
 ### Secondary Output (`cmd=0x73`)
 
@@ -114,7 +114,7 @@ Virus also accepts **`72 00 2D`** on the wire; neither changes
 
 ### Global live edit (`cmd=0x73`)
 
-Most entries in [global-live-edit.md](global-live-edit.md) were first
+Most entries in [global-live-edit.md](live-edit/edit-config.md) were first
 captured from **AURA → Virus** traffic. **All Delays** (`0x1B`) is also
 known to transmit from the **Virus front panel**.
 
@@ -134,8 +134,8 @@ load). Behavior is host-driven, not a documented Virus request reply.
 
 ## Control inventory source
 
-The parameter worksheets in [single-dump.md](single-dump.md) and
-[multis-dump.md](multis-dump.md) were built from Virus Control / AURA /
+The parameter worksheets in [single-dump.md](dumps/single.md) and
+[multis-dump.md](dumps/arrangements.md) were built from Virus Control / AURA /
 OsTIrus inventories. **VC / AURA / OsTIrus availability columns** are not
 duplicated in those docs — only synth parameters and SysEx mapping.
 

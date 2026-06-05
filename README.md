@@ -1,7 +1,8 @@
 # Access Virus SysEx
 
 Reverse engineered **Access Virus TI mk2** SysEx specifications with assistance
-from Cursor AI. The same messages apply in principle to **[OsTIrus](docs/ostirus.md)**
+from Cursor AI. The same messages apply in principle to
+**[OsTIrus](docs/ostirus.md)**
 (TI/TI2/Snow firmware emulation in a DAW) — no hardware required for MIDI/SysEx
 control, only a suitable host port.
 
@@ -39,8 +40,8 @@ sendmidi dev "Virus TI USB Plugin I/O" hex syx \
 receivemidi dev "Virus TI USB Plugin I/O" dump
 ```
 
-Message formats: [multis-live-edit.md](docs/multis-live-edit.md),
-[multis-dump.md](docs/multis-dump.md). For agent/hardware test workflows see
+Message formats: [live-edit](docs/live-edit/README.md),
+[dumps](docs/dumps/README.md). For agent/hardware test workflows see
 [docs/testing.md](docs/testing.md).
 
 ## Reading the documentation
@@ -99,7 +100,7 @@ Rough groups:
 | **`0x10`**, **`0x11`**        | **Dumps** — synth **replies** with a stored snapshot        | `0x10` = `DUMP_SINGLE` (524 bytes on TI); `0x11` = `DUMP_MULTI` (267 bytes)                  |
 | **`0x70`–`0x73`**, **`0x6E`** | **Live edit** — change **one** parameter now (no full dump) | `0x71` = edit a Single “Page B” parameter; `0x72` = Multi/common; `0x6E` = part sound buffer |
 
-So **`cmd=0x71`** in [single-live-edit.md](docs/single-live-edit.md) is **live
+So **`cmd=0x71`** in [live-edit](docs/live-edit/README.md) is **live
 parameter edit** on classic Page B (e.g. Smooth Mode `param 0x19`), not
 “dump single” and not “dump arrangement”. **`cmd=0x10`** is the opposite
 direction: a **full Single program** coming back from a request or save.
@@ -156,15 +157,14 @@ Volume = CC 91). See [docs/control-change.md](docs/control-change.md).
 
 ### Where to go next
 
-| You want…                                   | Start here                                                                             |
-| ------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Request/dump command list (1999 + TI notes) | [docs/waf80.md](docs/waf80.md)                                                         |
-| Single / Multi file layout and byte offsets | [docs/single-dump.md](docs/single-dump.md), [docs/multis-dump.md](docs/multis-dump.md) |
-| Live Multi edits (`0x72`, …)                | [docs/multis-live-edit.md](docs/multis-live-edit.md)                                   |
-| Live Single / part sound edits              | [docs/single-live-edit.md](docs/single-live-edit.md)                                   |
-| Banks, arrangement, architecture            | [docs/virus.md](docs/virus.md)                                                         |
-| AURA plugin / host quirks (not Virus SysEx) | [docs/aura-notes.md](docs/aura-notes.md)                                               |
-| OsTIrus (TI2 firmware in a DAW, no hardware)  | [docs/ostirus.md](docs/ostirus.md)                                                     |
+| You want…                                    | Start here                                                                             |
+| -------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Request/dump command list (1999 + TI notes)  | [docs/waf80.md](docs/waf80.md)                                                         |
+| Live edit (by panel menu)                    | [docs/live-edit/README.md](docs/live-edit/README.md)                                   |
+| Dumps (single / multi / banks)               | [docs/dumps/README.md](docs/dumps/README.md)                                           |
+| Banks, arrangement, architecture             | [docs/virus.md](docs/virus.md)                                                         |
+| AURA plugin / host quirks (not Virus SysEx)  | [docs/aura-notes.md](docs/aura-notes.md)                                               |
+| OsTIrus (TI2 firmware in a DAW, no hardware) | [docs/ostirus.md](docs/ostirus.md)                                                     |
 
 ## Documentation
 
@@ -172,13 +172,15 @@ Volume = CC 91). See [docs/control-change.md](docs/control-change.md).
 | -------------------------------------- | ---------------------------------------------------------------- |
 | Hardware testing (`sendmidi`, etc.)    | [docs/testing.md](docs/testing.md)                               |
 | General notes about Virus architecture | [docs/virus.md](docs/virus.md)                                   |
-| Single program dump (`DUMP_SINGLE`)    | [docs/single-dump.md](docs/single-dump.md)                       |
-| Multi program dump (`DUMP_MULTI`)      | [docs/multis-dump.md](docs/multis-dump.md)                       |
-| Multi Live Edit (`0x72`, …)            | [docs/multis-live-edit.md](docs/multis-live-edit.md)             |
-| Global Live Edit (`0x73`)              | [docs/global-live-edit.md](docs/global-live-edit.md)             |
+| Live edit — CONFIG / global (`0x73`)   | [docs/live-edit/edit-config.md](docs/live-edit/edit-config.md)   |
+| Live edit — Edit Single                | [docs/live-edit/edit-single.md](docs/live-edit/edit-single.md)   |
+| Live edit — Oscillators / Filters / FX | [docs/live-edit/](docs/live-edit/README.md)                      |
+| Live edit — Edit Multi (`0x72`)        | [docs/live-edit/edit-multi.md](docs/live-edit/edit-multi.md)     |
+| Dump — Single (`DUMP_SINGLE`)          | [docs/dumps/single.md](docs/dumps/single.md)                     |
+| Dump — Multis & arrangements           | [docs/dumps/arrangements.md](docs/dumps/arrangements.md)         |
+| Dump — Banks & requests                | [docs/dumps/bank.md](docs/dumps/bank.md)                         |
 | MIDI Control Change (CC)               | [docs/control-change.md](docs/control-change.md)                 |
 | WAF80 SysEx reference (1999, classic)  | [docs/waf80.md](docs/waf80.md)                                   |
-| Single Live Edit                       | [docs/single-live-edit.md](docs/single-live-edit.md)             |
 | Single parameter option lists          | [docs/parameter-option-lists.md](docs/parameter-option-lists.md) |
 | AURA plugin / host quirks (not Virus)  | [docs/aura-notes.md](docs/aura-notes.md)                         |
 | OsTIrus (DSP56300 TI/TI2 emulation)    | [docs/ostirus.md](docs/ostirus.md)                               |

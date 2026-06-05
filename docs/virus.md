@@ -6,7 +6,8 @@ Note: Currently applies only to Access Virus TI mk2 desktop (not keyboard/Polar)
 
 ## Banks and programs
 
-The TI mk2 provides **four RAM banks** (A–D). Each bank holds **128 Single programs**.
+The TI mk2 provides **four RAM banks** (A–D). Each bank holds **128 Single
+programs**.
 
 | Bank  | Role     |
 | ----- | -------- |
@@ -15,11 +16,12 @@ The TI mk2 provides **four RAM banks** (A–D). Each bank holds **128 Single pro
 | RAM C | User RAM |
 | RAM D | User RAM |
 
-There are also **26 ROM banks** (ROM A through ROM Z), each with **128 factory Singles**.
+There are also **26 ROM banks** (ROM A through ROM Z), each with **128 factory
+Singles**.
 
 In each Multi, every part stores a **bank index** and **program number**
 pointing at a Single. The encoding is documented in
-[multis-dump.md](multis-dump.md#part-bank-index).
+[multis-dump.md](dumps/arrangements.md#part-bank-index).
 
 ## SysEx dump types
 
@@ -44,20 +46,23 @@ same 267-byte block; it may be exported with sixteen singles like slots
 
 Message-level layouts:
 
-- Multi dump: [multis-dump.md](multis-dump.md)
-- Single dump: [single-dump.md](single-dump.md)
-- Live multi edits (not full dumps): [multis-live-edit.md](multis-live-edit.md)
+- Multi dump: [multis-dump.md](dumps/arrangements.md)
+- Single dump: [single-dump.md](dumps/single.md)
+- Live multi edits (not full dumps):
+[multis-live-edit.md](live-edit/edit-multi.md)
 
 ## Multi bank (TI series)
 
-See [multis-dump.md — Embedded vs Reference Multis](multis-dump.md#embedded-vs-reference-multis).
+See [multis-dump.md — Embedded vs Reference
+Multis](dumps/arrangements.md#embedded-vs-reference-multis).
 
 ## Front-panel modes (observed SysEx)
 
 The TI desktop exposes **Multi**, **Single**, and **Sequencer** (combined
 **MULTI+SINGLE**) play/edit modes. Mode changes can emit global SysEx
 (**`cmd=0x73`**, param **`0x10`**) — see
-[global-live-edit.md — Edit mode 0x10](global-live-edit.md#edit-mode-0x10-tentative).
+[global-live-edit.md — Edit mode
+0x10](live-edit/edit-config.md#edit-mode-0x10-tentative).
 
 | Panel action                 | Typical SysEx from Virus          |
 | ---------------------------- | --------------------------------- |
