@@ -46,7 +46,7 @@ sendmidi list    # find the port your host exposes (name varies)
 sendmidi dev "<your-port>" hex syx 00 20 33 01 00 70 00 28 40
 ```
 
-Use **`hex syx`** and omit `F0`/`F7` — see [README Setup](../README.md#setup)
+Use **`hex syx`** and omit `F0`/`F7` — see [Setup](setup.md)
 and [testing.md](testing.md).
 
 **Port names are host-specific** (not `Virus TI USB Plugin I/O` unless you use
@@ -58,14 +58,14 @@ DAW’s own virtual port are common.
 | Topic                | Notes                                                                                                                                                                                                    |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Protocol**         | Captures on **Virus TI mk2** target TI2-family SysEx; OsTIrus is intended to run **TI/TI2/Snow ROM** — treat mappings here as the working hypothesis until confirmed on your ROM + host.                 |
-| **Verification**     | Prefer a MIDI monitor on the OsTIrus track while stepping one control; compare to [single-live-edit.md](docs/live-edit/edit-single.md) / [multis-live-edit.md](live-edit/edit-multi.md).                 |
+| **Verification**     | Prefer a MIDI monitor on the OsTIrus track while stepping one control; compare to [single-live-edit.md](docs/live-edit/edit-single.md) / [edit-multi.md](live-edit/edit-multi.md).                 |
 | **Dumps & analysis** | Request/export singles and multis from OsTIrus (when the UI/ROM supports it), parse with the same dump docs — useful for **preset-pack analysis** and constrained randomization without owning hardware. |
 | **Composition**      | Combine **MIDI sequences** (channel 1–16 per part) with **SysEx live edits** between notes — same pattern as hardware demos; only the port and host differ.                                              |
 
 Host-specific export quirks for the **legacy Access AURA/TI plugin** are in
 [aura-notes.md](aura-notes.md). **OsTIrus-specific** dump/export differences
 are not fully inventoried here yet; file an issue or capture if bytes diverge
-from [multis-dump.md](dumps/arrangements.md) /
+from [arrangements.md](dumps/arrangements.md) /
 [single-dump.md](dumps/single.md).
 
 ## Further reading

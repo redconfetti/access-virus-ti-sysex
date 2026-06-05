@@ -10,7 +10,7 @@ parameter page layouts appear **backward compatible**. Use this as a
 **TI rule:** If a control is **not on the TI panel** or behaves differently
 (e.g. no Filter 2 Cutoff — only **Offset**), mark it **N/A** in the TI docs and
 do not assume the classic row applies. Confirm on TI hardware (see
-[single-dump.md](dumps/single.md), [multis-dump.md](dumps/arrangements.md),
+[single-dump.md](dumps/single.md), [arrangements.md](dumps/arrangements.md),
 [live-edit](live-edit/README.md)).
 
 ## Parameter pages
@@ -46,11 +46,11 @@ regressing hardware:
 
 | Topic                                             | Document                                                                                |
 | ------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Multi live `0x72`, `DUMP_MULTI` offsets           | [multis-live-edit.md](live-edit/edit-multi.md), [multis-dump.md](dumps/arrangements.md) |
+| Multi live `0x72`, `DUMP_MULTI` offsets           | [edit-multi.md](live-edit/edit-multi.md), [arrangements.md](dumps/arrangements.md) |
 | Single Common `0x71` / `0x70`, part buffer `0x6E` | [live-edit](live-edit/README.md)                                                        |
 | Globals `0x73`                                    | [edit-config.md](live-edit/edit-config.md)                                              |
 | CC 91 / 93 / 94                                   | [control-change.md](control-change.md)                                                  |
-| `REQUEST_MULTI`, `REQUEST_ARRANGEMENT`            | [multis-dump.md](dumps/arrangements.md), [single-dump.md](dumps/single.md)              |
+| `REQUEST_MULTI`, `REQUEST_ARRANGEMENT`            | [arrangements.md](dumps/arrangements.md), [single-dump.md](dumps/single.md)              |
 
 TI also uses **`cmd=0x73`** (globals), **`cmd=0x6E`** (part single buffer), and
 **`cmd=0x6F`** (extended single — e.g. **Atomizer** `7E`, **Input Mode** `7C`,
@@ -249,9 +249,9 @@ Example: `B0 21 40` — CC **33** (Osc Balance) = 64 on channel 1.
 | 16      | Clock Tempo                                     | 63–190 BPM                                                                                                                                                                                                                                          |
 | 17      | Arp Clock                                       | 1–17                                                                                                                                                                                                                                                |
 | 18–21   | Lfo1/2/3/Delay Clock                            | Off, 1/64..                                                                                                                                                                                                                                         |
-| 25      | Control Smooth Mode                             | TI: `71` / `0x19` — [Smooth Mode list](parameter-option-lists.md#control-smooth-mode--clock-quantize) (`00`–`14`, quantize grid + Off/On/Auto/Note)                                                                                                 |
-| 26      | Bender Range Up                                 | −64..+63 — TI: [multis-live-edit.md](live-edit/edit-multi.md)                                                                                                                                                                                       |
-| 27      | Bender Range Down                               | −64..+63 — TI: [multis-live-edit.md](live-edit/edit-multi.md)                                                                                                                                                                                       |
+| 25      | Control Smooth Mode                             | TI: `71` / `0x19` — [Smooth Mode list](parameter-options.md#control-smooth-mode--clock-quantize) (`00`–`14`, quantize grid + Off/On/Auto/Note)                                                                                                      |
+| 26      | Bender Range Up                                 | −64..+63 — TI: [edit-multi.md](live-edit/edit-multi.md)                                                                                                                                                                                       |
+| 27      | Bender Range Down                               | −64..+63 — TI: [edit-multi.md](live-edit/edit-multi.md)                                                                                                                                                                                       |
 | 28      | Bender Scale                                    | 0 Linear / 1 Exponential — TI: [single-live-edit.md](docs/live-edit/edit-single.md)                                                                                                                                                                 |
 | 30–33   | Filter env polarity, cutoff link, keytrack base | F1 **`0x1E`**, F2 **`0x1F`**; cutoff link **`0x20`** — [Cutoff Link](docs/live-edit/filters.md#filter-cutoff-link-cmd0x71-param-0x20); key base **`0x21`** — [Key Follow Base](docs/live-edit/filters.md#filter-key-follow-base-cmd0x71-param-0x21) |
 | 35      | Osc Init Phase                                  |                                                                                                                                                                                                                                                     |
@@ -289,7 +289,7 @@ in the 1999 doc).
 | 41    | m     | Part Output Select                            |                                                     |
 | 72    | m     | Part Enable                                   |                                                     |
 | 73    | m     | Part MIDI Volume Enable                       |                                                     |
-| 74    | m     | Part Hold Pedal Enable                        | TI: [multis-live-edit.md](live-edit/edit-multi.md)  |
+| 74    | m     | Part Hold Pedal Enable                        | TI: [edit-multi.md](live-edit/edit-multi.md)  |
 | 77    | m     | Note Steal Priority                           |                                                     |
 | 78    | m     | Part Prog Change Enable                       |                                                     |
 | 85–87 | g     | Global Prog Change / Multi Prog / Glob Vol RX |                                                     |
@@ -338,7 +338,7 @@ Payload byte indices for **1999 Multi dump** (not TI 267-byte layout):
 **Part state bitfield** (one byte per part): bit0 Enable; bit1 Vol RX; bit2
 Hold; bit5 Priority; bit6 Prog Change.
 
-Compare TI offsets in [multis-dump.md](dumps/arrangements.md) — same fields,
+Compare TI offsets in [arrangements.md](dumps/arrangements.md) — same fields,
 different
 header/padding and **267-byte** wire format.
 
@@ -357,4 +357,4 @@ header/padding and **267-byte** wire format.
    [single-live-edit.md](docs/live-edit/edit-single.md) / dump docs.
 4. **Do not assume** 1999 **256-byte** dumps match TI **524** / **267-byte**
    wire formats — diff hardware captures
-   ([multis-dump.md](dumps/arrangements.md)).
+   ([arrangements.md](dumps/arrangements.md)).

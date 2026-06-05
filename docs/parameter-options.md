@@ -1,4 +1,4 @@
-# Parameter option lists
+# Parameter options
 
 Enumerated UI options for Virus TI parameters. **Index** is the zero-based
 list position; for most panel enums **`stored = index`** (exceptions: [Soft Knob
@@ -11,7 +11,7 @@ Live-edit docs ([live-edit/README.md](live-edit/README.md),
 only — **option names live here**. Link with:
 
 ```markdown
-See [Option name](parameter-option-lists.md#anchor).
+See [Option name](parameter-options.md#anchor) from live-edit or dump rows.
 ```
 
 See [waf80.md](waf80.md) for classic Page A/B parameter indices.

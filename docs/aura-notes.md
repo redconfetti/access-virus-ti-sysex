@@ -72,7 +72,7 @@ Key Mode enum was confirmed via **CC 94** in AURA and **`cmd=0x70`** /
 
 | Control           | Virus Control | AURA | Notes                                                                                                    |
 | ----------------- | ------------- | ---- | -------------------------------------------------------------------------------------------------------- |
-| Direct Monitoring | Yes           | No   | Analog outs direct, bypassing USB/DAW return — [multis-dump.md](dumps/arrangements.md#direct-monitoring) |
+| Direct Monitoring | Yes           | No   | Analog outs direct, bypassing USB/DAW return — [arrangements.md](dumps/arrangements.md#direct-monitoring) |
 | Solo              | No            | Yes  | UI-only: toggles **Enable** (`0x48`) on other parts — not a separate SysEx param                         |
 | Mute              | Yes           | Yes  | No dedicated dump byte (likely **Enable** off)                                                           |
 
@@ -96,7 +96,7 @@ hosts (or the Virus panel) may use the same or different `cmd` bytes.
 Some edits AURA sends on Multi pages use **`cmd=0x71`** (classic Page B)
 with the same `<part> <param> <value>` layout as **`0x72`**. The Virus
 panel uses **`0x71`** for Bend Up/Down on hardware as well — see
-[multis-live-edit.md](live-edit/edit-multi.md#bend-up-0x1a-cmd0x71).
+[edit-multi.md](live-edit/edit-multi.md#bend-up-0x1a-cmd0x71).
 
 ### Secondary Output (`cmd=0x73`)
 
@@ -135,7 +135,7 @@ load). Behavior is host-driven, not a documented Virus request reply.
 ## Control inventory source
 
 The parameter worksheets in [single-dump.md](dumps/single.md) and
-[multis-dump.md](dumps/arrangements.md) were built from Virus Control / AURA /
+[arrangements.md](dumps/arrangements.md) were built from Virus Control / AURA /
 OsTIrus inventories. **VC / AURA / OsTIrus availability columns** are not
 duplicated in those docs — only synth parameters and SysEx mapping.
 

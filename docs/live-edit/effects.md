@@ -4,7 +4,7 @@ Edit FX — **Delay**, **Reverb**, **EQ**, **Distortion**, **Character**,
 **Chorus**, **Phaser**, **Others** (focus + documented blocks).
 
 Part of [Live Edit](README.md). Enumerated options:
-[parameter-option-lists.md](../parameter-option-lists.md).
+[parameter-options.md](../parameter-options.md).
 Dump worksheet: [Single parameter map](../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](edit-multi.md).
 
@@ -34,8 +34,8 @@ knobs** and LCD labels target.
 
 | Group                              | `param`    | Enum                                                                        |
 | ---------------------------------- | ---------- | --------------------------------------------------------------------------- |
-| **1** (Delay / Reverb / EQ …)      | **`0x75`** | [EFFECTS focus group 1](../parameter-option-lists.md#effects-focus-group-1) |
-| **2** (Distortion / Character / …) | **`0x76`** | [EFFECTS focus group 2](../parameter-option-lists.md#effects-focus-group-2) |
+| **1** (Delay / Reverb / EQ …)      | **`0x75`** | [EFFECTS focus group 1](../parameter-options.md#effects-focus-group-1)      |
+| **2** (Distortion / Character / …) | **`0x76`** | [EFFECTS focus group 2](../parameter-options.md#effects-focus-group-2)      |
 
 | Item           | Value                                                                                          |
 | -------------- | ---------------------------------------------------------------------------------------------- |
@@ -57,7 +57,7 @@ F0 00 20 33 01 00 6E 00 76 04 F7   # Group 2 → Others (Vocoder / Input Followe
 ```
 
 **Not** global [Memory Protect](edit-config.md#memory-protect-0x76) (`73`/`76`).
-**Not** [Delay LFO Wave](../parameter-option-lists.md#delay-lfo-wave)
+**Not** [Delay LFO Wave](../parameter-options.md#delay-lfo-wave)
 (`70`/`76`).
 
 Knob routing per focus: [Delay EFFECTS knobs](#delay-effects-knobs) when group
@@ -74,7 +74,7 @@ maps
 [`6E`/`76`/`00`](#effects-section-focus) before knob edits target this block.
 
 Panel layout: [Distortion panel
-visibility](../parameter-option-lists.md#distortion-panel-visibility).
+visibility](../parameter-options.md#distortion-panel-visibility).
 
 | Control                   | Notes                                                                                                                                                 |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -82,14 +82,14 @@ visibility](../parameter-option-lists.md#distortion-panel-visibility).
 | **Mix**                   | [`6E`/`48`](#distortion-mix-cmd0x6e-param-0x48) — standard / minimal / reducer / overdrive                                                            |
 | **Intensity** / **Drive** | [`71`/`65`](#distortion-intensity-cmd0x71-param-0x65) — **Intensity** (standard / minimal / reducer); **Drive** (overdrive `14`–`19`)                 |
 | **Tone**                  | [`6E`/`4A`](#distortion-tone-cmd0x6e-param-0x4a) — overdrive with Tone (`14`/`16`/`17`/`18`)                                                          |
-| **Treble Boost**          | [`6E`/`46`](#distortion-treble-boost-cmd0x6e-param-0x46) — [standard types](../parameter-option-lists.md#standard-types--same-four-percent-rows) only |
-| **High Cut**              | [`6E`/`47`](#distortion-high-cut-cmd0x6e-param-0x47) — standard + [overdrive](../parameter-option-lists.md#overdrive-types--drive-mix-high-cut)       |
+| **Treble Boost**          | [`6E`/`46`](#distortion-treble-boost-cmd0x6e-param-0x46) — [standard types](../parameter-options.md#standard-types--same-four-percent-rows) only      |
+| **High Cut**              | [`6E`/`47`](#distortion-high-cut-cmd0x6e-param-0x47) — standard + [overdrive](../parameter-options.md#overdrive-types--drive-mix-high-cut)            |
 | **Quality**               | [`6E`/`49`](#distortion-quality-cmd0x6e-param-0x49) — **Bit** / **Rate Reducer** (`13`/`12`) only                                                     |
 
 ### Distortion Type (`cmd=0x71`, param `0x64`) {#distortion-type-cmd0x71-param-0x64}
 
 **EDIT FX → Distortion → Type**. Page **B#100** = **`0x64`**. Enum:
-[Distortion Type](../parameter-option-lists.md#distortion-type) (**`stored =
+[Distortion Type](../parameter-options.md#distortion-type) (**`stored =
 <value>`**,
 not a dense index).
 
@@ -130,7 +130,7 @@ F0 00 20 33 01 00 71 00 64 19 F7   # Chili Overdrive
 ### Distortion Mix (`cmd=0x6E`, param `0x48`) {#distortion-mix-cmd0x6e-param-0x48}
 
 **EDIT FX → Distortion → Mix** ([panel
-visibility](../parameter-option-lists.md#distortion-panel-visibility) — standard
+visibility](../parameter-options.md#distortion-panel-visibility) — standard
 / minimal / reducer / overdrive).
 Part buffer **`6E`**.
 
@@ -153,9 +153,9 @@ Param id and value both **`48`** in the last example — **`6E <part> 48
 ### Distortion Intensity (`cmd=0x71`, param `0x65`) {#distortion-intensity-cmd0x71-param-0x65}
 
 **EDIT FX → Distortion → Intensity** ([panel
-visibility](../parameter-option-lists.md#distortion-panel-visibility) — standard
+visibility](../parameter-options.md#distortion-panel-visibility) — standard
 / minimal / reducer). On [overdrive
-types](../parameter-option-lists.md#overdrive-types--drive-mix-high-cut) the
+types](../parameter-options.md#overdrive-types--drive-mix-high-cut) the
 panel label is **Drive** (same byte).
 Page **B#101** = **`0x65`**. Same byte as [soft-knob
 runtime](edit-single.md#soft-knob-runtime-distortion-intensity).
@@ -178,7 +178,7 @@ Param id and value both **`65`** in the middle example — **`71 <part> 65
 ### Distortion Treble Boost (`cmd=0x6E`, param `0x46`) {#distortion-treble-boost-cmd0x6e-param-0x46}
 
 **EDIT FX → Distortion → Treble Boost** ([standard
-types](../parameter-option-lists.md#distortion-panel-visibility)).
+types](../parameter-options.md#distortion-panel-visibility)).
 
 | Item           | Value                                                |
 | -------------- | ---------------------------------------------------- |
@@ -195,7 +195,7 @@ F0 00 20 33 01 00 6E 00 46 7F F7   # 100.0 %
 ### Distortion Tone (`cmd=0x6E`, param `0x4A`) {#distortion-tone-cmd0x6e-param-0x4a}
 
 **EDIT FX → Distortion → Tone** ([overdrive types with
-Tone](../parameter-option-lists.md#overdrive-types--drive-mix-high-cut) —
+Tone](../parameter-options.md#overdrive-types--drive-mix-high-cut) —
 **Mint** / **Saffron** / **Onion** / **Pepper**; not **Curry** / **Chili**).
 
 | Item           | Value                                                                              |
@@ -214,9 +214,9 @@ F0 00 20 33 01 00 6E 00 4A 7F F7   # +100.0 %
 ### Distortion High Cut (`cmd=0x6E`, param `0x47`) {#distortion-high-cut-cmd0x6e-param-0x47}
 
 **EDIT FX → Distortion → High Cut** ([standard
-types](../parameter-option-lists.md#standard-types--same-four-percent-rows) and
+types](../parameter-options.md#standard-types--same-four-percent-rows) and
 [overdrive
-types](../parameter-option-lists.md#overdrive-types--drive-mix-high-cut)).
+types](../parameter-options.md#overdrive-types--drive-mix-high-cut)).
 
 | Item           | Value                                                |
 | -------------- | ---------------------------------------------------- |
@@ -236,7 +236,7 @@ F0 00 20 33 01 00 6E 00 47 7F F7   # 100.0 %
 Reducer**).
 Replaces **Treble Boost** / **High Cut** on those types — see
 [Distortion panel
-visibility](../parameter-option-lists.md#distortion-panel-visibility).
+visibility](../parameter-options.md#distortion-panel-visibility).
 
 | Item           | Value                                                                                |
 | -------------- | ------------------------------------------------------------------------------------ |
@@ -253,7 +253,7 @@ F0 00 20 33 01 00 6E 00 49 7F F7   # 100.0 %
 ### Delay
 
 Panel layout: [Delay panel
-visibility](../parameter-option-lists.md#delay-panel-visibility).
+visibility](../parameter-options.md#delay-panel-visibility).
 
 #### EFFECTS section knobs (Delay selected) {#delay-effects-knobs}
 
@@ -266,7 +266,7 @@ three front-panel knobs drive the same live-edit bytes as **EDIT FX → Delay**
 
 | Knob | LCD label          | `param`    | Encoding                                                                                         |
 | ---- | ------------------ | ---------- | ------------------------------------------------------------------------------------------------ |
-| 1    | **Delay Send**     | **`0x71`** | [Delay Send (LCD)](../parameter-option-lists.md#delay-send-lcd) — **`00`** Off … **`7F`** Effect |
+| 1    | **Delay Send**     | **`0x71`** | [Delay Send (LCD)](../parameter-options.md#delay-send-lcd) — **`00`** Off … **`7F`** Effect      |
 | 2    | **Delay Color**    | **`0x77`** | Classic **Coloration** — **`stored = ui + 64`** (**−64..+63**)                                   |
 | 3    | **Delay Feedback** | **`0x73`** | Classic **0.0..100.0 %** — `stored = round(pct × 127 / 100)`                                     |
 
@@ -281,30 +281,30 @@ non-**Off** value before type-specific rows appear.
 
 | Control      | Notes                                                                                                                         |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Type**     | [Delay Type](../parameter-option-lists.md#delay-type) — [`6E`/`0A`](#delay-type-cmd0x6e)                                      |
-| **Send**     | [Delay Send (LCD)](../parameter-option-lists.md#delay-send-lcd) — [`70`/`71`](#delay-send-cmd0x70-param-0x71); **`00`** = Off |
+| **Type**     | [Delay Type](../parameter-options.md#delay-type) — [`6E`/`0A`](#delay-type-cmd0x6e)                                           |
+| **Send**     | [Delay Send (LCD)](../parameter-options.md#delay-send-lcd) — [`70`/`71`](#delay-send-cmd0x70-param-0x71); **`00`** = Off      |
 | **Feedback** | [`70`/`73`](#delay-feedback) — **Classic** **0..100 %** / **Tape** **0..200 %**                                               |
 
 #### Classic (`00`) — Send ≠ Off
 
 | Control        | Notes                                                                                                                                                                                                                                    |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Send**       | [Delay Send (LCD)](../parameter-option-lists.md#delay-send-lcd); [`70`/`71`](#delay-send-cmd0x70-param-0x71)                                                                                                                             |
+| **Send**       | [Delay Send (LCD)](../parameter-options.md#delay-send-lcd); [`70`/`71`](#delay-send-cmd0x70-param-0x71)                                                                                                                                  |
 | **Feedback**   | **0.0..100.0 %** — [`70`/`73`](#delay-feedback)                                                                                                                                                                                          |
-| **Mode**       | [Delay Mode](../parameter-option-lists.md#delay-mode) — **`01`–`16`**; [`70`/`70`](#delay-mode-cmd0x70-param-0x70); **Pattern …** = no **Clock**                                                                                         |
-| **Coloration** | **−64..+63** → `stored = ui + 64` — [`70`/`77`](#delay-tape-frequency-cmd0x70-param-0x77); [anchors](../parameter-option-lists.md#delay-coloration)                                                                                      |
-| **Clock**      | [Delay Clock](../parameter-option-lists.md#delay-clock) — Simple/Ping Pong only; **`71`/`14`**; **`00`** = Off                                                                                                                           |
+| **Mode**       | [Delay Mode](../parameter-options.md#delay-mode) — **`01`–`16`**; [`70`/`70`](#delay-mode-cmd0x70-param-0x70); **Pattern …** = no **Clock**                                                                                              |
+| **Coloration** | **−64..+63** → `stored = ui + 64` — [`70`/`77`](#delay-tape-frequency-cmd0x70-param-0x77); [anchors](../parameter-options.md#delay-coloration)                                                                                           |
+| **Clock**      | [Delay Clock](../parameter-options.md#delay-clock) — Simple/Ping Pong only; **`71`/`14`**; **`00`** = Off                                                                                                                                |
 | **Delay Time** | Simple/Ping Pong + **Clock** Off only — [`70`/`72`](#delay-tape-time-cmd0x70-param-0x72); **not** on **Pattern** (`06`–`16`; panel **Pattern 5+5**)                                                                                      |
-| **LFO**        | [Delay LFO](../parameter-option-lists.md#delay-lfo) — **Rate** [`70`/`74`](#delay-lfo-rate-cmd0x70-param-0x74), **Depth** [`70`/`75`](#delay-lfo-depth-cmd0x70-param-0x75), **LFO Wave** [`70`/`76`](#delay-lfo-wave-cmd0x70-param-0x76) |
+| **LFO**        | [Delay LFO](../parameter-options.md#delay-lfo) — **Rate** [`70`/`74`](#delay-lfo-rate-cmd0x70-param-0x74), **Depth** [`70`/`75`](#delay-lfo-depth-cmd0x70-param-0x75), **LFO Wave** [`70`/`76`](#delay-lfo-wave-cmd0x70-param-0x76)      |
 
 #### Tape Clocked (`01`) — Send ≠ Off
 
 | Control         | Notes                                                                                                                                                 |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Send**        | [Delay Send (LCD)](../parameter-option-lists.md#delay-send-lcd) — Off, −46.2 dB … **0/−24.0 dB**, Effect; [`70`/`71`](#delay-send-cmd0x70-param-0x71) |
+| **Send**        | [Delay Send (LCD)](../parameter-options.md#delay-send-lcd) — Off, −46.2 dB … **0/−24.0 dB**, Effect; [`70`/`71`](#delay-send-cmd0x70-param-0x71)      |
 | **Feedback**    | **0.0..200.0 %** — [`70`/`73`](#delay-feedback); **`40`** = 100.0 %                                                                                   |
-| **Left Clock**  | [Delay Tape Left Clock](../parameter-option-lists.md#delay-tape-left-clock) — **`6E`/`0D`**; `00`–`05`                                                |
-| **Right Clock** | [Delay Tape Right Clock](../parameter-option-lists.md#delay-tape-right-clock) — **`6E`/`0E`**; same menu                                              |
+| **Left Clock**  | [Delay Tape Left Clock](../parameter-options.md#delay-tape-left-clock) — **`6E`/`0D`**; `00`–`05`                                                     |
+| **Right Clock** | [Delay Tape Right Clock](../parameter-options.md#delay-tape-right-clock) — **`6E`/`0E`**; same menu                                                   |
 | **Frequency**   | **`0`–`127`** — [`70`/`77`](#delay-tape-frequency-cmd0x70-param-0x77)                                                                                 |
 | **Bandwidth**   | **`0`–`127`** — [`6E`/`11`](#delay-tape-bandwidth-cmd0x6e-param-0x11)                                                                                 |
 | **Modulation**  | **0.0..100.0 %** — [`70`/`75`](#delay-tape-modulation-cmd0x70-param-0x75)                                                                             |
@@ -315,10 +315,10 @@ No **Time** or **Ratio** on **Tape Clocked**.
 
 | Control        | Notes                                                                                                                                                                  |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Send**       | [Delay Send (LCD)](../parameter-option-lists.md#delay-send-lcd); [`70`/`71`](#delay-send-cmd0x70-param-0x71) — same curve all **Types** (panel: **Tape Doppler** `03`) |
+| **Send**       | [Delay Send (LCD)](../parameter-options.md#delay-send-lcd); [`70`/`71`](#delay-send-cmd0x70-param-0x71) — same curve all **Types** (panel: **Tape Doppler** `03`)      |
 | **Feedback**   | **0.0..200.0 %** — [`70`/`73`](#delay-feedback); same as Tape Clocked (panel: **Tape Doppler** `03`)                                                                   |
-| **Time**       | Same as Classic **Delay Time** — **0.0..693.6 ms**, [`70`/`72`](#delay-tape-time-cmd0x70-param-0x72); [LCD table](../parameter-option-lists.md#delay-tape-time)        |
-| **Ratio**      | [Delay Tape Ratio](../parameter-option-lists.md#delay-tape-ratio) — **`6E`/`0C`**; `00`–`06` (panel: **Tape Doppler** `03`)                                            |
+| **Time**       | Same as Classic **Delay Time** — **0.0..693.6 ms**, [`70`/`72`](#delay-tape-time-cmd0x70-param-0x72); [LCD table](../parameter-options.md#delay-tape-time)             |
+| **Ratio**      | [Delay Tape Ratio](../parameter-options.md#delay-tape-ratio) — **`6E`/`0C`**; `00`–`06` (panel: **Tape Doppler** `03`)                                                 |
 | **Frequency**  | **`0`–`127`** — [`70`/`77`](#delay-tape-frequency-cmd0x70-param-0x77) (panel: **Tape Doppler** `03`)                                                                   |
 | **Bandwidth**  | **`0`–`127`** — [`6E`/`11`](#delay-tape-bandwidth-cmd0x6e-param-0x11) (panel: **Tape Doppler** `03`)                                                                   |
 | **Modulation** | **0.0..100.0 %** — [`70`/`75`](#delay-tape-modulation-cmd0x70-param-0x75) (panel: **Tape Doppler** `03`)                                                               |
@@ -332,7 +332,7 @@ No **Left Clock** / **Right Clock** (Tape Clocked only).
 | Item           | Value                                                                 |
 | -------------- | --------------------------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 6E <part> 0A <value> F7`                           |
-| Value encoding | [Delay Type](../parameter-option-lists.md#delay-type) — **`00`–`03`** |
+| Value encoding | [Delay Type](../parameter-options.md#delay-type) — **`00`–`03`**      |
 | Confirmed      | Hardware TX                                                           |
 
 ```text
@@ -345,7 +345,7 @@ F0 00 20 33 01 00 6E 00 0A 03 F7   # Tape Doppler
 ### Delay Mode (`cmd=0x70`, param `0x70`) {#delay-mode-cmd0x70-param-0x70}
 
 **EDIT FX → Delay → Mode** (**Type** = Classic). Enum:
-[Delay Mode](../parameter-option-lists.md#delay-mode) — wire **`01`–`16`**, not
+[Delay Mode](../parameter-options.md#delay-mode) — wire **`01`–`16`**, not
 **`00`**.
 Not `6E`/`0A` (**Type**).
 
@@ -366,7 +366,7 @@ F0 00 20 33 01 00 70 00 70 16 F7   # Pattern 5+5
 **EDIT FX → Delay → Send** (all types). Also **EFFECTS → Delay** knob 1 —
 [Delay EFFECTS knobs](#delay-effects-knobs). Page **A#113** = **`0x71`**. LCD
 index =
-wire byte — [Delay Send (LCD)](../parameter-option-lists.md#delay-send-lcd).
+wire byte — [Delay Send (LCD)](../parameter-options.md#delay-send-lcd).
 
 | Item           | Value                                                                       |
 | -------------- | --------------------------------------------------------------------------- |
@@ -382,7 +382,7 @@ F0 00 20 33 01 00 70 00 71 7F F7   # Effect
 
 **EDIT FX → Delay → Feedback**. Page **A#115** = **`0x73`**. Same byte for all
 **Types**; scale depends on **Type** — see
-[Delay Feedback](../parameter-option-lists.md#delay-feedback).
+[Delay Feedback](../parameter-options.md#delay-feedback).
 
 #### Classic (`00`) — `stored = round(pct × 127 / 100)`
 
@@ -412,7 +412,7 @@ F0 00 20 33 01 00 70 00 73 7F F7   # 200.0 % (Tape)
 ### Delay Tape Left Clock (`cmd=0x6E`, param `0x0D`) {#delay-tape-left-clock-cmd0x6e}
 
 **Tape Clocked → Left Clock**. Options:
-[Delay Tape Left Clock](../parameter-option-lists.md#delay-tape-left-clock).
+[Delay Tape Left Clock](../parameter-options.md#delay-tape-left-clock).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
@@ -428,7 +428,7 @@ F0 00 20 33 01 00 6E 00 0D 05 F7   # 5/16
 
 **Classic → Delay Time** (Simple/Ping Pong, **Clock** Off only — **not** Pattern
 modes), **Tape Free / Doppler → Time** — same param. **0.0..693.6 ms** — see
-[Delay Time (ms)](../parameter-option-lists.md#delay-tape-time).
+[Delay Time (ms)](../parameter-options.md#delay-tape-time).
 
 | Item           | Value                                                                          |
 | -------------- | ------------------------------------------------------------------------------ |
@@ -444,7 +444,7 @@ F0 00 20 33 01 00 70 00 72 7F F7   # 693.6 ms
 ### Delay Tape Ratio (`cmd=0x6E`, param `0x0C`) {#delay-tape-ratio-cmd0x6e}
 
 **Tape Free / Tape Doppler → Ratio**. Options:
-[Delay Tape Ratio](../parameter-option-lists.md#delay-tape-ratio).
+[Delay Tape Ratio](../parameter-options.md#delay-tape-ratio).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
@@ -459,8 +459,8 @@ F0 00 20 33 01 00 6E 00 0C 06 F7   # 4/1
 ### Delay Coloration / Tape Frequency (`cmd=0x70`, param `0x77`) {#delay-tape-frequency-cmd0x70-param-0x77}
 
 Page **A#119** = **`0x77`**. Same wire byte; encoding depends on **Type** — see
-[Delay Coloration](../parameter-option-lists.md#delay-coloration),
-[Tape Frequency](../parameter-option-lists.md#delay-tape-frequency).
+[Delay Coloration](../parameter-options.md#delay-coloration),
+[Tape Frequency](../parameter-options.md#delay-tape-frequency).
 
 #### Classic — Coloration (`stored = ui + 64`, **−64..+63**)
 
@@ -548,7 +548,7 @@ F0 00 20 33 01 00 6E 00 0E 05 F7   # 5/16
 ### Delay LFO {#delay-lfo}
 
 **Rate**, **Depth**, and **LFO Wave** — one panel page; see
-[Delay LFO](../parameter-option-lists.md#delay-lfo).
+[Delay LFO](../parameter-options.md#delay-lfo).
 
 ### Delay LFO Rate (`cmd=0x70`, param `0x74`) {#delay-lfo-rate-cmd0x70-param-0x74}
 
@@ -589,7 +589,7 @@ F0 00 20 33 01 00 70 00 75 7F F7   # Depth 100.0 %
 ### Delay LFO Wave (`cmd=0x70`, param `0x76`) {#delay-lfo-wave-cmd0x70-param-0x76}
 
 **EDIT FX → Delay → LFO Wave**. Page **A#118** = **`0x76`**. Options:
-[Delay LFO Wave](../parameter-option-lists.md#delay-lfo-wave).
+[Delay LFO Wave](../parameter-options.md#delay-lfo-wave).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
@@ -605,7 +605,7 @@ F0 00 20 33 01 00 70 00 76 05 F7   # S&G
 ### Reverb
 
 Panel layout: [Reverb panel
-visibility](../parameter-option-lists.md#reverb-panel-visibility).
+visibility](../parameter-options.md#reverb-panel-visibility).
 
 **Mode = Off (`00`)** — **Mode** and **Send** only (TI reference).
 
@@ -635,7 +635,7 @@ or **Predelay** (unlike Delay **Send**).
 
 **EDIT FX → Reverb → Mode**. Part-sound buffer (**`6E`**, like [Delay
 Type](#delay-type-cmd0x6e)).
-Enum: [Reverb Mode](../parameter-option-lists.md#reverb-mode). **Not** param
+Enum: [Reverb Mode](../parameter-options.md#reverb-mode). **Not** param
 **`0x03`**
 (that is [Type](#reverb-type-cmd0x6e)).
 
@@ -654,7 +654,7 @@ F0 00 20 33 01 00 6E 00 01 03 F7   # Feedback 2
 ### Reverb Type (`cmd=0x6E`, param `0x03`) {#reverb-type-cmd0x6e}
 
 **EDIT FX → Reverb → Type** (**Mode** = Reverb). Enum:
-[Reverb Type](../parameter-option-lists.md#reverb-type).
+[Reverb Type](../parameter-options.md#reverb-type).
 
 | Item           | Value                                              |
 | -------------- | -------------------------------------------------- |
@@ -672,7 +672,7 @@ F0 00 20 33 01 00 6E 00 03 03 F7   # Hall
 ### Reverb Clock (`cmd=0x6E`, param `0x08`) {#reverb-clock-cmd0x6e}
 
 **EDIT FX → Reverb → Clock**. Syncs **Predelay**. Same **`<value>`** map as
-[Delay Clock](../parameter-option-lists.md#delay-clock) but **`6E`/`08`** (not
+[Delay Clock](../parameter-options.md#delay-clock) but **`6E`/`08`** (not
 `71`/`14`).
 
 | Item           | Value                                       |
@@ -704,7 +704,7 @@ F0 00 20 33 01 00 6E 00 04 7F F7   # 127
 ### Reverb Damping (`cmd=0x6E`, param `0x05`) {#reverb-damping-cmd0x6e}
 
 **EDIT FX → Reverb → Damping** (**Mode** = Reverb). **0.0..100.0 %** — see
-[Reverb Damping](../parameter-option-lists.md#reverb-damping).
+[Reverb Damping](../parameter-options.md#reverb-damping).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
@@ -721,7 +721,7 @@ F0 00 20 33 01 00 6E 00 05 7F F7   # 100.0 %
 ### Reverb Coloration (`cmd=0x6E`, param `0x06`) {#reverb-coloration-cmd0x6e}
 
 **EDIT FX → Reverb → Coloration** (**Mode** = Reverb). **−64..+63** — see
-[Reverb Coloration](../parameter-option-lists.md#reverb-coloration).
+[Reverb Coloration](../parameter-options.md#reverb-coloration).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
@@ -738,7 +738,7 @@ F0 00 20 33 01 00 6E 00 06 00 F7   # −64
 ### Reverb Predelay (`cmd=0x6E`, param `0x07`) {#reverb-predelay-cmd0x6e}
 
 **EDIT FX → Reverb → Predelay** (**Clock** = Off). **0.0..500.0 ms** — see
-[Reverb Predelay](../parameter-option-lists.md#reverb-predelay).
+[Reverb Predelay](../parameter-options.md#reverb-predelay).
 
 | Item           | Value                                                                   |
 | -------------- | ----------------------------------------------------------------------- |
@@ -757,7 +757,7 @@ F0 00 20 33 01 00 6E 00 07 5C F7   # 500.0 ms
 
 **EDIT FX → Reverb → Feedback** (**Mode** = **Feedback 1** or **Feedback 2**).
 **0..127** — see [Reverb
-Feedback](../parameter-option-lists.md#reverb-feedback).
+Feedback](../parameter-options.md#reverb-feedback).
 
 | Item           | Value                                                  |
 | -------------- | ------------------------------------------------------ |
@@ -795,7 +795,7 @@ F0 00 20 33 01 00 6E 00 02 7F F7   # Effect
 ```
 
 LCD ↔ **`stored`**: [Reverb Send
-(LCD)](../parameter-option-lists.md#reverb-send-lcd)
+(LCD)](../parameter-options.md#reverb-send-lcd)
 (sparse panel rows; full label table still open).
 
 ### Low EQ
@@ -811,7 +811,7 @@ Page A **Filter 2 Envelope Amount** on **`70`/`2D`**.
 ### EQ Low Frequency (`cmd=0x71`, param `0x2D`) {#eq-low-frequency-cmd0x71-param-0x2d}
 
 **EDIT FX → Low EQ → Frequency (Hz)**. Page **B#45** = **`0x2D`**. Hz curve:
-[EQ Low Frequency](../parameter-option-lists.md#eq-low-frequency).
+[EQ Low Frequency](../parameter-options.md#eq-low-frequency).
 
 | Item           | Value                                                |
 | -------------- | ---------------------------------------------------- |
@@ -825,7 +825,7 @@ F0 00 20 33 01 00 71 00 2D 00 F7   # 32 Hz
 F0 00 20 33 01 00 71 00 2D 7F F7   # 458 Hz
 ```
 
-[Soft Knob Destinations](../parameter-option-lists.md#soft-knob-destinations)
+[Soft Knob Destinations](../parameter-options.md#soft-knob-destinations)
 use
 different wire bytes (e.g. **Filter 2 Env Amount** = **`2D`** in **`71`/`3E`**)
 than
@@ -834,7 +834,7 @@ these live-edit param IDs.
 ### EQ Low Gain (`cmd=0x71`, param `0x5F`) {#eq-low-gain-cmd0x71-param-0x5f}
 
 **EDIT FX → Low EQ → Gain**. Page **B#95** = **`0x5F`**. Encoding:
-[EQ Low Gain](../parameter-option-lists.md#eq-low-gain).
+[EQ Low Gain](../parameter-options.md#eq-low-gain).
 
 | Item           | Value                                                 |
 | -------------- | ----------------------------------------------------- |
@@ -862,7 +862,7 @@ F0 00 20 33 01 00 71 00 5F 7F F7   # +16 dB
 ### EQ Mid Frequency (`cmd=0x71`, param `0x5D`) {#eq-mid-frequency-cmd0x71-param-0x5d}
 
 **EDIT FX → Mid EQ → Frequency (Hz)**. Page **B#93** = **`0x5D`**. Hz curve:
-[EQ Mid Frequency](../parameter-option-lists.md#eq-mid-frequency).
+[EQ Mid Frequency](../parameter-options.md#eq-mid-frequency).
 
 | Item           | Value                                                    |
 | -------------- | -------------------------------------------------------- |
@@ -881,7 +881,7 @@ F0 00 20 33 01 00 71 00 5D 7F F7   # 24.0 kHz
 
 **EDIT FX → Mid EQ → Gain**. Page **B#92** = **`0x5C`**. Same encoding as
 [EQ Low Gain](#eq-low-gain-cmd0x71-param-0x5f) — see
-[EQ Mid Gain](../parameter-option-lists.md#eq-mid-gain).
+[EQ Mid Gain](../parameter-options.md#eq-mid-gain).
 
 | Item           | Value                                                |
 | -------------- | ---------------------------------------------------- |
@@ -899,7 +899,7 @@ F0 00 20 33 01 00 71 00 5C 7F F7   # +16 dB
 ### EQ Mid Q-Factor (`cmd=0x71`, param `0x5E`) {#eq-mid-q-factor-cmd0x71-param-0x5e}
 
 **EDIT FX → Mid EQ → Q-Factor**. Page **B#94** = **`0x5E`**. Anchors:
-[EQ Mid Q-Factor](../parameter-option-lists.md#eq-mid-q-factor).
+[EQ Mid Q-Factor](../parameter-options.md#eq-mid-q-factor).
 
 | Item           | Value                                              |
 | -------------- | -------------------------------------------------- |
@@ -927,7 +927,7 @@ Both use **Page B** (`cmd=0x71`).
 ### EQ High Frequency (`cmd=0x71`, param `0x2E`) {#eq-high-frequency-cmd0x71-param-0x2e}
 
 **EDIT FX → High EQ → Frequency (Hz)**. Page **B#46** = **`0x2E`**. Hz curve:
-[EQ High Frequency](../parameter-option-lists.md#eq-high-frequency).
+[EQ High Frequency](../parameter-options.md#eq-high-frequency).
 
 | Item           | Value                                                       |
 | -------------- | ----------------------------------------------------------- |
@@ -948,7 +948,7 @@ F0 00 20 33 01 00 71 00 2E 7F F7   # 24.0 kHz
 
 **EDIT FX → High EQ → Gain**. Page **B#96** = **`0x60`**. Same encoding as
 [EQ Low Gain](#eq-low-gain-cmd0x71-param-0x5f) — see
-[EQ High Gain](../parameter-option-lists.md#eq-high-gain).
+[EQ High Gain](../parameter-options.md#eq-high-gain).
 
 | Item           | Value                                                |
 | -------------- | ---------------------------------------------------- |

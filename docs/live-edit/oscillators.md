@@ -4,7 +4,7 @@ Edit Single — **Oscillators** (Osc 1–3), **Noise**, **Ring Modulator**, **Su
 Oscillator**, mixer levels.
 
 Part of [Live Edit](README.md). Enumerated options:
-[parameter-option-lists.md](../parameter-option-lists.md).
+[parameter-options.md](../parameter-options.md).
 Dump worksheet: [Single parameter map](../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](edit-multi.md).
 
@@ -120,7 +120,7 @@ when
 **Shape ≥ `40`** (Sawtooth and Saw>Pulse — not at Spectral Wave `00`).
 **Pulse Width** **`70`/`12`** — formulas in
 [Pulse Width](#pulse-width-shape--sawtooth); LCD lookup table in
-[parameter-option-lists.md](../parameter-option-lists.md#osc-1-classic--pulse-width-lcd).
+[parameter-options.md](../parameter-options.md#osc-1-classic--pulse-width-lcd).
 
 | LCD                | `<value>` | Confirmed |
 | ------------------ | --------- | --------- |
@@ -301,8 +301,8 @@ stored = round((pct − 50) × 127 / 50)    # clamp 00..7F
 Endpoints **`00`** / **`7F`** show **50.0 %** / **100 %** on the wire
 values directly. Same label can appear on two detents. Partial **wire → LCD**
 map:
-[parameter-option-lists.md — Osc 1 Pulse Width
-LCD](../parameter-option-lists.md#osc-1-classic--pulse-width-lcd).
+[parameter-options.md — Osc 1 Pulse Width
+LCD](../parameter-options.md#osc-1-classic--pulse-width-lcd).
 
 ```text
 F0 00 20 33 01 00 70 00 12 00 F7   # min 50.0 %
@@ -339,8 +339,8 @@ lands **`40`**, **`74`–`76`**, **`7B`**, **`7F`**. **`58`–`6C`**
 often **~0.1–0.5 below** predicted; **`44`–`57`**, **`74`+** are within
 **~0.1**. Duplicate labels appear on some detents (**`5C`/`5D`**,
 **`67`/`68`**, **`77`/`78`**, etc.). Full **128**-entry map:
-[parameter-option-lists.md — Density
-LCD](../parameter-option-lists.md#osc-1-hypersaw--density-lcd).
+[parameter-options.md — Density
+LCD](../parameter-options.md#osc-1-hypersaw--density-lcd).
 
 **Do not** use `stored = round((lcd − 1) × 127 / 8)` from LCD alone
 (e.g. LCD **3.0** → **`3F`**, not **`20`**).
@@ -450,8 +450,8 @@ anomalies vs **1:1** encoding.
 Select**.
 **`stored`** = wavetable index (**0**–**99** → **`00`–`63`**). Panel order
 matches
-[parameter-option-lists.md — Wavetable
-Names](../parameter-option-lists.md#wavetable-names)
+[parameter-options.md — Wavetable
+Names](../parameter-options.md#wavetable-names)
 (hardware verified: full sweep **Sine** → **Domina7rix**).
 
 | LCD             | `<value>` | Confirmed |

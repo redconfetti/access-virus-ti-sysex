@@ -53,7 +53,7 @@ the wire (not individual loop keys — those are played on the keyboard). Panel
 labels **2**–**16** are stored **`02`–`10`**; exact musical length per index is
 not yet correlated to SysEx here (see Atomizer manual for performance detail).
 
-Enum: [Atomizer preset](../parameter-option-lists.md#atomizer-preset)
+Enum: [Atomizer preset](../parameter-options.md#atomizer-preset)
 (`00`–`10`).
 
 ```text
@@ -64,7 +64,7 @@ F0 00 20 33 01 00 6F 00 7E 10 F7   # Atomizer 16
 
 ### Input Mode (`0x7C`, `cmd=0x6F`)
 
-Enum: [Input Mode](../parameter-option-lists.md#input-mode).
+Enum: [Input Mode](../parameter-options.md#input-mode).
 
 ```text
 F0 00 20 33 01 00 6F 00 7C 00 F7   # Input Mode Off
@@ -74,7 +74,7 @@ F0 00 20 33 01 00 6F 00 7C 02 F7   # Input Mode Static
 
 ### Input Select (`0x7D`, `cmd=0x6F`)
 
-Enum: [Input Select](../parameter-option-lists.md#input-select).
+Enum: [Input Select](../parameter-options.md#input-select).
 
 ```text
 F0 00 20 33 01 00 6F 00 7D 00 F7   # Input Select Left
@@ -501,7 +501,7 @@ To test whether globals are stored in the multi payload:
 2. Change one global via **`0x73`** and confirm on the Virus LCD.
 3. Request **`DUMP_MULTI`** (edit buffer or stored slot).
 4. Diff against baseline; check unmapped regions in
-   [multis-dump.md — Unmapped
+   [arrangements.md — Unmapped
    payload](../dumps/arrangements.md#unmapped-payload):
    `0x19..0x28`, `0xB9..0xC7`, `0xE8..0xF7`.
 

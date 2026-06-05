@@ -4,7 +4,7 @@ Edit Single — **Filters** (Common, Filter 1/2, Filter/Amp envelopes,
 **Saturation**).
 
 Part of [Live Edit](README.md). Enumerated options:
-[parameter-option-lists.md](../parameter-option-lists.md).
+[parameter-options.md](../parameter-options.md).
 Dump worksheet: [Single parameter map](../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](edit-multi.md).
 

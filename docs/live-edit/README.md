@@ -13,7 +13,7 @@ Real-time SysEx parameter changes on the Virus TI mk2 (**`0x70`**, **`0x71`**,
 | [edit-multi.md](edit-multi.md)   | Edit Multi — parts, keyboard range, routing                                   |
 
 **Enums & panel tables:**
-[parameter-option-lists.md](../parameter-option-lists.md)
+[parameter-options.md](../parameter-options.md)
 **Dump offsets (worksheet):**
 [dumps/single.md](../dumps/single.md#single-parameter-map)
 **MIDI CC (when Page A = Controller Data):**

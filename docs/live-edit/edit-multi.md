@@ -21,7 +21,7 @@ F0 00 20 33 01 00 71 <part> <param> <value> F7
 Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 [edit-single.md](edit-single.md).
 
-Enumerated options: [parameter-option-lists.md](../parameter-option-lists.md).
+Enumerated options: [parameter-options.md](../parameter-options.md).
 
 ## Summary
 
@@ -50,7 +50,7 @@ Enumerated options: [parameter-option-lists.md](../parameter-option-lists.md).
 | `0x4E`   | `0xF8 + part` (packed flags) | Program Change   | Program Change response                      |
 
 **Not in this table:** **Direct Monitoring** (VC-only; dump byte
-unmapped — [multis-dump.md](../dumps/arrangements.md#direct-monitoring)).
+unmapped — [arrangements.md](../dumps/arrangements.md#direct-monitoring)).
 **Solo** in some host UIs manipulates **`0x48` Enable** on other parts — see
 [aura-notes.md](../aura-notes.md#multi-mixer-ui-host-software).
 
@@ -162,7 +162,7 @@ encoding)**.
 - Per-part Single **bank** for the part.
 - Dump correlation: **`0x29 + (part−1)`** — see
   [Part bank index](../dumps/arrangements.md#part-bank-index) in
-  `multis-dump.md`.
+  `arrangements.md`.
 - Live value = dump bank index (`0x00` = RAM A, `0x01` = RAM B, `0x04` =
   ROM A, etc.).
 - Virus Part 1: live `72 00 20 01` → LCD **RAM-B** (confirmed).
@@ -363,7 +363,7 @@ Used by: `0x29`.
 ### Secondary Output Enum (`0x2D`)
 
 Full panel labels: [Secondary output
-routing](../parameter-option-lists.md#secondary-output-routing).
+routing](../parameter-options.md#secondary-output-routing).
 **`00`** = Off; otherwise same routes as
 [primary output](#output-routing-enum-0x29), **`stored = primary_index + 1`**
 (through **`12`** = USB 3 R).

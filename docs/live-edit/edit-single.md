@@ -4,7 +4,7 @@ Edit Single — **Common**, **Unison**, **Envelope 3/4**, **Velocity Map**, **So
 Knobs**, and related patch settings.
 
 Part of [Live Edit](README.md). Enumerated options:
-[parameter-option-lists.md](../parameter-option-lists.md).
+[parameter-options.md](../parameter-options.md).
 Dump worksheet: [Single parameter map](../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](edit-multi.md).
 
@@ -22,7 +22,7 @@ different `cmd` bytes.
 
 Per-part **Common** page settings (Edit Single). Not stored in
 **`DUMP_MULTI`** (hardware-tested for Bend Up/Down — see
-[multis-live-edit.md](edit-multi.md)).
+[edit-multi.md](edit-multi.md)).
 
 ### Transpose / Patch Transpose (`0x5D`, `cmd=0x70` / CC 93)
 
@@ -176,7 +176,7 @@ F0 00 20 33 01 00 70 00 24 7F F7   # Osc Volume +63
 Edit Single → Common → **Smooth Mode** (Page B **#25** *Control Smooth Mode*).
 **`stored = index`** — full list in
 [Control Smooth Mode / clock
-quantize](../parameter-option-lists.md#control-smooth-mode--clock-quantize).
+quantize](../parameter-options.md#control-smooth-mode--clock-quantize).
 
 ```text
 F0 00 20 33 01 00 71 00 19 00 F7   # Off
@@ -221,13 +221,13 @@ F0 00 20 33 01 00 71 00 1A 40 F7   # Bend Up +0
 F0 00 20 33 01 00 71 00 1A 7F F7   # Bend Up +63
 ```
 
-Also documented for Edit Multi: [multis-live-edit.md — Bend Up / Bend
+Also documented for Edit Multi: [edit-multi.md — Bend Up / Bend
 Down](edit-multi.md#bend-up-0x1a-cmd0x71).
 
 ### Bender Scale (`0x1C`, `cmd=0x71`)
 
 Edit Single → Common → **Bender Scale** (Page B **#28**). **`stored = index`** —
-see [Bender Scale](../parameter-option-lists.md#bender-scale).
+see [Bender Scale](../parameter-options.md#bender-scale).
 
 | Mode          | `<value>` | Confirmed |
 | ------------- | --------- | --------- |
@@ -300,7 +300,7 @@ CC number). Bipolar pan **−64..+63** (panel **L< 100.0 %** … **100.0 % >R**)
 | 100.0 % >R     | `7F`      | ✓         |
 
 Full **wire → LCD** table (**`00`–`7F`**, hardware-confirmed): [Panorama
-LCD](../parameter-option-lists.md#edit-single--panorama-lcd).
+LCD](../parameter-options.md#edit-single--panorama-lcd).
 Right **`41`–`7E`** mirrors left **`0x80 − R`** (`L<` → `% >R`); endpoints
 **`00`** /
 **`7F`** = **100.0 %**.
@@ -560,14 +560,14 @@ bus (rear/surround send in a multi-output setup — separate from the main
 **Edit Multi → Secondary Output** and AURA’s “Secondary Output”:
 **`cmd=0x73`**, param **`0x2D`**, part **`00`** in Single captures. Enum:
 [Secondary output
-routing](../parameter-option-lists.md#secondary-output-routing).
+routing](../parameter-options.md#secondary-output-routing).
 **Not in `DUMP_MULTI`** / **`DUMP_SINGLE` offset TBD** (edit-buffer only in
 hardware tests so far).
 
 ### Output (`0x2D`, `cmd=0x73`)
 
 Enum: [Secondary output
-routing](../parameter-option-lists.md#secondary-output-routing)
+routing](../parameter-options.md#secondary-output-routing)
 (**Off** … **Out 3 R** = `00`–`09`; USB through `12`).
 
 ```text
@@ -607,7 +607,7 @@ browser (**Search by Category**). **`cmd=0x71`**, part **`00`**.
 | Name Cat 2  | `7C`    | ✓         |
 
 Both use [Patch name
-categories](../parameter-option-lists.md#patch-name-categories)
+categories](../parameter-options.md#patch-name-categories)
 (**Off** … **Favourites 3**, `00`–`16`).
 
 ```text
@@ -624,7 +624,7 @@ is
 destination** parameter in real time.
 
 **Function As…** uses a **destination wire byte** (see
-[Soft Knob Destinations](../parameter-option-lists.md#soft-knob-destinations)).
+[Soft Knob Destinations](../parameter-options.md#soft-knob-destinations)).
 The **value** SysEx slot is usually a **different `param`** on **`cmd=0x71`**
 (see [soft-knob runtime example](#soft-knob-runtime-distortion-intensity) when
 **Function As…** = Distortion Intensity; full **EFFECTS → Distortion** mapping
@@ -645,8 +645,8 @@ above knob 1; sweeping the knob sends **`71`/`65`** (**0 %** → `00`,
 
 | Control          | `cmd` | `param` | Notes                                                                                                                                          |
 | ---------------- | ----- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Function As…** | `71`  | `3E`    | Wire byte per [Soft Knob Destinations](../parameter-option-lists.md#soft-knob-destinations) (not list index); e.g. Distortion Intensity → `57` |
-| **Name**         | `71`  | `33`    | Wire byte per [Soft Knob Names](../parameter-option-lists.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off          |
+| **Function As…** | `71`  | `3E`    | Wire byte per [Soft Knob Destinations](../parameter-options.md#soft-knob-destinations) (not list index); e.g. Distortion Intensity → `57`      |
+| **Name**         | `71`  | `33`    | Wire byte per [Soft Knob Names](../parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off               |
 | *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (≠ Function As wire); example → [`65`](#soft-knob-runtime-distortion-intensity)                     |
 
 ```text
@@ -669,7 +669,7 @@ F0 00 20 33 01 00 71 00 33 57 F7   # Name Speaker (wire 57)
 | Control          | `cmd` | `param` | Notes                                                                                                                                 |
 | ---------------- | ----- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | **Function As…** | `71`  | `3F`    | Same destination list as Knob 1 (WAF80 **B#63** *Definable2 Single*)                                                                  |
-| **Name**         | `71`  | `34`    | Wire byte per [Soft Knob Names](../parameter-option-lists.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| **Name**         | `71`  | `34`    | Wire byte per [Soft Knob Names](../parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off      |
 | *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination)                                                                          |
 
 ```text
@@ -685,7 +685,7 @@ F0 00 20 33 01 00 71 00 34 47 F7   # Name Width
 | Control          | `cmd` | `param` | Notes                                                                                                                                 |
 | ---------------- | ----- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | **Function As…** | `71`  | `40`    | Same destination list as Knob 1                                                                                                       |
-| **Name**         | `71`  | `35`    | Wire byte per [Soft Knob Names](../parameter-option-lists.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| **Name**         | `71`  | `35`    | Wire byte per [Soft Knob Names](../parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off      |
 | *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination)                                                                          |
 
 ```text
@@ -704,7 +704,7 @@ Intensity](effects.md#distortion-intensity-cmd0x71-param-0x65)
 [`71`/`64`](effects.md#distortion-type-cmd0x71-param-0x64).
 
 When **Function As…** =
-[Distortion Intensity](../parameter-option-lists.md#soft-knob-destinations)
+[Distortion Intensity](../parameter-options.md#soft-knob-destinations)
 (wire
 **`57`** on `71`/`3E`/`3F`/`40`), the knob sends **`71`/`65`**:
 

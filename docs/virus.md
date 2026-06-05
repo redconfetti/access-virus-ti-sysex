@@ -21,7 +21,7 @@ Singles**.
 
 In each Multi, every part stores a **bank index** and **program number**
 pointing at a Single. The encoding is documented in
-[multis-dump.md](dumps/arrangements.md#part-bank-index).
+[arrangements.md](dumps/arrangements.md#part-bank-index).
 
 ## SysEx dump types
 
@@ -46,14 +46,14 @@ same 267-byte block; it may be exported with sixteen singles like slots
 
 Message-level layouts:
 
-- Multi dump: [multis-dump.md](dumps/arrangements.md)
+- Multi dump: [arrangements.md](dumps/arrangements.md)
 - Single dump: [single-dump.md](dumps/single.md)
 - Live multi edits (not full dumps):
-[multis-live-edit.md](live-edit/edit-multi.md)
+[edit-multi.md](live-edit/edit-multi.md)
 
 ## Multi bank (TI series)
 
-See [multis-dump.md — Embedded vs Reference
+See [arrangements.md — Embedded vs Reference
 Multis](dumps/arrangements.md#embedded-vs-reference-multis).
 
 ## Front-panel modes (observed SysEx)
