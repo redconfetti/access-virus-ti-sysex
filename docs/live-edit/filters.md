@@ -26,6 +26,34 @@ TI mk2 desktop; remaining **FILTERS** rows (e.g. modulation, velocity targets) �
 see
 [testing.md — Filters queue](../testing.md#filters--order-filter-1-first).
 
+### SELECT (`71`/`7A`) {#filters-select}
+
+**FILTERS** section — **SELECT** toggles **Filter 1** / **Filter 2** (press
+both together for **Filter 1 + Filter 2**). Also sets which filter the front-
+panel **Resonance** and **Envelope Amount** knobs edit. Live edit **`cmd=0x71`**,
+param **`0x7A`** (Page B — WAF80 **Filter Select**, B#**112**). Enum:
+[Filters SELECT](../parameter-options.md#filters-select).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 7A <value> F7`                    |
+| Value encoding | **`00`** Filter 1 · **`01`** Filter 2 · **`02`** Filter 1 + 2  |
+| Confirmed      | Hardware TX (TI mk2)                                           |
+
+```text
+F0 00 20 33 01 00 71 00 7A 00 F7   # 7A/00 — Filter 1
+F0 00 20 33 01 00 71 00 7A 01 F7   # 7A/01 — Filter 2
+F0 00 20 33 01 00 71 00 7A 02 F7   # 7A/02 — Filter 1 + Filter 2
+```
+
+**Not** WAF80 **Filter bypass** on/off. **Not**
+[Pan Spread](#pan-spread-cmd0x6e-param-0x7a) (`6E`/`7A` — same param byte,
+different **`cmd`**).
+
+When [Vocoder Mode](../parameter-options.md#vocoder-mode) ≠ **Off**, the
+**FILTERS** section is unavailable — LCD **`Vocoder active. Filters are
+disabled`**.
+
 ### Filter 1 Cutoff (`cmd=0x70`, param `0x28`)
 
 **FILTERS → EDIT → Filter 1 → Cutoff**. WAF80 Page **A** index **40** =
@@ -363,9 +391,8 @@ Page **B** **`0x21`**. **Semitone index** from **C-1** (`00`) through **G9**
 TI control (not classic WAF80 Page A/B). **Only on the panel when
 [Filter Routing](#filter-routing-cmd0x70-param-0x35) = Split Mode.** Direct
 **0–127**. Same param ID **`0x7A`** as
-[Filter knob
-target](#filter-knob-target-resonance--env-amount-cmd0x71-param-0x7a)
-but **different `cmd`** — always check the command byte.
+[Filters SELECT](#filters-select)
+(`71`/`7A`) but **different `cmd`** — always check the command byte.
 
 | UI  | `<value>` | Confirmed |
 | --- | --------- | --------- |
@@ -392,20 +419,8 @@ Page **A** **36** = **`0x24`** (classic “Osc Mainvolume”). Bipolar **−64..
 **Also:**
 [Oscillator Section
 Volume](oscillators.md#oscillator-section-volume-cmd0x71-param-0x7f)
-from **Oscillators → Mixer** uses **`71` / `7F`** (different message).
-
-### Filter knob target (Resonance / Env Amount) (`cmd=0x71`, param `0x7A`)
-
-Front-panel **toggles** (not in the Saturation LCD menu): which filter the
-physical **Resonance** and **Envelope Amount** knobs edit.
-
-| Target   | Message                            |
-| -------- | ---------------------------------- |
-| Filter 1 | `F0 00 20 33 01 00 71 00 7A 00 F7` |
-| Filter 2 | `F0 00 20 33 01 00 71 00 7A 01 F7` |
-
-Not the same as WAF80 Page B **Filter Select** (`B#112`). Not filter bypass
-on/off.
+from **Oscillators → Mixer** uses **`71` / `7F`** (different message). Oscillator
+page **SELECT**: [SELECT (`71`/`7F`)](oscillators.md#oscillators-select).
 
 ## Filter 1 envelope (ADSR) {#filter-1-envelope-adsr}
 

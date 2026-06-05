@@ -31,6 +31,29 @@ Capture path: **`Mode` / `Shape` / `Control` → LCD value**. Use **+/−** when
 possible. Knob sweeps: use the **last** SysEx line. Master inventory:
 [single-dump.md — Oscillators](../dumps/single.md#oscillators).
 
+### SELECT (`71`/`7F`) {#oscillators-select}
+
+**OSCILLATORS** section — front-panel **SELECT** cycles which oscillator the
+edit page targets. Live edit **`cmd=0x71`**, param **`0x7F`** (Page B). Enum:
+[Oscillators SELECT](../parameter-options.md#oscillators-select).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 7F <value> F7`                    |
+| Value encoding | **`00`** Osc 1 · **`01`** Osc 2 · **`02`** Osc 3               |
+| Confirmed      | Hardware TX (TI mk2)                                           |
+
+```text
+F0 00 20 33 01 00 71 00 7F 00 F7   # 7F/00 — Oscillator 1
+F0 00 20 33 01 00 71 00 7F 01 F7   # 7F/01 — Oscillator 2
+F0 00 20 33 01 00 71 00 7F 02 F7   # 7F/02 — Oscillator 3
+```
+
+Same **`cmd`/`param`** as [Oscillator Section
+Volume](#oscillator-section-volume-cmd0x71-param-0x7f) — **SELECT** uses
+**`00`–`02`** as index; **Mixer → Oscillator Section Volume** uses bipolar
+**`stored = ui + 64`** on the same byte.
+
 ### LCD “landing zones” (same label, different wire)
 
 On many TI controls the **panel shows one LCD value on several consecutive
@@ -1596,7 +1619,9 @@ F0 00 20 33 01 00 70 00 23 01 F7   # Shape Triangle
 ### Oscillator Section Volume (`cmd=0x71`, param `0x7F`) {#oscillator-section-volume-cmd0x71-param-0x7f}
 
 **Oscillators → Mixer → Oscillator Section Volume** (main osc mixer level).
-Same bipolar range as [Saturation — Osc
+Same **`71`/`7F`** wire as [SELECT (`71`/`7F`)](#oscillators-select) — volume
+uses bipolar **`stored = ui + 64`**, not index **`00`–`02`**. Same bipolar
+range as [Saturation — Osc
 Volume](filters.md#saturation--osc-volume-cmd0x70-param-0x24)
 but edited via **Page B** SysEx here, not **`70` / `24`**.
 

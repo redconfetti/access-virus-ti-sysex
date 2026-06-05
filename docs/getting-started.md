@@ -92,6 +92,27 @@ Some parameters use **encoded** values (not “what you see on the LCD”):
 The parameter map tables mark **Live edit** as command + param (e.g.
 `71` / `0x19`) and **Dump offset** as a hex position when known.
 
+## Implementer notes {#implementer-notes}
+
+**Scope:** This repo documents **SysEx** — message bytes, confirmed
+encodings, and hardware TX/RX where tested. It does **not** specify full panel
+layout, menu flow, or LED behaviour except where needed to interpret a byte.
+
+For **host software** or **AI agents** building against this spec:
+
+**Parameter IDs are not global.** The same **`param`** byte means different
+controls under different **`cmd`** bytes. Example: **`70`/`13`** = Oscillator 1
+wave; **`6E`/`13`** = Filter Bank Type.
+
+**Context-dependent reuse.** One **`cmd`/`param`** pair can change encoding with
+another setting. Example: decode **`70`/`6A`** and **`70`/`6B`** using
+**`70`/`67`** (Chorus Type); decode **`70`/`77`** using [Delay
+Type](../parameter-options.md#delay-type).
+
+**Prefer confirmed tables over inference.** Rows marked **TBD** or “dump only”
+were not verified on TI mk2 hardware; do not assume WAF80 or AURA names match
+panel text.
+
 ## Requests vs dumps vs live edits
 
 ```text
@@ -115,6 +136,7 @@ Volume = CC 91). See [control-change.md](control-change.md).
 
 | You want…                                    | Start here                                                                             |
 | -------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Build an editor / agent against this spec    | [Implementer notes](#implementer-notes) · [live-edit](live-edit/README.md)             |
 | Request/dump command list (1999 + TI notes)  | [waf80.md](waf80.md)                                                                   |
 | Live edit (by panel menu)                    | [live-edit/README.md](live-edit/README.md)                                             |
 | Dumps (single / multi / banks)               | [dumps/README.md](dumps/README.md)                                                     |

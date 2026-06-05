@@ -16,62 +16,70 @@ F0 00 20 33 01 00 6E <part> <param> <value> F7   # part single edit buffer
 ```
 
 Param IDs are **not global** — the same hex ID can mean different settings under
-different `cmd` bytes.
+different `cmd` bytes. See [Implementer notes](../getting-started.md#implementer-notes).
+
+**Chorus** reuses Page A bytes **`68`–`6F`** across [types](#chorus-type-cmd0x70-param-0x67)
+— always decode with **`70`/`67`** (and **`6E`/`76`/`02`** for EFFECTS focus).
 
 ## Edit FX (Effects)
 
 Panel **EDIT FX** (after **Common**). SysEx **`cmd` / `param`** per control —
 capture as you step through sub-menus.
 
-### EFFECTS section focus (`cmd=0x6E`) {#effects-section-focus}
+### SELECT (`6E`/`75`, `6E`/`76`) {#effects-select}
 
-The front-panel **EFFECTS** area has two **SELECT** groups. Each group’s
-highlighted effect is switched with **`cmd=0x6E`** on the part single buffer
-(same buffer as [Delay Type](#delay-type-cmd0x6e), [Reverb
-Mode](#reverb-mode-cmd0x6e),
-etc.). This **does not** change parameter values — only which effect the **three
-knobs** and LCD labels target.
+Front-panel **EFFECTS** area — two **SELECT** button groups. Live edit on the
+part single buffer. **`6E`/`75`** = group **1**; **`6E`/`76`** = group **2**.
+**`stored = index`**. Does **not** write effect parameter values — only which
+effect block the shared **EFFECTS** section of the physical panel targets.
 
-| Group                              | `param`    | Enum                                                                        |
-| ---------------------------------- | ---------- | --------------------------------------------------------------------------- |
-| **1** (Delay / Reverb / EQ …)      | **`0x75`** | [EFFECTS focus group 1](../parameter-options.md#effects-focus-group-1)      |
-| **2** (Distortion / Character / …) | **`0x76`** | [EFFECTS focus group 2](../parameter-options.md#effects-focus-group-2)      |
+Physical knob-to-parameter routing is panel UX (out of scope here). Hosts set
+focus with **`6E`/`75`** or **`6E`/`76`**, then send parameter SysEx from the
+**EDIT FX** sections below.
+
+| `param`    | Enum                                                                        |
+| ---------- | --------------------------------------------------------------------------- |
+| **`0x75`** | [EFFECTS SELECT group 1](../parameter-options.md#effects-focus-group-1)      |
+| **`0x76`** | [EFFECTS SELECT group 2](../parameter-options.md#effects-focus-group-2)      |
 
 | Item           | Value                                                                                          |
 | -------------- | ---------------------------------------------------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 6E <part> <param> <value> F7`                                               |
-| Confirmed      | Hardware TX + **`sendmidi`** — groups **1** and **2**, **`00`–`04`** each change selection     |
-| UI latency     | EFFECTS **LED** / focus update often **> 0.5 s** after TX; use **≥ 1 s** between test messages |
+| Confirmed      | Hardware **TX** + **`sendmidi` RX** (TI mk2) — values **`00`–`04`** on **`75`** and **`76`** |
 
 ```text
-F0 00 20 33 01 00 6E 00 75 00 F7   # Group 1 → Delay
-F0 00 20 33 01 00 6E 00 75 01 F7   # Group 1 → Reverb
-F0 00 20 33 01 00 6E 00 75 02 F7   # Group 1 → Low EQ
-F0 00 20 33 01 00 6E 00 75 03 F7   # Group 1 → Mid EQ
-F0 00 20 33 01 00 6E 00 75 04 F7   # Group 1 → High EQ
-F0 00 20 33 01 00 6E 00 76 00 F7   # Group 2 → Distortion
-F0 00 20 33 01 00 6E 00 76 01 F7   # Group 2 → Character
-F0 00 20 33 01 00 6E 00 76 02 F7   # Group 2 → Chorus
-F0 00 20 33 01 00 6E 00 76 03 F7   # Group 2 → Phaser
-F0 00 20 33 01 00 6E 00 76 04 F7   # Group 2 → Others (Vocoder / Input Follower / Filter Bank)
+F0 00 20 33 01 00 6E 00 75 00 F7   # 75/00 — Delay
+F0 00 20 33 01 00 6E 00 75 01 F7   # 75/01 — Reverb
+F0 00 20 33 01 00 6E 00 75 02 F7   # 75/02 — Low EQ
+F0 00 20 33 01 00 6E 00 75 03 F7   # 75/03 — Mid EQ
+F0 00 20 33 01 00 6E 00 75 04 F7   # 75/04 — High EQ
+F0 00 20 33 01 00 6E 00 76 00 F7   # 76/00 — Distortion
+F0 00 20 33 01 00 6E 00 76 01 F7   # 76/01 — Character
+F0 00 20 33 01 00 6E 00 76 02 F7   # 76/02 — Chorus
+F0 00 20 33 01 00 6E 00 76 03 F7   # 76/03 — Phaser
+F0 00 20 33 01 00 6E 00 76 04 F7   # 76/04 — Others
 ```
+
+| Group | `75` / `76` | EDIT FX block |
+| ----- | ----------- | ------------- |
+| 1     | `00`        | [Delay](#delay) |
+| 1     | `01`        | [Reverb](#reverb) |
+| 1     | `02`        | [Low EQ](#low-eq) |
+| 1     | `03`        | [Mid EQ](#mid-eq) |
+| 1     | `04`        | [High EQ](#high-eq) |
+| 2     | `00`        | [Distortion](#distortion) |
+| 2     | `01`        | [Character](#character) |
+| 2     | `02`        | [Chorus](#chorus) |
+| 2     | `03`        | [Phaser](#phaser) |
+| 2     | `04`        | [Others](#others) |
 
 **Not** global [Memory Protect](edit-config.md#memory-protect-0x76) (`73`/`76`).
 **Not** [Delay LFO Wave](../parameter-options.md#delay-lfo-wave)
 (`70`/`76`).
 
-Knob routing per focus: [Delay EFFECTS knobs](#delay-effects-knobs) when group
-**1**
-= **Delay**; [Distortion soft-knob
-runtime](edit-single.md#soft-knob-runtime-distortion-intensity) when
-group **2** = **Distortion**; Reverb / EQ / Chorus / Phaser / **Others** knob
-maps
-**TBD** as captured.
-
 ### Distortion
 
-**EDIT FX → Distortion**. Focus **EFFECTS** group **2** with
-[`6E`/`76`/`00`](#effects-section-focus) before knob edits target this block.
+**EDIT FX → Distortion**. EFFECTS focus: [`6E`/`76`/`00`](#effects-select).
 
 Panel layout: [Distortion panel
 visibility](../parameter-options.md#distortion-panel-visibility).
@@ -250,40 +258,1199 @@ F0 00 20 33 01 00 6E 00 49 40 F7   # 50.0 % (Rate / Bit Reducer; panel-confirmed
 F0 00 20 33 01 00 6E 00 49 7F F7   # 100.0 %
 ```
 
+### Character {#character}
+
+**EDIT FX → Character**. EFFECTS focus: [`6E`/`76`/`01`](#effects-select).
+
+Panel layout: [Character panel
+visibility](../parameter-options.md#character-panel-visibility).
+
+All nine **Type** values (`00`–`08`) panel-mapped on TI mk2. Three wire families:
+**Analog Boost** (`70`/`15`, `70`/`21`); **Stereo Widener** / **Speaker Cabinet**
+(`71`/`61`, `71`/`62`); preset types **`01`–`06`** (**Type** only).
+
+#### Analog Boost (`00`) {#analog-boost-00}
+
+| Control       | Notes                                                                                        |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| **Type**      | [`6E`/`1A`](#character-type-cmd0x6e-param-0x1a)                                              |
+| **Intensity** | [`70`/`15`](#character-intensity-cmd0x70-param-0x15) — [LCD curve](../parameter-options.md#character-intensity-lcd) |
+| **Frequency** | [`70`/`21`](#character-frequency-cmd0x70-param-0x21) — **`0`–`127`**                          |
+
+#### Preset types (`01`–`06`)
+
+[Vintage 1](../parameter-options.md#character-preset-types) … **Bass Enhancer**
+— **Type** only (`6E`/`1A`); no further live-edit params (panel-confirmed).
+
+#### Stereo Widener (`07`) / Speaker Cabinet (`08`) {#character-adjustable-07-08}
+
+Same panel and wire map for both types — see [parameter-options](../parameter-options.md#character-adjustable-07-08).
+
+| Control       | Notes                                                                                        |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| **Type**      | [`6E`/`1A`](#character-type-cmd0x6e-param-0x1a)                                              |
+| **Intensity** | [`71`/`61`](#character-intensity-stereo-widener-cmd0x71-param-0x61) — [LCD curve](../parameter-options.md#character-intensity-lcd) |
+| **Frequency** | [`71`/`62`](#character-frequency-stereo-widener-cmd0x71-param-0x62) — **`0`–`127`**          |
+
+### Character Type (`cmd=0x6E`, param `0x1A`) {#character-type-cmd0x6e-param-0x1a}
+
+**EDIT FX → Character → Type**. Part-sound buffer (**`6E`**, not Page A).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 1A <value> F7`                    |
+| Value encoding | [Character Type](../parameter-options.md#character-type) — **`00`–`08`** |
+| Confirmed      | Hardware TX (menu step-through; matches panel labels)          |
+
+```text
+F0 00 20 33 01 00 6E 00 1A 00 F7   # Analog Boost
+F0 00 20 33 01 00 6E 00 1A 01 F7   # Vintage 1
+F0 00 20 33 01 00 6E 00 1A 02 F7   # Vintage 2
+F0 00 20 33 01 00 6E 00 1A 03 F7   # Vintage 3
+F0 00 20 33 01 00 6E 00 1A 04 F7   # Pad Opener
+F0 00 20 33 01 00 6E 00 1A 05 F7   # Lead Enhancer
+F0 00 20 33 01 00 6E 00 1A 06 F7   # Bass Enhancer
+F0 00 20 33 01 00 6E 00 1A 07 F7   # Stereo Widener
+F0 00 20 33 01 00 6E 00 1A 08 F7   # Speaker Cabinet
+```
+
+### Character Intensity — Analog Boost (`cmd=0x70`, param `0x15`) {#character-intensity-cmd0x70-param-0x15}
+
+**EDIT FX → Character → Intensity** when [Type](../parameter-options.md#analog-boost-00) =
+**Analog Boost** (`00`). Page A param **`0x15`**. LCD index = wire byte —
+[Character Intensity (LCD)](../parameter-options.md#character-intensity-lcd).
+Soft-knob **Analog Boost Int** (wire **`55`**).
+
+| Item           | Value                                                                 |
+| -------------- | --------------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 15 <value> F7`                           |
+| Value encoding | **`00`** Off; **`01`–`7F`** → panel **%** (see LCD table)           |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**)                    |
+
+```text
+F0 00 20 33 01 00 70 00 15 00 F7   # Off
+F0 00 20 33 01 00 70 00 15 01 F7   # 0.8 %
+F0 00 20 33 01 00 70 00 15 02 F7   # 1.6 %
+F0 00 20 33 01 00 70 00 15 03 F7   # 2.3 %
+F0 00 20 33 01 00 70 00 15 7F F7   # 100.0 %
+```
+
+### Character Intensity — Stereo Widener / Speaker Cabinet (`cmd=0x71`, param `0x61`) {#character-intensity-stereo-widener-cmd0x71-param-0x61}
+
+**EDIT FX → Character → Intensity** when [Type](../parameter-options.md#character-adjustable-07-08) =
+**Stereo Widener** (`07`) or **Speaker Cabinet** (`08`). Page **B** param
+**`0x61`**. Same [LCD curve](../parameter-options.md#character-intensity-lcd) as
+Analog Boost.
+
+| Item           | Value                                                                 |
+| -------------- | --------------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 61 <value> F7`                           |
+| Value encoding | **`00`** Off; **`01`–`7F`** → panel **%** (see LCD table)           |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** after **`6E`/`1A`/`07`** or **`08`** on **`0F`**) |
+
+```text
+F0 00 20 33 01 00 71 00 61 00 F7   # Off
+F0 00 20 33 01 00 71 00 61 01 F7   # 0.8 %
+F0 00 20 33 01 00 71 00 61 02 F7   # 1.6 %
+F0 00 20 33 01 00 71 00 61 7F F7   # 100.0 %
+```
+
+### Character Frequency — Analog Boost (`cmd=0x70`, param `0x21`) {#character-frequency-cmd0x70-param-0x21}
+
+**EDIT FX → Character → Frequency** when [Type](../parameter-options.md#analog-boost-00) =
+**Analog Boost** (`00`). Page A param **`0x21`**. Soft-knob **Analog Boost
+Tune** (wire **`56`**).
+
+| Item           | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 21 <value> F7`          |
+| Panel range    | **`0`–`127`** → `stored = value`                     |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**)   |
+
+```text
+F0 00 20 33 01 00 70 00 21 00 F7   # 0
+F0 00 20 33 01 00 70 00 21 40 F7   # 64
+F0 00 20 33 01 00 70 00 21 7F F7   # 127
+```
+
+### Character Frequency — Stereo Widener / Speaker Cabinet (`cmd=0x71`, param `0x62`) {#character-frequency-stereo-widener-cmd0x71-param-0x62}
+
+**EDIT FX → Character → Frequency** when [Type](../parameter-options.md#character-adjustable-07-08) =
+**Stereo Widener** (`07`) or **Speaker Cabinet** (`08`). Page **B** param
+**`0x62`**.
+
+| Item           | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 62 <value> F7`          |
+| Panel range    | **`0`–`127`** → `stored = value`                     |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** after **`6E`/`1A`/`07`** or **`08`** on **`0F`**) |
+
+```text
+F0 00 20 33 01 00 71 00 62 00 F7   # 0
+F0 00 20 33 01 00 71 00 62 40 F7   # 64
+F0 00 20 33 01 00 71 00 62 7F F7   # 127
+```
+
+### Chorus {#chorus}
+
+**EDIT FX → Chorus**. EFFECTS focus: [`6E`/`76`/`02`](#effects-select).
+
+Panel layout: [Chorus panel
+visibility](../parameter-options.md#chorus-panel-visibility).
+
+#### Classic (`01`) {#chorus-classic-01}
+
+| Control      | Notes                                                                                       |
+| ------------ | ------------------------------------------------------------------------------------------- |
+| **Type**     | [`70`/`67`](#chorus-type-cmd0x70-param-0x67) — **`01`** Classic                             |
+| **Rate**     | [`70`/`6A`](#chorus-rate-cmd0x70-param-0x6a) — **`0`–`127`**                               |
+| **Depth**    | [`70`/`6B`](#chorus-depth-cmd0x70-param-0x6b) — **0.0..100.0 %**                           |
+| **Feedback** | [`70`/`6D`](#chorus-feedback-cmd0x70-param-0x6d) — **−100.0..+100.0 %**                     |
+| **Delay**    | [`70`/`6C`](#chorus-delay-cmd0x70-param-0x6c) — **`0`–`127`**                               |
+| **Mix**      | [`70`/`69`](#chorus-mix-cmd0x70-param-0x69) — **`00`** Off; **`01`–`7F`**                  |
+| **LFO Wave** | [`70`/`6E`](#chorus-lfo-wave-cmd0x70-param-0x6e) — [enum](../parameter-options.md#chorus-lfo-wave) |
+
+#### Vintage (`02`) {#chorus-vintage-02}
+
+| Control    | Notes                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| **Type**   | [`70`/`67`](#chorus-type-cmd0x70-param-0x67) — **`02`** Vintage                             |
+| **Rate**   | [`70`/`6A`](#chorus-rate-cmd0x70-param-0x6a) — **`0`–`127`**                               |
+| **Depth**  | [`70`/`6B`](#chorus-depth-cmd0x70-param-0x6b) — **0.0..100.0 %**                           |
+| **Mix**    | [`70`/`68`](#chorus-mix-vintage-cmd0x70-param-0x68) — **`0`–`127`**                          |
+| **X-Over** | [`70`/`6F`](#chorus-x-over-cmd0x70-param-0x6f) — **`0`–`127`**                              |
+
+#### Hyper Chorus (`03`) {#chorus-hyper-03}
+
+| Control    | Notes                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| **Type**   | [`70`/`67`](#chorus-type-cmd0x70-param-0x67) — **`03`** Hyper Chorus                       |
+| **Depth**  | [`70`/`6B`](#chorus-depth-cmd0x70-param-0x6b) — **0.0..100.0 %**                           |
+| **Amount** | [`70`/`6C`](#chorus-amount-cmd0x70-param-0x6c) — [1.00..3.00](../parameter-options.md#chorus-amount-lcd) |
+| **Mix**    | [`70`/`68`](#chorus-mix-vintage-cmd0x70-param-0x68) — **`0`–`127`**                          |
+| **X-Over** | [`70`/`6F`](#chorus-x-over-cmd0x70-param-0x6f) — **`0`–`127`**                              |
+
+#### Air Chorus (`04`) {#chorus-air-04}
+
+| Control    | Notes                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| **Type**   | [`70`/`67`](#chorus-type-cmd0x70-param-0x67) — **`04`** Air Chorus                          |
+| **Depth**  | [`70`/`6B`](#chorus-depth-cmd0x70-param-0x6b) — **0.0..100.0 %**                           |
+| **X-Over** | [`70`/`6F`](#chorus-x-over-cmd0x70-param-0x6f) — **`0`–`127`**                              |
+
+#### Vibrato (`05`) {#chorus-vibrato-05}
+
+| Control    | Notes                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| **Type**   | [`70`/`67`](#chorus-type-cmd0x70-param-0x67) — **`05`** Vibrato                            |
+| **Rate**   | [`70`/`6A`](#chorus-rate-cmd0x70-param-0x6a) — **`0`–`127`**                               |
+| **Depth**  | [`70`/`6B`](#chorus-depth-vibrato-cmd0x70-param-0x6b) — **`0`–`127`**                       |
+| **X-Over** | [`70`/`6F`](#chorus-x-over-cmd0x70-param-0x6f) — **`0`–`127`**                              |
+
+#### Rotary Speaker (`06`) {#chorus-rotary-speaker-06}
+
+| Control      | Notes                                                                                       |
+| ------------ | ------------------------------------------------------------------------------------------- |
+| **Type**           | [`70`/`67`](#chorus-type-cmd0x70-param-0x67) — **`06`** Rotary Speaker                     |
+| **Speed**          | [`70`/`6A`](#chorus-speed-rotary-cmd0x70-param-0x6a) — [Slow … Fast](../parameter-options.md#chorus-rotary-speed) |
+| **Distance**       | [`70`/`6B`](#chorus-distance-rotary-cmd0x70-param-0x6b) — [4.0..30.0 cm](../parameter-options.md#chorus-rotary-distance-lcd) |
+| **Mix**            | [`70`/`68`](#chorus-mix-vintage-cmd0x70-param-0x68) — **`0`–`127`**                         |
+| **Mic Angle**      | [`70`/`6C`](#chorus-mic-angle-rotary-cmd0x70-param-0x6c) — [−180..+180 °](../parameter-options.md#chorus-rotary-mic-angle-lcd) |
+| **Low/High Balance** | [`70`/`6D`](#chorus-low-high-balance-rotary-cmd0x70-param-0x6d) — [LowHigh Bal](../parameter-options.md#chorus-rotary-low-high-balance-lcd) |
+
+### Chorus Type (`cmd=0x70`, param `0x67`) {#chorus-type-cmd0x70-param-0x67}
+
+**EDIT FX → Chorus → Type**. Page A param **`0x67`**.
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 67 <value> F7`                    |
+| Value encoding | [Chorus Type](../parameter-options.md#chorus-type)             |
+| Confirmed      | Hardware TX — **`01`–`06`** on part **`0F`** |
+
+```text
+F0 00 20 33 01 00 70 00 67 01 F7   # Classic
+F0 00 20 33 01 00 70 00 67 02 F7   # Vintage
+F0 00 20 33 01 00 70 00 67 03 F7   # Hyper Chorus
+F0 00 20 33 01 00 70 00 67 04 F7   # Air Chorus
+F0 00 20 33 01 00 70 00 67 05 F7   # Vibrato
+F0 00 20 33 01 00 70 00 67 06 F7   # Rotary Speaker
+```
+
+### Chorus Rate (`cmd=0x70`, param `0x6A`) {#chorus-rate-cmd0x70-param-0x6a}
+
+**EDIT FX → Chorus → Rate** ([Classic](#chorus-classic-01),
+[Vintage](#chorus-vintage-02), [Vibrato](#chorus-vibrato-05)). On **Rotary
+Speaker**, the same byte is [Speed](#chorus-speed-rotary-cmd0x70-param-0x6a).
+Soft-knob **Chorus Rate** (wire **`17`**).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6A <value> F7`        |
+| Panel range    | **`0`–`127`** → `stored = value`                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 6A 00 F7   # 0
+F0 00 20 33 01 00 70 00 6A 40 F7   # 64
+F0 00 20 33 01 00 70 00 6A 7F F7   # 127
+```
+
+### Chorus Speed — Rotary Speaker (`cmd=0x70`, param `0x6A`) {#chorus-speed-rotary-cmd0x70-param-0x6a}
+
+**EDIT FX → Chorus → Speed** ([Rotary Speaker](#chorus-rotary-speaker-06)). Same
+param byte as [Rate](#chorus-rate-cmd0x70-param-0x6a) on other types — see
+[Chorus Rotary Speed](../parameter-options.md#chorus-rotary-speed).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6A <value> F7`        |
+| Panel range    | **`00`** Slow … **`7F`** Fast (`stored = value`)   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`**, part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 6A 00 F7   # Slow
+F0 00 20 33 01 00 70 00 6A 7F F7   # Fast
+```
+
+### Chorus Depth (`cmd=0x70`, param `0x6B`) {#chorus-depth-cmd0x70-param-0x6b}
+
+**EDIT FX → Chorus → Depth** ([Classic](#chorus-classic-01),
+[Vintage](#chorus-vintage-02), [Hyper](#chorus-hyper-03),
+[Air](#chorus-air-04)). On **Vibrato**, same byte is raw **`0`–`127`**
+[Depth](#chorus-depth-vibrato-cmd0x70-param-0x6b); on **Rotary Speaker**, [Distance](#chorus-distance-rotary-cmd0x70-param-0x6b). Soft-knob **Chorus Depth** (wire **`18`**).
+
+| Item           | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6B <value> F7`          |
+| Panel range    | **0.0..100.0 %** → `stored = round(pct × 127 / 100)` |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**)   |
+
+```text
+F0 00 20 33 01 00 70 00 6B 00 F7   # 0.0 %
+F0 00 20 33 01 00 70 00 6B 40 F7   # 50.4 %
+F0 00 20 33 01 00 70 00 6B 7F F7   # 100.0 %
+```
+
+### Chorus Depth — Vibrato (`cmd=0x70`, param `0x6B`) {#chorus-depth-vibrato-cmd0x70-param-0x6b}
+
+**EDIT FX → Chorus → Depth** ([Vibrato](#chorus-vibrato-05) only). **`0`–`127`**
+direct — not the **%** curve used on Classic / Vintage / Hyper / Air.
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6B <value> F7`        |
+| Panel range    | **`0`–`127`** → `stored = value`                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 6B 00 F7   # 0
+F0 00 20 33 01 00 70 00 6B 7F F7   # 127
+```
+
+### Chorus Distance — Rotary Speaker (`cmd=0x70`, param `0x6B`) {#chorus-distance-rotary-cmd0x70-param-0x6b}
+
+**EDIT FX → Chorus → Distance** ([Rotary Speaker](#chorus-rotary-speaker-06)).
+LCD: [Chorus Rotary Distance (LCD)](../parameter-options.md#chorus-rotary-distance-lcd).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6B <value> F7`        |
+| Panel range    | **4.0..30.0 cm** — see LCD table                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`**, part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 6B 00 F7   # 4.0 cm
+F0 00 20 33 01 00 70 00 6B 10 F7   # 6.0 cm (init patch default, panel-confirmed)
+F0 00 20 33 01 00 70 00 6B 29 F7   # 9.1 cm
+F0 00 20 33 01 00 70 00 6B 40 F7   # 12.0 cm
+F0 00 20 33 01 00 70 00 6B 5A F7   # 17.5 cm
+F0 00 20 33 01 00 70 00 6B 7F F7   # 30.0 cm
+```
+
+### Chorus Feedback (`cmd=0x70`, param `0x6D`) {#chorus-feedback-cmd0x70-param-0x6d}
+
+**EDIT FX → Chorus → Feedback** ([Classic](#chorus-classic-01)). On **Rotary
+Speaker**, same byte is [Low/High Balance](#chorus-low-high-balance-rotary-cmd0x70-param-0x6d).
+Soft-knob **Chorus Feedback** (wire **`1A`**). Bipolar **percent** display.
+
+| Item           | Value                                                                 |
+| -------------- | --------------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6D <value> F7`                           |
+| Panel range    | **−100.0..+100.0 %** → `stored = round(pct × 64 / 100) + 64`          |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`**; **`40`** = 0.0 % on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 6D 00 F7   # −100.0 %
+F0 00 20 33 01 00 70 00 6D 40 F7   # 0.0 %
+F0 00 20 33 01 00 70 00 6D 7F F7   # +100.0 % (panel; wire max 127)
+```
+
+### Chorus Delay — Classic (`cmd=0x70`, param `0x6C`) {#chorus-delay-cmd0x70-param-0x6c}
+
+**EDIT FX → Chorus → Delay** ([Classic](#chorus-classic-01) only). On **Hyper
+Chorus**, the same param byte is [Amount](#chorus-amount-cmd0x70-param-0x6c). On
+**Rotary Speaker**, [Mic Angle](#chorus-mic-angle-rotary-cmd0x70-param-0x6c).
+Soft-knob **Chorus Delay** (wire **`19`**).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6C <value> F7`        |
+| Panel range    | **`0`–`127`** → `stored = value`                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 6C 00 F7   # 0
+F0 00 20 33 01 00 70 00 6C 7F F7   # 127
+```
+
+### Chorus Mix — Classic (`cmd=0x70`, param `0x69`) {#chorus-mix-cmd0x70-param-0x69}
+
+**EDIT FX → Chorus → Mix** ([Classic](#chorus-classic-01) only). Soft-knob
+**Chorus Mix** (wire **`16`**).
+
+| Item           | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 69 <value> F7`          |
+| Panel range    | **`00`** Off; **`01`–`7F`** wet level (**1..127**)   |
+| Confirmed      | Hardware TX ( **`00`** Off; sweep to **`7F`** on **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 69 00 F7   # Off
+F0 00 20 33 01 00 70 00 69 01 F7   # 1
+F0 00 20 33 01 00 70 00 69 7F F7   # 127
+```
+
+### Chorus Mix — Vintage / Hyper / Rotary (`cmd=0x70`, param `0x68`) {#chorus-mix-vintage-cmd0x70-param-0x68}
+
+**EDIT FX → Chorus → Mix** ([Vintage](#chorus-vintage-02),
+[Hyper](#chorus-hyper-03), [Rotary Speaker](#chorus-rotary-speaker-06)).
+**`0`–`127`** direct — **`00`** = **0**, not **Off** (Classic uses **`69`**).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 68 <value> F7`        |
+| Panel range    | **`0`–`127`** → `stored = value`                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 68 00 F7   # 0
+F0 00 20 33 01 00 70 00 68 40 F7   # 64
+F0 00 20 33 01 00 70 00 68 7F F7   # 127
+```
+
+### Chorus Mic Angle — Rotary Speaker (`cmd=0x70`, param `0x6C`) {#chorus-mic-angle-rotary-cmd0x70-param-0x6c}
+
+**EDIT FX → Chorus → Mic Angle** ([Rotary Speaker](#chorus-rotary-speaker-06)).
+Same param byte as [Delay](#chorus-delay-cmd0x70-param-0x6c) (Classic) and
+[Amount](#chorus-amount-cmd0x70-param-0x6c) (Hyper) — decode with **`70`/`67`**.
+
+| Item           | Value                                                                 |
+| -------------- | --------------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6C <value> F7`                           |
+| Panel range    | **−180..+180 °** → `stored = round(deg × 64 / 180) + 64`              |
+| Confirmed      | Hardware TX — **`00`** = −180°, **`40`** = +0°, **`7F`** = +180°      |
+
+```text
+F0 00 20 33 01 00 70 00 6C 00 F7   # −180°
+F0 00 20 33 01 00 70 00 6C 40 F7   # +0°
+F0 00 20 33 01 00 70 00 6C 7F F7   # +180°
+```
+
+LCD: [Chorus Rotary Mic Angle (LCD)](../parameter-options.md#chorus-rotary-mic-angle-lcd).
+
+### Chorus Low/High Balance — Rotary Speaker (`cmd=0x70`, param `0x6D`) {#chorus-low-high-balance-rotary-cmd0x70-param-0x6d}
+
+**EDIT FX → Chorus → LowHigh Bal** ([Rotary Speaker](#chorus-rotary-speaker-06)).
+Same param byte as [Feedback](#chorus-feedback-cmd0x70-param-0x6d) (Classic) —
+decode with **`70`/`67`**.
+
+| Item           | Value                                                                 |
+| -------------- | --------------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6D <value> F7`                           |
+| Panel range    | **−100.0..+100.0 %** → `stored = round(pct × 64 / 100) + 64`          |
+| Confirmed      | Hardware TX — **`00`** = −100.0 %, **`40`** = +0.0 %, **`7F`** = +100.0 % |
+
+```text
+F0 00 20 33 01 00 70 00 6D 00 F7   # −100.0 %
+F0 00 20 33 01 00 70 00 6D 40 F7   # +0.0 %
+F0 00 20 33 01 00 70 00 6D 7F F7   # +100.0 %
+```
+
+LCD: [Chorus Rotary Low/High Balance (LCD)](../parameter-options.md#chorus-rotary-low-high-balance-lcd).
+
+### Chorus X-Over (`cmd=0x70`, param `0x6F`) {#chorus-x-over-cmd0x70-param-0x6f}
+
+**EDIT FX → Chorus → X-Over** ([Vintage](#chorus-vintage-02),
+[Hyper](#chorus-hyper-03), [Air](#chorus-air-04),
+[Vibrato](#chorus-vibrato-05)).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6F <value> F7`        |
+| Panel range    | **`0`–`127`** → `stored = value`                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 6F 00 F7   # 0
+F0 00 20 33 01 00 70 00 6F 40 F7   # 64
+F0 00 20 33 01 00 70 00 6F 7F F7   # 127
+```
+
+### Chorus Amount — Hyper (`cmd=0x70`, param `0x6C`) {#chorus-amount-cmd0x70-param-0x6c}
+
+**EDIT FX → Chorus → Amount** ([Hyper](#chorus-hyper-03) only). Page A param
+**`0x6C`** — same byte as [Classic Delay](#chorus-delay-cmd0x70-param-0x6c),
+different **Type** context. LCD:
+[Chorus Amount (LCD)](../parameter-options.md#chorus-amount-lcd).
+
+| Item           | Value                                                                 |
+| -------------- | --------------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6C <value> F7`                           |
+| Panel range    | **1.00..3.00** → `amount = 1.00 + stored × (2.00 / 127)`            |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** after **`67`/`03`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 70 00 6C 00 F7   # 1.00
+F0 00 20 33 01 00 70 00 6C 40 F7   # ≈2.00
+F0 00 20 33 01 00 70 00 6C 7F F7   # 3.00
+```
+
+### Chorus LFO Wave (`cmd=0x70`, param `0x6E`) {#chorus-lfo-wave-cmd0x70-param-0x6e}
+
+**EDIT FX → Chorus → LFO Wave** ([Classic](#chorus-classic-01)). Page A param
+**`0x6E`** (not SELECT **`6E`/`76`**, not [Delay LFO Wave](#delay-lfo-wave-cmd0x70-param-0x76)).
+Enum: [Chorus LFO Wave](../parameter-options.md#chorus-lfo-wave).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 6E <value> F7`                    |
+| Value encoding | **`00`–`05`** — same shapes as [Delay LFO Wave](../parameter-options.md#delay-lfo-wave) |
+| Confirmed      | Hardware TX (step **`00`–`05`** on part **`0F`**)              |
+
+```text
+F0 00 20 33 01 00 70 00 6E 00 F7   # Sine
+F0 00 20 33 01 00 70 00 6E 01 F7   # Triangle
+F0 00 20 33 01 00 70 00 6E 02 F7   # Sawtooth
+F0 00 20 33 01 00 70 00 6E 03 F7   # Square
+F0 00 20 33 01 00 70 00 6E 04 F7   # S&H
+F0 00 20 33 01 00 70 00 6E 05 F7   # S&G
+```
+
+### Phaser {#phaser}
+
+**EDIT FX → Phaser**. EFFECTS focus: [`6E`/`76`/`03`](#effects-select).
+
+Panel layout: [Phaser panel
+visibility](../parameter-options.md#phaser-panel-visibility).
+
+| Control       | Notes                                                                                       |
+| ------------- | ------------------------------------------------------------------------------------------- |
+| **Mix**       | [`71`/`55`](#phaser-mix-cmd0x71-param-0x55) — always visible                               |
+| **Frequency** | [`71`/`58`](#phaser-frequency-cmd0x71-param-0x58) — **Mix** ≠ **Off** only                  |
+| **Feedback**  | [`71`/`59`](#phaser-feedback-cmd0x71-param-0x59) — **Mix** ≠ **Off** only                  |
+| **Mod Rate**  | [`71`/`56`](#phaser-mod-rate-cmd0x71-param-0x56) — **Mix** ≠ **Off** only                  |
+| **Mod Depth** | [`71`/`57`](#phaser-mod-depth-cmd0x71-param-0x57) — **Mix** ≠ **Off** only                 |
+| **Stages**    | [`71`/`54`](#phaser-stages-cmd0x71-param-0x54) — **Mix** ≠ **Off** only                    |
+| **Spread**    | [`71`/`5A`](#phaser-spread-cmd0x71-param-0x5a) — **Mix** ≠ **Off** only                   |
+
+### Phaser Mix (`cmd=0x71`, param `0x55`) {#phaser-mix-cmd0x71-param-0x55}
+
+**EDIT FX → Phaser → Mix**. Page **B** param **`0x55`**. LCD index = wire byte
+— [Phaser Mix (LCD)](../parameter-options.md#phaser-mix-lcd). Soft-knob
+**Phaser Mix** destination uses wire **`5E`** (not this live-edit byte).
+
+| Item           | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 55 <value> F7`          |
+| Panel range    | **`00`** Off; **`01`–`7F`** wet level (**1..127**)   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**)   |
+
+```text
+F0 00 20 33 01 00 71 00 55 00 F7   # Off
+F0 00 20 33 01 00 71 00 55 01 F7   # 1
+F0 00 20 33 01 00 71 00 55 40 F7   # 64
+F0 00 20 33 01 00 71 00 55 7F F7   # 127
+```
+
+### Phaser Frequency (`cmd=0x71`, param `0x58`) {#phaser-frequency-cmd0x71-param-0x58}
+
+**EDIT FX → Phaser → Frequency** ([panel](../parameter-options.md#phaser-panel-visibility) — **Mix** ≠ **Off**).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 58 <value> F7`        |
+| Panel range    | **`0`–`127`** → `stored = value`                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 71 00 58 00 F7   # 0
+F0 00 20 33 01 00 71 00 58 7F F7   # 127
+```
+
+### Phaser Feedback (`cmd=0x71`, param `0x59`) {#phaser-feedback-cmd0x71-param-0x59}
+
+**EDIT FX → Phaser → Feedback** ([panel](../parameter-options.md#phaser-panel-visibility) — **Mix** ≠ **Off**). Same bipolar **%** encoding as [Chorus Feedback](#chorus-feedback-cmd0x70-param-0x6d).
+
+| Item           | Value                                                                 |
+| -------------- | --------------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 59 <value> F7`                           |
+| Panel range    | **−100.0..+100.0 %** → `stored = round(pct × 64 / 100) + 64`          |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**)                    |
+
+```text
+F0 00 20 33 01 00 71 00 59 00 F7   # −100.0 %
+F0 00 20 33 01 00 71 00 59 40 F7   # 0.0 %
+F0 00 20 33 01 00 71 00 59 7F F7   # +100.0 %
+```
+
+### Phaser Mod Rate (`cmd=0x71`, param `0x56`) {#phaser-mod-rate-cmd0x71-param-0x56}
+
+**EDIT FX → Phaser → Mod Rate** ([panel](../parameter-options.md#phaser-panel-visibility) — **Mix** ≠ **Off**).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 56 <value> F7`        |
+| Panel range    | **`0`–`127`** → `stored = value`                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 71 00 56 00 F7   # 0
+F0 00 20 33 01 00 71 00 56 7F F7   # 127
+```
+
+### Phaser Mod Depth (`cmd=0x71`, param `0x57`) {#phaser-mod-depth-cmd0x71-param-0x57}
+
+**EDIT FX → Phaser → Mod Depth** ([panel](../parameter-options.md#phaser-panel-visibility) — **Mix** ≠ **Off**).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 57 <value> F7`        |
+| Panel range    | **`0`–`127`** → `stored = value`                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 71 00 57 00 F7   # 0
+F0 00 20 33 01 00 71 00 57 7F F7   # 127
+```
+
+### Phaser Stages (`cmd=0x71`, param `0x54`) {#phaser-stages-cmd0x71-param-0x54}
+
+**EDIT FX → Phaser → Stages** ([panel](../parameter-options.md#phaser-panel-visibility) — **Mix** ≠ **Off**). Enum:
+[Phaser Stages](../parameter-options.md#phaser-stages).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 54 <value> F7`        |
+| Value encoding | **`00`–`05`** — **1..6 Stages**                    |
+| Confirmed      | Hardware TX (step **`00`–`05`** on part **`0F`**)   |
+
+```text
+F0 00 20 33 01 00 71 00 54 00 F7   # 1 Stage
+F0 00 20 33 01 00 71 00 54 03 F7   # 4 Stages
+F0 00 20 33 01 00 71 00 54 05 F7   # 6 Stages
+```
+
+### Phaser Spread (`cmd=0x71`, param `0x5A`) {#phaser-spread-cmd0x71-param-0x5a}
+
+**EDIT FX → Phaser → Spread** ([panel](../parameter-options.md#phaser-panel-visibility) — **Mix** ≠ **Off**).
+
+| Item           | Value                                              |
+| -------------- | -------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 5A <value> F7`        |
+| Panel range    | **`0`–`127`** → `stored = value`                   |
+| Confirmed      | Hardware TX (sweep **`00`–`7F`** on part **`0F`**) |
+
+```text
+F0 00 20 33 01 00 71 00 5A 00 F7   # 0
+F0 00 20 33 01 00 71 00 5A 7F F7   # 127
+```
+
+### Others {#others}
+
+**EDIT FX → Others**. EFFECTS focus: [`6E`/`76`/`04`](#effects-select)
+(Distortion **`00`** … Others **`04`** on param **`0x76`**).
+
+Panel layout: [Others panel
+visibility](../parameter-options.md#others-panel-visibility). Sub-page order
+(panel-confirmed on TI mk2):
+
+1. **Filter Bank**
+2. **Vocoder**
+3. **Input Follower**
+
+**No SysEx** when paging among **Filter Bank** / **Vocoder** / **Input Follower**
+— LCD navigation only; focus stays **`6E`/`76`/`04`**.
+
+| Sub-page           | Status              | Notes                                                                 |
+| ------------------ | ------------------- | --------------------------------------------------------------------- |
+| **Filter Bank**    | **All types** confirmed | [Filter Bank](#filter-bank) — **`13`–`19`** on **`6E`**                              |
+| **Vocoder**        | **`00`–`06`** confirmed | [Vocoder](#vocoder) — **Mode** **`71`/`27`**; other rows **`6E`/`28`–`3A`** |
+| **Input Follower** | **`01`–`03`** confirmed | [Input Follower](#input-follower) — **`26`**, **`36`**, **`38`**, **`3A`** on **`6E`** |
+
+#### Filter Bank {#filter-bank}
+
+**EDIT FX → Others → Filter Bank**. [Panel
+visibility](../parameter-options.md#filter-bank-panel-visibility). All parameters
+below use **`cmd=0x6E`** (part single buffer).
+
+| Type | Notes |
+| ---- | ----- |
+| **Ring Modulator** (`01`) | [Mix](#filter-bank-mix-cmd0x6e-param-0x14), [Frequency](#filter-bank-frequency-bipolar-cmd0x6e-param-0x15), [Stereo Phase](#filter-bank-stereo-phase-cmd0x6e-param-0x16) |
+| **Frequency Shifter** (`02`) | Above + [Shape L](#filter-bank-shape-l-cmd0x6e-param-0x17) / [Shape R](#filter-bank-shape-r-cmd0x6e-param-0x18) |
+| **Vowel Filter** (`03`) | [Mix](#filter-bank-mix-cmd0x6e-param-0x14), [Frequency](#filter-bank-vowel-frequency-cmd0x6e-param-0x15), [Resonance](#filter-bank-resonance-cmd0x6e-param-0x19), [Stereo Phase](#filter-bank-stereo-phase-cmd0x6e-param-0x16) |
+| **Comb Filter** (`04`) | Mix, [Comb Frequency](#filter-bank-comb-frequency-cmd0x6e-param-0x15), Resonance, Stereo Phase |
+| **Pole XFade** (`05`–`08`) | [Frequency (direct)](#filter-bank-frequency-direct-cmd0x6e-param-0x15), Resonance, [Filter Type](#filter-bank-filter-type-cmd0x6e-param-0x17) |
+| **VariSlope** (`09`–`0B`) | Frequency (direct), Resonance, [Poles](#filter-bank-poles-cmd0x6e-param-0x17), [Slope](#filter-bank-slope-cmd0x6e-param-0x18) |
+
+| Control  | Notes                                                                 |
+| -------- | --------------------------------------------------------------------- |
+| **Type** | [`6E`/`13`](#filter-bank-type-cmd0x6e-param-0x13) — [enum](../parameter-options.md#filter-bank-type) |
+
+### Filter Bank Type (`cmd=0x6E`, param `0x13`) {#filter-bank-type-cmd0x6e-param-0x13}
+
+**EDIT FX → Others → Filter Bank → Type**. Part single buffer (**`6E`**, not Page
+A/B). Enum: [Filter Bank Type](../parameter-options.md#filter-bank-type).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 13 <value> F7`                    |
+| Value encoding | **`00`–`0B`** — dense type list ( **`00`** = Off )              |
+| Confirmed      | Hardware TX (step **`00`–`0B`** after **`6E`/`76`/`04`**)      |
+
+```text
+F0 00 20 33 01 00 6E 00 13 00 F7   # Off
+F0 00 20 33 01 00 6E 00 13 01 F7   # Ring Modulator
+F0 00 20 33 01 00 6E 00 13 02 F7   # Frequency Shifter
+F0 00 20 33 01 00 6E 00 13 03 F7   # Vowel Filter
+F0 00 20 33 01 00 6E 00 13 04 F7   # Comb Filter
+F0 00 20 33 01 00 6E 00 13 05 F7   # 1 Pole XFade
+F0 00 20 33 01 00 6E 00 13 06 F7   # 2 Pole XFade
+F0 00 20 33 01 00 6E 00 13 07 F7   # 4 Pole XFade
+F0 00 20 33 01 00 6E 00 13 08 F7   # 6 Pole XFade
+F0 00 20 33 01 00 6E 00 13 09 F7   # LP VariSlope
+F0 00 20 33 01 00 6E 00 13 0A F7   # HP VariSlope
+F0 00 20 33 01 00 6E 00 13 0B F7   # BP VariSlope
+```
+
+### Filter Bank Mix (`cmd=0x6E`, param `0x14`) {#filter-bank-mix-cmd0x6e-param-0x14}
+
+**EDIT FX → Others → Filter Bank → Mix** ([Ring Modulator](../parameter-options.md#filter-bank-ring-modulator-01),
+[Frequency Shifter](../parameter-options.md#filter-bank-frequency-shifter-02),
+[Vowel Filter](../parameter-options.md#filter-bank-vowel-filter-03),
+[Comb Filter](../parameter-options.md#filter-bank-comb-filter-04)). LCD:
+[Filter Bank Mix (LCD)](../parameter-options.md#filter-bank-mix-lcd).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 14 <value> F7`                    |
+| Value encoding | **`00`** Off; **`01`–`7F`** → **%** (same as Character Intensity) |
+| Confirmed      | Panel-confirmed ( **`01`**, **`02`**, **`7F`** anchors )       |
+
+```text
+F0 00 20 33 01 00 6E 00 14 00 F7   # Off
+F0 00 20 33 01 00 6E 00 14 01 F7   # 0.8 %
+F0 00 20 33 01 00 6E 00 14 7F F7   # 100.0 %
+```
+
+### Filter Bank Frequency — bipolar (`cmd=0x6E`, param `0x15`) {#filter-bank-frequency-bipolar-cmd0x6e-param-0x15}
+
+**EDIT FX → Others → Filter Bank → Frequency** on [Ring Modulator](../parameter-options.md#filter-bank-ring-modulator-01) /
+[Frequency Shifter](../parameter-options.md#filter-bank-frequency-shifter-02).
+Decode **`6E`/`15`** using **`6E`/`13`** — see also [Comb](#filter-bank-comb-frequency-cmd0x6e-param-0x15),
+[Vowel](#filter-bank-vowel-frequency-cmd0x6e-param-0x15), [direct](#filter-bank-frequency-direct-cmd0x6e-param-0x15).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 15 <value> F7`                    |
+| Panel range    | **−64..+63** → `stored = ui + 64`                              |
+| Confirmed      | Panel-confirmed — **`40`** = **+0**                            |
+
+```text
+F0 00 20 33 01 00 6E 00 15 00 F7   # −64
+F0 00 20 33 01 00 6E 00 15 40 F7   # +0
+F0 00 20 33 01 00 6E 00 15 7F F7   # +63
+```
+
+### Filter Bank Comb Frequency (`cmd=0x6E`, param `0x15`) {#filter-bank-comb-frequency-cmd0x6e-param-0x15}
+
+**EDIT FX → Others → Filter Bank → Frequency** on [Comb Filter](../parameter-options.md#filter-bank-comb-filter-04)
+(`13`/`04`). LCD:
+[Filter Bank Comb Frequency](../parameter-options.md#filter-bank-comb-frequency).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 15 <value> F7`                    |
+| Panel range    | **C0..C8** chromatic — **`00`** = **C0** … **`5F`** = **B7**, **`60`** = **C8** |
+| Confirmed      | Hardware TX — panel stops at **`60`** / **C8**                                    |
+
+```text
+F0 00 20 33 01 00 6E 00 15 00 F7   # C0
+F0 00 20 33 01 00 6E 00 15 01 F7   # C#0
+F0 00 20 33 01 00 6E 00 15 5F F7   # B7
+F0 00 20 33 01 00 6E 00 15 60 F7   # C8
+```
+
+### Filter Bank Frequency — direct (`cmd=0x6E`, param `0x15`) {#filter-bank-frequency-direct-cmd0x6e-param-0x15}
+
+**EDIT FX → Others → Filter Bank → Frequency** on [Pole XFade](../parameter-options.md#filter-bank-pole-xfade-05-08)
+/ [VariSlope](../parameter-options.md#filter-bank-varislope-09-0b). LCD:
+[Filter Bank Frequency (direct)](../parameter-options.md#filter-bank-frequency-direct).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 15 <value> F7`                    |
+| Panel range    | **`0`–`127`** → `stored = value`                               |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 15 00 F7   # 0
+F0 00 20 33 01 00 6E 00 15 40 F7   # 64
+F0 00 20 33 01 00 6E 00 15 7F F7   # 127
+```
+
+### Filter Bank Vowel Frequency (`cmd=0x6E`, param `0x15`) {#filter-bank-vowel-frequency-cmd0x6e-param-0x15}
+
+**EDIT FX → Others → Filter Bank → Frequency** on [Vowel Filter](../parameter-options.md#filter-bank-vowel-filter-03)
+(`13`/`03`). Same param byte as bipolar **Frequency** on other types — decode
+using **`13`**. LCD:
+[Filter Bank Vowel Frequency](../parameter-options.md#filter-bank-vowel-frequency).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 15 <value> F7`                    |
+| Panel range    | **0..100.0 %** + vowel glyph — **`00`** = **0 %**, **`40`** = **50.0 %**, **`7F`** = **100.0 %** |
+| Confirmed      | Panel-confirmed (full sweep + glyph segments)                  |
+
+```text
+F0 00 20 33 01 00 6E 00 15 00 F7   # 0 % — <u>
+F0 00 20 33 01 00 6E 00 15 40 F7   # 50.0 % — <i>
+F0 00 20 33 01 00 6E 00 15 7F F7   # 100.0 % — <u>
+```
+
+### Filter Bank Stereo Phase (`cmd=0x6E`, param `0x16`) {#filter-bank-stereo-phase-cmd0x6e-param-0x16}
+
+**EDIT FX → Others → Filter Bank → Stereo Phase** ([Ring Modulator](../parameter-options.md#filter-bank-ring-modulator-01),
+[Frequency Shifter](../parameter-options.md#filter-bank-frequency-shifter-02),
+[Vowel Filter](../parameter-options.md#filter-bank-vowel-filter-03),
+[Comb Filter](../parameter-options.md#filter-bank-comb-filter-04)).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 16 <value> F7`                    |
+| Panel range    | **−64..+63** → `stored = ui + 64`                              |
+| Confirmed      | Panel-confirmed — **`40`** = **+0**                            |
+
+```text
+F0 00 20 33 01 00 6E 00 16 00 F7   # −64
+F0 00 20 33 01 00 6E 00 16 40 F7   # +0
+F0 00 20 33 01 00 6E 00 16 7F F7   # +63
+```
+
+### Filter Bank Resonance (`cmd=0x6E`, param `0x19`) {#filter-bank-resonance-cmd0x6e-param-0x19}
+
+**EDIT FX → Others → Filter Bank → Resonance** on [Vowel Filter](../parameter-options.md#filter-bank-vowel-filter-03),
+[Comb Filter](../parameter-options.md#filter-bank-comb-filter-04),
+[Pole XFade](../parameter-options.md#filter-bank-pole-xfade-05-08),
+[VariSlope](../parameter-options.md#filter-bank-varislope-09-0b). LCD:
+[Filter Bank Resonance (LCD)](../parameter-options.md#filter-bank-resonance-lcd).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 19 <value> F7`                    |
+| Panel range    | **0..100.0 %** — **`00`** = **0 %**, **`40`** = **50.0 %**, **`7F`** = **100.0 %** |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 19 00 F7   # 0 %
+F0 00 20 33 01 00 6E 00 19 40 F7   # 50.0 %
+F0 00 20 33 01 00 6E 00 19 7F F7   # 100.0 %
+```
+
+### Filter Bank Filter Type (`cmd=0x6E`, param `0x17`) {#filter-bank-filter-type-cmd0x6e-param-0x17}
+
+**EDIT FX → Others → Filter Bank → Filter Type** on [Pole XFade](../parameter-options.md#filter-bank-pole-xfade-05-08).
+Same byte as [Shape L](#filter-bank-shape-l-cmd0x6e-param-0x17) on Frequency Shifter.
+LCD: [Filter Bank XFade Filter Type](../parameter-options.md#filter-bank-xfade-filter-type).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 17 <value> F7`                    |
+| Panel range    | **`00`** Low Pass; **`01`–`7E`** numeric; **`40`** Band Pass; **`7F`** High Pass |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 17 00 F7   # Low Pass
+F0 00 20 33 01 00 6E 00 17 40 F7   # Band Pass
+F0 00 20 33 01 00 6E 00 17 7F F7   # High Pass
+```
+
+### Filter Bank Poles (`cmd=0x6E`, param `0x17`) {#filter-bank-poles-cmd0x6e-param-0x17}
+
+**EDIT FX → Others → Filter Bank → Poles** on [VariSlope](../parameter-options.md#filter-bank-varislope-09-0b).
+LCD: [Filter Bank VariSlope Poles (LCD)](../parameter-options.md#filter-bank-varislope-poles-lcd).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 17 <value> F7`                    |
+| Panel range    | **2.00..6.00** — **`00`** = **2.00**, **`40`** = **4.00**, **`7F`** = **6.00** |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 17 00 F7   # 2.00
+F0 00 20 33 01 00 6E 00 17 40 F7   # 4.00
+F0 00 20 33 01 00 6E 00 17 7F F7   # 6.00
+```
+
+### Filter Bank Slope (`cmd=0x6E`, param `0x18`) {#filter-bank-slope-cmd0x6e-param-0x18}
+
+**EDIT FX → Others → Filter Bank → Slope** on [VariSlope](../parameter-options.md#filter-bank-varislope-09-0b).
+Same byte as [Shape R](#filter-bank-shape-r-cmd0x6e-param-0x18) on Frequency Shifter.
+LCD: [Filter Bank VariSlope Slope](../parameter-options.md#filter-bank-varislope-slope).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 18 <value> F7`                    |
+| Panel range    | **`0`–`127`** → `stored = value`                               |
+| Confirmed      | Panel-confirmed — **`40`** = **64**                            |
+
+```text
+F0 00 20 33 01 00 6E 00 18 00 F7   # 0
+F0 00 20 33 01 00 6E 00 18 40 F7   # 64
+F0 00 20 33 01 00 6E 00 18 7F F7   # 127
+```
+
+### Filter Bank Shape L (`cmd=0x6E`, param `0x17`) {#filter-bank-shape-l-cmd0x6e-param-0x17}
+
+**EDIT FX → Others → Filter Bank → Shape L** ([Frequency Shifter](../parameter-options.md#filter-bank-frequency-shifter-02) only —
+on Pole XFade this byte is [Filter Type](#filter-bank-filter-type-cmd0x6e-param-0x17); on VariSlope,
+[Poles](#filter-bank-poles-cmd0x6e-param-0x17)).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 17 <value> F7`                    |
+| Panel range    | **−100.0..+100.0 %** → `stored = round(pct × 64 / 100) + 64`   |
+| Confirmed      | Panel-confirmed — **`40`** = **+0 %**                          |
+
+```text
+F0 00 20 33 01 00 6E 00 17 00 F7   # −100.0 %
+F0 00 20 33 01 00 6E 00 17 40 F7   # +0 %
+F0 00 20 33 01 00 6E 00 17 7F F7   # +100.0 %
+```
+
+### Filter Bank Shape R (`cmd=0x6E`, param `0x18`) {#filter-bank-shape-r-cmd0x6e-param-0x18}
+
+**EDIT FX → Others → Filter Bank → Shape R** ([Frequency Shifter](../parameter-options.md#filter-bank-frequency-shifter-02) only —
+on VariSlope this byte is [Slope](#filter-bank-slope-cmd0x6e-param-0x18)).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 18 <value> F7`                    |
+| Panel range    | **−100.0..+100.0 %** → `stored = round(pct × 64 / 100) + 64`   |
+| Confirmed      | Panel-confirmed — **`40`** = **+0 %**                          |
+
+```text
+F0 00 20 33 01 00 6E 00 18 00 F7   # −100.0 %
+F0 00 20 33 01 00 6E 00 18 40 F7   # +0 %
+F0 00 20 33 01 00 6E 00 18 7F F7   # +100.0 %
+```
+
+#### Vocoder {#vocoder}
+
+**EDIT FX → Others → Vocoder**. [Panel
+visibility](../parameter-options.md#vocoder-panel-visibility). **Mode** uses
+**`cmd=0x71`** (Page B); other rows use **`cmd=0x6E`** (part single buffer).
+
+When **Mode** ≠ **Off**, **FILTERS** is disabled on the panel — LCD
+**`Vocoder active. Filters are disabled`** (see
+[Filters SELECT](../filters.md#filters-select)).
+
+| Mode | Notes |
+| ---- | ----- |
+| **Off** (`00`) | [Mode](#vocoder-mode-cmd0x71-param-0x27) only |
+| **Oscillator** … **In R** (`01`–`06`) | Mode + nine rows below |
+
+| Control | `cmd`/`param` | Notes |
+| ------- | ------------- | ----- |
+| **Mode** | [`71`/`27`](#vocoder-mode-cmd0x71-param-0x27) | [enum](../parameter-options.md#vocoder-mode) |
+| **Spread** | [`6E`/`2E`](#vocoder-spread-cmd0x6e-param-0x2e) | **−64..+63** |
+| **Q-Factor** | [`6E`/`2A`](#vocoder-q-factor-cmd0x6e-param-0x2a) | **`0`–`127`** |
+| **Center Freq** | [`6E`/`28`](#vocoder-center-freq-cmd0x6e-param-0x28) | **−64..+63** |
+| **Balance** | [`6E`/`30`](#vocoder-balance-cmd0x6e-param-0x30) | **`0`–`127`** |
+| **Mod Offset** | [`6E`/`29`](#vocoder-mod-offset-cmd0x6e-param-0x29) | **−64..+63** |
+| **Carrier Attack** | [`6E`/`36`](#vocoder-carrier-attack-cmd0x6e-param-0x36) | **`0`–`127`** |
+| **Carrier Release** | [`6E`/`37`](#vocoder-carrier-release-cmd0x6e-param-0x37) | **`0`–`127`** |
+| **Spectral Balance** | [`6E`/`39`](#vocoder-spectral-balance-cmd0x6e-param-0x39) | **`0`–`127`** |
+| **Bands** | [`6E`/`3A`](#vocoder-bands-cmd0x6e-param-0x3a) | **`01`–`32`** |
+
+### Vocoder Mode (`cmd=0x71`, param `0x27`) {#vocoder-mode-cmd0x71-param-0x27}
+
+**EDIT FX → Others → Vocoder → Mode**. Page B — WAF80 B#**39** =
+**`0x27`**. Enum: [Vocoder Mode](../parameter-options.md#vocoder-mode). Param
+**`0x27`** on **`0x6E`** is a different control — use **`cmd`** to
+disambiguate.
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 27 <value> F7`                    |
+| Value encoding | **`00`–`06`** — **`00`** Off; no other rows when Off           |
+| Confirmed      | Hardware **TX** + **`sendmidi` RX** (TI mk2) — **`00`–`06`** |
+
+```text
+F0 00 20 33 01 00 71 00 27 00 F7   # Off
+F0 00 20 33 01 00 71 00 27 01 F7   # Oscillator
+F0 00 20 33 01 00 71 00 27 02 F7   # Osc Hold
+F0 00 20 33 01 00 71 00 27 03 F7   # Noise
+F0 00 20 33 01 00 71 00 27 04 F7   # In L
+F0 00 20 33 01 00 71 00 27 05 F7   # In L+R
+F0 00 20 33 01 00 71 00 27 06 F7   # In R
+```
+
+### Vocoder Center Freq (`cmd=0x6E`, param `0x28`) {#vocoder-center-freq-cmd0x6e-param-0x28}
+
+**EDIT FX → Others → Vocoder → Center Freq** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 28 <value> F7`                    |
+| Panel range    | **−64..+63** → `stored = ui + 64`                              |
+| Confirmed      | Panel-confirmed — **`40`** = **+0**                            |
+
+```text
+F0 00 20 33 01 00 6E 00 28 00 F7   # −64
+F0 00 20 33 01 00 6E 00 28 40 F7   # +0
+F0 00 20 33 01 00 6E 00 28 7F F7   # +63
+```
+
+### Vocoder Mod Offset (`cmd=0x6E`, param `0x29`) {#vocoder-mod-offset-cmd0x6e-param-0x29}
+
+**EDIT FX → Others → Vocoder → Mod Offset** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 29 <value> F7`                    |
+| Panel range    | **−64..+63** → `stored = ui + 64`                              |
+| Confirmed      | Panel-confirmed — **`40`** = **+0**                            |
+
+```text
+F0 00 20 33 01 00 6E 00 29 00 F7   # −64
+F0 00 20 33 01 00 6E 00 29 40 F7   # +0
+F0 00 20 33 01 00 6E 00 29 7F F7   # +63
+```
+
+### Vocoder Q-Factor (`cmd=0x6E`, param `0x2A`) {#vocoder-q-factor-cmd0x6e-param-0x2a}
+
+**EDIT FX → Others → Vocoder → Q-Factor** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 2A <value> F7`                    |
+| Panel range    | **`0`–`127`** → `stored = value`                               |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 2A 00 F7   # 0
+F0 00 20 33 01 00 6E 00 2A 7F F7   # 127
+```
+
+### Vocoder Spread (`cmd=0x6E`, param `0x2E`) {#vocoder-spread-cmd0x6e-param-0x2e}
+
+**EDIT FX → Others → Vocoder → Spread** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 2E <value> F7`                    |
+| Panel range    | **−64..+63** → `stored = ui + 64`                              |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 2E 00 F7   # −64
+F0 00 20 33 01 00 6E 00 2E 40 F7   # +0
+F0 00 20 33 01 00 6E 00 2E 7F F7   # +63
+```
+
+### Vocoder Balance (`cmd=0x6E`, param `0x30`) {#vocoder-balance-cmd0x6e-param-0x30}
+
+**EDIT FX → Others → Vocoder → Balance** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 30 <value> F7`                    |
+| Panel range    | **`0`–`127`** → `stored = value`                               |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 30 00 F7   # 0
+F0 00 20 33 01 00 6E 00 30 7F F7   # 127
+```
+
+### Vocoder Carrier Attack (`cmd=0x6E`, param `0x36`) {#vocoder-carrier-attack-cmd0x6e-param-0x36}
+
+**EDIT FX → Others → Vocoder → Carrier Attack** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 36 <value> F7`                    |
+| Panel range    | **`0`–`127`** → `stored = value`                               |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 36 00 F7   # 0
+F0 00 20 33 01 00 6E 00 36 7F F7   # 127
+```
+
+### Vocoder Carrier Release (`cmd=0x6E`, param `0x37`) {#vocoder-carrier-release-cmd0x6e-param-0x37}
+
+**EDIT FX → Others → Vocoder → Carrier Release** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 37 <value> F7`                    |
+| Panel range    | **`0`–`127`** → `stored = value`                               |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 37 00 F7   # 0
+F0 00 20 33 01 00 6E 00 37 7F F7   # 127
+```
+
+### Vocoder Spectral Balance (`cmd=0x6E`, param `0x39`) {#vocoder-spectral-balance-cmd0x6e-param-0x39}
+
+**EDIT FX → Others → Vocoder → Spectral Balance** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 39 <value> F7`                    |
+| Panel range    | **`0`–`127`** → `stored = value`                               |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 39 00 F7   # 0
+F0 00 20 33 01 00 6E 00 39 7F F7   # 127
+```
+
+### Vocoder Bands (`cmd=0x6E`, param `0x3A`) {#vocoder-bands-cmd0x6e-param-0x3a}
+
+**EDIT FX → Others → Vocoder → Bands** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**). Enum: [Vocoder Bands](../parameter-options.md#vocoder-bands).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 3A <value> F7`                    |
+| Value encoding | **`00`–`1F`** → panel **`01`–`32`** (`bands = stored + 1`)     |
+| Confirmed      | Panel-confirmed                                                |
+
+```text
+F0 00 20 33 01 00 6E 00 3A 00 F7   # 01
+F0 00 20 33 01 00 6E 00 3A 1F F7   # 32
+```
+
+#### Input Follower {#input-follower}
+
+**EDIT FX → Others → Input Follower**. [Panel
+visibility](../parameter-options.md#input-follower-panel-visibility). Parameters
+use **`cmd=0x6E`** (part single buffer).
+
+| Control | `cmd`/`param` | Notes |
+| ------- | ------------- | ----- |
+| **Input Select** | [`6E`/`26`](#input-follower-input-select-cmd0x6e-param-0x26) | [enum](../parameter-options.md#input-follower-input-select) |
+| **Attack** | [`6E`/`36`](#input-follower-attack-cmd0x6e-param-0x36) | **`0`–`127`** when **Input Select** ≠ Off |
+| **Release** | [`6E`/`3A`](#input-follower-release-cmd0x6e-param-0x3a) | **`0`–`127`** when **Input Select** ≠ Off |
+| **Sensitivity** | [`6E`/`38`](#input-follower-sensitivity-cmd0x6e-param-0x38) | **0.0..100.0 %** when **Input Select** ≠ Off |
+
+Same **`cmd`/`param`** bytes as [Vocoder](#vocoder) rows on **`6E`** — always
+decode by **EDIT FX** sub-page (**Input Follower** vs **Vocoder**).
+
+### Input Follower Input Select (`cmd=0x6E`, param `0x26`) {#input-follower-input-select-cmd0x6e-param-0x26}
+
+**EDIT FX → Others → Input Follower → Input Select**. Enum:
+[Input Follower Input Select](../parameter-options.md#input-follower-input-select).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 26 <value> F7`                    |
+| Value encoding | **`00`** Off; **`01`** In L; **`02`** In L+R; **`03`** In R  |
+| Confirmed      | Hardware TX (TI mk2)                                           |
+
+```text
+F0 00 20 33 01 00 6E 00 26 00 F7   # Off
+F0 00 20 33 01 00 6E 00 26 01 F7   # In L
+F0 00 20 33 01 00 6E 00 26 02 F7   # In L+R
+F0 00 20 33 01 00 6E 00 26 03 F7   # In R
+```
+
+**Not** [Ring Modulator Volume](../oscillators.md#ring-modulator-volume-0x26-cmd0x70--cc-38)
+(`70`/`26`).
+
+### Input Follower Attack (`cmd=0x6E`, param `0x36`) {#input-follower-attack-cmd0x6e-param-0x36}
+
+**EDIT FX → Others → Input Follower → Attack** when [Input
+Select](#input-follower-input-select-cmd0x6e-param-0x26) ≠ **Off** (**In L** /
+**In L+R** / **In R**).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 36 <value> F7`                    |
+| Panel range    | **0..127** → `stored = lcd`                                    |
+| Confirmed      | Hardware TX — **`00`** = **0**, **`7F`** = **127**             |
+
+```text
+F0 00 20 33 01 00 6E 00 36 00 F7   # 0
+F0 00 20 33 01 00 6E 00 36 7F F7   # 127
+```
+
+**Not** [Vocoder Carrier Attack](#vocoder-carrier-attack-cmd0x6e-param-0x36) on
+the **Vocoder** sub-page (same **`6E`/`36`** wire).
+
+### Input Follower Release (`cmd=0x6E`, param `0x3A`) {#input-follower-release-cmd0x6e-param-0x3a}
+
+**EDIT FX → Others → Input Follower → Release** when **Input Select** ≠ **Off**.
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 3A <value> F7`                    |
+| Panel range    | **0..127** → `stored = lcd`                                    |
+| Confirmed      | Hardware TX — **`00`** = **0**, **`7F`** = **127**             |
+
+```text
+F0 00 20 33 01 00 6E 00 3A 00 F7   # 0
+F0 00 20 33 01 00 6E 00 3A 7F F7   # 127
+```
+
+**Not** [Vocoder Bands](#vocoder-bands-cmd0x6e-param-0x3a) on the **Vocoder**
+sub-page (same **`6E`/`3A`** wire).
+
+### Input Follower Sensitivity (`cmd=0x6E`, param `0x38`) {#input-follower-sensitivity-cmd0x6e-param-0x38}
+
+**EDIT FX → Others → Input Follower → Sensitivity** when **Input Select** ≠
+**Off**. Percent curve: [Input Follower Sensitivity
+(LCD)](../parameter-options.md#input-follower-sensitivity-lcd).
+
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 6E <part> 38 <value> F7`                    |
+| Panel range    | **0.0..100.0 %** → `stored = round(pct × 127 / 100)`           |
+| Confirmed      | Hardware TX — **`00`** = **0 %**, **`7F`** = **100.0 %**       |
+
+```text
+F0 00 20 33 01 00 6E 00 38 00 F7   # 0 %
+F0 00 20 33 01 00 6E 00 38 7F F7   # 100.0 %
+```
+
 ### Delay
+
+**EDIT FX → Delay**. EFFECTS focus: [`6E`/`75`/`00`](#effects-select).
 
 Panel layout: [Delay panel
 visibility](../parameter-options.md#delay-panel-visibility).
-
-#### EFFECTS section knobs (Delay selected) {#delay-effects-knobs}
-
-With **EFFECTS** group **1** = **Delay**
-([`6E`/`75`/`00`](#effects-section-focus)),
-the
-three front-panel knobs drive the same live-edit bytes as **EDIT FX → Delay**
-(Page
-**A**, `cmd=0x70`). TI mk2 confirmed:
-
-| Knob | LCD label          | `param`    | Encoding                                                                                         |
-| ---- | ------------------ | ---------- | ------------------------------------------------------------------------------------------------ |
-| 1    | **Delay Send**     | **`0x71`** | [Delay Send (LCD)](../parameter-options.md#delay-send-lcd) — **`00`** Off … **`7F`** Effect      |
-| 2    | **Delay Color**    | **`0x77`** | Classic **Coloration** — **`stored = ui + 64`** (**−64..+63**)                                   |
-| 3    | **Delay Feedback** | **`0x73`** | Classic **0.0..100.0 %** — `stored = round(pct × 127 / 100)`                                     |
-
-Same **`70`/`77`** byte is **Tape Frequency** when **Type** ≠ Classic — knob
-label
-stays **Delay Color** only for Classic-style routing; confirm **Type** on panel.
-
-**Send = Off (`00`)** — all **Types**: panel shows **Type**, **Send**, and
-**Feedback** only (no **Delay Time** / **Time**, **Mode**, etc.). Set **Send**
-to a
-non-**Off** value before type-specific rows appear.
-
-| Control      | Notes                                                                                                                         |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Type**     | [Delay Type](../parameter-options.md#delay-type) — [`6E`/`0A`](#delay-type-cmd0x6e)                                           |
-| **Send**     | [Delay Send (LCD)](../parameter-options.md#delay-send-lcd) — [`70`/`71`](#delay-send-cmd0x70-param-0x71); **`00`** = Off      |
-| **Feedback** | [`70`/`73`](#delay-feedback) — **Classic** **0..100 %** / **Tape** **0..200 %**                                               |
 
 #### Classic (`00`) — Send ≠ Off
 
@@ -363,15 +1530,13 @@ F0 00 20 33 01 00 70 00 70 16 F7   # Pattern 5+5
 
 ### Delay Send (`cmd=0x70`, param `0x71`) {#delay-send-cmd0x70-param-0x71}
 
-**EDIT FX → Delay → Send** (all types). Also **EFFECTS → Delay** knob 1 —
-[Delay EFFECTS knobs](#delay-effects-knobs). Page **A#113** = **`0x71`**. LCD
-index =
+**EDIT FX → Delay → Send** (all types). Page **A#113** = **`0x71`**. LCD index =
 wire byte — [Delay Send (LCD)](../parameter-options.md#delay-send-lcd).
 
-| Item           | Value                                                                       |
-| -------------- | --------------------------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 71 <value> F7`                                 |
-| Confirmed      | Hardware TX — **Off** ↔ **Effect** (`00`–`7F`–`00`); EDIT FX + EFFECTS knob |
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 71 <value> F7`                  |
+| Confirmed      | Hardware TX — **Off** ↔ **Effect** (`00`–`7F`–`00`)            |
 
 ```text
 F0 00 20 33 01 00 70 00 71 00 F7   # Off
@@ -389,7 +1554,7 @@ F0 00 20 33 01 00 70 00 71 7F F7   # Effect
 | Item           | Value                                                                          |
 | -------------- | ------------------------------------------------------------------------------ |
 | Message format | `F0 00 20 33 01 00 70 <part> 73 <value> F7`                                    |
-| Confirmed      | Hardware TX — **0 %** ↔ **100.0 %** (`00`–`7F`–`00`); EDIT FX + EFFECTS knob 3 |
+| Confirmed      | Hardware TX — **0 %** ↔ **100.0 %** (`00`–`7F`–`00`)           |
 
 ```text
 F0 00 20 33 01 00 70 00 73 00 F7   # 0.0 %
@@ -464,15 +1629,13 @@ Page **A#119** = **`0x77`**. Same wire byte; encoding depends on **Type** — se
 
 #### Classic — Coloration (`stored = ui + 64`, **−64..+63**)
 
-**EDIT FX → Delay → Coloration**. Also **EFFECTS → Delay** knob 2 (**Delay
-Color**) —
-[Delay EFFECTS knobs](#delay-effects-knobs).
+**EDIT FX → Delay → Coloration**.
 
-| Item           | Value                                                                              |
-| -------------- | ---------------------------------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 77 <value> F7`                                        |
-| Endpoints      | **`00`** = −64, **`40`** = +0, **`7F`** = +63                                      |
-| Confirmed      | Hardware TX — **−64** ↔ **+63** ↔ **−64** (`00`–`7F`–`00`); EDIT FX + EFFECTS knob |
+| Item           | Value                                                          |
+| -------------- | -------------------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 77 <value> F7`                  |
+| Endpoints      | **`00`** = −64, **`40`** = +0, **`7F`** = +63                  |
+| Confirmed      | Hardware TX — **−64** ↔ **+63** ↔ **−64** (`00`–`7F`–`00`)     |
 
 ```text
 F0 00 20 33 01 00 70 00 77 00 F7   # −64
@@ -603,6 +1766,8 @@ F0 00 20 33 01 00 70 00 76 05 F7   # S&G
 ```
 
 ### Reverb
+
+**EDIT FX → Reverb**. EFFECTS focus: [`6E`/`75`/`01`](#effects-select).
 
 Panel layout: [Reverb panel
 visibility](../parameter-options.md#reverb-panel-visibility).
@@ -784,23 +1949,23 @@ Reverb Send is **not** in the 267-byte `DUMP_MULTI`.
 | -------------- | -------------------------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 6E <part> 02 <value> F7`                          |
 | Scope          | Part edit / single edit buffer (not stored in `DUMP_MULTI`)          |
-| Value range    | Direct byte `0..127`                                                 |
-| Key points     | **`00`** = Off, **`60`** = 0/0 dB, **`7F`** = Effect                 |
-| Confirmed      | Hardware TX (**Send** sweep **`00`–`7F`**; endpoints + sparse steps) |
+| Value encoding | **`stored = index`** — same LCD map as [Delay Send](../parameter-options.md#delay-send-lcd) |
+| Key points     | **`00`** Off, **`60`** 0/0 dB, **`7F`** Effect                       |
+| Confirmed      | Hardware TX — Reverb path spot-checks match Delay Send table         |
 
 ```text
 F0 00 20 33 01 00 6E 00 02 00 F7   # Off
-F0 00 20 33 01 00 6E 00 02 60 F7   # 0/0 dB (unity)
+F0 00 20 33 01 00 6E 00 02 01 F7   # −46.2 dB
+F0 00 20 33 01 00 6E 00 02 60 F7   # 0/0 dB
 F0 00 20 33 01 00 6E 00 02 7F F7   # Effect
 ```
 
-LCD ↔ **`stored`**: [Reverb Send
-(LCD)](../parameter-options.md#reverb-send-lcd)
-(sparse panel rows; full label table still open).
+LCD ↔ **`stored`**: [Reverb Send (LCD)](../parameter-options.md#reverb-send-lcd).
 
 ### Low EQ
 
-**EDIT FX → Low EQ**. Both controls use **Page B** (`cmd=0x71`). Distinct from
+**EDIT FX → Low EQ**. EFFECTS focus: [`6E`/`75`/`02`](#effects-select). Both
+controls use **Page B** (`cmd=0x71`). Distinct from
 Page A **Filter 2 Envelope Amount** on **`70`/`2D`**.
 
 | Control            | Live edit                                         |
@@ -816,12 +1981,15 @@ Page A **Filter 2 Envelope Amount** on **`70`/`2D`**.
 | Item           | Value                                                |
 | -------------- | ---------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 2D <value> F7`          |
-| Panel range    | **32..458 Hz** (log-spaced LCD; **`stored` ≠ Hz**)   |
-| Endpoints      | **`00`** → 32 Hz, **`7F`** → 458 Hz                  |
-| Confirmed      | Hardware TX (sweep up to **`7F`**, down to **`00`**) |
+| Panel range    | **32..458 Hz** — log-spaced; see [LCD table](../parameter-options.md#eq-low-frequency) |
+| Confirmed      | Hardware TX — anchors below (TI mk2)                   |
 
 ```text
 F0 00 20 33 01 00 71 00 2D 00 F7   # 32 Hz
+F0 00 20 33 01 00 71 00 2D 10 F7   # 45 Hz
+F0 00 20 33 01 00 71 00 2D 14 F7   # 49 Hz
+F0 00 20 33 01 00 71 00 2D 79 F7   # 404 Hz
+F0 00 20 33 01 00 71 00 2D 7E F7   # 458 Hz
 F0 00 20 33 01 00 71 00 2D 7F F7   # 458 Hz
 ```
 
@@ -851,7 +2019,8 @@ F0 00 20 33 01 00 71 00 5F 7F F7   # +16 dB
 
 ### Mid EQ
 
-**EDIT FX → Mid EQ**. All three controls use **Page B** (`cmd=0x71`).
+**EDIT FX → Mid EQ**. EFFECTS focus: [`6E`/`75`/`03`](#effects-select). All
+three controls use **Page B** (`cmd=0x71`).
 
 | Control            | Live edit                                         |
 | ------------------ | ------------------------------------------------- |
@@ -867,13 +2036,17 @@ F0 00 20 33 01 00 71 00 5F 7F F7   # +16 dB
 | Item           | Value                                                    |
 | -------------- | -------------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 5D <value> F7`              |
-| Panel range    | **19 Hz..24.0 kHz** (log-spaced LCD; max shows **kHz**)  |
-| Endpoints      | **`00`** → 19 Hz, **`3E`** → 632 Hz, **`7F`** → 24.0 kHz |
-| Confirmed      | Hardware TX (sweep **`7F`** → **`00`** → **`3E`**)       |
+| Panel range    | **19 Hz..24.0 kHz** — log-spaced; see [LCD table](../parameter-options.md#eq-mid-frequency) |
+| Confirmed      | Hardware TX — anchors below (TI mk2)                     |
 
 ```text
 F0 00 20 33 01 00 71 00 5D 00 F7   # 19 Hz
-F0 00 20 33 01 00 71 00 5D 3E F7   # 632 Hz
+F0 00 20 33 01 00 71 00 5D 01 F7   # 20 Hz
+F0 00 20 33 01 00 71 00 5D 40 F7   # 707 Hz
+F0 00 20 33 01 00 71 00 5D 60 F7   # 4238 Hz
+F0 00 20 33 01 00 71 00 5D 6F F7   # 9810 Hz
+F0 00 20 33 01 00 71 00 5D 70 F7   # 10.3 kHz
+F0 00 20 33 01 00 71 00 5D 78 F7   # 17.1 kHz
 F0 00 20 33 01 00 71 00 5D 7F F7   # 24.0 kHz
 ```
 
@@ -904,20 +2077,26 @@ F0 00 20 33 01 00 71 00 5C 7F F7   # +16 dB
 | Item           | Value                                              |
 | -------------- | -------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 5E <value> F7`        |
-| Panel range    | **0.28..15.4** (non-linear LCD)                    |
-| Endpoints      | **`00`** → 0.28, **`40`** → 1.58, **`7F`** → 15.4  |
-| Confirmed      | Hardware TX (sweep **`00`** → **`7F`** → **`40`**) |
+| Panel range    | **0.28..15.4** — log-spaced; see [LCD table](../parameter-options.md#eq-mid-q-factor) |
+| Confirmed      | Hardware TX — anchors below (TI mk2)               |
 
 ```text
-F0 00 20 33 01 00 71 00 5E 00 F7   # Q 0.28
-F0 00 20 33 01 00 71 00 5E 40 F7   # Q 1.58
-F0 00 20 33 01 00 71 00 5E 7F F7   # Q 15.4
+F0 00 20 33 01 00 71 00 5E 00 F7   # 0.28
+F0 00 20 33 01 00 71 00 5E 10 F7   # 0.45
+F0 00 20 33 01 00 71 00 5E 20 F7   # 0.71
+F0 00 20 33 01 00 71 00 5E 40 F7   # 1.58
+F0 00 20 33 01 00 71 00 5E 50 F7   # 2.82
+F0 00 20 33 01 00 71 00 5E 60 F7   # 5.01
+F0 00 20 33 01 00 71 00 5E 70 F7   # 8.91
+F0 00 20 33 01 00 71 00 5E 7E F7   # 14.9
+F0 00 20 33 01 00 71 00 5E 7F F7   # 15.4
 ```
 
 ### High EQ
 
-**EDIT FX → High EQ**. **Frequency** and **Gain** only (no **Q** on mk2 panel).
-Both use **Page B** (`cmd=0x71`).
+**EDIT FX → High EQ**. EFFECTS focus: [`6E`/`75`/`04`](#effects-select).
+**Frequency** and **Gain** only (no **Q** on mk2 panel). Both use **Page B**
+(`cmd=0x71`).
 
 | Control            | Live edit                                          |
 | ------------------ | -------------------------------------------------- |
@@ -932,12 +2111,15 @@ Both use **Page B** (`cmd=0x71`).
 | Item           | Value                                                       |
 | -------------- | ----------------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 2E <value> F7`                 |
-| Panel range    | **1831 Hz..24.0 kHz** (log-spaced LCD)                      |
-| Endpoints      | **`00`** → 1831 Hz, **`40`** → 7012 Hz, **`7F`** → 24.0 kHz |
-| Confirmed      | Hardware TX (sweep **`7F`** → **`00`** → **`40`**)          |
+| Panel range    | **1831 Hz..24.0 kHz** — log-spaced; see [LCD table](../parameter-options.md#eq-high-frequency) |
+| Confirmed      | Hardware TX — anchors below (TI mk2)                        |
 
 ```text
 F0 00 20 33 01 00 71 00 2E 00 F7   # 1831 Hz
+F0 00 20 33 01 00 71 00 2E 0C F7   # 2355 Hz
+F0 00 20 33 01 00 71 00 2E 1F F7   # 3436 Hz
+F0 00 20 33 01 00 71 00 2E 3B F7   # 6183 Hz
+F0 00 20 33 01 00 71 00 2E 3E F7   # 6724 Hz
 F0 00 20 33 01 00 71 00 2E 40 F7   # 7012 Hz
 F0 00 20 33 01 00 71 00 2E 7F F7   # 24.0 kHz
 ```

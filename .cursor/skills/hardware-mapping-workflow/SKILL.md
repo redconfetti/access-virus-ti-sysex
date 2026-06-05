@@ -46,19 +46,24 @@ F0 00 20 33 01 00 <cmd> <part> <param> <value> F7
 `<part>` is **0-based** (`00` = Part 1). Booleans on `0x48`–`0x4E`: `00` off,
 `01` on.
 
-## EFFECTS focus probes
+## SELECT buttons (section focus)
 
-`6E` / `75` (group 1) or `76` (group 2). LED often lags **> 0.5 s** — `sleep 1`
-between values:
+Front-panel **SELECT** switches which sub-page the shared knobs edit. **`stored =
+index`**. Pause **≥ 1 s** between probe messages. For **EFFECTS**, documents
+**`6E`/`75`** / **`6E`/`76`** focus only — not physical knob routing.
+
+| Section      | Live edit   | Values (confirmed) |
+| ------------ | ----------- | ------------------ |
+| Oscillators  | `71`/`7F`   | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/oscillators.md#oscillators-select) |
+| Filters      | `71`/`7A`   | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/filters.md#filters-select); **disabled** when Vocoder active |
+| Effects g1   | `6E`/`75`   | `00` Delay … `04` High EQ |
+| Effects g2   | `6E`/`76`   | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/effects.md#effects-select) |
 
 ```bash
-for v in 00 01 02 03 04; do
-  sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 6E 00 75 "$v"
-  sleep 1
-done
+sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 71 00 7F 01   # Osc 2
+sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 71 00 7A 02   # Filter 1 + 2
+sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 6E 00 76 02   # Chorus
 ```
-
-Doc: [effects.md — EFFECTS focus](../../docs/live-edit/effects.md#effects-section-focus).
 
 ## Before mapping
 
