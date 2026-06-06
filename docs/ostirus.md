@@ -15,11 +15,11 @@ repository’s TI mk2 hardware work uses **`DUMP_SINGLE` 524-byte** SysEx
 
 ## Who this documentation is for
 
-| User                                                   | MIDI path                                                                                        |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| **Virus TI mk2 desktop** (primary capture source here) | `Virus TI USB Plugin I/O` or hardware USB — [testing.md](testing.md)                             |
-| **Access Virus TI plugin** (legacy TI integration)     | `Virus TI USB Plugin I/O`                                                                        |
-| **OsTIrus in a DAW** (no hardware required)            | Host MIDI → plugin instance on a **MIDI channel**; optional virtual port for `sendmidi` / agents |
+| User | MIDI path |
+| --- | --- |
+| **Virus TI mk2 desktop** (primary capture source here) | `Virus TI USB Plugin I/O` or hardware USB — [testing.md](testing.md) |
+| **Access Virus TI plugin** (legacy TI integration) | `Virus TI USB Plugin I/O` |
+| **OsTIrus in a DAW** (no hardware required) | Host MIDI → plugin instance on a **MIDI channel**; optional virtual port for `sendmidi` / agents |
 
 If you only run OsTIrus, you can still use the same **Access SysEx** vocabulary
 documented in this repo (`00 20 33 01 00` …): **live edit** (`70`, `71`, `6E`,
@@ -37,12 +37,12 @@ Typical DAW setup:
 1. Insert **OsTIrus** on a track.
 2. Set the track **MIDI input** to a keyboard bus or to a **virtual MIDI port**.
 3. Send **note/CC** traffic on that channel for music; send **SysEx** on the
-   same path (many hosts put SysEx on the same MIDI port as notes).
+ same path (many hosts put SysEx on the same MIDI port as notes).
 
 For agent / script testing (as with hardware):
 
 ```bash
-sendmidi list    # find the port your host exposes (name varies)
+sendmidi list # find the port your host exposes (name varies)
 sendmidi dev "<your-port>" hex syx 00 20 33 01 00 70 00 28 40
 ```
 
@@ -55,12 +55,12 @@ DAW’s own virtual port are common.
 
 ## Relationship to this repository
 
-| Topic                | Notes                                                                                                                                                                                                    |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Protocol**         | Captures on **Virus TI mk2** target TI2-family SysEx; OsTIrus is intended to run **TI/TI2/Snow ROM** — treat mappings here as the working hypothesis until confirmed on your ROM + host.                 |
-| **Verification**     | Prefer a MIDI monitor on the OsTIrus track while stepping one control; compare to [single-live-edit.md](docs/live-edit/edit-single.md) / [edit-multi.md](live-edit/edit-multi.md).                 |
+| Topic | Notes |
+| --- | --- |
+| **Protocol** | Captures on **Virus TI mk2** target TI2-family SysEx; OsTIrus is intended to run **TI/TI2/Snow ROM** — treat mappings here as the working hypothesis until confirmed on your ROM + host. |
+| **Verification** | Prefer a MIDI monitor on the OsTIrus track while stepping one control; compare to [single-live-edit.md](docs/live-edit/edit-single.md) / [edit-multi.md](live-edit/edit-multi.md). |
 | **Dumps & analysis** | Request/export singles and multis from OsTIrus (when the UI/ROM supports it), parse with the same dump docs — useful for **preset-pack analysis** and constrained randomization without owning hardware. |
-| **Composition**      | Combine **MIDI sequences** (channel 1–16 per part) with **SysEx live edits** between notes — same pattern as hardware demos; only the port and host differ.                                              |
+| **Composition** | Combine **MIDI sequences** (channel 1–16 per part) with **SysEx live edits** between notes — same pattern as hardware demos; only the port and host differ. |
 
 **OsTIrus-specific** dump/export differences are not fully inventoried here
 yet; file an issue or capture if bytes diverge from

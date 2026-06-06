@@ -25,29 +25,29 @@ Enumerated options: [parameter-options.md](../parameter-options.md).
 
 ## Summary
 
-| Param ID | Memory / Target              | Parameter        | Description                                  |
-| -------- | ---------------------------- | ---------------- | -------------------------------------------- |
-| `0x0F`   | Global (`0x17` in dump)      | Master Clock     | Global Multi tempo                           |
-| `0x23`   | `0x59 + part`                | Low Key          | Part low key limit                           |
-| `0x24`   | `0x69 + part`                | High Key         | Part high key limit                          |
-| `0x25`   | `0x79 + part`                | Transpose        | Part transposition                           |
-| `0x26`   | `0x89 + part`                | Detune           | Part detune                                  |
-| `0x1A`   | **Not in dump**              | Bend Up          | Pitch bend up limit (`cmd=0x71`)             |
-| `0x1B`   | **Not in dump**              | Bend Down        | Pitch bend down limit (`cmd=0x71`)           |
-| `0x27`   | `0x99 + (part−1)`            | Volume           | Part level (Part 16 at `0xA8`)               |
-| `0x20`   | `0x29 + (part−1)`            | Bank             | Single bank index (P1 at `0x29`)             |
-| `0x21`   | `0x39 + (part−1)`            | Program          | Single program 0–127 (P1 at `0x39`)          |
-| `0x22`   | `0x49 + (part−1)`            | MIDI Channel     | Part MIDI channel 1–16 (P1 at `0x49`)        |
-| `0x28`   | `0xA9 + (part−1)`            | Init Volume      | MIDI volume on multi select (Part 16 `0xB8`) |
-| `0x29`   | `0xC8 + part`                | Output Routing   | Part output bus and channel                  |
-| `0x2D`   | **Not in dump** (`cmd=0x73`) | Secondary Output | Second output bus (`cmd=0x73`)               |
-| `0x2B`   | `0xD8 + part`                | Panorama         | Part pan position                            |
-| `0x40`   | **Not in dump** (desktop)    | Keyboard-related | Keyboard global behavior control             |
-| `0x48`   | `0xF8 + part` (packed flags) | Enable           | Part on/off                                  |
-| `0x49`   | `0xF8 + part` (packed flags) | Volume RX        | Receive MIDI CC#7                            |
-| `0x4A`   | `0xF8 + part` (packed flags) | Hold Pedal       | Sustain pedal behavior                       |
-| `0x4D`   | `0xF8 + part` (packed flags) | Priority         | Note-steal priority                          |
-| `0x4E`   | `0xF8 + part` (packed flags) | Program Change   | Program Change response                      |
+| Param ID | Memory / Target | Parameter | Description |
+| --- | --- | --- | --- |
+| `0x0F` | Global (`0x17` in dump) | Master Clock | Global Multi tempo |
+| `0x23` | `0x59 + part` | Low Key | Part low key limit |
+| `0x24` | `0x69 + part` | High Key | Part high key limit |
+| `0x25` | `0x79 + part` | Transpose | Part transposition |
+| `0x26` | `0x89 + part` | Detune | Part detune |
+| `0x1A` | **Not in dump** | Bend Up | Pitch bend up limit (`cmd=0x71`) |
+| `0x1B` | **Not in dump** | Bend Down | Pitch bend down limit (`cmd=0x71`) |
+| `0x27` | `0x99 + (part−1)` | Volume | Part level (Part 16 at `0xA8`) |
+| `0x20` | `0x29 + (part−1)` | Bank | Single bank index (P1 at `0x29`) |
+| `0x21` | `0x39 + (part−1)` | Program | Single program 0–127 (P1 at `0x39`) |
+| `0x22` | `0x49 + (part−1)` | MIDI Channel | Part MIDI channel 1–16 (P1 at `0x49`) |
+| `0x28` | `0xA9 + (part−1)` | Init Volume | MIDI volume on multi select (Part 16 `0xB8`) |
+| `0x29` | `0xC8 + part` | Output Routing | Part output bus and channel |
+| `0x2D` | **Not in dump** (`cmd=0x73`) | Secondary Output | Second output bus (`cmd=0x73`) |
+| `0x2B` | `0xD8 + part` | Panorama | Part pan position |
+| `0x40` | **Not in dump** (desktop) | Keyboard-related | Keyboard global behavior control |
+| `0x48` | `0xF8 + part` (packed flags) | Enable | Part on/off |
+| `0x49` | `0xF8 + part` (packed flags) | Volume RX | Receive MIDI CC#7 |
+| `0x4A` | `0xF8 + part` (packed flags) | Hold Pedal | Sustain pedal behavior |
+| `0x4D` | `0xF8 + part` (packed flags) | Priority | Note-steal priority |
+| `0x4E` | `0xF8 + part` (packed flags) | Program Change | Program Change response |
 
 **Not in this table:** **Direct Monitoring** (VC-only; dump byte
 unmapped — [arrangements.md](../dumps/arrangements.md#direct-monitoring)).
@@ -94,53 +94,53 @@ encoding)**.
 - Per-part **pitch bend up** limit (Edit Single → Common).
 - Sent via **`cmd=0x71`**, not `0x72`:
 
-  ```text
-  F0 00 20 33 01 00 71 <part> <param> <value> F7
-  ```
+ ```text
+ F0 00 20 33 01 00 71 <part> <param> <value> F7
+ ```
 
 - Dump correlation: **not in `DUMP_MULTI`** (edit buffer; hardware-tested:
-  `71 00 1A` at `00` / `7F` — identical dump vs INIT baseline).
+ `71 00 1A` at `00` / `7F` — identical dump vs INIT baseline).
 - Encoding: **`stored = ui + 64`** (center `0x40` = 0); UI **−64..+63** →
-  `0x00..0x7F`.
+ `0x00..0x7F`.
 
-| UI  | `<value>` (Part 1) |
-| --- | ------------------ |
-| −64 | `00`               |
-| −2  | `3E`               |
-| 0   | `40`               |
-| +2  | `42`               |
-| +63 | `7F`               |
+| UI | `<value>` (Part 1) |
+| --- | --- |
+| −64 | `00` |
+| −2 | `3E` |
+| 0 | `40` |
+| +2 | `42` |
+| +63 | `7F` |
 
 ```text
-F0 00 20 33 01 00 71 00 1A 00 F7   # −64
-F0 00 20 33 01 00 71 00 1A 3E F7   # −2
-F0 00 20 33 01 00 71 00 1A 40 F7   # 0
-F0 00 20 33 01 00 71 00 1A 42 F7   # +2
-F0 00 20 33 01 00 71 00 1A 7F F7   # +63
+F0 00 20 33 01 00 71 00 1A 00 F7 # −64
+F0 00 20 33 01 00 71 00 1A 3E F7 # −2
+F0 00 20 33 01 00 71 00 1A 40 F7 # 0
+F0 00 20 33 01 00 71 00 1A 42 F7 # +2
+F0 00 20 33 01 00 71 00 1A 7F F7 # +63
 ```
 
 ### Bend Down (`0x1B`, `cmd=0x71`)
 
 - Per-part **pitch bend down** limit (Edit Single → Common).
 - Same transport and encoding as [Bend Up](#bend-up-0x1a-cmd0x71) (`cmd=0x71`,
-  **`stored = ui + 64`**, UI **−64..+63**).
+ **`stored = ui + 64`**, UI **−64..+63**).
 - Dump correlation: **not in `DUMP_MULTI`** (hardware-tested: `71 00 1B` at
-  `00` / `7F` — no dump change).
+ `00` / `7F` — no dump change).
 
-| UI  | `<value>` (Part 1) |
-| --- | ------------------ |
-| −64 | `00`               |
-| −2  | `3E`               |
-| 0   | `40`               |
-| +2  | `42`               |
-| +63 | `7F`               |
+| UI | `<value>` (Part 1) |
+| --- | --- |
+| −64 | `00` |
+| −2 | `3E` |
+| 0 | `40` |
+| +2 | `42` |
+| +63 | `7F` |
 
 ```text
-F0 00 20 33 01 00 71 00 1B 00 F7   # −64
-F0 00 20 33 01 00 71 00 1B 3E F7   # −2
-F0 00 20 33 01 00 71 00 1B 40 F7   # 0
-F0 00 20 33 01 00 71 00 1B 42 F7   # +2
-F0 00 20 33 01 00 71 00 1B 7F F7   # +63
+F0 00 20 33 01 00 71 00 1B 00 F7 # −64
+F0 00 20 33 01 00 71 00 1B 3E F7 # −2
+F0 00 20 33 01 00 71 00 1B 40 F7 # 0
+F0 00 20 33 01 00 71 00 1B 42 F7 # +2
+F0 00 20 33 01 00 71 00 1B 7F F7 # +63
 ```
 
 ### Volume (`0x27`)
@@ -156,30 +156,42 @@ encoding)**.
 - Dump correlation: `0xA9 + (part−1)` — Parts **1–16** at `0xA9..0xB8`.
 - Supported values: see **Value Reference → Init Volume (direct 7-bit)**.
 
-### Bank (`0x20`)
+### Bank (`0x20`) {#bank-0x20}
 
 - Per-part Single **bank** for the part.
+- Message: **`72 <part> 20 <bank_index>`** — **`<part>`** = Multi part
+ **`0x00`–`0x0F`** (Part 1 = **`0x00`**), not Single-mode scope **`0x40`**.
 - Dump correlation: **`0x29 + (part−1)`** — see
-  [Part bank index](../dumps/arrangements.md#part-bank-index) in
-  `arrangements.md`.
+ [Part bank index](../dumps/arrangements.md#part-bank-index) in
+ `arrangements.md`.
 - Live value = dump bank index (`0x00` = RAM A, `0x01` = RAM B, `0x04` =
-  ROM A, etc.).
+ ROM A, etc.).
 - Virus Part 1: live `72 00 20 01` → LCD **RAM-B** (confirmed).
 
-### Program (`0x21`)
+### Program (`0x21`) {#program-0x21}
 
 - Per-part Single **program** number.
+- Message: **`72 <part> 21 <program>`** — same **`<part>`** rule as Bank.
 - Dump correlation: **`0x39 + (part−1)`** — stored byte = UI program
-  number on LCD (`0x00` = 0, `0x40` = 64, `0x41` = 65).
+ number on LCD (`0x00` = 0, `0x40` = 64, `0x41` = 65).
 - Virus Part 1: `21 41` → program **65**; `21 00` → program **0** (dump
-  confirmed).
+ confirmed).
+
+**Load from RAM/ROM (Multi mode, Part 1)** — same layout as AURA before a
+**`DUMP_SINGLE`** upload; hardware load-from-bank via **`0x72` alone** is
+**not confirmed** on TI mk2:
+
+```text
+F0 00 20 33 01 00 72 00 20 00 F7  # Part 1 → RAM A
+F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
+```
 
 ### MIDI Channel (`0x22`)
 
 - Per-part MIDI channel assignment.
 - Dump correlation: `0x49 + (part−1)` — Part 1 at **`0x49`**.
 - Live value is **zero-based** channel index: `0x00` = channel 1 …
-  `0x0F` = channel 16 (Part 1: all 16 steps confirmed on Virus LCD).
+ `0x0F` = channel 16 (Part 1: all 16 steps confirmed on Virus LCD).
 - Supported values: see [MIDI Channel (zero-based)](#midi-channel-zero-based).
 
 ### Output Routing (`0x29`)
@@ -192,20 +204,20 @@ encoding)**.
 ### Secondary Output (`0x2D`)
 
 - Per-part **secondary** output routing (Edit Multi). On TI mk2 the same
-  setting appears as **Edit Single → Surround → Output** (rear/surround bus);
-  see [Surround (Edit Single)](edit-single.md#surround-edit-single).
+ setting appears as **Edit Single → Surround → Output** (rear/surround bus);
+ see [Surround (Edit Single)](edit-single.md#surround-edit-single).
 - Sent via **`cmd=0x73`**, not `0x72`:
 
-  ```text
-  F0 00 20 33 01 00 73 00 2D <value> F7
-  ```
+ ```text
+ F0 00 20 33 01 00 73 00 2D <value> F7
+ ```
 
-  Part 1 captures confirmed; whether other parts use a part selector byte
-  with the same param is **not confirmed**.
+ Part 1 captures confirmed; whether other parts use a part selector byte
+ with the same param is **not confirmed**.
 - Dump correlation: **not in `DUMP_MULTI`** (hardware-tested: `73 00 2D`
-  Off/`01`, and `72 00 2D 01` — no dump change vs INIT baseline).
+ Off/`01`, and `72 00 2D 01` — no dump change vs INIT baseline).
 - Supported values: see
-  [Secondary Output Enum (`0x2D`)](#secondary-output-enum-0x2d).
+ [Secondary Output Enum (`0x2D`)](#secondary-output-enum-0x2d).
 
 ### Panorama (`0x2B`)
 
@@ -218,13 +230,13 @@ encoding)**.
 - Observed as global control (`part=00`).
 - Keyboard local / global keyboard behavior (label TBD on panel).
 - On TI desktop module, **`72 00 40` on/off does not change `DUMP_MULTI`**
-  (hardware-tested).
+ (hardware-tested).
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
 ### Enable (`0x48`)
 
 - Per-part packed-flag control (dump bit **`0x01`**: `0x44` off / `0x45` on
-  at INIT).
+ at INIT).
 - Dump correlation: `0xF8 + part`.
 - Host **Mute** / **Solo** UIs may toggle this flag.
 - Supported values: see [Boolean On/Off](#boolean-onoff).
@@ -269,86 +281,86 @@ variants, so `0x40` remains keyboard-related with target TBD.
 - `F0 00 20 33 01 00 72 01 25 7F F7` — Part 2 transpose maximum
 - `F0 00 20 33 01 00 72 0F 24 7F F7` — Part 16 High Key G9
 - `F0 00 20 33 01 00 72 00 24 00 F7` / `... 0F 24 00 F7` — Part 1 / Part 16
-  High Key C1
+ High Key C1
 - `F0 00 20 33 01 00 72 00 49 00 F7` / `... 49 01 F7` — Part 1 Volume RX
-  off / on
+ off / on
 - `F0 00 20 33 01 00 72 00 20 01 F7` / `... 21 41 F7` — Part 1 Bank RAM B /
-  Program 65
+ Program 65
 - `F0 00 20 33 01 00 72 00 22 01 F7` / `... 22 0F F7` — Part 1 MIDI
-  channel 2 / 16 (`0x01` / `0x0F` at dump `0x49`)
+ channel 2 / 16 (`0x01` / `0x0F` at dump `0x49`)
 - `F0 00 20 33 01 00 72 00 4A 00 F7` / `... 4A 01 F7` — Part 1 Hold Pedal
-  off / on
+ off / on
 - `F0 00 20 33 01 00 72 0F 4A 00 F7` / `... 4A 01 F7` — Part 16 Hold Pedal
-  off / on
+ off / on
 - `F0 00 20 33 01 00 72 0F 49 00 F7` / `... 49 01 F7` — Part 16 Volume RX
-  off / on
+ off / on
 - `F0 00 20 33 01 00 72 0F 4E 00 F7` / `... 4E 01 F7` — Part 16 Program
-  Change off / on
+ Change off / on
 - `F0 00 20 33 01 00 72 0F 4D 01 F7` — Part 16 Priority High
 - `F0 00 20 33 01 00 72 00 0F 3D F7` — Master Clock 124 bpm (`0x3D` = 124 −
-  63)
+ 63)
 - `F0 00 20 33 01 00 72 00 48 00 F7` / `... 48 01 F7` — Part 1 Enable
-  off / on
+ off / on
 - `F0 00 20 33 01 00 72 07 48 00 F7` — Part 8 Enable off (dump `0x100`
-  `0x45`→`0x44`)
+ `0x45`→`0x44`)
 - `F0 00 20 33 01 00 72 0F 48 00 F7` / `... 48 01 F7` — Part 16 Enable
-  off / on
+ off / on
 - `F0 00 20 33 01 00 72 00 40 00 F7` / `... 40 01 F7` — keyboard-related
-  global toggle
+ global toggle
 
 ## Value Reference
 
 ### Boolean On/Off
 
 | Value | Meaning |
-| ----- | ------- |
-| `00`  | Off     |
-| `01`  | On      |
+| --- | --- |
+| `00` | Off |
+| `01` | On |
 
 Used by: `0x40`, `0x48`, `0x49`, `0x4A`, `0x4E`.
 
 ### Bipolar `-63..+64` (live encoding)
 
-| Value range | Meaning    |
-| ----------- | ---------- |
-| `00`..`7F`  | `-63..+64` |
-| `00`        | `-63`      |
-| `40`        | `+1`       |
-| `7F`        | `+64`      |
+| Value range | Meaning |
+| --- | --- |
+| `00`..`7F` | `-63..+64` |
+| `00` | `-63` |
+| `40` | `+1` |
+| `7F` | `+64` |
 
 Used by: `0x25` (live transpose), `0x27` (volume).
 
 ### Init Volume (direct 7-bit)
 
-| Value range | Meaning       |
-| ----------- | ------------- |
-| `00`        | Off           |
-| `01`..`7F`  | UI `1`..`127` |
+| Value range | Meaning |
+| --- | --- |
+| `00` | Off |
+| `01`..`7F` | UI `1`..`127` |
 
 Used by: `0x28`.
 
 ### MIDI Channel (zero-based)
 
 | Value | MIDI channel |
-| ----- | ------------ |
-| `00`  | 1            |
-| `01`  | 2            |
-| `0F`  | 16           |
+| --- | --- |
+| `00` | 1 |
+| `01` | 2 |
+| `0F` | 16 |
 
 Stored the same way in `DUMP_MULTI` at `0x49 + (part−1)`. Used by: `0x22`.
 
 ### Key Range (direct 7-bit)
 
-| Value range | Meaning            |
-| ----------- | ------------------ |
-| `00`..`7F`  | C1..G9 note domain |
+| Value range | Meaning |
+| --- | --- |
+| `00`..`7F` | C1..G9 note domain |
 
 Used by: `0x23` (Low Key), `0x24` (High Key).
 
 ### Output Routing Enum (`0x29`)
 
-| Value     | Routing          |
-| --------- | ---------------- |
+| Value | Routing |
+| --- | --- |
 | `00`–`02` | Out 1: L, L+R, R |
 | `03`–`05` | Out 2: L, L+R, R |
 | `06`–`08` | Out 3: L, L+R, R |
@@ -369,11 +381,11 @@ routing](../parameter-options.md#secondary-output-routing).
 Part 1 captures (`cmd=0x73`):
 
 ```text
-F0 00 20 33 01 00 73 00 2D 00 F7   # Off
-F0 00 20 33 01 00 73 00 2D 01 F7   # Out 1 L
-F0 00 20 33 01 00 73 00 2D 02 F7   # Out 1 L+R
-F0 00 20 33 01 00 73 00 2D 0A F7   # USB 1 L
-F0 00 20 33 01 00 73 00 2D 11 F7   # USB 3 L+R
+F0 00 20 33 01 00 73 00 2D 00 F7 # Off
+F0 00 20 33 01 00 73 00 2D 01 F7 # Out 1 L
+F0 00 20 33 01 00 73 00 2D 02 F7 # Out 1 L+R
+F0 00 20 33 01 00 73 00 2D 0A F7 # USB 1 L
+F0 00 20 33 01 00 73 00 2D 11 F7 # USB 3 L+R
 ```
 
 Used by: `0x2D` with **`cmd=0x73`**.
@@ -381,25 +393,25 @@ Used by: `0x2D` with **`cmd=0x73`**.
 ### Priority Enum
 
 | Value | Meaning |
-| ----- | ------- |
-| `00`  | Low     |
-| `01`  | High    |
+| --- | --- |
+| `00` | Low |
+| `01` | High |
 
 Used by: `0x4D`.
 
 ### Panorama (special direct)
 
 | Value | Meaning |
-| ----- | ------- |
-| `00`  | Off     |
-| `40`  | Center  |
+| --- | --- |
+| `00` | Off |
+| `40` | Center |
 
 Used by: `0x2B`.
 
 ### Tempo (`bpm - 63`)
 
 | BPM range | Stored value |
-| --------- | ------------ |
-| 63..190   | `00`..`7F`   |
+| --- | --- |
+| 63..190 | `00`..`7F` |
 
 Used by: `0x0F`.

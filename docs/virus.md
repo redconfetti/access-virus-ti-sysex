@@ -9,8 +9,8 @@ Note: Currently applies only to Access Virus TI mk2 desktop (not keyboard/Polar)
 The TI mk2 provides **four RAM banks** (A–D). Each bank holds **128 Single
 programs**.
 
-| Bank  | Role     |
-| ----- | -------- |
+| Bank | Role |
+| --- | --- |
 | RAM A | User RAM |
 | RAM B | User RAM |
 | RAM C | User RAM |
@@ -27,14 +27,14 @@ pointing at a Single. The encoding is documented in
 
 The Virus can export or stream several kinds of MIDI SysEx data:
 
-| #   | Name                | Description                                                          | Project interest                           |
-| --- | ------------------- | -------------------------------------------------------------------- | ------------------------------------------ |
-| 1   | **Single Buffer**   | One Single in the temporary edit buffer                              | Secondary — relates to arrangement exports |
-| 2   | **Single Bank**     | All 128 programs in a RAM bank (A–D)                                 | Secondary                                  |
-| 3   | **Controller Dump** | One Single as a sequence of parameter changes (CC or SysEx)          | Secondary                                  |
-| 4   | **Arrangement**     | Current Multi (or sequencer) buffer: **multi settings + 16 Singles** | Important — full performance snapshot      |
-| 5   | **Multi Bank**      | All programs in the Multi bank (128 slots)                           | Important                                  |
-| 6   | **Remote Patches**  | Remote control templates                                             | Out of scope                               |
+| # | Name | Description | Project interest |
+| --- | --- | --- | --- |
+| 1 | **Single Buffer** | One Single in the temporary edit buffer | Secondary — relates to arrangement exports |
+| 2 | **Single Bank** | All 128 programs in a RAM bank (A–D) | **`0x32`** request, banks **`01`–`04`** — [bank.md](dumps/bank.md#single-bank-request-0x32) |
+| 3 | **Controller Dump** | One Single as a stream of live-edit SysEx (not `DUMP_SINGLE`) | **`0x37`** — [controller-dump.md](dumps/controller-dump.md) |
+| 4 | **Arrangement** | Current Multi (or sequencer) buffer: **multi settings + 16 Singles** | Important — full performance snapshot |
+| 5 | **Multi Bank** | All programs in the Multi bank (128 slots) | Important |
+| 6 | **Remote Patches** | Remote control templates | Out of scope |
 
 **Multi bank export:** one **`DUMP_MULTI`** (267 bytes) for every slot.
 **Slots 1–16** also include **sixteen `DUMP_SINGLE`** messages (524 bytes
@@ -64,10 +64,10 @@ The TI desktop exposes **Multi**, **Single**, and **Sequencer** (combined
 [global-live-edit.md — Edit mode
 0x10](live-edit/edit-config.md#edit-mode-0x10-tentative).
 
-| Panel action                 | Typical SysEx from Virus          |
-| ---------------------------- | --------------------------------- |
-| Select multi from bank       | `73 00 10 00` (often twice)       |
-| Press **SINGLE**             | `73 40 10 00`                     |
+| Panel action | Typical SysEx from Virus |
+| --- | --- |
+| Select multi from bank | `73 00 10 00` (often twice) |
+| Press **SINGLE** | `73 40 10 00` |
 | **MULTI+SINGLE** / Sequencer | Empty `F0 F7` frames (no payload) |
 
 This is separate from **parameter edits** (e.g. Filter Cutoff uses

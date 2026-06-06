@@ -1,9 +1,9 @@
 ---
 name: hardware-mapping-workflow
 description: >-
-  Maps Access Virus TI mk2 SysEx by hardware capture with sendmidi/receivemidi.
-  Use when confirming parameters, live-edit bytes, dump offsets, WAF80 queue
-  work, panel-to-host capture, or Virus TI USB MIDI testing.
+ Maps Access Virus TI mk2 SysEx by hardware capture with sendmidi/receivemidi.
+ Use when confirming parameters, live-edit bytes, dump offsets,
+ work, panel-to-host capture, or Virus TI USB MIDI testing.
 disable-model-invocation: true
 ---
 
@@ -18,7 +18,7 @@ Install and first message: [docs/setup.md](../../docs/setup.md).
 ## Prerequisites
 
 1. Virus TI powered on, USB connected, **`Virus TI USB Plugin I/O`** in port
-   lists.
+ lists.
 2. `brew install sendmidi receivemidi` (see Setup doc).
 3. Agent commands need `required_permissions: ["all"]` (MIDI + `/tmp` capture).
 
@@ -52,17 +52,17 @@ Front-panel **SELECT** switches which sub-page the shared knobs edit. **`stored 
 index`**. Pause **≥ 1 s** between probe messages. For **EFFECTS**, documents
 **`6E`/`75`** / **`6E`/`76`** focus only — not physical knob routing.
 
-| Section      | Live edit   | Values (confirmed) |
-| ------------ | ----------- | ------------------ |
-| Oscillators  | `71`/`7F`   | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/oscillators.md#oscillators-select) |
-| Filters      | `71`/`7A`   | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/filters.md#filters-select); **disabled** when Vocoder active |
-| Effects g1   | `6E`/`75`   | `00` Delay … `04` High EQ |
-| Effects g2   | `6E`/`76`   | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/effects.md#effects-select) |
+| Section | Live edit | Values (confirmed) |
+| --- | --- | --- |
+| Oscillators | `71`/`7F` | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/oscillators.md#oscillators-select) |
+| Filters | `71`/`7A` | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/filters.md#filters-select); **disabled** when Vocoder active |
+| Effects g1 | `6E`/`75` | `00` Delay … `04` High EQ |
+| Effects g2 | `6E`/`76` | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/effects.md#effects-select) |
 
 ```bash
-sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 71 00 7F 01   # Osc 2
-sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 71 00 7A 02   # Filter 1 + 2
-sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 6E 00 76 02   # Chorus
+sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 71 00 7F 01 # Osc 2
+sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 71 00 7A 02 # Filter 1 + 2
+sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 6E 00 76 02 # Chorus
 ```
 
 ## Before mapping
@@ -70,9 +70,9 @@ sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 6E 00 76 02   # Chorus
 Set global **MIDI Controller Page A/B** to **SysEx** (not Controller Data) so
 panel edits emit Access SysEx — [edit-config.md](../../docs/live-edit/edit-config.md).
 
-## Confirmation queue (WAF80 → TI)
+## Confirmation queue
 
-1. Use [waf80.md](../../docs/waf80.md) as **hypothesis**.
+1. Use worksheet rows and prior captures as **hypothesis**.
 2. Confirm on **TI mk2 desktop**; record in TI docs.
 3. Work **one LCD menu** at a time — align with [single.md](../../docs/dumps/single.md) categories.
 4. Finish a menu group before flushing markdown.
@@ -102,42 +102,42 @@ Background shell, `required_permissions: ["all"]`. After each edit: `tail -n 20
 4. **Ranged** params: capture **several LCD landings** (0 %, 50 %, 100 %, …).
 5. Session notes in chat; **flush to markdown when a menu group is done**.
 6. CC vs SysEx: some controls differ by Page A mode — check
-   [control-change.md](../../docs/control-change.md).
+ [control-change.md](../../docs/control-change.md).
 7. **Duplicate LCD / adjacent wire bytes** is normal — document every wire
-   `00`–`7F` detent; do not assume one LCD ↔ one byte.
+ `00`–`7F` detent; do not assume one LCD ↔ one byte.
 8. Ignore spurious **Noise Volume** (`70`/`25`) when using VALUE +/− near that
-   knob.
+ knob.
 
 ## Single-parameter verify (send → dump)
 
 1. Load baseline (e.g. **INIT MULTI** #32); note packed flags **`0x45`** per
-   part at `0xF9` / `0x108` in 267-byte dump.
+ part at `0xF9` / `0x108` in 267-byte dump.
 2. Send **one** `hex syx` live edit; user confirms panel.
 3. Capture `DUMP_MULTI`:
-   - Panel: `receivemidi dev "$VIRUS_DEV" dump`
-   - Request buffer: `sendmidi … 31 00 7f 7c`
-   - Bank slot: bank `01`, slot byte, no checksum — see
-     [arrangements.md](../../docs/dumps/arrangements.md)
+ - Panel: `receivemidi dev "$VIRUS_DEV" dump`
+ - Request buffer: `sendmidi … 31 00 7f 7c`
+ - Bank slot: bank `01`, slot byte, no checksum — see
+ [arrangements.md](../../docs/dumps/arrangements.md)
 4. Diff payload — **one** offset should change (+ checksum). Prefer Virus
-   panel dumps over host export when diffing.
+ panel dumps over host export when diffing.
 
 ```python
 def parse(s):
-    return [int(x, 16) for x in s.split()]
+ return [int(x, 16) for x in s.split()]
 a, b = parse(open("/tmp/baseline.txt").read()), parse(open("/tmp/after.txt").read())
 for i, (x, y) in enumerate(zip(a, b)):
-    if x != y:
-        print(f"0x{i:02X}: {x:02X} -> {y:02X}")
+ if x != y:
+ print(f"0x{i:02X}: {x:02X} -> {y:02X}")
 ```
 
 ## Smoke tests
 
-| #   | Message (summary)    | Panel check   |
-| --- | -------------------- | ------------- |
-| 1   | P1 Hold `4A` `00`    | Hold Disabled |
-| 2   | P1 Hold `4A` `01`    | Hold Enabled  |
-| 3   | P16 Enable `48` `00` | Part 16 Off   |
-| 4   | P1 Vol `27` `48`     | Part 1 Vol +8 |
+| # | Message (summary) | Panel check |
+| --- | --- | --- |
+| 1 | P1 Hold `4A` `00` | Hold Disabled |
+| 2 | P1 Hold `4A` `01` | Hold Enabled |
+| 3 | P16 Enable `48` `00` | Part 16 Off |
+| 4 | P1 Vol `27` `48` | Part 1 Vol +8 |
 
 ## Stop and ask the user when
 
@@ -149,11 +149,11 @@ for i, (x, y) in enumerate(zip(a, b)):
 
 ## Doc targets after confirm
 
-| Work            | Update                                                       |
-| --------------- | ------------------------------------------------------------ |
-| Live edit bytes | [docs/live-edit/](../../docs/live-edit/README.md)            |
-| Dump offsets    | [docs/dumps/](../../docs/dumps/README.md)                    |
-| Enum tables     | [docs/parameter-options.md](../../docs/parameter-options.md) |
+| Work | Update |
+| --- | --- |
+| Live edit bytes | [docs/live-edit/](../../docs/live-edit/README.md) |
+| Dump offsets | [docs/dumps/](../../docs/dumps/README.md) |
+| Enum tables | [docs/parameter-options.md](../../docs/parameter-options.md) |
 
 Follow [documentation-standards](../documentation-standards/SKILL.md) when
 writing markdown.
