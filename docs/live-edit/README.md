@@ -10,6 +10,7 @@ Real-time SysEx parameter changes on the Virus TI mk2 (**`0x70`**, **`0x71`**,
 | [oscillators.md](oscillators.md) | Oscillators — Osc 1–3, Noise, Ring Mod, Sub Osc                               |
 | [filters.md](filters.md)         | Filters — Common, Filter 1/2, Filter/Amp envelopes, Saturation                |
 | [effects.md](effects.md)         | Edit FX — SELECT focus (`6E`/`75`, `6E`/`76`) + Delay, Reverb, EQ, …          |
+| [arpeggiator.md](arpeggiator.md) | Arpeggiator — EDIT ARP settings, pattern editor                               |
 | [edit-multi.md](edit-multi.md)   | Edit Multi — parts, keyboard range, routing                                   |
 
 **Enums & panel tables:**

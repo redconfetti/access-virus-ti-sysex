@@ -38,7 +38,7 @@ Organize live-edit and dump inventory rows to match the synth’s menus:
 | **Effects**                                                   | [effects.md](../../docs/live-edit/effects.md)         | FX 1 / FX 2                                                        |
 | **Modulators**                                                | *TBD*                                                 | LFO (when mapped)                                                  |
 | **Matrix**                                                    | *TBD*                                                 | Modulation Matrix                                                  |
-| **Arpeggiator**                                               | *TBD*                                                 | Arpeggiator                                                        |
+| **Arpeggiator**                                               | [arpeggiator.md](../../docs/live-edit/arpeggiator.md) | Arpeggiator                                                        |
 
 Add new parameters under the correct section file — do not append unrelated
 blocks to `effects.md` or `edit-single.md`.

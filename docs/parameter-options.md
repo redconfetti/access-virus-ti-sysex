@@ -29,6 +29,14 @@ See [waf80.md](waf80.md) for classic Page A/B parameter indices.
 | [Soft Knob Names](#soft-knob-names)                                          | Soft Knob **Name** — `71`/`33`, `34`, `35` (wire `<value>` per row)                        |
 | [Control Smooth Mode / clock quantize](#control-smooth-mode--clock-quantize) | Common **Smooth Mode** (`71`/`19`); same grid as LFO/Delay **Clock** (WAF80)               |
 | [Bender Scale](#bender-scale)                                                | Common **Bender Scale** (`71`/`1C`)                                                        |
+| [Arpeggiator Mode](#arpeggiator-mode)                                        | **EDIT ARP → Mode** (`71`/`0F`); **Off** disables arp                                      |
+| [Arpeggiator panel visibility](#arpeggiator-panel-visibility)                | **Mode** Off vs on — which **EDIT ARP** rows appear                                        |
+| [Arpeggiator Pattern](#arpeggiator-pattern)                                  | **EDIT ARP → Pattern** (`71`/`02`); **User** + presets **2**–**64**                        |
+| [Arpeggiator Octaves](#arpeggiator-octaves)                                  | **EDIT ARP → Octaves** (`71`/`03`); **1**–**4**                                            |
+| [Arpeggiator Resolution](#arpeggiator-resolution)                            | **EDIT ARP → Resolution** (`71`/`11`); tempo grid **1/128**–**1/2**                        |
+| [Arpeggiator Note Length (LCD)](#arpeggiator-note-length-lcd)                | **EDIT ARP → Note Length** (`71`/`05`); **−100.0..+100.0 %**                               |
+| [Arpeggiator Swing Factor (LCD)](#arpeggiator-swing-factor-lcd)              | **EDIT ARP → Swing Factor** (`71`/`06`); **Off**, mostly **%**, **16B**–**16F** labels     |
+| [Arpeggiator Hold](#arpeggiator-hold)                                        | **EDIT ARP → Hold** (`71`/`04`); **Off** / **On**                                          |
 | [Delay Type](#delay-type)                                                    | Edit FX → Delay **Type**                                                                   |
 | [Delay panel visibility](#delay-panel-visibility)                            | **Send** Off vs on; controls per **Type**                                                  |
 | [Delay Mode](#delay-mode)                                                    | Edit FX → Delay **Mode** (Classic; **`01`–`16`**)                                          |
@@ -203,6 +211,223 @@ panel **2**–**16** → **`02`–`10`**.
 | ----- | --------- | ------------- |
 | 0     | `00`      | Linear        |
 | 1     | `01`      | Exponential   |
+
+---
+
+## Arpeggiator Mode {#arpeggiator-mode}
+
+**EDIT ARP → Mode** (`71` / `0x0F`). **`stored = index`**. WAF80 Page B **#1**
+lists modes **`00`–`06`** only; TI mk2 adds **Arp>Matrix** at **`07`**.
+
+| Index | `<value>` | Option     |
+| ----- | --------- | ---------- |
+| 0     | `00`      | Off        |
+| 1     | `01`      | Up         |
+| 2     | `02`      | Down       |
+| 3     | `03`      | Up&Down    |
+| 4     | `04`      | As Played  |
+| 5     | `05`      | Random     |
+| 6     | `06`      | Chord      |
+| 7     | `07`      | Arp>Matrix |
+
+---
+
+## Arpeggiator panel visibility {#arpeggiator-panel-visibility}
+
+**EDIT ARP** (TI mk2). **Mode** is always on the panel.
+
+### Mode = Off (`00`)
+
+**Mode** only — **Pattern**, **Octaves**, and all other **EDIT ARP** rows are
+**hidden**.
+
+### Mode = Down (`02`)
+
+**Mode** and **Hold** only — no **Pattern**, **Octaves**, **Resolution**,
+**Note Length**, or **Swing Factor**.
+
+### Full settings — **Up** (`01`), **Up&Down** (`03`), **As Played** (`04`),
+**Random** (`05`), **Chord** (`06`)
+
+**Pattern**, **Octaves**, **Resolution**, **Note Length**, **Swing Factor**, and
+**Hold** — same wire maps on all five modes (hardware TX confirmed).
+Pattern-editor rows — **TBD**.
+
+### Mode = **Arp>Matrix** (`07`)
+
+**Pattern** and **Resolution** only — no **Octaves**, **Note Length**, **Swing
+Factor**, or **Hold** (same wire maps as full settings modes for the two visible
+rows).
+
+---
+
+## Arpeggiator Pattern {#arpeggiator-pattern}
+
+**EDIT ARP → Pattern** (`71` / `0x02`). **`stored = <value>`** (wire byte).
+Hardware TX confirmed (**`00`–`3F`**). Hidden when **Mode** = **Off** or **Down**.
+Visible on full settings modes and **Arp>Matrix**.
+
+| `<value>` | LCD label | Confirmed |
+| --------- | --------- | --------- |
+| `00`      | User      | ✓         |
+| `01`      | 2         | ✓         |
+| `02`      | 3         | ✓         |
+| …         | …         |           |
+| `3F`      | 64        | ✓         |
+
+Preset patterns **2**–**64**: **`stored = pattern_number − 1`** (LCD shows the
+decimal pattern index). **User** is always **`00`**.
+
+```text
+F0 00 20 33 01 00 71 00 02 00 F7   # User
+F0 00 20 33 01 00 71 00 02 01 F7   # 2
+F0 00 20 33 01 00 71 00 02 3F F7   # 64
+```
+
+---
+
+## Arpeggiator Octaves {#arpeggiator-octaves}
+
+**EDIT ARP → Octaves** (`71` / `0x03`; WAF80 Page B **#3** *Arp Octave Range*).
+**`stored = octaves − 1`** (**`00`–`03`** → LCD **1**–**4**). Full settings
+modes only — hidden when **Mode** = **Off**, **Down**, or **Arp>Matrix**.
+
+| Octaves | `<value>` | Confirmed |
+| ------- | --------- | --------- |
+| 1       | `00`      | ✓         |
+| 2       | `01`      | ✓         |
+| 3       | `02`      | ✓         |
+| 4       | `03`      | ✓         |
+
+```text
+F0 00 20 33 01 00 71 00 03 00 F7   # 1 octave
+F0 00 20 33 01 00 71 00 03 03 F7   # 4 octaves
+```
+
+---
+
+## Arpeggiator Resolution {#arpeggiator-resolution}
+
+**EDIT ARP → Resolution** (`71` / `0x11`; WAF80 Page B **#17** *Arp Clock*).
+**`stored = <value>`** (wire byte). **No Off** row — slowest option is
+**1/128** (`01`). Same division **names** as [Delay Clock](#delay-clock) /
+[LFO Clock](#control-smooth-mode--clock-quantize) but a **different** wire map
+(finer grid through **1/128** / **3/128**; stops at **1/2**, no **2/3** /
+**3/4**). Hidden when **Mode** = **Off** or **Down**. Also on **Arp>Matrix**
+(with **Pattern** only).
+
+Panel menu order (slow → fast):
+
+| `<value>` | Option | Confirmed |
+| --------- | ------ | --------- |
+| `01`      | 1/128  | ✓         |
+| `02`      | 1/64   | ✓         |
+| `0B`      | 1/48   | ✓         |
+| `07`      | 3/128  | ✓         |
+| `03`      | 1/32   | ✓         |
+| `0C`      | 1/24   | ✓         |
+| `08`      | 3/64   | ✓         |
+| `04`      | 1/16   | ✓         |
+| `0D`      | 1/12   | ✓         |
+| `09`      | 3/32   | ✓         |
+| `05`      | 1/8    | ✓         |
+| `0E`      | 1/6    | ✓         |
+| `0A`      | 3/16   | ✓         |
+| `06`      | 1/4    | ✓         |
+| `0F`      | 1/3    | ✓         |
+| `10`      | 3/8    | ✓         |
+| `11`      | 1/2    | ✓         |
+
+```text
+F0 00 20 33 01 00 71 00 11 01 F7   # 1/128
+F0 00 20 33 01 00 71 00 11 11 F7   # 1/2
+```
+
+---
+
+## Arpeggiator Note Length (LCD) {#arpeggiator-note-length-lcd}
+
+**EDIT ARP → Note Length** (`71` / `0x05`). Bipolar **`stored = ui + 64`**
+(**`00`–`7F`**). LCD **−100.0..+100.0 %** with **+0.0 %** at **`40`**. Full
+settings modes only — hidden when **Mode** = **Off**, **Down**, or **Arp>Matrix**.
+
+| UI         | `<value>` | Confirmed |
+| ---------- | --------- | --------- |
+| −100.0 %   | `00`      | ✓         |
+| +0.0 %     | `40`      | ✓         |
+| +100.0 %   | `7F`      | ✓         |
+
+```text
+F0 00 20 33 01 00 71 00 05 00 F7   # −100.0 %
+F0 00 20 33 01 00 71 00 05 40 F7   # +0.0 %
+F0 00 20 33 01 00 71 00 05 7F F7   # +100.0 %
+```
+
+---
+
+## Arpeggiator Swing Factor (LCD) {#arpeggiator-swing-factor-lcd}
+
+**EDIT ARP → Swing Factor** (`71` / `0x06`). **`00`** = **Off**. **`01`–`7F`**
+= swing amount. Most detents show **XX.X %** on the LCD (**50.2 %** at **`01`**
+through **75.0 %** at **`7F`**). Five wire values instead show **16-note swing
+shorthand** (**16B** … **16F**) — not a percentage readout.
+Full settings modes only — hidden when **Mode** = **Off**, **Down**, or
+**Arp>Matrix**.
+
+Intermediate detents step the wire byte **+1**; LCD **%** is **not** linear in
+**`stored`**.
+
+### Percent anchors
+
+| `<value>` | LCD     | Confirmed |
+| --------- | ------- | --------- |
+| `01`      | 50.2 %  | ✓         |
+| `41`      | 62.8 %  | ✓         |
+| `43`      | 63.2 %  | ✓         |
+| `7E`      | 74.8 %  | ✓         |
+| `7F`      | 75.0 %  | ✓         |
+
+### 16-note swing shorthand (not **%**)
+
+| `<value>` | LCD  | Confirmed |
+| --------- | ---- | --------- |
+| `15`      | 16B  | ✓         |
+| `29`      | 16C  | ✓         |
+| `42`      | 16D  | ✓         |
+| `57`      | 16E  | ✓         |
+| `6B`      | 16F  | ✓         |
+
+```text
+F0 00 20 33 01 00 71 00 06 00 F7   # Off
+F0 00 20 33 01 00 71 00 06 01 F7   # 50.2 %
+F0 00 20 33 01 00 71 00 06 15 F7   # 16B
+F0 00 20 33 01 00 71 00 06 29 F7   # 16C
+F0 00 20 33 01 00 71 00 06 42 F7   # 16D
+F0 00 20 33 01 00 71 00 06 57 F7   # 16E
+F0 00 20 33 01 00 71 00 06 6B F7   # 16F
+F0 00 20 33 01 00 71 00 06 7E F7   # 74.8 %
+F0 00 20 33 01 00 71 00 06 7F F7   # 75.0 %
+```
+
+---
+
+## Arpeggiator Hold {#arpeggiator-hold}
+
+**EDIT ARP → Hold** (`71` / `0x04`; WAF80 Page B **#4** *Arp Hold Enable*;
+worksheet **Hold Mode**). **`00`** = **Off**, **`01`** = **On**. Hidden when
+**Mode** = **Off** or **Arp>Matrix**. On **Down**, **Hold** is the only setting
+besides **Mode**; on full settings modes, **Hold** is the last row of the
+settings block.
+
+| `<value>` | Option | Confirmed |
+| --------- | ------ | --------- |
+| `00`      | Off    | ✓         |
+| `01`      | On     | ✓         |
+
+```text
+F0 00 20 33 01 00 71 00 04 00 F7   # Off
+F0 00 20 33 01 00 71 00 04 01 F7   # On
+```
 
 ---
 
@@ -2971,10 +3196,9 @@ index`**
 (`00`–`14`). The **Quantise …** rows (`04`–`14`, hardware-confirmed) use the
 same **clock division
 labels** Access documents for **LFO 1/2/3 / Delay Clock** (WAF80 Page B: *Off,
-1/64 …*) and the same naming as **Arpeggiator Clock / Resolution** on the panel
-— those parameters are **not yet wire-mapped** in this repo, so they do **not**
-share a second table here; expect the **quantize names and order** to match when
-captured.
+1/64 …*) and the same naming as **Arpeggiator Resolution** on the panel
+([Arpeggiator Resolution](#arpeggiator-resolution) uses a **different** wire map
+on **`71`/`11`**).
 
 | Index | `<value>` | Option        |
 | ----- | --------- | ------------- |

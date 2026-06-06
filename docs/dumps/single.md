@@ -343,17 +343,20 @@ Multi edit parameters are in
 | Mod Matrix Slot 1-6 Destination 3 | Slot 1-6    |             |           |
 | Mod Matrix Slot 1-6 Amount 3      | Slot 1-6    |             |           |
 
-### Arpeggiator
+### Arpeggiator {#arpeggiator}
+
+Live-edit bytes: [arpeggiator.md](../live-edit/arpeggiator.md). **Dump offsets**:
+**TBD**.
 
 | Control                              | SubCategory    | Dump offset | Live edit |
 | ------------------------------------ | -------------- | ----------- | --------- |
-| Arpeggiator Mode                     | Settings       |             |           |
-| Arpeggiator Pattern                  | Settings       |             |           |
-| Argpeggiator Range In Octaves        | Settings       |             |           |
-| Arpeggiator Clock / Resolution       | Settings       |             |           |
-| Arpeggiator Note Length              | Settings       |             |           |
-| Arpeggiator Swing Factor             | Settings       |             |           |
-| Arpeggiator Hold Mode                | Settings       |             |           |
+| Arpeggiator Mode                     | Settings       |             | [`71`/`0F`](../live-edit/arpeggiator.md#arpeggiator-mode-cmd0x71-param-0x0f) — [enum](../parameter-options.md#arpeggiator-mode) |
+| Arpeggiator Pattern                  | Settings       |             | [`71`/`02`](../live-edit/arpeggiator.md#arpeggiator-pattern-cmd0x71-param-0x02) — [enum](../parameter-options.md#arpeggiator-pattern); hidden when **Mode** Off |
+| Arpeggiator Range In Octaves         | Settings       |             | [`71`/`03`](../live-edit/arpeggiator.md#arpeggiator-octaves-cmd0x71-param-0x03) — [enum](../parameter-options.md#arpeggiator-octaves); hidden when **Mode** Off |
+| Arpeggiator Clock / Resolution       | Settings       |             | [`71`/`11`](../live-edit/arpeggiator.md#arpeggiator-resolution-cmd0x71-param-0x11) — [enum](../parameter-options.md#arpeggiator-resolution) |
+| Arpeggiator Note Length              | Settings       |             | [`71`/`05`](../live-edit/arpeggiator.md#arpeggiator-note-length-cmd0x71-param-0x05) — [LCD](../parameter-options.md#arpeggiator-note-length-lcd) |
+| Arpeggiator Swing Factor             | Settings       |             | [`71`/`06`](../live-edit/arpeggiator.md#arpeggiator-swing-factor-cmd0x71-param-0x06) — [LCD](../parameter-options.md#arpeggiator-swing-factor-lcd) |
+| Arpeggiator Hold Mode                | Settings       |             | [`71`/`04`](../live-edit/arpeggiator.md#arpeggiator-hold-cmd0x71-param-0x04) — [enum](../parameter-options.md#arpeggiator-hold); panel **Hold**; hidden when **Mode** Off |
 | Arpeggiator User Pattern Step        | Pattern Editor |             |           |
 | Arpeggiator Offset Direction Buttons | Pattern Editor |             |           |
 | Arpeggiator Step Random Button       | Pattern Editor |             |           |
