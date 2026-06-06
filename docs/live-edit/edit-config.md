@@ -1,8 +1,7 @@
 # Edit Config
 
 Global and CONFIG-menu SysEx (**`cmd=0x73`**, MIDI setup, system toggles). Part
-of [Live Edit](README.md). Host capture notes:
-[aura-notes.md](../aura-notes.md).
+of [Live Edit](README.md).
 
 ```text
 F0 00 20 33 01 <device_id> 73 00 <param> <value> F7
@@ -310,8 +309,7 @@ F0 00 20 33 01 00 73 00 57 01 F7
 
 CONFIG **MIDI Device ID** (**1–16**, or **Omni**). Not yet confirmed from
 **Virus front panel** edits (the SysEx **`<device_id>`** byte must match
-the unit’s configured ID). First captures were from a host plugin — see
-[aura-notes.md](../aura-notes.md).
+the unit’s configured ID).
 
 | UI ID | `<device_id>` | `<value>` | Full message                                    |
 | ----- | ------------- | --------- | ----------------------------------------------- |

@@ -110,8 +110,8 @@ another setting. Example: decode **`70`/`6A`** and **`70`/`6B`** using
 Type](../parameter-options.md#delay-type).
 
 **Prefer confirmed tables over inference.** Rows marked **TBD** or “dump only”
-were not verified on TI mk2 hardware; do not assume WAF80 or AURA names match
-panel text.
+were not verified on TI mk2 hardware; do not assume WAF80 or worksheet names
+match panel text.
 
 ## Requests vs dumps vs live edits
 
@@ -141,7 +141,6 @@ Volume = CC 91). See [control-change.md](control-change.md).
 | Live edit (by panel menu)                    | [live-edit/README.md](live-edit/README.md)                                             |
 | Dumps (single / multi / banks)               | [dumps/README.md](dumps/README.md)                                                     |
 | Banks, arrangement, architecture             | [virus.md](virus.md)                                                                   |
-| AURA plugin / host quirks (not Virus SysEx)  | [aura-notes.md](aura-notes.md)                                                         |
 | OsTIrus (TI2 firmware in a DAW, no hardware) | [ostirus.md](ostirus.md)                                                               |
 
 Full topic index: [README — Documentation](../README.md#documentation).  

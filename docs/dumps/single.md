@@ -103,9 +103,7 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
 
 ## Single parameter map
 
-Parameter inventory (control names and categories). Host availability
-matrices: [aura-notes.md](../aura-notes.md#control-inventory-source).
-**Excluded:** Flash ROM banks,
+Parameter inventory (control names and categories). **Excluded:** Flash ROM banks,
 Assignable X/Y Pad, and Browser (Patch Saving / Patch Browsing).
 
 Most rows are **Single-program** parameters to correlate with
@@ -116,7 +114,7 @@ Most rows are **Single-program** parameters to correlate with
 Multi edit parameters are in
 [Multi parameter map](arrangements.md#multi-parameter-map).
 
-**415** controls in **11** categories.
+**413** controls in **11** categories.
 
 ### Oscillators
 
@@ -284,8 +282,6 @@ Multi edit parameters are in
 | Velocity --> Panorama                 | Velocity / Amplifier       |             | `71` / `0x3D` (±100 %)                                                          |
 | Patch Volume                          | Amplifier                  |             | CC 91                                                                           |
 | Patch Panorama                        | Amplifier                  |             | Same as Common **Panorama** — `70` / `0x0A`                                     |
-| Reverb Send                           | Amplifier                  |             | AURA inventory only — no **Amplifier** **Send** on mk2; same as **EDIT FX → Reverb → Send** [`6E`/`02`](../live-edit/effects.md#reverb-send-cmd0x6e) (see [FX 2](#fx-2)) |
-| Delay Send                            | Amplifier                  |             | AURA inventory only — no **Amplifier** **Send** on mk2; same as **EDIT FX → Delay → Send** [`70`/`71`](../live-edit/effects.md#delay-send-cmd0x70-param-0x71) (see [FX 2](#fx-2)) |
 
 ### LFO
 
@@ -454,7 +450,7 @@ Live-edit bytes: [effects.md](../live-edit/effects.md). **Dump offsets**: **TBD*
 
 | Control                                 | SubCategory        | Dump offset | Live edit                                                                                                                                          |
 | --------------------------------------- | ------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FX Delay Switch                         | Delay              |             | AURA inventory only — no TI mk2 **EDIT FX** control                                                                                                |
+| FX Delay Switch                         | Delay              |             | No TI mk2 **EDIT FX** control                                                                                                                        |
 | Delay Send                              | Delay              |             | [`70`/`71`](../live-edit/effects.md#delay-send-cmd0x70-param-0x71) — [LCD](../parameter-options.md#delay-send-lcd)                              |
 | Delay Type                              | Delay              |             | [`6E`/`0A`](../live-edit/effects.md#delay-type-cmd0x6e) — [enum](../parameter-options.md#delay-type)                                              |
 | Delay Mode                              | Delay              |             | [`70`/`70`](../live-edit/effects.md#delay-mode-cmd0x70-param-0x70) — [Mode](../parameter-options.md#delay-mode); **`01`–`16`**                    |
@@ -483,7 +479,7 @@ Live-edit bytes: [effects.md](../live-edit/effects.md). **Dump offsets**: **TBD*
 | Delay Tape Delay Center Frequency       | Delay Tape Doppler |             | [`70`/`77`](../live-edit/effects.md#delay-tape-frequency-cmd0x70-param-0x77) — [Frequency](../parameter-options.md#delay-tape-frequency)         |
 | Delay Tape Delay Bandwidth              | Delay Tape Doppler |             | [`6E`/`11`](../live-edit/effects.md#delay-tape-bandwidth-cmd0x6e-param-0x11) — [Bandwidth](../parameter-options.md#delay-tape-bandwidth)         |
 | Delay Tape Delay Modulation             | Delay Tape Doppler |             | [`70`/`75`](../live-edit/effects.md#delay-tape-modulation-cmd0x70-param-0x75) — [Modulation](../parameter-options.md#delay-tape-modulation)        |
-| FX Reverb Switch                        | Reverb             |             | AURA inventory only — no TI mk2 **EDIT FX** control                                                                                                |
+| FX Reverb Switch                        | Reverb             |             | No TI mk2 **EDIT FX** control                                                                                                                        |
 | Reverb Send                             | Reverb             |             | [`6E`/`02`](../live-edit/effects.md#reverb-send-cmd0x6e) — [LCD](../parameter-options.md#reverb-send-lcd)                                          |
 | Reverb Mode                             | Reverb             |             | [`6E`/`01`](../live-edit/effects.md#reverb-mode-cmd0x6e) — **`00`–`03`**                                                                          |
 | Reverb Type                             | Reverb             |             | [`6E`/`03`](../live-edit/effects.md#reverb-type-cmd0x6e)                                                                                          |

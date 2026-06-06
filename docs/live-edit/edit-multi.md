@@ -51,8 +51,7 @@ Enumerated options: [parameter-options.md](../parameter-options.md).
 
 **Not in this table:** **Direct Monitoring** (VC-only; dump byte
 unmapped — [arrangements.md](../dumps/arrangements.md#direct-monitoring)).
-**Solo** in some host UIs manipulates **`0x48` Enable** on other parts — see
-[aura-notes.md](../aura-notes.md#multi-mixer-ui-host-software).
+**Solo** in some host UIs manipulates **`0x48` Enable** on other parts.
 
 ## Parameters
 
@@ -227,8 +226,7 @@ encoding)**.
 - Per-part packed-flag control (dump bit **`0x01`**: `0x44` off / `0x45` on
   at INIT).
 - Dump correlation: `0xF8 + part`.
-- Host **Mute** / **Solo** UIs may toggle this flag —
-[aura-notes.md](../aura-notes.md).
+- Host **Mute** / **Solo** UIs may toggle this flag.
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
 ### Volume RX (`0x49`)

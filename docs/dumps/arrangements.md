@@ -96,15 +96,14 @@ the other state). Part 8 at **`0x100`** (`0x45`→`0x44`); Part 16 at
 **`0x108`** (`0x45`→`0x44`, checksum unchanged `0x20`).
 
 **Mute** and **Solo** in host software are mixer UI controls, not separate
-dump fields. Solo may disable other parts by toggling **Enable** — see
-[aura-notes.md](../aura-notes.md#multi-mixer-ui-host-software).
+dump fields. Solo may disable other parts by toggling **Enable**.
 
 ##### Direct Monitoring
 
 Per-part Edit Multi setting. When enabled, that part’s audio is routed from
 the **analog outputs** directly, bypassing the USB return path through the
-DAW (avoids USB buffer latency for live performance). Availability in host
-apps: [aura-notes.md](../aura-notes.md#multi-mixer-ui-host-software).
+DAW (avoids USB buffer latency for live performance). Not all host apps expose
+this control.
 **`DUMP_MULTI` byte not confirmed** — prime candidate in
 [unmapped payload](#unmapped-payload)
 (e.g. `0x19..0x28` or a packed per-part flag not yet decoded).

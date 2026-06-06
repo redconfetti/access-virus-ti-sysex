@@ -76,7 +76,7 @@ the panel sends **CC 91**. With **Page A = SysEx**, live edit is
 [Patch Volume](docs/live-edit/edit-single.md#patch-volume-0x5b-cmd0x70--cc-91).
 
 Distinct from Edit Multi **Volume** (`0x99 + part` in `DUMP_MULTI`, live
-`0x72` / `0x27`). Host UI label “Part Level”: [aura-notes.md](aura-notes.md).
+`0x72` / `0x27`).
 
 | Field        | Status                          |
 | ------------ | ------------------------------- |

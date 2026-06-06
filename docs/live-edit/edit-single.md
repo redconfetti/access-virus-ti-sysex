@@ -184,9 +184,8 @@ F0 00 20 33 01 00 71 00 19 04 F7   # Quantise 1/64
 F0 00 20 33 01 00 71 00 19 14 F7   # Quantise 1/1
 ```
 
-Some hosts cannot send **Off** (`00`) — [aura-notes.md](../aura-notes.md). Do
-not
-confuse with global **All EQs** (`73` / `0x19`).
+Some hosts cannot send **Off** (`00`). Do not confuse with global **All EQs**
+(`73` / `0x19`).
 
 ### Bend Down (`0x1B`, `cmd=0x71`)
 
@@ -557,8 +556,8 @@ The same **`00` / `40` / `7F`** anchors apply to every row in the table.
 **Edit Single → Surround.** On TI mk2 this is the patch **secondary output**
 bus (rear/surround send in a multi-output setup — separate from the main
 **Output Routing** path on **`72`/`29`** in Multi mode). Same wire as
-**Edit Multi → Secondary Output** and AURA’s “Secondary Output”:
-**`cmd=0x73`**, param **`0x2D`**, part **`00`** in Single captures. Enum:
+Same wire as **Edit Multi → Secondary Output**: **`cmd=0x73`**, param
+**`0x2D`**, part **`00`** in Single captures. Enum:
 [Secondary output
 routing](../parameter-options.md#secondary-output-routing).
 **Not in `DUMP_MULTI`** / **`DUMP_SINGLE` offset TBD** (edit-buffer only in

@@ -28,5 +28,4 @@ control, only a suitable host port.
 | MIDI Control Change (CC)                | [docs/control-change.md](docs/control-change.md)                 |
 | WAF80 SysEx reference (1999, classic)   | [docs/waf80.md](docs/waf80.md)                                   |
 | Parameter options (enums, panel tables) | [docs/parameter-options.md](docs/parameter-options.md)           |
-| AURA plugin / host quirks (not Virus)   | [docs/aura-notes.md](docs/aura-notes.md)                         |
 | OsTIrus (DSP56300 TI/TI2 emulation)     | [docs/ostirus.md](docs/ostirus.md)                               |

@@ -118,8 +118,8 @@ Background shell, `required_permissions: ["all"]`. After each edit: `tail -n 20
    - Request buffer: `sendmidi … 31 00 7f 7c`
    - Bank slot: bank `01`, slot byte, no checksum — see
      [arrangements.md](../../docs/dumps/arrangements.md)
-4. Diff payload — **one** offset should change (+ checksum). Plugin export
-   quirks: [aura-notes.md](../../docs/aura-notes.md).
+4. Diff payload — **one** offset should change (+ checksum). Prefer Virus
+   panel dumps over host export when diffing.
 
 ```python
 def parse(s):

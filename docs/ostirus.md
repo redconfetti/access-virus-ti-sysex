@@ -18,7 +18,7 @@ repository’s TI mk2 hardware work uses **`DUMP_SINGLE` 524-byte** SysEx
 | User                                                   | MIDI path                                                                                        |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
 | **Virus TI mk2 desktop** (primary capture source here) | `Virus TI USB Plugin I/O` or hardware USB — [testing.md](testing.md)                             |
-| **Access Virus TI plugin** (legacy TI integration)     | `Virus TI USB Plugin I/O` — [aura-notes.md](aura-notes.md)                                       |
+| **Access Virus TI plugin** (legacy TI integration)     | `Virus TI USB Plugin I/O`                                                                        |
 | **OsTIrus in a DAW** (no hardware required)            | Host MIDI → plugin instance on a **MIDI channel**; optional virtual port for `sendmidi` / agents |
 
 If you only run OsTIrus, you can still use the same **Access SysEx** vocabulary
@@ -62,11 +62,9 @@ DAW’s own virtual port are common.
 | **Dumps & analysis** | Request/export singles and multis from OsTIrus (when the UI/ROM supports it), parse with the same dump docs — useful for **preset-pack analysis** and constrained randomization without owning hardware. |
 | **Composition**      | Combine **MIDI sequences** (channel 1–16 per part) with **SysEx live edits** between notes — same pattern as hardware demos; only the port and host differ.                                              |
 
-Host-specific export quirks for the **legacy Access AURA/TI plugin** are in
-[aura-notes.md](aura-notes.md). **OsTIrus-specific** dump/export differences
-are not fully inventoried here yet; file an issue or capture if bytes diverge
-from [arrangements.md](dumps/arrangements.md) /
-[single-dump.md](dumps/single.md).
+**OsTIrus-specific** dump/export differences are not fully inventoried here
+yet; file an issue or capture if bytes diverge from
+[arrangements.md](dumps/arrangements.md) / [single.md](dumps/single.md).
 
 ## Further reading
 
