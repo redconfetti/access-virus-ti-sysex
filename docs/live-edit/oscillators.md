@@ -1653,13 +1653,14 @@ range as [Saturation — Osc
 Volume](filters.md#saturation--osc-volume-cmd0x70-param-0x24)
 but edited via **Page B** SysEx here, not **`70` / `24`**.
 
-| Item                    | Value                                           |
-| ----------------------- | ----------------------------------------------- |
-| Message (last in burst) | `F0 00 20 33 01 00 71 40 7F 00 F7`              |
-| Scope byte              | `0x40` (verify — expected `0x00` for Part 1)    |
-| Param ID                | `0x7F`                                          |
-| Value encoding          | Bipolar **`stored = ui + 64`** (`−64` → `0x00`) |
-| Confirmed               | Hardware TX, landing **−64** → `0x00`           |
+| Item                    | Value                                                 |
+| ----------------------- | ----------------------------------------------------- |
+| Message (last in burst) | `F0 00 20 33 01 00 71 40 7F 00 F7`                    |
+| Scope byte              | **`0x40`** Single edit buffer (Multi Part 1 → `0x00`) |
+| Param ID                | `0x7F`                                                |
+| Dump offset             | **`0x107`** (Single edit buffer **`30 00 40`**)       |
+| Value encoding          | Bipolar **`stored = ui + 64`** (`−64` → `0x00`)       |
+| Confirmed               | Hardware TX + dump correlate (TI mk2)                 |
 
 ```text
 F0 00 20 33 01 00 71 40 7F 00 F7 # Oscillator Section Volume −64
