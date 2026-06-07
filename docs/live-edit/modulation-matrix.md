@@ -8,6 +8,8 @@ Part of [Live Edit](README.md). Source and destination enums:
 [Mod Matrix Destinations](../parameter-options.md#mod-matrix-destinations).
 Amount encoding: [Mod Matrix Amount](../parameter-options.md#mod-matrix-amount).
 Dump worksheet: [single.md — Modulation Matrix](../dumps/single.md#modulation-matrix).
+All **42** Source / Destination / Amount cells confirmed in **`DUMP_SINGLE`**
+(`30 00 40` / `<part>=0x40`).
 
 ```text
 F0 00 20 33 01 00 <cmd> <part> <param> <value> F7
@@ -37,8 +39,8 @@ three times.
 
 ## Per-slot `cmd` / param map (TI mk2)
 
-Full enum sweeps on all six slots; spot-checks on **Slot 2 row 2**, **Slot 3 row
-2**, and **Slot 6 row 1** (hardware TX + **`sendmidi` RX**).
+Full enum sweeps on all six slots; all **42** cells dump-correlate verified on
+TI mk2 (Single edit buffer **`30 00 40`**).
 
 | Slot  | Source    | Dest 1    | Amt 1     | Dest 2    | Amt 2     | Dest 3    | Amt 3     |
 | ----- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |

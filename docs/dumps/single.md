@@ -161,6 +161,7 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
 - **`0x159`–`0x162`** — Envelope 3 / 4 (`6E`/`50`–`59`)
 - **`0x183`** — Filter Common Pan Spread (`6E`/`7A`, Split routing)
 - **`0x0B7`–`0x0C5`** — **Edit Single → Velocity Map** (`71`/`2F`–`32`, `36`–`39`, `3C`–`3D`)
+- **`0x08A`–`0x08E`, `0x097`, `0x099`** — **EDIT ARP** settings (`71`/`02`–`06`, `0F`, `11`)
 - **~0x184–0x1E9 – User arpeggiator pattern** (when **Pattern** = **User**)
 - **`0x189`** — loop length (**1**–**32** steps; `stored = steps − 1`)
 - **`0x18A`…`0x1E9`** — **32** step triplets (**length**, **velocity**,
@@ -434,8 +435,8 @@ Live-edit bytes: [modulators.md](../live-edit/modulators.md). **Dump offsets**
 
 Live edit: [modulation-matrix.md](../live-edit/modulation-matrix.md). Each slot:
 **one** Source; **three** Destination / Amount pairs. **`cmd`** / **param** are
-**per slot** (and row) — see doc table. Dump offsets hardware-verified
-(`30 00 40` / `<part>=0x40`).
+**per slot** (and row) — see doc table. All **42** cells hardware-verified
+(`30 00 40` / `<part>=0x40`; [`dump-correlate.sh`](../../artifacts/captures/dump-correlate.sh)).
 
 | Control                         | SubCategory | Dump offset | Live edit                                                                  |
 | ------------------------------- | ----------- | ----------- | -------------------------------------------------------------------------- |
@@ -449,15 +450,15 @@ Live edit: [modulation-matrix.md](../live-edit/modulation-matrix.md). Each slot:
 | Mod Matrix Slot 2 Source        | Slot 2      | `0x0CB`     | `71`/`43`                                                                  |
 | Mod Matrix Slot 2 Destination 1 | Slot 2      | `0x0CC`     | `71`/`44`                                                                  |
 | Mod Matrix Slot 2 Amount 1      | Slot 2      | `0x0CD`     | `71`/`45`                                                                  |
-| Mod Matrix Slot 2 Destination 2 | Slot 2      | `0x0CE`     | `71`/`46` — ✓ spot-check                                                   |
-| Mod Matrix Slot 2 Amount 2      | Slot 2      | `0x0CF`     | `71`/`47` — ✓ spot-check                                                   |
+| Mod Matrix Slot 2 Destination 2 | Slot 2      | `0x0CE`     | `71`/`46`                                                                  |
+| Mod Matrix Slot 2 Amount 2      | Slot 2      | `0x0CF`     | `71`/`47`                                                                  |
 | Mod Matrix Slot 2 Destination 3 | Slot 2      | `0x167`     | `6E`/`5E`                                                                  |
 | Mod Matrix Slot 2 Amount 3      | Slot 2      | `0x168`     | `6E`/`5F`                                                                  |
 | Mod Matrix Slot 3 Source        | Slot 3      | `0x0D0`     | `71`/`48`                                                                  |
 | Mod Matrix Slot 3 Destination 1 | Slot 3      | `0x0D1`     | `71`/`49`                                                                  |
 | Mod Matrix Slot 3 Amount 1      | Slot 3      | `0x0D2`     | `71`/`4A`                                                                  |
-| Mod Matrix Slot 3 Destination 2 | Slot 3      | `0x0D3`     | `71`/`4B` — ✓ spot-check                                                   |
-| Mod Matrix Slot 3 Amount 2      | Slot 3      | `0x0D4`     | `71`/`4C` — ✓ spot-check                                                   |
+| Mod Matrix Slot 3 Destination 2 | Slot 3      | `0x0D3`     | `71`/`4B`                                                                  |
+| Mod Matrix Slot 3 Amount 2      | Slot 3      | `0x0D4`     | `71`/`4C`                                                                  |
 | Mod Matrix Slot 3 Destination 3 | Slot 3      | `0x0D5`     | `71`/`4D`                                                                  |
 | Mod Matrix Slot 3 Amount 3      | Slot 3      | `0x0D6`     | `71`/`4E`                                                                  |
 | Mod Matrix Slot 4 Source        | Slot 4      | `0x0EF`     | `71`/`67`                                                                  |
@@ -475,8 +476,8 @@ Live edit: [modulation-matrix.md](../live-edit/modulation-matrix.md). Each slot:
 | Mod Matrix Slot 5 Destination 3 | Slot 5      | `0x16F`     | `6E`/`66`                                                                  |
 | Mod Matrix Slot 5 Amount 3      | Slot 5      | `0x170`     | `6E`/`67`                                                                  |
 | Mod Matrix Slot 6 Source        | Slot 6      | `0x0F5`     | `71`/`6D`                                                                  |
-| Mod Matrix Slot 6 Destination 1 | Slot 6      | `0x0F6`     | `71`/`6E` — ✓ spot-check                                                   |
-| Mod Matrix Slot 6 Amount 1      | Slot 6      | `0x0F7`     | `71`/`6F` — ✓ spot-check                                                   |
+| Mod Matrix Slot 6 Destination 1 | Slot 6      | `0x0F6`     | `71`/`6E`                                                                  |
+| Mod Matrix Slot 6 Amount 1      | Slot 6      | `0x0F7`     | `71`/`6F`                                                                  |
 | Mod Matrix Slot 6 Destination 2 | Slot 6      | `0x171`     | `6E`/`68`                                                                  |
 | Mod Matrix Slot 6 Amount 2      | Slot 6      | `0x172`     | `6E`/`69`                                                                  |
 | Mod Matrix Slot 6 Destination 3 | Slot 6      | `0x173`     | `6E`/`6A`                                                                  |
@@ -486,17 +487,17 @@ Live edit: [modulation-matrix.md](../live-edit/modulation-matrix.md). Each slot:
 
 Live-edit bytes: [arpeggiator.md](../live-edit/arpeggiator.md). Pattern-editor
 dump layout: [user pattern in `DUMP_SINGLE`](../live-edit/arpeggiator.md#arpeggiator-user-pattern-dump).
-**EDIT ARP** settings dump offsets: **TBD**.
+Settings dump offsets hardware-verified (`30 00 40` / `<part>=0x40`).
 
 | Control                        | SubCategory    | Dump offset               | Live edit                                                                                                                                                                                                                                                                                          |
 | ------------------------------ | -------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Arpeggiator Mode               | Settings       |                           | [`71`/`0F`](../live-edit/arpeggiator.md#arpeggiator-mode-cmd0x71-param-0x0f) — [enum](../parameter-options.md#arpeggiator-mode)                                                                                                                                                                    |
-| Arpeggiator Pattern            | Settings       |                           | [`71`/`02`](../live-edit/arpeggiator.md#arpeggiator-pattern-cmd0x71-param-0x02) — [enum](../parameter-options.md#arpeggiator-pattern); hidden when **Mode** Off                                                                                                                                    |
-| Arpeggiator Range In Octaves   | Settings       |                           | [`71`/`03`](../live-edit/arpeggiator.md#arpeggiator-octaves-cmd0x71-param-0x03) — [enum](../parameter-options.md#arpeggiator-octaves); hidden when **Mode** Off                                                                                                                                    |
-| Arpeggiator Clock / Resolution | Settings       |                           | [`71`/`11`](../live-edit/arpeggiator.md#arpeggiator-resolution-cmd0x71-param-0x11) — [enum](../parameter-options.md#arpeggiator-resolution)                                                                                                                                                        |
-| Arpeggiator Note Length        | Settings       |                           | [`71`/`05`](../live-edit/arpeggiator.md#arpeggiator-note-length-cmd0x71-param-0x05) — [LCD](../parameter-options.md#arpeggiator-note-length-lcd)                                                                                                                                                   |
-| Arpeggiator Swing Factor       | Settings       |                           | [`71`/`06`](../live-edit/arpeggiator.md#arpeggiator-swing-factor-cmd0x71-param-0x06) — [LCD](../parameter-options.md#arpeggiator-swing-factor-lcd)                                                                                                                                                 |
-| Arpeggiator Hold Mode          | Settings       |                           | [`71`/`04`](../live-edit/arpeggiator.md#arpeggiator-hold-cmd0x71-param-0x04) — [enum](../parameter-options.md#arpeggiator-hold); panel **Hold**; hidden when **Mode** Off                                                                                                                          |
+| Arpeggiator Mode               | Settings       | `0x097`                   | [`71`/`0F`](../live-edit/arpeggiator.md#arpeggiator-mode-cmd0x71-param-0x0f) — [enum](../parameter-options.md#arpeggiator-mode)                                                                                                                                                                    |
+| Arpeggiator Pattern            | Settings       | `0x08A`                   | [`71`/`02`](../live-edit/arpeggiator.md#arpeggiator-pattern-cmd0x71-param-0x02) — [enum](../parameter-options.md#arpeggiator-pattern); hidden when **Mode** Off                                                                                                                                    |
+| Arpeggiator Range In Octaves   | Settings       | `0x08B`                   | [`71`/`03`](../live-edit/arpeggiator.md#arpeggiator-octaves-cmd0x71-param-0x03) — [enum](../parameter-options.md#arpeggiator-octaves); hidden when **Mode** Off                                                                                                                                    |
+| Arpeggiator Clock / Resolution | Settings       | `0x099`                   | [`71`/`11`](../live-edit/arpeggiator.md#arpeggiator-resolution-cmd0x71-param-0x11) — [enum](../parameter-options.md#arpeggiator-resolution)                                                                                                                                                        |
+| Arpeggiator Note Length        | Settings       | `0x08D`                   | [`71`/`05`](../live-edit/arpeggiator.md#arpeggiator-note-length-cmd0x71-param-0x05) — [LCD](../parameter-options.md#arpeggiator-note-length-lcd)                                                                                                                                                   |
+| Arpeggiator Swing Factor       | Settings       | `0x08E`                   | [`71`/`06`](../live-edit/arpeggiator.md#arpeggiator-swing-factor-cmd0x71-param-0x06) — [LCD](../parameter-options.md#arpeggiator-swing-factor-lcd)                                                                                                                                                 |
+| Arpeggiator Hold Mode          | Settings       | `0x08C`                   | [`71`/`04`](../live-edit/arpeggiator.md#arpeggiator-hold-cmd0x71-param-0x04) — [enum](../parameter-options.md#arpeggiator-hold); panel **Hold**; hidden when **Mode** Off                                                                                                                          |
 | Arpeggiator User Pattern Step  | Pattern Editor | `0x18A` + (step−1)×3 … +2 | Step triplet — [length](../live-edit/arpeggiator.md#arpeggiator-step-length-cmd0x6f) / [velocity](../live-edit/arpeggiator.md#arpeggiator-step-velocity-cmd0x6f) / [enable](../live-edit/arpeggiator.md#arpeggiator-step-enable-cmd0x6f) — [map](../parameter-options.md#arpeggiator-step-triplet) |
 | Arpeggiator Loop Length        | Pattern Editor | `0x189`                   | [`6E`/`7F`](../live-edit/arpeggiator.md#arpeggiator-loop-length-cmd0x6e-param-0x7f) — [enum](../parameter-options.md#arpeggiator-loop-length); **1**–**32** steps                                                                                                                                  |
 

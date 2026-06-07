@@ -29,6 +29,19 @@ rows. **Arp>Matrix** → **Pattern** + **Resolution** only — see
 
 ## Settings
 
+**`DUMP_SINGLE`** offsets (Single edit buffer **`30 00 40`**, `<part>=0x40`; TI mk2
+dump correlate):
+
+| Control     | Live edit | Dump offset |
+| ----------- | --------- | ----------- |
+| Mode        | `71`/`0F` | **`0x097`** |
+| Pattern     | `71`/`02` | **`0x08A`** |
+| Octaves     | `71`/`03` | **`0x08B`** |
+| Hold        | `71`/`04` | **`0x08C`** |
+| Note Length | `71`/`05` | **`0x08D`** |
+| Swing       | `71`/`06` | **`0x08E`** |
+| Resolution  | `71`/`11` | **`0x099`** |
+
 ### Mode (`0x0F`, `cmd=0x71`) {#arpeggiator-mode-cmd0x71-param-0x0f}
 
 **EDIT ARP → Mode**. **`stored = index`**
