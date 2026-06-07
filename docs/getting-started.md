@@ -8,11 +8,17 @@ Prerequisites: [Setup](setup.md) (`sendmidi`, port choice, first messages).
 
 ## One message, byte by byte
 
-```text
-F0          00  20  33  01      00   <cmd>            <payload…>  F7
-↑           ↑--------↑  ↑       ↑    ↑                ↑           ↑
-│           Access ID   TI      dev  command          rest        SysEx end
-SysEx start             family       (varies by cmd)
+```mermaid
+flowchart LR
+  f0["F0<br/>SysEx start"]
+  access["00 20 33<br/>Access ID"]
+  family["01<br/>TI family"]
+  dev["00<br/>device ID"]
+  cmd["cmd<br/>message type"]
+  payload["payload…<br/>varies by cmd"]
+  f7["F7<br/>SysEx end"]
+
+  f0 --> access --> family --> dev --> cmd --> payload --> f7
 ```
 
 | Bytes       | Role                                                                |
