@@ -165,8 +165,8 @@ besides **Mode**; on full settings modes, last row of the block.
 | Confirmed | Hardware TX (TI mk2; **Down**, full settings modes) |
 
 ```text
-F0 00 20 33 01 00 71 00 04 00 F7 # Off
-F0 00 20 33 01 00 71 00 04 01 F7 # On
+F0 00 20 33 01 00 71 40 04 00 F7 # Off (Single edit buffer)
+F0 00 20 33 01 00 71 40 04 01 F7 # On
 ```
 
 ## Pattern editor

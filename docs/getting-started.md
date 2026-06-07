@@ -35,10 +35,10 @@ F0 00 20 33 01 00 72 <part> <param> <value> F7
 
 ```bash
 sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 72 00 4a 00
-# │ │ │ └── value (0 = Off)
-# │ │ └─────── param 0x4A
-# │ └──────────── part 0 = Part 1
-# └──────────────── cmd 0x72
+#                                                             │  │  │  └── value (0 = Off)
+#                                                             │  │  └─────── param 0x4A
+#                                                             │  └──────────── part 0 = Part 1
+#                                                             └──────────────── cmd 0x72
 ```
 
 ## What `cmd=0x71` (and similar) means

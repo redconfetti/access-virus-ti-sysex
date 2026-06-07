@@ -18,7 +18,7 @@ F0 00 20 33 01 00 6E <part> <param> <value> F7 # part single edit buffer
 Param IDs are **not global** — the same hex ID can mean different settings under
 different `cmd` bytes.
 
-Page **B#7–13** (*Lfo3* settings …) and LFO modulation amounts remain **TBD**.
+Page **B#7–13** (*Lfo3* settings …) remain **TBD** for dump correlation.
 Documented LFO settings: [LFO live edit routing](../parameter-options.md#lfo-live-edit-routing),
 [LFO Clock](../parameter-options.md#lfo-clock),
 [LFO Shape](../parameter-options.md#lfo-shape),
@@ -183,7 +183,7 @@ F0 00 20 33 01 00 71 40 48 7F F7 # 100.0 %
 | Panel control | Live edit | Status |
 | --- | --- | --- |
 | Rate | `71` / `0x43` | ✓ — [Rate](#lfo-1-rate-cmd0x71-param-0x43) ( **Clock** = **Off** only) |
-| Clock Divider | `71` / `0x12` | ✓ — [Clock](#lfo-1-clock-cmd0x71-param-0x12) (min = **Off**; no **Clock Switch**) |
+| Clock Divider | `71` / `0x12` | ✓ — [Clock](#lfo-1-clock-cmd0x71-param-0x12) (minimum = **Off**) |
 | Keyfollow | `71` / `0x48` | ✓ — [Key Follow](#lfo-1-key-follow-cmd0x71-param-0x48) |
 | Trigger Phase | `71` / `0x49` | ✓ — [Trigger Phase](#lfo-1-trigger-phase-cmd0x71-param-0x49) |
 | Waveform Shape | `71` / `0x44` | ✓ — [Shape](#lfo-1-shape-cmd0x71-param-0x44) |
@@ -203,7 +203,7 @@ F0 00 20 33 01 00 71 40 48 7F F7 # 100.0 %
 | Pulse Width | `70` / `0x4C` | ✓ |
 | Resonance | `70` / `0x4D` | ✓ |
 | Filter Gain | `70` / `0x4E` | ✓ |
-| Assign Target | `71` / `0x4F` | partial — [Assign Target](../parameter-options.md#assign-target-0x4f) |
+| Assign Target | `71` / `0x4F` | ✓ — [Assign Target](../parameter-options.md#assign-target-0x4f) |
 | Amount | `71` / `0x50` | ✓ |
 
 ```text
@@ -222,7 +222,7 @@ bytes: [LFO live edit routing](../parameter-options.md#lfo-live-edit-routing).
 | Panel control | Live edit | Status |
 | --- | --- | --- |
 | Rate | `70` / `0x4F` | ✓ (**Clock** = **Off** only) |
-| Clock Divider | `71` / `0x13` | ✓ |
+| Clock Divider | `71` / `0x13` | ✓ — [LFO Clock](../parameter-options.md#lfo-clock) |
 | Keyfollow | `70` / `0x54` | ✓ |
 | Trigger Phase | `70` / `0x55` | ✓ |
 | Waveform Shape | `70` / `0x50` | ✓ |
@@ -232,6 +232,8 @@ bytes: [LFO live edit routing](../parameter-options.md#lfo-live-edit-routing).
 
 ```text
 F0 00 20 33 01 00 71 40 13 00 F7 # Clock Off
+F0 00 20 33 01 00 71 40 13 05 F7 # Clock 1/4
+F0 00 20 33 01 00 71 40 13 15 F7 # Clock 16/1
 F0 00 20 33 01 00 70 40 4F 00 F7 # Rate 0
 F0 00 20 33 01 00 70 40 50 00 F7 # Shape Sine
 F0 00 20 33 01 00 70 40 51 00 F7 # Envelope Mode Off
@@ -241,7 +243,27 @@ F0 00 20 33 01 00 70 40 54 00 F7 # Key Follow Off
 F0 00 20 33 01 00 70 40 55 00 F7 # Trigger Phase Off
 ```
 
-LFO 2 modulation targets (**LFO Modulation 2**) — **TBD**.
+### LFO 2 Destination {#lfo-2-destination}
+
+**EDIT LFO → LFO 2 → LFO 2 Destination** — [LFO 2 Destination](../parameter-options.md#lfo-2-destination).
+
+| Panel control | Live edit | Status |
+| --- | --- | --- |
+| Cutoff 1 | `70` / `0x58` | ✓ |
+| Cutoff 2 | `70` / `0x59` | ✓ |
+| Cutoff 1+2 | `70` / `58` + `59` | ✓ linked (same value to both) |
+| Shape 1+2 | `70` / `0x56` | ✓ |
+| FM Amount | `70` / `0x57` | ✓ |
+| Panorama | `70` / `0x5A` | ✓ |
+| Assign Target | `71` / `0x51` | ✓ — [Assign Target](../parameter-options.md#assign-target-0x51) |
+| Amount | `71` / `0x52` | ✓ |
+
+```text
+F0 00 20 33 01 00 70 40 58 53 F7 # Cutoff 1 +29.7 %
+F0 00 20 33 01 00 70 40 59 53 F7 # Cutoff 2 +29.7 % (linked)
+F0 00 20 33 01 00 71 40 51 00 F7 # Assign Target Off
+F0 00 20 33 01 00 71 40 52 40 F7 # Amount +0.0 %
+```
 
 ## LFO 3
 
@@ -252,13 +274,15 @@ Trigger Phase. [Routing table](../parameter-options.md#lfo-live-edit-routing).
 | Panel control | Live edit | Status |
 | --- | --- | --- |
 | Rate | `71` / `0x07` | ✓ (**Clock** = **Off** only) |
-| Clock Divider | `71` / `0x15` | ✓ |
+| Clock Divider | `71` / `0x15` | ✓ — [LFO Clock](../parameter-options.md#lfo-clock) |
 | Keyfollow | `71` / `0x0A` | ✓ |
 | Waveform Shape | `71` / `0x08` | ✓ |
 | Mode | `71` / `0x09` | ✓ |
 
 ```text
 F0 00 20 33 01 00 71 40 15 00 F7 # Clock Off
+F0 00 20 33 01 00 71 40 15 05 F7 # Clock 1/4
+F0 00 20 33 01 00 71 40 15 15 F7 # Clock 16/1
 F0 00 20 33 01 00 71 40 07 00 F7 # Rate 0
 F0 00 20 33 01 00 71 40 08 00 F7 # Shape Sine
 F0 00 20 33 01 00 71 40 09 00 F7 # Mode Poly
@@ -284,5 +308,3 @@ F0 00 20 33 01 00 71 40 0C 7F F7 # Amount 100.0 %
 F0 00 20 33 01 00 71 40 0D 00 F7 # Fade In 0
 F0 00 20 33 01 00 71 40 0D 7F F7 # Fade In 127
 ```
-
-LFO 1 / LFO 2 modulation sub-pages — **TBD**.

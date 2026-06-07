@@ -48,6 +48,7 @@ See [Option name](parameter-options.md#anchor) from live-edit or dump rows.
 | [LFO live edit routing](#lfo-live-edit-routing) | **`cmd` / `param`** per LFO — three distinct layouts (LFO 3 compact on **`71`/`07`–`0A`**) |
 | [LFO 3 Destination](#lfo-3-destination) | **EDIT LFO → LFO 3 Destination** — **`71`/`0B`–`0D`** (Assign Target, Amount, Fade In) |
 | [LFO 1 Destination](#lfo-1-destination) | **EDIT LFO → LFO 1 Destination** — depth **`70`/`4A`–`4E`**, Assign **`71`/`4F`**, Amount **`71`/`50`** |
+| [LFO 2 Destination](#lfo-2-destination) | **EDIT LFO → LFO 2 Destination** — depth **`70`/`56`–`5A`**, Assign **`71`/`51`**, Amount **`71`/`52`** |
 | [LFO Rate](#lfo-rate) | **EDIT LFO → Rate** when **Clock** = **Off** — LFO 1 **`71`/`43`**; **`0`–`127`** |
 | [LFO Shape](#lfo-shape) | **EDIT LFO → Shape** — LFO 1 **`71`/`44`**; **`00`–`43`** (68 shapes) |
 | [LFO settings](#lfo-settings) | **Contour**, **Mode**, **Envelope Mode**, **Trigger Phase**, **Key Follow** — see [LFO live edit routing](#lfo-live-edit-routing) |
@@ -435,8 +436,8 @@ settings block.
 | `01` | On | ✓ |
 
 ```text
-F0 00 20 33 01 00 71 00 04 00 F7 # Off
-F0 00 20 33 01 00 71 00 04 01 F7 # On
+F0 00 20 33 01 00 71 40 04 00 F7 # Off (Single edit buffer; part 40)
+F0 00 20 33 01 00 71 40 04 01 F7 # On
 ```
 
 ---
@@ -956,9 +957,8 @@ See also [LFO Clock](#lfo-clock) — same **`00`–`10`** grid, plus **`11`–`1
 Live edit: **`cmd=0x71`**, **`stored = <value>`** (wire byte).
 
 **Panel knob:** minimum (**all the way down**) = **Off** (`00`); each step up =
-**1/64**, **1/32**, … through **16/1** (`15`). There is **no** separate
-**Clock Switch** — **Off** is the first menu row on the **Clock** control itself
-(same idea as [Delay Clock](#delay-clock) **Off** + **Delay Time**).
+**1/64**, **1/32**, … through **16/1** (`15`). **Off** is the first row on the
+**Clock** control (same idea as [Delay Clock](#delay-clock) **Off** + **Delay Time**).
 
 Synced divisions **`01`–`15`** run **slow → fast** on the panel (same grid as
 [Delay Clock](#delay-clock) for **`01`–`10`**, plus **`11`–`15`** whole-note
@@ -967,13 +967,23 @@ multiples).
 | LFO | Page B | Param | Confirmed |
 | --- | --- | --- | --- |
 | LFO 1 | #18 | **`0x12`** | ✓ (TI mk2) |
-| LFO 2 | #19 | **`0x13`** | Same wire map (inherits Delay/LFO 1 table) |
-| LFO 3 | #21 | **`0x15`** | Same wire map |
+| LFO 2 | #19 | **`0x13`** | ✓ — same **`<value>`** map as table below |
+| LFO 3 | #21 | **`0x15`** | ✓ — same **`<value>`** map as table below |
 
 ```text
-F0 00 20 33 01 00 71 40 12 <value> F7 # LFO 1 Clock (Single edit buffer)
+F0 00 20 33 01 00 71 40 12 00 F7 # LFO 1 Off
+F0 00 20 33 01 00 71 40 12 05 F7 # LFO 1 1/4
+F0 00 20 33 01 00 71 40 12 15 F7 # LFO 1 16/1
+F0 00 20 33 01 00 71 40 13 00 F7 # LFO 2 Off
+F0 00 20 33 01 00 71 40 13 05 F7 # LFO 2 1/4
+F0 00 20 33 01 00 71 40 13 15 F7 # LFO 2 16/1
+F0 00 20 33 01 00 71 40 15 00 F7 # LFO 3 Off
+F0 00 20 33 01 00 71 40 15 05 F7 # LFO 3 1/4
+F0 00 20 33 01 00 71 40 15 15 F7 # LFO 3 16/1
 F0 00 20 33 01 00 71 00 12 <value> F7 # LFO 1 Clock (Multi Part 1)
 ```
+
+**`<value>`** table — all three LFO **Clock** params (**`12`**, **`13`**, **`15`**):
 
 | `<value>` | Option | Confirmed |
 | --- | --- | --- |
@@ -1026,8 +1036,9 @@ edit **`cmd` / `param`** depend on which LFO is being edited:
 | **Contour** | `71` / `47` | `70` / `53` | — |
 | **Key Follow** | `71` / `48` | `70` / `54` | `71` / `0A` |
 | **Trigger Phase** | `71` / `49` | `70` / `55` | — |
-| **Assign Target** | — | — | `71` / `0B` |
-| **Amount** | — | — | `71` / `0C` |
+| **Depth (×5)** | `70` / `4A`–`4E` | `70` / `56`–`5A` | — |
+| **Assign Target** | `71` / `4F` | `71` / `51` | `71` / `0B` |
+| **Amount** | `71` / `50` | `71` / `52` | `71` / `0C` |
 | **Fade In** | — | — | `71` / `0D` |
 
 **Routing rules (TI mk2):**
@@ -1039,12 +1050,16 @@ edit **`cmd` / `param`** depend on which LFO is being edited:
   (Rate → Shape → Envelope Mode → Mode → Contour → Key Follow → Trigger Phase).
 - **LFO 2** — settings on **`cmd=0x70`** (Page A), same seven-param order,
   block **`0x4F`–`0x55`**.
+- **LFO 1 Destination** — depths on **`cmd=0x70`** **`4A`–`4E`**; **Assign Target**
+  **`71`/`4F`**, **Amount** **`71`/`50`** — [LFO 1 Destination](#lfo-1-destination).
+- **LFO 2 Destination** — depths on **`cmd=0x70`** **`56`–`5A`**; **Assign Target**
+  **`71`/`51`**, **Amount** **`71`/`52`** — [LFO 2 Destination](#lfo-2-destination).
+  Assign **`<value>`** bytes match LFO 1.
 - **LFO 3** — compact panel on **`cmd=0x71`**: **Rate** **`0x07`**, **Shape**
   **`0x08`**, **Mode** **`0x09`**, **Key Follow** **`0x0A`**, **Clock**
   **`0x15`**. Sub-menu **LFO 3 Destination**: **Assign Target** **`0x0B`**,
   **Amount** **`0x0C`**, **Fade In** **`0x0D`**. **No** Envelope Mode,
-  Contour, or Trigger Phase. Same **value** encodings as LFO 1/2 where the
-  control exists — see [LFO 3 Destination](#lfo-3-destination).
+  Contour, or Trigger Phase — [LFO 3 Destination](#lfo-3-destination).
 
 ```text
 # LFO 2 — minimum settings (hardware TX)
@@ -1276,43 +1291,150 @@ F0 00 20 33 01 00 70 40 4B 43 F7 # Osc 2 Pitch +4.7 % (linked knob example)
 
 ### Assign Target (`cmd=0x71`, param `0x4F`) {#assign-target-0x4f}
 
-**Assign Target** menu. **`00`** = **Off**. Other rows use the same destination
-**name set** as [Mod Matrix Destinations](#mod-matrix-destinations) (panel order
-may differ from mod-matrix slot order). Wire **`<value>`** bytes are **not** the
-mod-matrix table index — capture each row on hardware.
+**Assign Target** menu. **`00`** = **Off**. Other rows share the **Mod Matrix
+Destinations** name set ([Mod Matrix Destinations](#mod-matrix-destinations));
+wire **`<value>`** bytes are a separate namespace (not the mod-matrix table
+index). Full enum confirmed on TI mk2 (**121** destinations + **Off**), matching
+[Mod Matrix Destinations](#mod-matrix-destinations) by name. Same **`<value>`**
+bytes on [LFO 2 Assign Target](#assign-target-0x51) (**`71`/`51`**). Unused wire
+bytes: **`49`**, **`4A`**, **`58`**, **`6B`**, **`70`**, **`77`**.
 
-Partial capture (TI mk2):
+**Filterbank Frequency (`60`):** Mod matrix and LFO Assign Target wire **`60`**
+→ [Filter Bank → Frequency](live-edit/effects.md#filter-bank) (**`6E`/`15`**).
+Modulation confirmed across **Ring Modulator**, **Frequency Shifter**, **Vowel
+Filter**, **Comb Filter**, **Pole XFade**, and **VariSlope** types. LFO menu LCD
+still shows **FreqShifter Frequency** — treat as **Filterbank Frequency** (mislabel).
 
-| `<value>` | Panel label (LFO 1 Destination) | Confirmed |
+| `<value>` | Panel label | Confirmed |
 | --- | --- | --- |
 | `00` | Off | ✓ |
+| `01` | Patch Volume | ✓ |
+| `02` | Osc 1 Interpolation | ✓ |
+| `03` | Panorama | ✓ |
+| `04` | Transpose | ✓ |
+| `05` | Portamento | ✓ |
+| `06` | Osc 1 Shape/Index | ✓ |
+| `07` | Osc 1 Pulse Width | ✓ |
+| `08` | Osc 1 Wave Select | ✓ |
+| `09` | Osc 1 Pitch | ✓ |
+| `0A` | Slot 6 Amount 3 | ✓ |
+| `0B` | Osc 2 Shape/Index | ✓ |
+| `0C` | Osc 2 Pulse Width | ✓ |
+| `0D` | Osc 2 Wave Select | ✓ |
+| `0E` | Osc 2 Pitch | ✓ |
+| `0F` | Osc 2 Detune | ✓ |
+| `10` | Osc 2 FM Amount | ✓ |
+| `11` | Filter Env > Osc 2 Pitch | ✓ |
+| `12` | Filter Env > FM/Sync | ✓ |
+| `13` | Osc 2 Interpolation | ✓ |
+| `14` | Oscillator Balance | ✓ |
+| `15` | Sub Osc Volume | ✓ |
+| `16` | Oscillator Volume | ✓ |
+| `17` | Noise Volume | ✓ |
+| `18` | Filter 1 Cutoff | ✓ |
+| `19` | Filter 2 Cutoff | ✓ |
+| `1A` | Filter 1 Resonance | ✓ |
+| `1B` | Filter 2 Resonance | ✓ |
+| `1C` | Filter 1 Env Amount | ✓ |
+| `1D` | Filter 2 Env Amount | ✓ |
+| `1E` | Slot 5 Amount 2 | ✓ |
+| `1F` | Slot 5 Amount 3 | ✓ |
+| `20` | Filter Balance | ✓ |
+| `21` | Filter Env Attack | ✓ |
+| `22` | Filter Env Decay | ✓ |
+| `23` | Filter Env Sustain | ✓ |
+| `24` | Filter Env Slope | ✓ |
+| `25` | Filter Env Release | ✓ |
 | `26` | Amp Env Attack | ✓ |
+| `27` | Amp Env Decay | ✓ |
 | `28` | Amp Env Sustain | ✓ |
 | `29` | Amp Env Slope | ✓ |
 | `2A` | Amp Env Release | ✓ |
+| `2B` | LFO 1 Rate | ✓ |
+| `2C` | LFO 1 Contour | ✓ |
+| `2D` | LFO 1 > Osc 1 Pitch | ✓ |
+| `2E` | LFO 1 > Osc 2 Pitch | ✓ |
+| `2F` | LFO 1 > Pulse Width | ✓ |
+| `30` | LFO 1 > Resonance | ✓ |
+| `31` | LFO 1 > Filter Gain | ✓ |
+| `32` | LFO 2 Rate | ✓ |
+| `33` | LFO 2 Contour | ✓ |
+| `34` | LFO 2 > Shape | ✓ |
+| `35` | LFO 2 > FM Amount | ✓ |
+| `36` | LFO 2 > Cutoff 1 | ✓ |
+| `37` | LFO 2 > Cutoff 2 | ✓ |
+| `38` | LFO 2 > Panorama | ✓ |
+| `39` | LFO 3 Rate | ✓ |
+| `3A` | LFO 3 > Assign Amount | ✓ |
+| `3B` | Unison Detune | ✓ |
+| `3C` | Pan Spread | ✓ |
 | `3D` | Unison LFO Phase | ✓ |
 | `3E` | Chorus Mix | ✓ |
 | `3F` | Chorus Mod Rate | ✓ |
 | `40` | Chorus Mod Depth | ✓ |
 | `41` | Chorus Delay | ✓ |
 | `42` | Chorus Feedback | ✓ |
+| `43` | Delay Send | ✓ |
+| `44` | Delay Time | ✓ |
 | `45` | Delay Feedback | ✓ |
 | `46` | Delay Mod Rate | ✓ |
 | `47` | Delay Mod Depth | ✓ |
+| `48` | Reverb Send | ✓ |
+| `4B` | Slot 6 Amount 2 | ✓ |
+| `4C` | Slot 4 Amount 2 | ✓ |
+| `4D` | Slot 4 Amount 3 | ✓ |
+| `4E` | Filterbank Resonance | ✓ |
+| `4F` | Filterbank Poles | ✓ |
+| `50` | Slot 2 Amount 3 | ✓ |
+| `51` | Filterbank Slope | ✓ |
+| `52` | Slot 1 Amount 1 | ✓ |
+| `53` | Slot 2 Amount 1 | ✓ |
+| `54` | Slot 2 Amount 2 | ✓ |
+| `55` | Slot 3 Amount 1 | ✓ |
+| `56` | Slot 3 Amount 2 | ✓ |
+| `57` | Slot 3 Amount 3 | ✓ |
+| `59` | Punch Intensity | ✓ |
+| `5A` | Ring Modulator | ✓ |
+| `5B` | Noise Color | ✓ |
 | `5C` | Delay Coloration | ✓ |
+| `5D` | Slot 1 Amount 2 | ✓ |
+| `5E` | Slot 1 Amount 3 | ✓ |
+| `5F` | Distortion Intensity | ✓ |
+| `60` | Filterbank Frequency *(LCD: FreqShifter Frequency)* | ✓ |
+| `61` | Osc 3 Volume | ✓ |
+| `62` | Osc 3 Pitch | ✓ |
+| `63` | Osc 3 Detune | ✓ |
+| `64` | LFO 1 > Assign Amount | ✓ |
+| `65` | LFO 2 > Assign Amount | ✓ |
+| `66` | Phaser Mix | ✓ |
+| `67` | Phaser Mod Rate | ✓ |
+| `68` | Phaser Mod Depth | ✓ |
+| `69` | Phaser Frequency | ✓ |
+| `6A` | Phaser Feedback | ✓ |
+| `6C` | Reverb Time | ✓ |
+| `6D` | Reverb Dampening | ✓ |
+| `6E` | Reverb Coloration | ✓ |
+| `6F` | Reverb PreDelay | ✓ |
+| `71` | Surround Balance | ✓ |
 | `72` | Arp Note Length | ✓ |
 | `73` | Arp Swing Factor | ✓ |
 | `74` | Arp Pattern | ✓ |
+| `75` | EQ Mid Gain | ✓ |
+| `76` | EQ Mid Frequency | ✓ |
+| `78` | Slot 4 Amount 1 | ✓ |
+| `79` | Slot 5 Amount 1 | ✓ |
+| `7A` | Slot 6 Amount 1 | ✓ |
+| `7B` | Osc 1 F-Shift | ✓ |
+| `7C` | Osc 2 F-Shift | ✓ |
+| `7D` | Osc 1 F-Spread | ✓ |
+| `7E` | Osc 2 F-Spread | ✓ |
+| `7F` | Distortion Mix | ✓ |
 
 ```text
 F0 00 20 33 01 00 71 40 4F 00 F7 # Off
 F0 00 20 33 01 00 71 40 4F 26 F7 # Amp Env Attack
+F0 00 20 33 01 00 71 40 4F 43 F7 # Delay Send
 ```
-
-Remaining menu rows: cross-check against [Mod Matrix
-Destinations](#mod-matrix-destinations) — expect **`(4F/<value>)`** on LFO 1
-(hardware TX **`71`/`4F`**); LFO 2 uses a different param byte, same value
-namespace (TBD).
 
 ### Amount (`cmd=0x71`, param `0x50`)
 
@@ -1330,6 +1452,64 @@ Amount](#amount-0x0c)).
 F0 00 20 33 01 00 71 40 50 00 F7 # −100.0 %
 F0 00 20 33 01 00 71 40 50 40 F7 # +0.0 %
 F0 00 20 33 01 00 71 40 50 7F F7 # +100.0 %
+```
+
+---
+
+## LFO 2 Destination {#lfo-2-destination}
+
+**EDIT LFO → LFO 2 → LFO 2 Destination** (modulation depth sub-menu). Worksheet
+**LFO Modulation 2** rows map here. **Cutoff 1+2** is a **linked panel control**
+— one knob sends the same depth to **`70`/`58`** and **`70`/`59`** (Cutoff 1 /
+Cutoff 2); no separate wire param.
+
+### Modulation depth (`cmd=0x70`)
+
+Bipolar **−100.0..+100.0 %** — same encoding as [LFO 1 Destination](#lfo-1-destination)
+depth rows.
+
+| Panel control | Param | Confirmed |
+| --- | --- | --- |
+| Shape 1+2 | **`0x56`** | ✓ |
+| FM Amount | **`0x57`** | ✓ |
+| Cutoff 1 | **`0x58`** | ✓ |
+| Cutoff 2 | **`0x59`** | ✓ |
+| Panorama | **`0x5A`** | ✓ |
+
+```text
+F0 00 20 33 01 00 70 40 56 00 F7 # Shape 1+2 −100.0 %
+F0 00 20 33 01 00 70 40 58 40 F7 # Cutoff 1 +0.0 %
+F0 00 20 33 01 00 70 40 59 53 F7 # Cutoff 2 +29.7 % (linked knob example)
+F0 00 20 33 01 00 70 40 5A 7F F7 # Panorama +100.0 %
+```
+
+### Assign Target (`cmd=0x71`, param `0x51`) {#assign-target-0x51}
+
+**Assign Target** menu — same **`<value>`** namespace as [LFO 1 Assign
+Target](#assign-target-0x4f) (full enum table there). Hardware TX on LFO 2
+confirms matching bytes (**`51`/`xx`** = **`4F`/`xx`**).
+
+```text
+F0 00 20 33 01 00 71 40 51 00 F7 # Off
+F0 00 20 33 01 00 71 40 51 26 F7 # Amp Env Attack
+F0 00 20 33 01 00 71 40 51 43 F7 # Delay Send
+```
+
+### Amount (`cmd=0x71`, param `0x52`)
+
+Active when **Assign Target** ≠ **Off**. Bipolar **−100.0..+100.0 %** (same as
+[LFO 1 Amount](#lfo-1-destination)).
+
+| `<value>` | LCD | Confirmed |
+| --- | --- | --- |
+| `00` | −100.0 % | ✓ |
+| `40` | +0.0 % | ✓ |
+| `7F` | +100.0 % | ✓ |
+
+```text
+F0 00 20 33 01 00 71 40 52 00 F7 # −100.0 %
+F0 00 20 33 01 00 71 40 52 40 F7 # +0.0 %
+F0 00 20 33 01 00 71 40 52 7F F7 # +100.0 %
 ```
 
 ---
@@ -3569,7 +3749,7 @@ Mod Matrix slot **Destination**.
 | 38 | Filterbank Poles |
 | 39 | Filterbank Resonance |
 | 40 | Filterbank Slope |
-| 41 | Filterbank Frequency |
+| 41 | Filterbank Frequency *(LFO Assign Target wire `60`; LCD **FreqShifter Frequency**)* |
 | 42 | LFO 1 > Assign Amount |
 | 43 | LFO 1 Contour |
 | 44 | LFO 1 Rate |

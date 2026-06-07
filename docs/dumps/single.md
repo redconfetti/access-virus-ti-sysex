@@ -321,7 +321,6 @@ Live-edit bytes: [modulators.md](../live-edit/modulators.md). **Dump offsets**:
 | --- | --- | --- | --- |
 | LFO 1 Rate | LFO 1 | | `71` / `0x43` — [LFO Rate](../parameter-options.md#lfo-rate) ( **Clock** = **Off** only) |
 | LFO 1 Clock Divider | LFO 1 | | `71` / `0x12` — [LFO Clock](../parameter-options.md#lfo-clock) (**Off** reveals [Rate](../parameter-options.md#lfo-rate)) |
-| ~~LFO 1 Clock Switch toggle~~ | LFO 1 | | **N/A** — not on TI mk2 panel (worksheet artifact; **Clock** **Off** replaces it) |
 | LFO 1 Keyfollow | LFO 1 | | `71` / `0x48` — [LFO Key Follow](../parameter-options.md#key-follow-0x48) |
 | LFO 1 Trigger Phase | LFO 1 | | `71` / `0x49` — [LFO Trigger Phase](../parameter-options.md#trigger-phase-0x49) |
 | LFO 1 Waveform Shape | LFO 1 | | `71` / `0x44` — [LFO Shape](../parameter-options.md#lfo-shape) |
@@ -338,24 +337,22 @@ Live-edit bytes: [modulators.md](../live-edit/modulators.md). **Dump offsets**:
 | LFO 1 User Destination Amount | LFO 1 Destination | | `71` / `0x50` — [Amount](../parameter-options.md#lfo-1-destination) |
 | LFO 2 Rate | LFO 2 | | `70` / `0x4F` — [LFO Rate](../parameter-options.md#lfo-rate) (**Clock** = **Off** only) |
 | LFO 2 Clock Divider | LFO 2 | | `71` / `0x13` — [LFO Clock](../parameter-options.md#lfo-clock) |
-| ~~LFO 2 Clock Switch toggle~~ | LFO 2 | | **N/A** — not on TI mk2 panel |
 | LFO 2 Keyfollow | LFO 2 | | `70` / `0x54` — [LFO Key Follow](../parameter-options.md#key-follow-0x48) |
 | LFO 2 Trigger Phase | LFO 2 | | `70` / `0x55` — [LFO Trigger Phase](../parameter-options.md#trigger-phase-0x49) |
 | LFO 2 Waveform Shape | LFO 2 | | `70` / `0x50` — [LFO Shape](../parameter-options.md#lfo-shape) |
 | LFO 2 Waveform Contour | LFO 2 | | `70` / `0x53` — [LFO Contour](../parameter-options.md#contour-0x47) |
 | LFO 2 Mode | LFO 2 | | `70` / `0x52` — [LFO Mode](../parameter-options.md#mode-0x46) |
 | LFO 2 Envelope Mode toggle | LFO 2 | | `70` / `0x51` — [LFO Envelope Mode](../parameter-options.md#envelope-mode-0x45) |
-| LFO 2 --> Filter Cutoff 1 | LFO Modulation 2 | | |
-| LFO 2 --> Filter Cutoff 2 | LFO Modulation 2 | | |
-| LFO 2 to Filter 1&2 lock | LFO Modulation 2 | | |
-| LFO 2 --> Shape 1+2 Depth | LFO Modulation 2 | | |
-| LFO 2 --> Panorama | LFO Modulation 2 | | |
-| LFO 2 --> FM Amount | LFO Modulation 2 | | |
-| LFO 2 User Destination | LFO Modulation 2 | | |
-| LFO 2 User Destination Amount | LFO Modulation 2 | | |
+| LFO 2 --> Filter Cutoff 1 | LFO 2 Destination | | `70` / `0x58` — [Cutoff 1](../parameter-options.md#lfo-2-destination) |
+| LFO 2 --> Filter Cutoff 2 | LFO 2 Destination | | `70` / `0x59` — [Cutoff 2](../parameter-options.md#lfo-2-destination) |
+| LFO 2 to Filter 1&2 lock | LFO 2 Destination | | linked **`58`** + **`59`** (panel **Cutoff 1+2**) |
+| LFO 2 --> Shape 1+2 Depth | LFO 2 Destination | | `70` / `0x56` — [Shape 1+2](../parameter-options.md#lfo-2-destination) |
+| LFO 2 --> Panorama | LFO 2 Destination | | `70` / `0x5A` — [Panorama](../parameter-options.md#lfo-2-destination) |
+| LFO 2 --> FM Amount | LFO 2 Destination | | `70` / `0x57` — [FM Amount](../parameter-options.md#lfo-2-destination) |
+| LFO 2 User Destination | LFO 2 Destination | | `71` / `0x51` — [Assign Target](../parameter-options.md#lfo-2-destination) |
+| LFO 2 User Destination Amount | LFO 2 Destination | | `71` / `0x52` — [Amount](../parameter-options.md#lfo-2-destination) |
 | LFO 3 Rate | LFO 3 | | `71` / `0x07` — [LFO Rate](../parameter-options.md#lfo-rate) (**Clock** = **Off** only) |
 | LFO 3 Clock Divider | LFO 3 | | `71` / `0x15` — [LFO Clock](../parameter-options.md#lfo-clock) |
-| ~~LFO 3 Clock Switch toggle~~ | LFO 3 | | **N/A** — not on TI mk2 panel |
 | LFO 3 Keyfollow | LFO 3 | | `71` / `0x0A` — [LFO Key Follow](../parameter-options.md#key-follow-0x48) |
 | LFO 3 Waveform Shape | LFO 3 | | `71` / `0x08` — [LFO Shape](../parameter-options.md#lfo-shape) |
 | LFO 3 Mode | LFO 3 | | `71` / `0x09` — [LFO Mode](../parameter-options.md#mode-0x46) |
