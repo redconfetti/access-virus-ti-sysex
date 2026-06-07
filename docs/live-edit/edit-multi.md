@@ -27,7 +27,7 @@ Enumerated options: [parameter-options.md](../parameter-options.md).
 
 | Param ID | Memory / Target              | Parameter        | Description                                  |
 | -------- | ---------------------------- | ---------------- | -------------------------------------------- |
-| `0x0F`   | Global (`0x17` in dump)      | Master Clock     | Global Multi tempo                           |
+| `0x0F`   | Global (`0x18` in dump)      | Master Clock     | Global Multi tempo                           |
 | `0x23`   | `0x59 + part`                | Low Key          | Part low key limit                           |
 | `0x24`   | `0x69 + part`                | High Key         | Part high key limit                          |
 | `0x25`   | `0x79 + part`                | Transpose        | Part transposition                           |
@@ -58,7 +58,8 @@ unmapped — [arrangements.md](../dumps/arrangements.md#direct-monitoring)).
 ### Master Clock Tempo (`0x0F`)
 
 - Global parameter.
-- Dump correlation: `0x17` in `DUMP_MULTI`.
+- Dump correlation: `0x18` in `DUMP_MULTI` (follows 10-byte name at `0x0D`–`0x16`
+  and null at `0x17`).
 - Supported values: see [Tempo (`bpm - 63`)](#tempo-bpm---63).
 
 ### Low Key (`0x23`)
@@ -209,11 +210,12 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
 - Sent via **`cmd=0x73`**, not `0x72`:
 
  ```text
- F0 00 20 33 01 00 73 00 2D <value> F7
+ F0 00 20 33 01 00 73 00 2D <value> F7   # Edit Multi Part 1
+ F0 00 20 33 01 00 73 40 2D <value> F7   # Single edit buffer
  ```
 
- Part 1 captures confirmed; whether other parts use a part selector byte
- with the same param is **not confirmed**.
+ Part 1 captures confirmed; Single mode uses **`<part>=0x40`**. Whether other
+ Multi parts use a different part byte with the same param is **not confirmed**.
 
 - Dump correlation: **not in `DUMP_MULTI`** (hardware-tested: `73 00 2D`
  Off/`01`, and `72 00 2D 01` — no dump change vs INIT baseline).

@@ -28,6 +28,13 @@ F0 00 20 33 01 <device> 10 <bank> <slot> <TI payload 0x09..0x208> <cs> F7
 A short message like `F0 … 10 01 40 F7` (no payload) will **not** load RAM A
 program 64 — there is nothing to parse.
 
+**Why no “load slot” SysEx in Single mode:** program recall is already **MIDI
+Program Change** (plus bank select as configured). The synth does not need a
+parallel one-message SysEx loader; hosts that want a stored patch should send
+**PC**, or pull **`0x30`** + re-upload **`0x10`** when they need the full
+524-byte body (editors, backup tools). See
+[bank.md — Single mode program recall](bank.md#single-mode-program-recall).
+
 ## Load RAM A program 64 into Multi Part 1 (TI mk2)
 
 Two steps — **Single Request**, then re-send a full **`0x10`** with the

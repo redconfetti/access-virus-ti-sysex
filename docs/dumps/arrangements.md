@@ -47,40 +47,61 @@ Fields match the **Virus TI Edit Multi** screen (TI manual).
 
 #### Summary
 
-| Parameter (TI Edit Multi) | Scope         | Dump offset               |
-| ------------------------- | ------------- | ------------------------- |
-| Multi Program Name        | Global        | `0x0D..`                  |
-| Master Clock Tempo        | Global        | `0x17`                    |
-| Keyboard to MIDI          | Global        | **Not in dump** (desktop) |
-| Enable                    | Part-specific | `0xF8 + part`             |
-| Direct Monitoring         | Part-specific | **Unmapped** (VC only)    |
-| Bank                      | Part-specific | `0x29 + (part−1)`         |
-| Program                   | Part-specific | `0x39 + (part−1)`         |
-| Volume                    | Part-specific | `0x99 + (part−1)`         |
-| Panorama                  | Part-specific | `0xD8 + part`             |
-| MIDI Channel              | Part-specific | `0x49 + (part−1)`         |
-| Output                    | Part-specific | `0xC8 + part`             |
-| Transpose                 | Part-specific | `0x79 + part`             |
-| Detune                    | Part-specific | `0x89 + part`             |
-| Priority                  | Part-specific | `0xF8 + part` (flag)      |
-| Init Volume               | Part-specific | `0xA9 + (part−1)`         |
-| Low Key                   | Part-specific | `0x59 + part`             |
-| High Key                  | Part-specific | `0x69 + part`             |
-| Hold Pedal                | Part-specific | `0xF8 + part` (flag)      |
-| Volume RX                 | Part-specific | `0xF8 + part` (flag)      |
-| Program Change            | Part-specific | `0xF8 + part` (flag)      |
+| Parameter (TI Edit Multi) | Scope         | Dump offset                  |
+| ------------------------- | ------------- | -------------------------    |
+| Multi Program Name        | Global        | `0x0D..0x16` (+ null `0x17`) |
+| Master Clock Tempo        | Global        | `0x18`                       |
+| Keyboard to MIDI          | Global        | **Not in dump** (desktop)    |
+| Enable                    | Part-specific | `0xF8 + part`                |
+| Direct Monitoring         | Part-specific | **Unmapped** (VC only)       |
+| Bank                      | Part-specific | `0x29 + (part−1)`            |
+| Program                   | Part-specific | `0x39 + (part−1)`            |
+| Volume                    | Part-specific | `0x99 + (part−1)`            |
+| Panorama                  | Part-specific | `0xD8 + part`                |
+| MIDI Channel              | Part-specific | `0x49 + (part−1)`            |
+| Output                    | Part-specific | `0xC8 + part`                |
+| Transpose                 | Part-specific | `0x79 + part`                |
+| Detune                    | Part-specific | `0x89 + part`                |
+| Priority                  | Part-specific | `0xF8 + part` (flag)         |
+| Init Volume               | Part-specific | `0xA9 + (part−1)`            |
+| Low Key                   | Part-specific | `0x59 + part`                |
+| High Key                  | Part-specific | `0x69 + part`                |
+| Hold Pedal                | Part-specific | `0xF8 + part` (flag)         |
+| Volume RX                 | Part-specific | `0xF8 + part` (flag)         |
+| Program Change            | Part-specific | `0xF8 + part` (flag)         |
 
 #### Parameters
 
 ##### Multi Program Name
 
-ASCII name for the multi. Dump confirmed at `0x0D..0x16`.
+ASCII name for the multi — **10 bytes** at **`0x0D`–`0x16`** (case as entered on
+the panel), null at **`0x17`**. **No live-edit SysEx** on TI mk2 desktop (panel
+rename → **`DUMP_MULTI`** only; **`receivemidi`** capture empty on rename).
+
+Hardware-verified (edit buffer, INIT MULTI baseline → **`Init Mult4`**):
+
+| Offset   | `INIT MULTI` | `Init Mult4` |
+| -------- | ------------ | ------------ |
+| `0x0D`   | `49` (`I`)   | `49` (`I`)   |
+| `0x0E`   | `4E` (`N`)   | `6E` (`n`)   |
+| `0x0F`   | `49` (`I`)   | `69` (`i`)   |
+| `0x10`   | `54` (`T`)   | `74` (`t`)   |
+| `0x11`   | `20` (sp)    | `20` (sp)    |
+| `0x12`   | `4D` (`M`)   | `4D` (`M`)   |
+| `0x13`   | `55` (`U`)   | `75` (`u`)   |
+| `0x14`   | `4C` (`L`)   | `6C` (`l`)   |
+| `0x15`   | `54` (`T`)   | `74` (`t`)   |
+| `0x16`   | `49` (`I`)   | `34` (`4`)   |
+| `0x17`   | `00`         | `00`         |
+
+Edit flag **`0x0A`** also toggles (`00` → `01`) on rename.
 
 ##### Master Clock Tempo
 
 Global tempo for all parts in the Multi (**63–190** bpm), overriding
-Single-program Master Clock settings. `stored = bpm - 63` (`120`→`0x39`,
-`124`→`0x3D`); INIT MULTI baseline.
+Single-program Master Clock settings. Dump at **`0x18`**
+(`stored = bpm - 63`; `120`→`0x39`, `124`→`0x3D`); INIT MULTI baseline.
+Live edit: **`72` / `0x0F`** — see [edit-multi.md](../live-edit/edit-multi.md).
 
 ##### Keyboard to MIDI
 
@@ -304,8 +325,9 @@ Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
 
 | Offset(s)     | Field                          | Encoding                              | Supported values                                                                                                       |
 | ------------- | ------------------------------ | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `0x0D..0x16`  | Multi name                     | ASCII + `0x00`                        | `"INIT MULTI"` + null; tempo follows at **`0x17`**                                                                     |
-| `0x17`        | Master Clock Tempo             | `stored = bpm - 63`                   | UI `63..190` → `0x00..0x7F`; default **`0x39`** (120 bpm)                                                              |
+| `0x0D..0x16`  | Multi name                     | 10 × ASCII                            | `"INIT MULTI"` or `"Init Mult4"`; panel truncates/pads to 10 chars                                                     |
+| `0x17`        | Name terminator                | `0x00`                                | Null after name field                                                                                                  |
+| `0x18`        | Master Clock Tempo             | `stored = bpm - 63`                   | UI `63..190` → `0x00..0x7F`; default **`0x39`** (120 bpm)                                                              |
 | `0x29..0x38`  | Part bank (16 bytes)           | Sequential bank index                 | See [Part bank index](#part-bank-index); Parts 2–16 `0x00` in captures                                                 |
 | `0x39..0x48`  | Part program (16 bytes)        | Direct `0..127`                       | Part 1 at `0x39`: UI `64` → `0x40`, UI `65` → `0x41`; Parts 2–16 often `0x7F` in baseline                              |
 | `0x49..0x58`  | Part MIDI channels (16 bytes)  | Zero-based channel index              | `0x00..0x0F` -> MIDI channels `1..16`                                                                                  |

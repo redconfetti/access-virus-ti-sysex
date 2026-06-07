@@ -13,3 +13,6 @@ Bulk SysEx — program files, banks, arrangements (**`DUMP_SINGLE`**,
 
 **Live edit** (per-knob SysEx while editing):
 [live-edit/README.md](../live-edit/README.md)
+
+**Gaps** (what is not mapped yet):
+[unmapped.md](../unmapped.md)

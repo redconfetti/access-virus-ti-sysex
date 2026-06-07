@@ -94,26 +94,33 @@ matches its configured **MIDI Device ID** (CONFIG). Captures in this doc
 use **`00`** (device 1) unless noted.
 
 At least **All Delays** (`0x1B`) is **transmitted by the Virus** when
-changed on the front panel. Other globals may need re-verification on the
-panel where **Hardware TX** is still blank below.
+changed on the front panel. Many other **`0x73`** globals are **RX only**
+(host → synth); the panel does not emit SysEx when they are edited — see
+[Knob Response](#knob-response-0x75) and [CONFIG → Inputs / USB (RX only)](#config-inputs--usb-rx-only).
 
 ## Summary
 
 | Param ID | Parameter              | Value encoding                                              | `DUMP_MULTI` | Hardware TX      |
 | -------- | ---------------------- | ----------------------------------------------------------- | ------------ | ---------------- |
+| `0x09`   | USB Audio Mode         | See [USB Audio Mode](#usb-audio-mode-0x09)                  | Unverified   | No; RX ✓         |
 | `0x10`   | Edit mode / focus      | See [Edit mode 0x10](#edit-mode-0x10-tentative)             | Unverified   | Yes (panel)      |
 | `0x19`   | All EQs                | See [All EQs](#all-eqs-0x19)                                | Unverified   | —                |
 | `0x1A`   | All Arpeggiators       | See [All Arpeggiators](#all-arpeggiators-0x1a)              | Unverified   | —                |
 | `0x1B`   | All Delays             | See [All Delays](#all-delays-0x1b)                          | Unverified   | Yes              |
 | `0x1C`   | All Reverbs            | See [All Reverbs](#all-reverbs-0x1c)                        | Unverified   | —                |
+| `0x1D`   | Input Characteristic   | See [Input Characteristic](#input-characteristic-0x1d)      | Unverified   | No; RX ✓         |
+| `0x1F`   | Input Sensitivity      | See [Input Sensitivity](#input-sensitivity-0x1f)            | Unverified   | No; RX ✓         |
 | `0x28`   | Navigation             | See [Navigation](#navigation-0x28) — **`73 40`** scope byte | Unverified   | ✓                |
 | `0x29`   | Value Wrapping         | See [Value Wrapping](#value-wrapping-0x29)                  | Unverified   | ✓                |
+| `0x2B`   | Input Source           | See [Input Source](#input-source-0x2b)                      | Unverified   | No; RX ✓         |
 | `0x32`   | BPM Brightness         | See [BPM Brightness](#bpm-brightness-0x32)                  | Unverified   | —                |
 | `0x33`   | LED Lux                | See [LED Lux](#led-lux-0x33)                                | Unverified   | —                |
 | `0x35`   | Random PG — Scope      | See [Randomize Scope](#randomize-scope-0x35)                | Unverified   | ✓                |
 | `0x36`   | Random PG — Strength   | See [Randomize Strength](#randomize-strength-0x36)          | Unverified   | ✓                |
 | `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change-0x55)    | Unverified   | —                |
-| `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx-0x57)    | Unverified   | —                |
+| `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx-0x57)    | Unverified   | No; RX ✓         |
+| `0x5A`   | Input Direct Thru      | See [Input Direct Thru](#input-direct-thru-0x5a)            | Unverified   | No; RX ✓         |
+| `0x5B`   | Input Boost            | See [Input Boost](#input-boost-0x5b)                        | Unverified   | No; RX ✓         |
 | `0x5D`   | MIDI Device ID         | See [MIDI Device ID](#midi-device-id-0x5d)                  | Unverified   | No (panel)       |
 | `0x5E`   | MIDI Controller Page A | See [MIDI Controller Page A](#midi-controller-page-a-0x5e)  | Unverified   | —                |
 | `0x5F`   | MIDI Controller Page B | See [MIDI Controller Page B](#midi-controller-page-b-0x5f)  | Unverified   | —                |
@@ -387,10 +394,12 @@ F0 00 20 33 01 00 73 00 55 00 F7
 F0 00 20 33 01 00 73 00 55 01 F7
 ```
 
-### Global MIDI Volume RX (`0x57`)
+### Global MIDI Volume RX (`0x57`) {#global-midi-volume-rx-0x57}
 
-Global receive **MIDI Volume** (CC#7). Distinct from per-part **Volume RX**
-in Edit Multi (packed flag at `0xF8 + part` in `DUMP_MULTI`).
+**EDIT CONFIG → MIDI → MIDI Volume** (global CC#7 receive). **`cmd=0x73`**, part
+**`00`**. **Hardware TX:** **No** (RX only — host **`sendmidi`** confirmed).
+**Not** in **`DUMP_SINGLE`**. Distinct from per-part **Volume RX** in Edit Multi
+(packed flag at `0xF8 + part` in `DUMP_MULTI`).
 
 | Value | Setting  |
 | ----- | -------- |
@@ -398,11 +407,8 @@ in Edit Multi (packed flag at `0xF8 + part` in `DUMP_MULTI`).
 | `01`  | Enabled  |
 
 ```text
-# Disabled
-F0 00 20 33 01 00 73 00 57 00 F7
-
-# Enabled
-F0 00 20 33 01 00 73 00 57 01 F7
+F0 00 20 33 01 00 73 00 57 00 F7 # Disabled
+F0 00 20 33 01 00 73 00 57 01 F7 # Enabled
 ```
 
 ### MIDI Device ID (`0x5D`) {#midi-device-id-0x5d}
@@ -535,30 +541,107 @@ F0 00 20 33 01 00 73 00 75 02 F7 # Snap
 F0 00 20 33 01 00 73 00 75 03 F7 # Rel
 ```
 
-### Knob Display Time {#knob-display-time}
+<a id="config-inputs--usb-rx-only"></a>
 
-**EDIT CONFIG → Knob Behavior → Display Time**.
+### CONFIG → Inputs / USB (RX only)
 
-| Panel           | Notes                 |
-| --------------- | --------------------- |
-| **Off**         |                       |
-| **1** … **127** | Integer seconds (LCD) |
+**EDIT CONFIG → Inputs / USB** (and related input level menus). All use
+**`cmd=0x73`**, part **`00`**. **Hardware TX:** **No** on TI mk2 desktop
+(confirmed / user capture). **RX:** host **`sendmidi`** confirmed for the
+examples below. **Not** in **`DUMP_SINGLE`**.
 
-**SysEx:** **not captured** — param byte / wire encoding **TBD**. **Hardware
-TX:** **No** (panel edits do not emit SysEx on TI mk2 desktop).
+Param bytes are **not global** across `cmd` — e.g. **`0x5B`** here is **Input
+Boost**, not Edit Single **Patch Volume** (`70`/`5B`).
 
-### Knob Target {#knob-target}
+#### USB Audio Mode (`0x09`) {#usb-audio-mode-0x09}
 
-**EDIT CONFIG → Knob Behavior → Target**.
+**EDIT CONFIG → USB Audio Mode** (output/input routing preset).
 
-| Panel option      |
-| ----------------- |
-| **Internal**      |
-| **Internal MIDI** |
-| **MIDI**          |
+| LCD           | `<value>` |
+| ------------- | --------- |
+| 2 outs / 0 in | `00`      |
+| 3 outs / 0 in | `01`      |
+| 3 outs / 1 in | `02`      |
 
-**SysEx:** **not captured** — may or may not be controllable over MIDI.
-**Hardware TX:** **No** (panel edits do not emit SysEx on TI mk2 desktop).
+```text
+F0 00 20 33 01 00 73 00 09 00 F7 # 2 outs / 0 in
+F0 00 20 33 01 00 73 00 09 01 F7 # 3 outs / 0 in
+F0 00 20 33 01 00 73 00 09 02 F7 # 3 outs / 1 in
+```
+
+#### Input Direct Thru (`0x5A`) {#input-direct-thru-0x5a}
+
+**EDIT CONFIG → Input Direct Thru**. **`0`–`127`** → `stored = lcd`.
+
+```text
+F0 00 20 33 01 00 73 00 5A 00 F7 # 0
+F0 00 20 33 01 00 73 00 5A 7F F7 # 127
+```
+
+#### Input Sensitivity (`0x1F`) {#input-sensitivity-0x1f}
+
+**EDIT CONFIG → Input Sensitivity** (analog input level preset). **`stored =
+index`**.
+
+| LCD       | `<value>` |
+| --------- | --------- |
+| +16 dBv   | `00`      |
+| +5 dBv    | `01`      |
+| −8 dBv    | `02`      |
+| −16 dBv   | `03`      |
+
+```text
+F0 00 20 33 01 00 73 00 1F 00 F7 # +16 dBv
+F0 00 20 33 01 00 73 00 1F 01 F7 # +5 dBv
+F0 00 20 33 01 00 73 00 1F 02 F7 # −8 dBv
+F0 00 20 33 01 00 73 00 1F 03 F7 # −16 dBv
+```
+
+**Not** Edit FX **Input Follower → Sensitivity** (`70`/`38` → dump **`0x040`**).
+
+#### Input Boost (`0x5B`) {#input-boost-0x5b}
+
+**EDIT CONFIG → Input Boost**. **`Off`**, then **`1`–`127`** → `stored = lcd`
+(`00` = Off).
+
+```text
+F0 00 20 33 01 00 73 00 5B 00 F7 # Off
+F0 00 20 33 01 00 73 00 5B 01 F7 # 1
+F0 00 20 33 01 00 73 00 5B 7F F7 # 127
+```
+
+**Not** Edit Single **Patch Volume** (`70`/`5B` → dump **`0x063`**).
+
+#### Input Source (`0x2B`) {#input-source-0x2b}
+
+**EDIT CONFIG → Input Source**.
+
+| LCD     | `<value>` |
+| ------- | --------- |
+| Analog  | `00`      |
+| S/PDIF  | `01`      |
+
+```text
+F0 00 20 33 01 00 73 00 2B 00 F7 # Analog
+F0 00 20 33 01 00 73 00 2B 01 F7 # S/PDIF
+```
+
+#### Input Characteristic (`0x1D`) {#input-characteristic-0x1d}
+
+**EDIT CONFIG → Input Characteristic** (analog input EQ curve).
+
+| LCD    | `<value>` |
+| ------ | --------- |
+| Linear | `00`      |
+| Phono  | `01`      |
+
+```text
+F0 00 20 33 01 00 73 00 1D 00 F7 # Linear
+F0 00 20 33 01 00 73 00 1D 01 F7 # Phono
+```
+
+**Not** Edit FX **Character** intensity (`70`/`15` → dump **`0x01D`**) — same
+param **hex** on a different **`cmd`**.
 
 ### Memory Protect (`0x76`)
 

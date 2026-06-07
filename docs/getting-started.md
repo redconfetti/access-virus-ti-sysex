@@ -129,6 +129,11 @@ F0 00 20 33 01 00 10 00 00 … F7
 F0 00 20 33 01 00 71 00 19 00 F7
 ```
 
+**Single mode “load program”:** there is no short SysEx “load bank/slot by
+reference” — use **MIDI Program Change**, or **`0x30` + full `0x10` upload**
+for editor/backup workflows. See
+[bank.md — Single mode program recall](dumps/bank.md#single-mode-program-recall).
+
 Not everything is SysEx: some controls use **MIDI CC** only (e.g. Patch
 Volume = CC 91). See [control-change.md](control-change.md).
 

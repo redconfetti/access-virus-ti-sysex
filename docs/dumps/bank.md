@@ -55,6 +55,23 @@ sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 30 00 40
 sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 30 00 00
 ```
 
+### No “load program by slot” SysEx in Single mode {#single-mode-program-recall}
+
+There is **no** short SysEx that means “load RAM bank *X* program *Y* into the
+Single edit buffer” without transferring the full **524-byte** `DUMP_SINGLE`
+body. **`0x10`** upload always carries the entire program; a header-only
+message like `F0 … 10 01 40 F7` has **no payload to parse** — see
+[single-dump-upload.md](single-dump-upload.md).
+
+**Single mode program recall uses MIDI Program Change** (and Bank Select if
+your setup maps banks that way) — the same mechanism as picking a slot on the
+front panel. SysEx **`0x30`** is for **reading** a stored program into a dump
+message (backup/editor workflow), not a one-byte “load” substitute for PC.
+
+To copy a RAM slot into the edit buffer without Program Change, **Single
+Request** (`0x30`) the slot, then **Single Dump** (`0x10`) upload with header
+**`10 00 40`** (Single edit buffer) — full transfer, not a reference.
+
 ### Single Bank Request (`0x32`) {#single-bank-request-0x32}
 
 Classic Access docs: **SINGLE BANK REQUEST** — ask the synth to send **all 128**

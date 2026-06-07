@@ -384,8 +384,8 @@ F0 00 20 33 01 00 70 00 21 7F F7 # 127
 | -------------- | ---------------------------------------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 62 <value> F7`                                        |
 | Panel range    | **`0`–`127`** → `stored = value`                                                   |
-| Dump offset    | `0x0EA`                                                                              |
-| Confirmed      | Hardware TX + dump diff (TI mk2)                                                     |
+| Dump offset    | `0x0EA`                                                                            |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                                                   |
 
 ```text
 F0 00 20 33 01 00 71 40 62 00 F7 # 0
@@ -891,7 +891,7 @@ visibility](../parameter-options.md#others-panel-visibility). Sub-page order
 | ------------------ | ----------------------- | -------------------------------------------------------------------------------------- |
 | **Filter Bank**    | **All types** confirmed | [Filter Bank](#filter-bank) — **`13`–`19`** on **`6E`**                                |
 | **Vocoder**        | **`00`–`06`** confirmed | [Vocoder](#vocoder) — **Mode** **`71`/`27`**; other rows **`6E`/`28`–`3A`**            |
-| **Input Follower** | **`01`–`03`** confirmed | [Input Follower](#input-follower) — **`71`/`26`**, **`70`/`36`**, **`38`**, **`3A`** |
+| **Input Follower** | **`01`–`03`** confirmed | [Input Follower](#input-follower) — **`71`/`26`**, **`70`/`36`**, **`38`**, **`3A`**   |
 
 #### Filter Bank {#filter-bank}
 
@@ -1331,12 +1331,12 @@ F0 00 20 33 01 00 70 40 30 7F F7 # 127
 **EDIT FX → Others → Vocoder → Carrier Attack** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
 **Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
 
-| Item           | Value                                       |
-| -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 36 <value> F7` |
-| Panel range    | **`0`–`127`** → `stored = value`            |
+| Item           | Value                                                                                     |
+| -------------- | -------------------------------------------                                               |
+| Message format | `F0 00 20 33 01 00 70 <part> 36 <value> F7`                                               |
+| Panel range    | **`0`–`127`** → `stored = value`                                                          |
 | Dump offset    | `0x03E` — same byte as [Input Follower Attack](#input-follower-attack-cmd0x70-param-0x36) |
-| Confirmed      | Hardware TX + dump diff (TI mk2)            |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                                                          |
 
 ```text
 F0 00 20 33 01 00 70 40 36 00 F7 # 0
@@ -1382,12 +1382,12 @@ F0 00 20 33 01 00 70 40 39 7F F7 # 127
 **EDIT FX → Others → Vocoder → Bands** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
 **Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**). Enum: [Vocoder Bands](../parameter-options.md#vocoder-bands).
 
-| Item           | Value                                                      |
-| -------------- | ---------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 3A <value> F7`                |
-| Value encoding | **`00`–`1F`** → panel **`01`–`32`** (`bands = stored + 1`) |
+| Item           | Value                                                                                       |
+| -------------- | ----------------------------------------------------------                                  |
+| Message format | `F0 00 20 33 01 00 70 <part> 3A <value> F7`                                                 |
+| Value encoding | **`00`–`1F`** → panel **`01`–`32`** (`bands = stored + 1`)                                  |
 | Dump offset    | `0x042` — same byte as [Input Follower Release](#input-follower-release-cmd0x70-param-0x3a) |
-| Confirmed      | Hardware TX + dump diff (TI mk2)                           |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                                                            |
 
 ```text
 F0 00 20 33 01 00 70 40 3A 00 F7 # 01
@@ -1441,7 +1441,7 @@ Select](#input-follower-input-select-cmd0x71-param-0x26) ≠ **Off**.
 | Message format | `F0 00 20 33 01 00 70 <part> 36 <value> F7`        |
 | Panel range    | **0..127** → `stored = lcd`                        |
 | Dump offset    | `0x03E`                                            |
-| Confirmed      | Hardware TX + dump diff (TI mk2)                    |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                   |
 
 ```text
 F0 00 20 33 01 00 70 40 36 00 F7 # 0
@@ -1457,7 +1457,7 @@ F0 00 20 33 01 00 70 40 36 7F F7 # 127
 | Message format | `F0 00 20 33 01 00 70 <part> 3A <value> F7`        |
 | Panel range    | **0..127** → `stored = lcd`                        |
 | Dump offset    | `0x042`                                            |
-| Confirmed      | Hardware TX + dump diff (TI mk2)                    |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                   |
 
 ```text
 F0 00 20 33 01 00 70 40 3A 00 F7 # 0

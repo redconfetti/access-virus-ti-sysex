@@ -165,7 +165,16 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
 - **`0x0DC`–`0x0E2`, `0x0E4`–`0x0E8`, `0x0EC`–`0x0ED`** — Phaser, EQ gains,
    Distortion type/intensity Page B (`71`/`54`–`60`, `5C`–`5F`, `64`–`65`)
 - **`0x0E9`–`0x0EA`** — Character Stereo Widener / Speaker Cabinet intensity + frequency (`71`/`61`, `62`)
+- **`0x012`** — Panorama (`70`/`0A`)
+- **`0x063`** — Patch Volume (`70`/`5B`)
+- **`0x065`** — Transpose (`70`/`5D`)
+- **`0x066`** — Key Mode (`70`/`5E`)
+- **`0x0A1`–`0x0A4`** — Edit Single Common: Smooth Mode, Bend Up/Down, Bender Scale (`71`/`19`–`1C`)
 - **`0x0A8`** — Filter Cutoff Link (`71`/`20`)
+- **`0x0BB`–`0x0BD`** — Soft Knob 1–3 **Name** (`71`/`33`–`35`)
+- **`0x0C2`** — Surround Balance (`71`/`3A`)
+- **`0x0C6`–`0x0C8`** — Soft Knob 1–3 **Function As…** (`71`/`3E`–`40`; **`0x0C8`** = Mod Matrix slot 1 Source wire)
+- **`0x103`–`0x104`** — Name Cat 1 / 2 (`71`/`7B`, `7C`)
 - **`0x159`–`0x162`** — Envelope 3 / 4 (`6E`/`50`–`59`)
 - **`0x183`** — Filter Common Pan Spread (`6E`/`7A`, Split routing)
 - **`0x0B7`–`0x0C5`** — **Edit Single → Velocity Map** (`71`/`2F`–`32`, `36`–`39`, `3C`–`3D`)
@@ -175,7 +184,7 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
 - **`0x18A`…`0x1E9`** — **32** step triplets (**length**, **velocity**,
  **enable**; **3** bytes per step) — see
  [Arpeggiator user pattern dump](../live-edit/arpeggiator.md#arpeggiator-user-pattern-dump)
-- **~0xF8–0x103 – Patch name and nearby globals**
+- **~0xF8–0x103 – Patch name, categories, and nearby globals**
 - Contains the ASCII patch name `-INIT-` padded with spaces:
 - The ASCII sequence `2d 49 4e 49 54 2d 20 20 20`
  (`-INIT-` padded with spaces)
@@ -199,7 +208,7 @@ Most rows are **Single-program** parameters to correlate with
 Multi edit parameters are in
 [Multi parameter map](arrangements.md#multi-parameter-map).
 
-**413** controls in **11** categories.
+**403** controls in **11** categories.
 
 ### Oscillators
 
@@ -354,8 +363,7 @@ separate dump bytes **`0x0A6`** / **`0x0A7`** — see
 | Voice Saturation Type / Curve         | Filter Common              |                 | **N/A** on TI Saturation menu (only Osc Volume)                                                                                                                       |
 | Filter knob target (Res / Env Amt)    | Filter Common              | `0x102`         | [`71`/`7A`](../live-edit/filters.md#filters-select) — **SELECT** (`00` F1 … `02` F1+F2)                                                                               |
 | Filter Keyfollow Base                 | Filter Common              | `0x0A9`         | `71` / `0x21` (C-1..G9)                                                                                                                                               |
-| Filter Cutoff Link toggle             | Filter Common              | `0x0A8`         | `71` / `0x20` — **`00`** Off / **`01`** On (`<part>=0x40`)                                                                                                                                                                            |
-| ~~Filter Link toggle~~                | Filter Common              | —               | Unconfirmed — may differ from **knob target** `7A`                                                                                                                    |
+| Filter Cutoff Link toggle             | Filter Common              | `0x0A8`         | `71` / `0x20` — **`00`** Off / **`01`** On (`<part>=0x40`)                                                                                                            |
 | Filter Balance                        | Filter Common              | `0x038`         | `70` / `0x30` (bipolar `ui+64`)                                                                                                                                       |
 | Pan Spread                            | Filter Common              | `0x183`         | `6E` / `0x7A` (Split routing only)                                                                                                                                    |
 | ~~Filter Envelope Select~~            | —                          | —               | **N/A** on TI mk2 — no panel control; use **Filter 1/2 Env Polarity** (`71`/`1E`, `71`/`1F`) and [FILTERS SELECT](../live-edit/filters.md#filters-select) (`71`/`7A`) |
@@ -433,9 +441,6 @@ Live-edit bytes: [modulators.md](../live-edit/modulators.md). **Dump offsets**
 | LFO 3 Keyfollow                                    | LFO 3             | `0x092`           | `71` / `0x0A` — [LFO Key Follow](../parameter-options.md#key-follow-0x48)                                                 |
 | LFO 3 Waveform Shape                               | LFO 3             | `0x090`           | `71` / `0x08` — [LFO Shape](../parameter-options.md#lfo-shape)                                                            |
 | LFO 3 Mode                                         | LFO 3             | `0x091`           | `71` / `0x09` — [LFO Mode](../parameter-options.md#mode-0x46)                                                             |
-| LFO 3 Waveform Contour                             | LFO 3             |                   | **N/A** — not on TI mk2 panel                                                                                             |
-| LFO 3 Trigger Phase                                | LFO 3             |                   | **N/A** — not on TI mk2 panel                                                                                             |
-| LFO 3 Envelope Mode toggle                         | LFO 3             |                   | **N/A** — not on TI mk2 panel                                                                                             |
 | LFO 3 Fade In Time                                 | LFO 3 Destination | `0x095`           | `71` / `0x0D` — [Fade In](../parameter-options.md#fade-in-0x0d) (panel **Fade In**; **`0`–`127`**)                        |
 | LFO 3 User Destination                             | LFO 3 Destination | `0x093`           | `71` / `0x0B` — [Assign Target](../parameter-options.md#assign-target-0x0b)                                               |
 | LFO 3 User Destination Amount                      | LFO 3 Destination | `0x094`           | `71` / `0x0C` — [Amount](../parameter-options.md#amount-0x0c)                                                             |
@@ -521,9 +526,9 @@ Shared Page A chorus bytes (`0x070`–`0x076`) apply across chorus types; type a
 
 | Control                         | SubCategory                   | Dump offset       | Live edit                                                                                                                                                                                                                                                                                                 |
 | ------------------------------- | ----------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Character Type                  | Characters                    | `0x123`           | [`6E`/`1A`](../live-edit/effects.md#character-type-cmd0x6e-param-0x1a) — preset types **`01`–`06`** change **Type** only (no other **EDIT FX** rows)                                                                                                                                                       |
+| Character Type                  | Characters                    | `0x123`           | [`6E`/`1A`](../live-edit/effects.md#character-type-cmd0x6e-param-0x1a) — preset types **`01`–`06`** change **Type** only (no other **EDIT FX** rows)                                                                                                                                                      |
 | Character Intensity             | Characters                    | `0x01D` / `0x0E9` | Analog Boost [`70`/`15`](../live-edit/effects.md#character-intensity-cmd0x70-param-0x15) → **`0x01D`**; Stereo Widener / Speaker Cabinet [`71`/`61`](../live-edit/effects.md#character-intensity-stereo-widener-cmd0x71-param-0x61) → **`0x0E9`**; [LCD](../parameter-options.md#character-intensity-lcd) |
-| Character Tune / Frequency      | Characters                    | `0x029` / `0x0EA` | Analog Boost [`70`/`21`](../live-edit/effects.md#character-frequency-cmd0x70-param-0x21) → **`0x029`**; Stereo Widener / Speaker Cabinet [`71`/`62`](../live-edit/effects.md#character-frequency-stereo-widener-cmd0x71-param-0x62) → **`0x0EA`**                                                                                     |
+| Character Tune / Frequency      | Characters                    | `0x029` / `0x0EA` | Analog Boost [`70`/`21`](../live-edit/effects.md#character-frequency-cmd0x70-param-0x21) → **`0x029`**; Stereo Widener / Speaker Cabinet [`71`/`62`](../live-edit/effects.md#character-frequency-stereo-widener-cmd0x71-param-0x62) → **`0x0EA`**                                                         |
 | Chorus Type                     | Chorus                        | `0x06F`           | [`70`/`67`](../live-edit/effects.md#chorus-type-cmd0x70-param-0x67) — **`01`–`06`** ([enum](../parameter-options.md#chorus-type))                                                                                                                                                                         |
 | Chorus Mix                      | Chorus Classic                | `0x071`           | [`70`/`69`](../live-edit/effects.md#chorus-mix-cmd0x70-param-0x69)                                                                                                                                                                                                                                        |
 | Chorus Delay                    | Chorus Classic                | `0x074`           | [`70`/`6C`](../live-edit/effects.md#chorus-delay-cmd0x70-param-0x6c)                                                                                                                                                                                                                                      |
@@ -605,7 +610,6 @@ hardware-verified on clean **`-INIT-`** (`30 00 40` / `<part>=0x40`;
 
 | Control                            | SubCategory        | Dump offset | Live edit                                                                                                                                       |
 | ---------------------------------- | ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| FX Delay Switch                    | Delay              |             | No TI mk2 **EDIT FX** control                                                                                                                   |
 | Delay Send                         | Delay              | `0x079`     | [`70`/`71`](../live-edit/effects.md#delay-send-cmd0x70-param-0x71) — [LCD](../parameter-options.md#delay-send-lcd)                              |
 | Delay Type                         | Delay              | `0x113`     | [`6E`/`0A`](../live-edit/effects.md#delay-type-cmd0x6e) — [enum](../parameter-options.md#delay-type)                                            |
 | Delay Mode                         | Delay              | `0x078`     | [`70`/`70`](../live-edit/effects.md#delay-mode-cmd0x70-param-0x70) — [Mode](../parameter-options.md#delay-mode); **`01`–`16`**                  |
@@ -634,7 +638,6 @@ hardware-verified on clean **`-INIT-`** (`30 00 40` / `<part>=0x40`;
 | Delay Tape Delay Center Frequency  | Delay Tape Doppler | `0x07F`     | [`70`/`77`](../live-edit/effects.md#delay-tape-frequency-cmd0x70-param-0x77) — [Frequency](../parameter-options.md#delay-tape-frequency)        |
 | Delay Tape Delay Bandwidth         | Delay Tape Doppler | `0x11A`     | [`6E`/`11`](../live-edit/effects.md#delay-tape-bandwidth-cmd0x6e-param-0x11) — [Bandwidth](../parameter-options.md#delay-tape-bandwidth)        |
 | Delay Tape Delay Modulation        | Delay Tape Doppler | `0x07D`     | [`70`/`75`](../live-edit/effects.md#delay-tape-modulation-cmd0x70-param-0x75) — [Modulation](../parameter-options.md#delay-tape-modulation)     |
-| FX Reverb Switch                   | Reverb             |             | No TI mk2 **EDIT FX** control                                                                                                                   |
 | Reverb Send                        | Reverb             | `0x10B`     | [`6E`/`02`](../live-edit/effects.md#reverb-send-cmd0x6e) — [LCD](../parameter-options.md#reverb-send-lcd)                                       |
 | Reverb Mode                        | Reverb             | `0x10A`     | [`6E`/`01`](../live-edit/effects.md#reverb-mode-cmd0x6e) — **`00`–`03`**                                                                        |
 | Reverb Type                        | Reverb             | `0x10C`     | [`6E`/`03`](../live-edit/effects.md#reverb-type-cmd0x6e)                                                                                        |
@@ -651,10 +654,10 @@ hardware-verified on clean **`-INIT-`** (`30 00 40` / `<part>=0x40`;
 | Vocoder Envelope Attack            | Vocoder            | `0x03E`     | [`70`/`36`](../live-edit/effects.md#vocoder-carrier-attack-cmd0x70-param-0x36) — **Carrier Attack**                                             |
 | Vocoder Envelope Release           | Vocoder            | `0x03F`     | [`70`/`37`](../live-edit/effects.md#vocoder-carrier-release-cmd0x70-param-0x37) — **Carrier Release**                                           |
 | Vocoder Carrier Center Frequency   | Vocoder            | `0x030`     | [`70`/`28`](../live-edit/effects.md#vocoder-center-freq-cmd0x70-param-0x28) — **Center Freq**                                                   |
-| Vocoder Carrier Frequency Spread   | Vocoder            | `0x037`     | [`70`/`2F`](../live-edit/effects.md#vocoder-spread-cmd0x70-param-0x2f) — **Spread**                                                              |
-| Vocoder Carrier Q-Factor           | Vocoder            | `0x033`     | [`70`/`2B`](../live-edit/effects.md#vocoder-q-factor-cmd0x70-param-0x2b) — **Q-Factor**                                                          |
+| Vocoder Carrier Frequency Spread   | Vocoder            | `0x037`     | [`70`/`2F`](../live-edit/effects.md#vocoder-spread-cmd0x70-param-0x2f) — **Spread**                                                             |
+| Vocoder Carrier Q-Factor           | Vocoder            | `0x033`     | [`70`/`2B`](../live-edit/effects.md#vocoder-q-factor-cmd0x70-param-0x2b) — **Q-Factor**                                                         |
 | Vocoder Modulator Frequency Offset | Vocoder            | `0x031`     | [`70`/`29`](../live-edit/effects.md#vocoder-mod-offset-cmd0x70-param-0x29) — **Mod Offset**                                                     |
-| Vocoder Modulator Input            | Vocoder            | `0x0AF`     | [Mode](../parameter-options.md#vocoder-mode) **`04`** In L / **`05`** In L+R / **`06`** In R — same byte as **Mode**                             |
+| Vocoder Modulator Input            | Vocoder            | `0x0AF`     | [Mode](../parameter-options.md#vocoder-mode) **`04`** In L / **`05`** In L+R / **`06`** In R — same byte as **Mode**                            |
 
 ### Common
 
@@ -664,36 +667,36 @@ hardware-verified on clean **`-INIT-`** (`30 00 40` / `<part>=0x40`;
 | Unison Detune                      | Edit Single → Unison | `0x202`                | `6F` / `0x79` — panel visible when Voices ≥ Twin; **0..127** `stored = lcd`                                                            |
 | Unison Pan Spread                  | Edit Single → Unison | `0x203`                | `6F` / `0x7A` — **0.0..100.0 %** (`× 100 / 128`, `7F` → 100 %)                                                                         |
 | Unison LFO Phase Offset            | Edit Single → Unison | `0x204`                | `6F` / `0x7B` — **−64..+63** → `ui+64`                                                                                                 |
-| Transpose / Patch Transpose        | Common Parameters    |                        | `70` / `0x5D` (CC 93) — **−64..+63** → `ui+64` — [Transpose](edit-single.md#transpose--patch-transpose-0x5d-cmd0x70--cc-93             |
+| Transpose / Patch Transpose        | Common Parameters    | `0x065`                | `70` / `0x5D` (CC 93) — **−64..+63** → `ui+64` — [Transpose](edit-single.md#transpose--patch-transpose-0x5d-cmd0x70--cc-93)            |
 | ~~Part Detune~~                    | —                    | —                      | **Multi** detune (`0x72`/`0x26`) — not Edit Single; CSV lists VC Common access only                                                    |
-| Multi Tempo / Master Clock         | Common Parameters    | `0x17` in `DUMP_MULTI` | `72` / `0x0F` — **63..190** bpm → `stored = bpm - 63` — [Multi Tempo](edit-single.md#multi-tempo--master-clock-0x0f-cmd0x72            |
-| Parameter Smooth Mode              | Common Parameters    | **Not in dump**        | `71` / `0x19` — [Control Smooth Mode / clock quantize](../parameter-options.md#control-smooth-mode--clock-quantize)                    |
-| Oscillator Section Keyboard Mode   | Common Parameters    |                        | `70`/`0x5E` or CC 94                                                                                                                   |
-| Patch Volume                       | Common Parameters    |                        | `70` / `0x5B` (CC 91) — **0..127** direct — [Patch Volume](edit-single.md#patch-volume-0x5b-cmd0x70--cc-91                             |
-| Panorama                           | Common Parameters    |                        | `70` / `0x0A` (CC 10) — **−64..+63** → `ui+64` — [Panorama](edit-single.md#panorama-0x0a-cmd0x70--cc-10                                |
-| Bend Down                          | Pitch Bender         | **Not in dump**        | `71` / `0x1B` — **−64..+63** → `ui+64` — [Bend Down](edit-single.md#bend-down-0x1b-cmd0x71                                             |
-| Bend Up                            | Pitch Bender         | **Not in dump**        | `71` / `0x1A` — same encoding — [Bend Up](edit-single.md#bend-up-0x1a-cmd0x71                                                          |
-| Bender Scale                       | Pitch Bender         | **Not in dump**        | `71` / `0x1C` — [Bender Scale](../parameter-options.md#bender-scale) — [live](edit-single.md#bender-scale-0x1c-cmd0x71                 |
-| Patch Category 1                   | Category             |                        | `71` / `0x7B` — [Patch name categories](../parameter-options.md#patch-name-categories) (**Name Cat 1**)                                |
-| Patch Category 2                   | Category             |                        | `71` / `0x7C` — same list (**Name Cat 2**) — [Categories](edit-single.md#categories-edit-single                                        |
-| Surround Channel Balance           | Output               |                        | `71` / `0x3A` (−64..+63, `ui+64`) — [Surround Balance](edit-single.md#balance-0x3a-cmd0x71; also mod dest **116**                      |
+| Multi Tempo / Master Clock         | Common Parameters    | `0x18` in `DUMP_MULTI` | `72` / `0x0F` — **63..190** bpm → `stored = bpm - 63` — [Multi Tempo](edit-single.md#multi-tempo--master-clock-0x0f-cmd0x72)           |
+| Parameter Smooth Mode              | Common Parameters    | `0x0A1`                | `71` / `0x19` — [Control Smooth Mode / clock quantize](../parameter-options.md#control-smooth-mode--clock-quantize)                    |
+| Oscillator Section Keyboard Mode   | Common Parameters    | `0x066`                | `70`/`0x5E` or CC 94                                                                                                                   |
+| Patch Volume                       | Common Parameters    | `0x063`                | `70` / `0x5B` (CC 91) — **0..127** direct — [Patch Volume](edit-single.md#patch-volume-0x5b-cmd0x70--cc-91)                            |
+| Panorama                           | Common Parameters    | `0x012`                | `70` / `0x0A` (CC 10) — **−64..+63** → `ui+64` — [Panorama](edit-single.md#panorama-0x0a-cmd0x70--cc-10)                               |
+| Bend Down                          | Pitch Bender         | `0x0A3`                | `71` / `0x1B` — **−64..+63** → `ui+64` — [Bend Down](edit-single.md#bend-down-0x1b-cmd0x71)                                            |
+| Bend Up                            | Pitch Bender         | `0x0A2`                | `71` / `0x1A` — same encoding — [Bend Up](edit-single.md#bend-up-0x1a-cmd0x71)                                                         |
+| Bender Scale                       | Pitch Bender         | `0x0A4`                | `71` / `0x1C` — [Bender Scale](../parameter-options.md#bender-scale) — [live](edit-single.md#bender-scale-0x1c-cmd0x71)                |
+| Patch Category 1                   | Category             | `0x103`                | `71` / `0x7B` — [Patch name categories](../parameter-options.md#patch-name-categories) (**Name Cat 1**)                                |
+| Patch Category 2                   | Category             | `0x104`                | `71` / `0x7C` — same list (**Name Cat 2**) — [Categories](edit-single.md#categories-edit-single)                                       |
+| Surround Channel Balance           | Output               | `0x0C2`                | `71` / `0x3A` (−64..+63, `ui+64`) — [Surround Balance](edit-single.md#balance-0x3a-cmd0x71; also mod dest **116**)                     |
 | Multi Part Parameter Output Select | Output               | **Not in dump**        | **`73` / `0x2D`** — **Edit Single → Surround → Output** — [Secondary output routing](../parameter-options.md#secondary-output-routing) |
-| Soft Knob 1 Function As…           | Soft Knobs           |                        | `71` / `0x3E` — [Soft Knob Destinations](../parameter-options.md#soft-knob-destinations) (wire `<value>` ≠ index)                      |
-| Soft Knob 1 Name                   | Soft Knobs           |                        | `71` / `0x33` — [Soft Knob Names](../parameter-options.md#soft-knob-names); LCD label above knob 1                                     |
-| Soft Knob 2 Function As…           | Soft Knobs           |                        | `71` / `0x3F` — same destination list — [Soft Knobs](edit-single.md#soft-knobs-edit-single                                             |
-| Soft Knob 2 Name                   | Soft Knobs           |                        | `71` / `0x34` — [Soft Knob Names](../parameter-options.md#soft-knob-names)                                                             |
-| Soft Knob 3 Function As…           | Soft Knobs           |                        | `71` / `0x40` — same destination list                                                                                                  |
-| Soft Knob 3 Name                   | Soft Knobs           |                        | `71` / `0x35` — [Soft Knob Names](../parameter-options.md#soft-knob-names)                                                             |
+| Soft Knob 1 Function As…           | Soft Knobs           | `0x0C6`                | `71` / `0x3E` — [Soft Knob Destinations](../parameter-options.md#soft-knob-destinations) (wire `<value>` ≠ index)                      |
+| Soft Knob 1 Name                   | Soft Knobs           | `0x0BB`                | `71` / `0x33` — [Soft Knob Names](../parameter-options.md#soft-knob-names); LCD label above knob 1                                     |
+| Soft Knob 2 Function As…           | Soft Knobs           | `0x0C7`                | `71` / `0x3F` — same destination list — [Soft Knobs](edit-single.md#soft-knobs-edit-single)                                            |
+| Soft Knob 2 Name                   | Soft Knobs           | `0x0BC`                | `71` / `0x34` — [Soft Knob Names](../parameter-options.md#soft-knob-names)                                                             |
+| Soft Knob 3 Function As…           | Soft Knobs           | `0x0C8`                | `71` / `0x40` — same wire as [Mod Matrix slot 1 Source](#modulation-matrix) (`71`/`40`)                                                |
+| Soft Knob 3 Name                   | Soft Knobs           | `0x0BD`                | `71` / `0x35` — [Soft Knob Names](../parameter-options.md#soft-knob-names)                                                             |
 
 ### Patch Utility - Config
 
 Patch utility / I/O config; likely not in `DUMP_SINGLE`.
 
-| Control         | SubCategory                  | Dump offset | Live edit |
-| --------------- | ---------------------------- | ----------- | --------- |
-| USB Audio Mode  | Input / Output Configuration |             |           |
-| Surround Output | Input / Output Configuration |             |           |
-| Master Volume   | Input / Output Configuration |             |           |
+| Control         | SubCategory                  | Dump offset     | Live edit                                                                                      |
+| --------------- | ---------------------------- | -----------     | ---------                                                                                      |
+| USB Audio Mode  | Input / Output Configuration | **Not in dump** | `73` / `0x09` — [USB Audio Mode](../live-edit/edit-config.md#usb-audio-mode-0x09); **RX** only |
+| Surround Output | Input / Output Configuration |                 |                                                                                                |
+| Master Volume   | Input / Output Configuration |                 |                                                                                                |
 
 ### Patch Utility - Remote
 
@@ -706,50 +709,47 @@ Remote template UI; not a synth parameter.
 ### Global
 
 Global settings — see [edit-config.md](../live-edit/edit-config.md). Not stored
-in `DUMP_SINGLE`.
+in `DUMP_SINGLE`. Rows below are legacy inventory placeholders; **panel-only**
+CONFIG (no SysEx on TI mk2) is omitted — documented only when a wire byte is
+confirmed in `edit-config.md`.
 
-| Control                                    | SubCategory    | Dump offset | Live edit                                                                              |
-| ------------------------------------------ | -------------- | ----------- | -------------------------------------------------------------------------------------- |
-| LED Mode                                   | Hardware Panel |             |                                                                                        |
-| LED Brightness (Lux) - TI Series Only      | Hardware Panel |             |                                                                                        |
-| BPM Brightness (Lux) - TI Series Only      | Hardware Panel |             |                                                                                        |
-| LCD Contrast                               | Hardware Panel |             |                                                                                        |
-| Memory Protect                             | Memory / RAM   |             |                                                                                        |
-| Sync Clock to External Host toggle         | MIDI           |             |                                                                                        |
-| Master Clock / Global Tempo                | MIDI           |             |                                                                                        |
-| MIDI Clock Source                          | MIDI           |             |                                                                                        |
-| MIDI Destination                           | MIDI           |             |                                                                                        |
-| MIDI Device ID                             | MIDI           |             |                                                                                        |
-| Global MIDI Channel                        | MIDI           |             |                                                                                        |
-| MIDI Volume Receive (RX) toggle            | MIDI           |             |                                                                                        |
-| Program Change Receive (RX) toggle         | MIDI           |             |                                                                                        |
-| MIDI Control Page A toggle                 | MIDI           |             |                                                                                        |
-| MIDI Control Page B toggle                 | MIDI           |             |                                                                                        |
-| Arpeggiator to MIDI Out / Note Send toggle | MIDI           |             |                                                                                        |
-| All Argpeggiators toggle                   | FX             |             |                                                                                        |
-| All Delays                                 | FX             |             |                                                                                        |
-| All Reverbs                                | FX             |             |                                                                                        |
-| All EQs                                    | FX             |             |                                                                                        |
-| Knob Response                              | Knobs          |             | [`73`/`75`](../live-edit/edit-config.md#knob-response-0x75) — **RX** only; no panel TX |
-| Soft Knob 1 Mode                           | Knobs          |             |                                                                                        |
-| Soft Knob 2 Mode                           | Knobs          |             |                                                                                        |
-| Soft Knob 3 Mode                           | Knobs          |             |                                                                                        |
-| Knob Display Time                          | Knobs          |             | **TBD** — [edit-config.md](../live-edit/edit-config.md#knob-display-time); no panel TX |
-| Knob Target                                | Knobs          |             | **TBD** — [edit-config.md](../live-edit/edit-config.md#knob-target); no panel TX       |
-| Keyboard Local Mode / Control              | Global         |             |                                                                                        |
-| Keyboard Channel Mode                      | Global         |             |                                                                                        |
-| Keyboard Transpose                         | Global         |             |                                                                                        |
-| Keyboard Aftertouch Sensitivity            | Global         |             |                                                                                        |
-| Modwheel Assign                            | Global         |             |                                                                                        |
-| Pedal 1 Assign                             | Global         |             |                                                                                        |
-| Pedal 2 Assign                             | Global         |             |                                                                                        |
-| Master Tuning                              | Global         |             |                                                                                        |
-| Pure Tuning                                | Global         |             |                                                                                        |
-| Input Source                               | In / Out       |             |                                                                                        |
-| Characteristic                             | In / Out       |             |                                                                                        |
-| Input Direct Thru                          | In / Out       |             |                                                                                        |
-| Input Boost                                | In / Out       |             |                                                                                        |
-| Sensitivity                                | In / Out       |             |                                                                                        |
+| Control                                    | SubCategory    | Dump offset     | Live edit                                                                                                                           |
+| ------------------------------------------ | -------------- | -----------     | --------------------------------------------------------------------------------------                                              |
+| LED Mode                                   | Hardware Panel |                 |                                                                                                                                     |
+| LED Brightness (Lux) - TI Series Only      | Hardware Panel |                 |                                                                                                                                     |
+| BPM Brightness (Lux) - TI Series Only      | Hardware Panel |                 |                                                                                                                                     |
+| LCD Contrast                               | Hardware Panel |                 |                                                                                                                                     |
+| Memory Protect                             | Memory / RAM   |                 |                                                                                                                                     |
+| Sync Clock to External Host toggle         | MIDI           |                 |                                                                                                                                     |
+| Master Clock / Global Tempo                | MIDI           |                 |                                                                                                                                     |
+| MIDI Clock Source                          | MIDI           |                 |                                                                                                                                     |
+| MIDI Destination                           | MIDI           |                 |                                                                                                                                     |
+| MIDI Device ID                             | MIDI           |                 |                                                                                                                                     |
+| Global MIDI Channel                        | MIDI           |                 |                                                                                                                                     |
+| MIDI Volume Receive (RX) toggle            | MIDI           | **Not in dump** | `73` / `0x57` — [Global MIDI Volume RX](../live-edit/edit-config.md#global-midi-volume-rx-0x57); **RX** only                        |
+| Program Change Receive (RX) toggle         | MIDI           |                 |                                                                                                                                     |
+| MIDI Control Page A toggle                 | MIDI           |                 |                                                                                                                                     |
+| MIDI Control Page B toggle                 | MIDI           |                 |                                                                                                                                     |
+| Arpeggiator to MIDI Out / Note Send toggle | MIDI           |                 |                                                                                                                                     |
+| All Argpeggiators toggle                   | FX             |                 |                                                                                                                                     |
+| All Delays                                 | FX             |                 |                                                                                                                                     |
+| All Reverbs                                | FX             |                 |                                                                                                                                     |
+| All EQs                                    | FX             |                 |                                                                                                                                     |
+| Knob Response                              | Knobs          |                 | [`73`/`75`](../live-edit/edit-config.md#knob-response-0x75) — **RX** only; no panel TX                                              |
+| Keyboard Local Mode / Control              | Global         |                 |                                                                                                                                     |
+| Keyboard Channel Mode                      | Global         |                 |                                                                                                                                     |
+| Keyboard Transpose                         | Global         |                 |                                                                                                                                     |
+| Keyboard Aftertouch Sensitivity            | Global         |                 |                                                                                                                                     |
+| Modwheel Assign                            | Global         |                 |                                                                                                                                     |
+| Pedal 1 Assign                             | Global         |                 |                                                                                                                                     |
+| Pedal 2 Assign                             | Global         |                 |                                                                                                                                     |
+| Master Tuning                              | Global         |                 |                                                                                                                                     |
+| Pure Tuning                                | Global         |                 |                                                                                                                                     |
+| Input Source                               | In / Out       | **Not in dump** | `73` / `0x2B` — [Input Source](../live-edit/edit-config.md#input-source-0x2b); **RX** only                                          |
+| Input Characteristic                       | In / Out       | **Not in dump** | `73` / `0x1D` — [Input Characteristic](../live-edit/edit-config.md#input-characteristic-0x1d); **RX** only                          |
+| Input Direct Thru                          | In / Out       | **Not in dump** | `73` / `0x5A` — **`0`–`127`** `stored = lcd` — [Input Direct Thru](../live-edit/edit-config.md#input-direct-thru-0x5a); **RX** only |
+| Input Boost                                | In / Out       | **Not in dump** | `73` / `0x5B` — **`00`** Off, **`01`–`7F`** level — [Input Boost](../live-edit/edit-config.md#input-boost-0x5b); **RX** only        |
+| Input Sensitivity (CONFIG)                 | In / Out       | **Not in dump** | `73` / `0x1F` — [Input Sensitivity](../live-edit/edit-config.md#input-sensitivity-0x1f); **RX** only                                |
 
 ## Known / unknowns at this stage
 
@@ -762,7 +762,7 @@ in `DUMP_SINGLE`.
 - The **patch name** appears as an ASCII sequence near offset 0xFA, padded to
  a fixed length with spaces.
 - The final byte before `F7` behaves like a **checksum byte**.
-- **415** UI controls are listed in [Single parameter
+- **405** UI controls are listed in [Single parameter
  map](#single-parameter-map)
  for byte /
  live-edit correlation (Multi parameters →

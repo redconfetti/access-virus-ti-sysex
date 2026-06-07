@@ -27,4 +27,5 @@ control, only a suitable host port.
 | Dump — Banks & requests                 | [docs/dumps/bank.md](docs/dumps/bank.md)                         |
 | MIDI Control Change (CC)                | [docs/control-change.md](docs/control-change.md)                 |
 | Parameter options (enums, panel tables) | [docs/parameter-options.md](docs/parameter-options.md)           |
+| Unmapped / outstanding gaps             | [docs/unmapped.md](docs/unmapped.md)                             |
 | OsTIrus (DSP56300 TI/TI2 emulation)     | [docs/ostirus.md](docs/ostirus.md)                               |

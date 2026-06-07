@@ -21,6 +21,7 @@ corrective data before continuing or updating docs.
 | Dump maps                     | [dumps/README.md](dumps/README.md)                |
 | Doc writing rules             | `.cursor/skills/documentation-standards/SKILL.md` |
 | Parameter enums               | [parameter-options.md](parameter-options.md)      |
+| Unmapped / outstanding gaps   | [unmapped.md](unmapped.md)                        |
 
 ## Message types (reference)
 

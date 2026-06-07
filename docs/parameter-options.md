@@ -1061,8 +1061,7 @@ edit **`cmd` / `param`** depend on which LFO is being edited:
 - **LFO 3** — compact panel on **`cmd=0x71`**: **Rate** **`0x07`**, **Shape**
   **`0x08`**, **Mode** **`0x09`**, **Key Follow** **`0x0A`**, **Clock**
   **`0x15`**. Sub-menu **LFO 3 Destination**: **Assign Target** **`0x0B`**,
-  **Amount** **`0x0C`**, **Fade In** **`0x0D`**. **No** Envelope Mode,
-  Contour, or Trigger Phase — [LFO 3 Destination](#lfo-3-destination).
+  **Amount** **`0x0C`**, **Fade In** **`0x0D`** — [LFO 3 Destination](#lfo-3-destination).
 
 ```text
 # LFO 2 — minimum settings (hardware TX)
@@ -2795,12 +2794,12 @@ SysEx when paging). Parameter rows per sub-page:
 param **`0x26`** (Single edit buffer **`<part>=0x40`**). **`stored = <value>`**
 (dense **`00`–`03`**).
 
-| `<value>` | Option | Confirmed       |
-| --------- | ------ | --------------- |
-| `00`      | Off    | ✓ (hardware TX) |
-| `01`      | In L   | ✓ (hardware TX) |
+| `<value>` | Option | Confirmed                               |
+| --------- | ------ | ---------------                         |
+| `00`      | Off    | ✓ (hardware TX)                         |
+| `01`      | In L   | ✓ (hardware TX)                         |
 | `02`      | In L+R | ✓ (hardware TX) — `F0 … 71 40 26 02 F7` |
-| `03`      | In R   | ✓ (hardware TX) |
+| `03`      | In R   | ✓ (hardware TX)                         |
 
 Panel rows per **Input Select**: [Input Follower panel
 visibility](#input-follower-panel-visibility).
@@ -2843,10 +2842,10 @@ Select](#input-follower-input-select) ≠ **Off**. Live edit **`cmd=0x70`**, par
 **`0x38`**. **`stored = round(pct × 127 / 100)`** — **`00`** = **0 %**,
 **`7F`** = **100.0 %** (panel-confirmed endpoints).
 
-| LCD     | `<value>` | Confirmed       |
-| ------- | --------- | --------------- |
+| LCD     | `<value>` | Confirmed                 |
+| ------- | --------- | ---------------           |
 | 0 %     | `00`      | ✓ — `F0 … 70 40 38 00 F7` |
-| 100.0 % | `7F`      | ✓ (hardware TX) |
+| 100.0 % | `7F`      | ✓ (hardware TX)           |
 
 See [effects.md — Input Follower Attack / Release /
 Sensitivity](live-edit/effects.md#input-follower).
@@ -3169,10 +3168,10 @@ row set and encodings.
 | **Center Freq**      | `70`/`28`     | **−64..+63** → `stored = ui + 64` (**`40`** = **+0**) — dump **`0x030`**                                                                                            |
 | **Balance**          | `70`/`30`     | **`0`–`127`** direct — dump **`0x038`**                                                                                                                             |
 | **Mod Offset**       | `70`/`29`     | **−64..+63** → `stored = ui + 64` (**`40`** = **+0**) — dump **`0x031`**                                                                                            |
-| **Carrier Attack**   | `70`/`36`     | **`0`–`127`** direct — dump **`0x03E`** — `F0 … 70 40 36 00 F7` = **0**                                                                                            |
-| **Carrier Release**  | `70`/`37`     | **`0`–`127`** direct — dump **`0x03F`** — `F0 … 70 40 37 7F F7` = **127**                                                                                          |
-| **Spectral Balance** | `70`/`39`     | **`0`–`127`** direct — dump **`0x041`** — `F0 … 70 40 39 00 F7` = **0**                                                                                            |
-| **Bands**            | `70`/`3A`     | [Vocoder Bands](#vocoder-bands) — dump **`0x042`** — `F0 … 70 40 3A 00 F7` = **01**                                                                                |
+| **Carrier Attack**   | `70`/`36`     | **`0`–`127`** direct — dump **`0x03E`** — `F0 … 70 40 36 00 F7` = **0**                                                                                             |
+| **Carrier Release**  | `70`/`37`     | **`0`–`127`** direct — dump **`0x03F`** — `F0 … 70 40 37 7F F7` = **127**                                                                                           |
+| **Spectral Balance** | `70`/`39`     | **`0`–`127`** direct — dump **`0x041`** — `F0 … 70 40 39 00 F7` = **0**                                                                                             |
+| **Bands**            | `70`/`3A`     | [Vocoder Bands](#vocoder-bands) — dump **`0x042`** — `F0 … 70 40 3A 00 F7` = **01**                                                                                 |
 
 ---
 
@@ -3741,128 +3740,128 @@ match [LFO 1 Assign Target](#assign-target-0x4f) (**`41/xx`** = **`4F/xx`**, etc
 122 options (`0`–`121`) — **Index** / panel name reference (wire byte in Assign
 Target table):
 | --- | ------------------------------------------------------------------------ |
-| 0   | Off                                                                      |
-| 1   | Amp Env Attack                                                           |
-| 2   | Amp Env Decay                                                            |
-| 3   | Amp Env Slope                                                            |
-| 4   | Amp Env Sustain                                                          |
-| 5   | Amp Env Release                                                          |
-| 6   | Arp Note Length                                                          |
-| 7   | Arp Pattern                                                              |
-| 8   | Arp Swing Factor                                                         |
-| 9   | Chorus Delay                                                             |
-| 10  | Chorus Feedback                                                          |
-| 11  | Chorus Mix                                                               |
-| 12  | Chorus Mod Depth                                                         |
-| 13  | Chorus Mod Rate                                                          |
-| 14  | Delay Coloration                                                         |
-| 15  | Delay Feedback                                                           |
-| 16  | Delay Mod Depth                                                          |
-| 17  | Delay Mod Rate                                                           |
-| 18  | Delay Send                                                               |
-| 19  | Delay Time                                                               |
-| 20  | Distortion Intensity                                                     |
-| 21  | Distortion Mix                                                           |
-| 22  | EQ Mid Frequency                                                         |
-| 23  | EQ Mid Gain                                                              |
-| 24  | Filter Env > FM/Sync                                                     |
-| 25  | Filter Env > Osc 2 Pitch                                                 |
-| 26  | Filter Balance                                                           |
-| 27  | Filter Env Attack                                                        |
-| 28  | Filter Env Decay                                                         |
-| 29  | Filter Env Slope                                                         |
-| 30  | Filter Env Sustain                                                       |
-| 31  | Filter Env Release                                                       |
-| 32  | Filter 1 Cutoff                                                          |
-| 33  | Filter 1 Env Amount                                                      |
-| 34  | Filter 1 Resonance                                                       |
-| 35  | Filter 2 Cutoff                                                          |
-| 36  | Filter 2 Env Amount                                                      |
-| 37  | Filter 2 Resonance                                                       |
-| 38  | Filterbank Poles                                                         |
-| 39  | Filterbank Resonance                                                     |
-| 40  | Filterbank Slope                                                         |
-| 41  | Filterbank Frequency *(wire `60`; [Assign Target](#assign-target-0x4f))* |
-| 42  | LFO 1 > Assign Amount                                                    |
-| 43  | LFO 1 Contour                                                            |
-| 44  | LFO 1 Rate                                                               |
-| 45  | LFO 1 > Filter Gain                                                      |
-| 46  | LFO 1 > Osc 1 Pitch                                                      |
-| 47  | LFO 1 > Osc 2 Pitch                                                      |
-| 48  | LFO 1 > Pulse Width                                                      |
-| 49  | LFO 1 > Resonance                                                        |
-| 50  | LFO 2 > Assign Amount                                                    |
-| 51  | LFO 2 Contour                                                            |
-| 52  | LFO 2 Rate                                                               |
-| 53  | LFO 2 > Cutoff 1                                                         |
-| 54  | LFO 2 > Cutoff 2                                                         |
-| 55  | LFO 2 > FM Amount                                                        |
-| 56  | LFO 2 > Panorama                                                         |
-| 57  | LFO 2 > Shape                                                            |
-| 58  | LFO 3 > Assign Amount                                                    |
-| 59  | LFO 3 Rate                                                               |
-| 60  | Noise Color                                                              |
-| 61  | Noise Volume                                                             |
-| 62  | Oscillator Balance                                                       |
-| 63  | Oscillator Volume                                                        |
-| 64  | Osc 1 F-Shift                                                            |
-| 65  | Osc 1 F-Spread                                                           |
-| 66  | Osc 1 Interpolation                                                      |
-| 67  | Osc 1 Pitch                                                              |
-| 68  | Osc 1 Pulse Width                                                        |
-| 69  | Osc 1 Shape/Index                                                        |
-| 70  | Osc 1 Wave Select                                                        |
-| 71  | Osc 2 Detune                                                             |
-| 72  | Osc 2 FM Amount                                                          |
-| 73  | Osc 2 F-Shift                                                            |
-| 74  | Osc 2 F-Spread                                                           |
-| 75  | Osc 2 Interpolation                                                      |
-| 76  | Osc 2 Pitch                                                              |
-| 77  | Osc 2 Pulse Width                                                        |
-| 78  | Osc 2 Shape/Index                                                        |
-| 79  | Osc 2 Wave Select                                                        |
-| 80  | Osc 3 Detune                                                             |
-| 81  | Osc 3 Pitch                                                              |
-| 82  | Osc 3 Volume                                                             |
-| 83  | Sub Osc Volume                                                           |
-| 84  | Pan Spread                                                               |
-| 85  | Panorama                                                                 |
-| 86  | Patch Volume                                                             |
-| 87  | Phaser Feedback                                                          |
-| 88  | Phaser Frequency                                                         |
-| 89  | Phaser Mix                                                               |
-| 90  | Phaser Mod Depth                                                         |
-| 91  | Phaser Mod Rate                                                          |
-| 92  | Portamento                                                               |
-| 93  | Punch Intensity                                                          |
-| 94  | Reverb Send                                                              |
-| 95  | Reverb Coloration                                                        |
-| 96  | Reverb Dampening                                                         |
-| 97  | Reverb Time                                                              |
-| 98  | Reverb PreDelay                                                          |
-| 99  | Ring Modulator                                                           |
-| 100 | Slot 1 Amount 1                                                          |
-| 101 | Slot 1 Amount 2                                                          |
-| 102 | Slot 1 Amount 3                                                          |
-| 103 | Slot 2 Amount 1                                                          |
-| 104 | Slot 2 Amount 2                                                          |
-| 105 | Slot 2 Amount 3                                                          |
-| 106 | Slot 3 Amount 1                                                          |
-| 107 | Slot 3 Amount 2                                                          |
-| 108 | Slot 3 Amount 3                                                          |
-| 109 | Slot 4 Amount 1                                                          |
-| 110 | Slot 4 Amount 2                                                          |
-| 111 | Slot 4 Amount 3                                                          |
-| 112 | Slot 5 Amount 1                                                          |
-| 113 | Slot 5 Amount 2                                                          |
-| 114 | Slot 5 Amount 3                                                          |
-| 115 | Slot 6 Amount 1                                                          |
-| 116 | Slot 6 Amount 2                                                          |
-| 117 | Slot 6 Amount 3                                                          |
-| 118 | Surround Balance                                                         |
-| 119 | Transpose                                                                |
-| 120 | Unison Detune                                                            |
-| 121 | Unison LFO Phase                                                         |
+| 0 | Off |
+| 1 | Amp Env Attack |
+| 2 | Amp Env Decay |
+| 3 | Amp Env Slope |
+| 4 | Amp Env Sustain |
+| 5 | Amp Env Release |
+| 6 | Arp Note Length |
+| 7 | Arp Pattern |
+| 8 | Arp Swing Factor |
+| 9 | Chorus Delay |
+| 10 | Chorus Feedback |
+| 11 | Chorus Mix |
+| 12 | Chorus Mod Depth |
+| 13 | Chorus Mod Rate |
+| 14 | Delay Coloration |
+| 15 | Delay Feedback |
+| 16 | Delay Mod Depth |
+| 17 | Delay Mod Rate |
+| 18 | Delay Send |
+| 19 | Delay Time |
+| 20 | Distortion Intensity |
+| 21 | Distortion Mix |
+| 22 | EQ Mid Frequency |
+| 23 | EQ Mid Gain |
+| 24 | Filter Env > FM/Sync |
+| 25 | Filter Env > Osc 2 Pitch |
+| 26 | Filter Balance |
+| 27 | Filter Env Attack |
+| 28 | Filter Env Decay |
+| 29 | Filter Env Slope |
+| 30 | Filter Env Sustain |
+| 31 | Filter Env Release |
+| 32 | Filter 1 Cutoff |
+| 33 | Filter 1 Env Amount |
+| 34 | Filter 1 Resonance |
+| 35 | Filter 2 Cutoff |
+| 36 | Filter 2 Env Amount |
+| 37 | Filter 2 Resonance |
+| 38 | Filterbank Poles |
+| 39 | Filterbank Resonance |
+| 40 | Filterbank Slope |
+| 41 | Filterbank Frequency *(wire `60`; [Assign Target](#assign-target-0x4f))* |
+| 42 | LFO 1 > Assign Amount |
+| 43 | LFO 1 Contour |
+| 44 | LFO 1 Rate |
+| 45 | LFO 1 > Filter Gain |
+| 46 | LFO 1 > Osc 1 Pitch |
+| 47 | LFO 1 > Osc 2 Pitch |
+| 48 | LFO 1 > Pulse Width |
+| 49 | LFO 1 > Resonance |
+| 50 | LFO 2 > Assign Amount |
+| 51 | LFO 2 Contour |
+| 52 | LFO 2 Rate |
+| 53 | LFO 2 > Cutoff 1 |
+| 54 | LFO 2 > Cutoff 2 |
+| 55 | LFO 2 > FM Amount |
+| 56 | LFO 2 > Panorama |
+| 57 | LFO 2 > Shape |
+| 58 | LFO 3 > Assign Amount |
+| 59 | LFO 3 Rate |
+| 60 | Noise Color |
+| 61 | Noise Volume |
+| 62 | Oscillator Balance |
+| 63 | Oscillator Volume |
+| 64 | Osc 1 F-Shift |
+| 65 | Osc 1 F-Spread |
+| 66 | Osc 1 Interpolation |
+| 67 | Osc 1 Pitch |
+| 68 | Osc 1 Pulse Width |
+| 69 | Osc 1 Shape/Index |
+| 70 | Osc 1 Wave Select |
+| 71 | Osc 2 Detune |
+| 72 | Osc 2 FM Amount |
+| 73 | Osc 2 F-Shift |
+| 74 | Osc 2 F-Spread |
+| 75 | Osc 2 Interpolation |
+| 76 | Osc 2 Pitch |
+| 77 | Osc 2 Pulse Width |
+| 78 | Osc 2 Shape/Index |
+| 79 | Osc 2 Wave Select |
+| 80 | Osc 3 Detune |
+| 81 | Osc 3 Pitch |
+| 82 | Osc 3 Volume |
+| 83 | Sub Osc Volume |
+| 84 | Pan Spread |
+| 85 | Panorama |
+| 86 | Patch Volume |
+| 87 | Phaser Feedback |
+| 88 | Phaser Frequency |
+| 89 | Phaser Mix |
+| 90 | Phaser Mod Depth |
+| 91 | Phaser Mod Rate |
+| 92 | Portamento |
+| 93 | Punch Intensity |
+| 94 | Reverb Send |
+| 95 | Reverb Coloration |
+| 96 | Reverb Dampening |
+| 97 | Reverb Time |
+| 98 | Reverb PreDelay |
+| 99 | Ring Modulator |
+| 100 | Slot 1 Amount 1 |
+| 101 | Slot 1 Amount 2 |
+| 102 | Slot 1 Amount 3 |
+| 103 | Slot 2 Amount 1 |
+| 104 | Slot 2 Amount 2 |
+| 105 | Slot 2 Amount 3 |
+| 106 | Slot 3 Amount 1 |
+| 107 | Slot 3 Amount 2 |
+| 108 | Slot 3 Amount 3 |
+| 109 | Slot 4 Amount 1 |
+| 110 | Slot 4 Amount 2 |
+| 111 | Slot 4 Amount 3 |
+| 112 | Slot 5 Amount 1 |
+| 113 | Slot 5 Amount 2 |
+| 114 | Slot 5 Amount 3 |
+| 115 | Slot 6 Amount 1 |
+| 116 | Slot 6 Amount 2 |
+| 117 | Slot 6 Amount 3 |
+| 118 | Surround Balance |
+| 119 | Transpose |
+| 120 | Unison Detune |
+| 121 | Unison LFO Phase |
 
 ## Wavetable Names
 

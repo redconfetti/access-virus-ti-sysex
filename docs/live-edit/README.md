@@ -19,6 +19,8 @@ Real-time SysEx parameter changes on the Virus TI mk2 (**`0x70`**, **`0x71`**,
 [parameter-options.md](../parameter-options.md)
 **Dump offsets (worksheet):**
 [dumps/single.md](../dumps/single.md#single-parameter-map)
+**Unmapped / outstanding gaps:**
+[unmapped.md](../unmapped.md)
 **MIDI CC (when Page A = Controller Data):**
 [control-change.md](../control-change.md)
 

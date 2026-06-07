@@ -21,14 +21,16 @@ different `cmd` bytes.
 
 ## Common (Edit Single)
 
-Per-part **Common** page settings (Edit Single). Not stored in
-**`DUMP_MULTI`** (hardware-tested for Bend Up/Down — see
-[edit-multi.md](edit-multi.md)).
+Per-part **Common** page settings (Edit Single). Pitch-bender and smooth-mode
+bytes **are** stored in **`DUMP_SINGLE`** (hardware-verified on `-INIT-`,
+`<part>=0x40`); they are **not** in per-part **`DUMP_MULTI`** slices — see
+[edit-multi.md](edit-multi.md).
 
 ### Transpose / Patch Transpose (`0x5D`, `cmd=0x70` / CC 93)
 
 Edit Single → Common → **Transpose** (same as **Patch Transpose**). Page A param
 **`0x5D`** (decimal **93** = CC number). **−64..+63** → `stored = ui + 64`.
+Dump offset **`0x065`** (`30 00 40` / `<part>=0x40`).
 
 | UI  | `<value>` | Confirmed |
 | --- | --------- | --------- |
@@ -50,7 +52,7 @@ F0 00 20 33 01 00 70 00 5D 7F F7 # Transpose +63
 
 **Key Mode** (Page A param **94** / `0x5E`). Virus panel: **Oscillators** →
 **EDIT** → Common → **Key Mode**; also a **MONO** shortcut on the
-oscillator section (see below).
+oscillator section (see below). Dump offset **`0x066`**.
 
 | Value | Mode   | CC 94 | SysEx (`Page A` = SysEx)  |
 | ----- | ------ | ----- | ------------------------- |
@@ -176,6 +178,7 @@ Edit Single → Common → **Smooth Mode** (Page B **#25** *Control Smooth Mode*
 **`stored = index`** — full list in
 [Control Smooth Mode / clock
 quantize](../parameter-options.md#control-smooth-mode--clock-quantize).
+Dump offset **`0x0A1`**.
 
 ```text
 F0 00 20 33 01 00 71 00 19 00 F7 # Off
@@ -189,7 +192,7 @@ Some hosts cannot send **Off** (`00`). Do not confuse with global **All EQs**
 ### Bend Down (`0x1B`, `cmd=0x71`)
 
 Edit Single → Common → **Bend Down** (Page B **#27**). **−64..+63** →
-`stored = ui + 64`. Not in **`DUMP_MULTI`**.
+`stored = ui + 64`. Dump offset **`0x0A3`** (not in **`DUMP_MULTI`**).
 
 | UI  | `<value>` | Confirmed |
 | --- | --------- | --------- |
@@ -206,6 +209,7 @@ F0 00 20 33 01 00 71 00 1B 7F F7 # Bend Down +63
 ### Bend Up (`0x1A`, `cmd=0x71`)
 
 Edit Single → Common → **Bend Up** (Page B **#26**). Same encoding as Bend Down.
+Dump offset **`0x0A2`**.
 
 | UI  | `<value>` | Confirmed |
 | --- | --------- | --------- |
@@ -225,7 +229,7 @@ Down](edit-multi.md#bend-up-0x1a-cmd0x71).
 ### Bender Scale (`0x1C`, `cmd=0x71`)
 
 Edit Single → Common → **Bender Scale** (Page B **#28**). **`stored = index`** —
-see [Bender Scale](../parameter-options.md#bender-scale).
+see [Bender Scale](../parameter-options.md#bender-scale). Dump offset **`0x0A4`**.
 
 | Mode        | `<value>` | Confirmed |
 | ----------- | --------- | --------- |
@@ -260,12 +264,14 @@ F0 00 20 33 01 00 72 00 0F 39 F7 # Multi Tempo 120 bpm
 F0 00 20 33 01 00 72 00 0F 7F F7 # Multi Tempo 190 bpm
 ```
 
-Dump offset in **`DUMP_MULTI`**: **`0x17`** (`stored` same).
+Dump offset in **`DUMP_MULTI`**: **`0x18`** (`stored` same; follows name at
+`0x0D`–`0x16` and null at `0x17`).
 
 ### Patch Volume (`0x5B`, `cmd=0x70` / CC 91)
 
 **Edit Single → Common → Patch Volume**. Page A param **`0x5B`** (decimal **91**
 = CC number). Panel **0..127**; wire matches LCD (**not** a percent curve).
+Dump offset **`0x063`** (`-INIT-` default **`0x64`** = 100).
 
 | LCD | `<value>` | Confirmed |
 | --- | --------- | --------- |
@@ -289,7 +295,7 @@ F0 00 20 33 01 00 70 00 5B 7F F7 # Patch Volume 127
 
 **Edit Single → Common → Panorama**. Page A param **`0x0A`** (decimal **10** =
 CC number). Bipolar pan **−64..+63** (panel **L< 100.0 %** … **100.0 % >R**):
-`stored = ui + 64`.
+`stored = ui + 64`. Dump offset **`0x012`**.
 
 | LCD (reported) | `<value>` | Confirmed |
 | -------------- | --------- | --------- |
@@ -582,12 +588,14 @@ The same **`00` / `40` / `7F`** anchors apply to every row in the table.
 **Edit Single → Surround.** On TI mk2 this is the patch **secondary output**
 bus (rear/surround send in a multi-output setup — separate from the main
 **Output Routing** path on **`72`/`29`** in Multi mode). Same wire as
-Same wire as **Edit Multi → Secondary Output**: **`cmd=0x73`**, param
-**`0x2D`**, part **`00`** in Single captures. Enum:
+**Edit Multi → Secondary Output**: **`cmd=0x73`**, param **`0x2D`**. In Single
+mode use **`<part>=0x40`** (Single edit buffer — same scope as other Single
+sound edits). Enum:
 [Secondary output
 routing](../parameter-options.md#secondary-output-routing).
-**Not in `DUMP_MULTI`** / **`DUMP_SINGLE` offset TBD** (edit-buffer only in
-hardware tests so far).
+**Output** is **not in `DUMP_SINGLE`** (hardware-tested: `73`/`2D` does not
+change the `30 00 40` payload). **Balance** **is** in the dump at **`0x0C2`**
+(`71`/`3A`).
 
 ### Output (`0x2D`, `cmd=0x73`)
 
@@ -596,15 +604,19 @@ routing](../parameter-options.md#secondary-output-routing)
 (**Off** … **Out 3 R** = `00`–`09`; USB through `12`).
 
 ```text
-F0 00 20 33 01 00 73 00 2D 00 F7 # Output Off
-F0 00 20 33 01 00 73 00 2D 01 F7 # Out 1 L
-F0 00 20 33 01 00 73 00 2D 09 F7 # Out 3 R
+F0 00 20 33 01 00 73 40 2D 00 F7 # Output Off
+F0 00 20 33 01 00 73 40 2D 04 F7 # Out 2 L
+F0 00 20 33 01 00 73 40 2D 09 F7 # Out 3 R
 ```
+
+Edit Multi per-part captures use **`73 00 2D`** (Part 1 scope). Values are
+the same enum.
 
 ### Balance (`0x3A`, `cmd=0x71`)
 
 **Surround → Balance** (rear/surround channel placement). Bipolar
 **−64..+63**: `stored = ui + 64` (same family as Filter Keyfollow).
+Dump offset **`0x0C2`**.
 
 | LCD | `<value>` |
 | --- | --------- |
@@ -613,9 +625,9 @@ F0 00 20 33 01 00 73 00 2D 09 F7 # Out 3 R
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 71 00 3A 00 F7 # Balance −64
-F0 00 20 33 01 00 71 00 3A 40 F7 # Balance +0
-F0 00 20 33 01 00 71 00 3A 7F F7 # Balance +63
+F0 00 20 33 01 00 71 40 3A 00 F7 # Balance −64
+F0 00 20 33 01 00 71 40 3A 40 F7 # Balance +0
+F0 00 20 33 01 00 71 40 3A 7F F7 # Balance +63
 ```
 
 Mod matrix destination **116** / **118** = **Surround Balance** (amount
@@ -624,7 +636,8 @@ modulation) — same parameter family, different UI path.
 ## Categories (Edit Single)
 
 **Edit Single → Categories.** Patch **search/filter tags** (**Search by
-Category**). **`cmd=0x71`**, part **`00`**.
+Category**). **`cmd=0x71`**, part **`00`** (Single edit buffer **`0x40`**
+also works). Dump **`0x103`** (Cat 1) / **`0x104`** (Cat 2).
 
 | Panel      | `param` | Confirmed |
 | ---------- | ------- | --------- |
@@ -647,6 +660,11 @@ Three hardware knobs under the LCD. **Edit Single** only configures them; there
 is
 **no separate “Amount” menu row** — turning a knob edits the **assigned
 destination** parameter in real time.
+
+Dump offsets (hardware-verified, `-INIT-`, `<part>=0x40`):
+**Function As…** **`0x0C6`** / **`0x0C7`** / **`0x0C8`**; **Name**
+**`0x0BB`** / **`0x0BC`** / **`0x0BD`**. Knob 3 **Function As…** shares
+**`0x0C8`** with [Mod Matrix slot 1 Source](../modulation-matrix.md) (`71`/`40`).
 
 **Function As…** uses a **destination wire byte** (see
 [Soft Knob Destinations](../parameter-options.md#soft-knob-destinations)).
