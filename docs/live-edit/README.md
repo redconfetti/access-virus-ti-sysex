@@ -12,6 +12,7 @@ Real-time SysEx parameter changes on the Virus TI mk2 (**`0x70`**, **`0x71`**,
 | [effects.md](effects.md) | Edit FX — SELECT focus (`6E`/`75`, `6E`/`76`) + Delay, Reverb, EQ, … |
 | [arpeggiator.md](arpeggiator.md) | Arpeggiator — EDIT ARP settings, pattern editor |
 | [modulators.md](modulators.md) | Modulators — EDIT LFO (LFO 1–3 settings, modulation amounts) |
+| [modulation-matrix.md](modulation-matrix.md) | Modulation Matrix — slots 1–6 (Source / Destination / Amount) |
 | [edit-multi.md](edit-multi.md) | Edit Multi — parts, keyboard range, routing |
 
 **Enums & panel tables:**

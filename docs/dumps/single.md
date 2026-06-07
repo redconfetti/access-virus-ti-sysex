@@ -52,7 +52,11 @@ Single-mode editing. **Single Request** `slot`, **`DUMP_SINGLE`** header
 See [edit-multi.md — Bank / Program](../live-edit/edit-multi.md#bank-0x20).
 
 Multi Part 1 and the Single edit buffer are **not** the same RAM — SysEx to
-**`<part>=00`** does not change the sound returned by **`30 00 40`**.
+**`<part>=00`** does not change the sound returned by **`30 00 40`**, and vice
+versa. The synth applies each live edit to the buffer named by **`<part>`**
+(Single **`0x40`** vs Multi **`0x00`–`0x0F`**); the panel’s current mode picks
+which buffer you are editing, but the wire **`<part>`** byte must match that
+target (param IDs such as Ring Mod **`0x32`** stay the same across modes).
 
 ```bash
 sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 30 00 40
@@ -110,11 +114,30 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
  - Standalone edit buffer: `… 10 00 7F 0C 00 00` (see [message
  header](#message-header-offsets-in-full-524-byte-message)).
 - **0x0C–~0xEF – Parameter payload**
- - Dense, non‑ASCII data, assumed to contain:
- - Oscillator, mixer, filter, envelope, LFO and matrix parameters
- - FX / EQ / reverb / chorus / global edit‑menu parameters
- - Exact field boundaries within this block are not yet mapped, but this block
- is where most sound‑shaping values live.
+ - Dense sound data. **Oscillator block** (hardware-verified on `-INIT-` /
+ Single edit buffer **`30 00 40`**, live edit **`<part>=0x40`**):
+ - **`0x00D`** — Portamento (`70`/`05`)
+ - **`0x019`–`0x01D`** — Osc 1 Classic: Shape, Pulse Width, Wave, Semitone,
+ Key Follow (`70`/`11`–`15`)
+ - **`0x01E`–`0x027`** — Osc 2 Classic: Shape, Pulse Width, Wave, Semitone,
+ Detune, FM Amount, Sync, FilterEnv>Pitch, FilterEnv>FM, Key Follow
+ (`70`/`16`–`1F`)
+ - **`0x029`–`0x02F`, `0x03A`** — Mixer / Noise / Ring Mod: Balance (`0x29`),
+ Sub Osc vol/shape (`0x2A`/`0x2B`), Osc vol/sat (`0x2C`), Noise vol (`0x2D`),
+ Noise color (`0x2F`), Ring Mod (`0x3A`)
+ - **`0x0AA`–`0x0B4`** — Phase Init, Punch, Osc 2 FM Mode, Osc 3 Mode/Volume/
+ Semitone/Detune (`71`/`23`–`29`, `71`/`24`)
+ - **`0x107`** — Mixer section Osc Volume (`71`/`7F`)
+ - **`0x127`, `0x12C`** — Osc 1 / Osc 2 mode (`6E`/`1E`, `6E`/`23`)
+ - **`0x12E`–`0x135`** — Osc 1 **`6E`** params: F-Spread (`0x25`→`0x12E`),
+ F-Shift (`0x2A`→`0x133`), Local Detune (`0x2B`→`0x134`), Interpolation
+ (`0x2C`→`0x135`)
+ - **`0x142`–`0x149`** — Osc 2 **`6E`** params: F-Spread (`0x39`→`0x142`),
+ F-Shift (`0x3E`→`0x147`), Local Detune (`0x3F`→`0x148`), Interpolation
+ (`0x40`→`0x149`)
+ - **`0x201`–`0x204`** — **Edit Single → Unison** (`6F`/`78`–`7B`): Voices,
+ Detune, Pan Spread, LFO Phase
+ - Remaining bytes: filters, envelopes, LFO, matrix, FX — mostly unmapped.
 - **~0x184–0x1E9 – User arpeggiator pattern** (when **Pattern** = **User**)
  - **`0x189`** — loop length (**1**–**32** steps; `stored = steps − 1`)
  - **`0x18A`…`0x1E9`** — **32** step triplets (**length**, **velocity**,
@@ -126,9 +149,9 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
  (`-INIT-` padded with spaces)
  appears near offset 0xFA.
  - Surrounding bytes likely hold category and other global Single attributes.
-- **0x204–0x209 – Trailer metadata + checksum**
- - Checksum at **`0x209`**; trailer bytes before it include `7F 40 00 01 00 00`
- (arrangement Part 1: `… 66 F7`).
+- **0x205–0x209 – Trailer metadata + checksum**
+ - Checksum at **`0x209`**; bytes at **`0x205`–`0x208`** include arrangement
+ trailer (`7F 40 00 01 00 00` on Part 1 INIT exports).
 
 ## Single parameter map
 
@@ -147,113 +170,126 @@ Multi edit parameters are in
 
 ### Oscillators
 
+**SubCategory** labels come from the Virus Control / AURA inventory
+([aura-notes.md](../aura-notes.md)), not always from TI mk2 **EDIT** menu
+names. Examples: **Oscillator Common FM** and **Oscillator Common Sync** are
+inventory groupings only — there is no **EDIT OSC → Common → FM** page. FM and
+sync-related controls live on **Osc 2** sub-menus, **EDIT OSC → Common** (e.g.
+**FilterEnv>Sync** when Sync is on), or **Edit Single → Velocity Map**. Rows
+for **Edit Single → Unison** are under [Common](#common) — not **EDIT OSC**.
+
+**Dump offsets** in the **Dump offset** column below were confirmed on TI mk2
+hardware by: request `DUMP_SINGLE` (`30 00 40`) → one live-edit SysEx
+(`<part>=0x40`) → re-request → diff (ignore checksum **`0x209`** and metadata
+byte **`0x108`**). Helper script:
+[`artifacts/captures/dump-correlate.sh`](../../artifacts/captures/dump-correlate.sh).
+Per-mode sweeps (switch **`6E`/`1E`** or **`6E`/`23`**, then test controls from
+[oscillators.md](../live-edit/oscillators.md)):
+[`dump-correlate-osc-modes.py`](../../artifacts/captures/dump-correlate-osc-modes.py).
+
 | Control | SubCategory | Dump offset | Live edit |
 | --- | --- | --- | --- |
-| Sub Oscillator Waveform Shape | Sub-Osc | | `70` / `0x23` (CC 35; Square `00`, Triangle `01` only) |
-| Oscillator 1 Model / Mode | Oscillator 1 | | `6E` / `0x1E` (see live-edit by mode) |
-| Oscillator 1 Detune in Semitone | Oscillator 1 | | `70` / `0x14` (−48..+48, `ui+64`) |
-| Oscillator 1 Keyfollow | Oscillator 1 | | `70` / `0x15` (Classic; Norm @ +32) |
+| Sub Oscillator Waveform Shape | Sub-Osc | `0x2B` | `70` / `0x23` (CC 35; Square `00`, Triangle `01` only) |
+| Oscillator 1 Model / Mode | Oscillator 1 | `0x127` | `6E` / `0x1E` (see live-edit by mode) |
+| Oscillator 1 Detune in Semitone | Oscillator 1 | `0x1C` | `70` / `0x14` (−48..+48, `ui+64`) |
+| Oscillator 1 Keyfollow | Oscillator 1 | `0x1D` | `70` / `0x15` (Classic; Norm @ +32) |
 | Velocity --> Osc1 Waveform Shape | Oscillator 1 | | `71` / `0x2F` (Velocity Map **Osc 1 Shape**; ±100 % — [Velocity Map](../live-edit/edit-single.md#velocity-map-edit-single) |
-| Oscillator 1 Waveform Shape | Oscillator 1 Classic | | `70` / `0x11` (`00`–`7F`; see live-edit) |
-| Oscillator 1 Wave Select | Oscillator 1 Classic | | `70` / `0x13` (64 waves `00`–`3F`) |
-| Oscillator 1 Pulsewidth | Oscillator 1 Classic | | |
-| Oscillator 1 Density | Oscillator 1 Hypersaw | | |
-| Oscillator 1 Local Detune | Oscillator 1 Hypersaw | `70` / `0x12` | **0..127** `stored = lcd` (Hypersaw; Classic `12` = Pulse Width) |
-| Oscillator 1+2 X-Sync Frequency | Oscillator 1 Hypersaw | `70` / `0x1B` | **0..127** when Sync On; `stored = lcd` |
-| Oscillator 1 Wavetable / Waveform | Oscillator 1 Wavetable | `70` / `0x13` | Index **0–99** → `00`–`63`; names in [parameter-options.md](../parameter-options.md#wavetable-names) |
-| Oscillator 1 Wavetable Index | Oscillator 1 Wavetable | `70` / `0x11` | **0..127** `stored = lcd` (mode `02`; not Shape/Density) |
-| Oscillator 1 Interpolation | Oscillator 1 Wavetable | `6E` / `0x2C` | **0..127** `stored = lcd` (not `70`/`2C` Filter Env) |
-| Oscillator 1 Wavetable / Waveform | Oscillator 1 Wavetable PWM | `70` / `0x13` | **`00`–`63`** enum; [live-edit](../live-edit/oscillators.md#oscillator-1--wavetable-pwm) |
-| Oscillator 1 Wavetable Index | Oscillator 1 Wavetable PWM | `70` / `0x11` | **0..127** `stored = lcd` |
-| Oscillator 1 Pulsewidth | Oscillator 1 Wavetable PWM | `70` / `0x12` | **0..127** `stored = lcd` (not Classic 50–100 %) |
-| Oscillator 1 Local Detune | Oscillator 1 Wavetable PWM | `6E` / `0x2B` | **0..127** `stored = lcd` |
-| Oscillator 1 Interpolation | Oscillator 1 Wavetable PWM | `6E` / `0x2C` | **0..127** `stored = lcd` |
-| Oscillator 1 Wavetable / Waveform | Oscillator 1 Grain Simple | `70` / `0x13` | **`00`–`63`** enum; [live-edit](../live-edit/oscillators.md#oscillator-1--grain-simple) |
-| Oscillator 1 Wavetable Index | Oscillator 1 Grain Simple | `70` / `0x11` | **0..127** `stored = lcd` |
-| Oscillator 1 Formant Shift | Oscillator 1 Grain Simple | `6E` / `0x2A` | F-Shift **−64..+63** → `ui+64` (not `70`/`2A` Resonance) |
-| Oscillator 1 Interpolation | Oscillator 1 Grain Simple | `6E` / `0x2C` | **0..127** `stored = lcd` |
-| Oscillator 1 Wavetable / Waveform | Oscillator 1 Grain Complex | `70` / `0x13` | **`00`–`63`** enum; [live-edit](../live-edit/oscillators.md#oscillator-1--grain-complex) |
-| Oscillator 1 Wavetable Index | Oscillator 1 Grain Complex | `70` / `0x11` | **0..127** `stored = lcd` |
-| Oscillator 1 Formant Shift | Oscillator 1 Grain Complex | `6E` / `0x2A` | F-Shift **−64..+63** → `ui+64` |
-| Oscillator 1 Formant Spread | Oscillator 1 Grain Complex | `6E` / `0x25` | F-Spread **0..127** → `stored = lcd` |
-| Oscillator 1 Local Detune | Oscillator 1 Grain Complex | `6E` / `0x2B` | **0..127** → `stored = lcd` |
-| Oscillator 1 Interpolation | Oscillator 1 Grain Complex | `6E` / `0x2C` | **0..127** `stored = lcd` |
-| Oscillator 1 Wavetable / Waveform | Oscillator 1 Formant Simple | `70` / `0x13` | Same enum as Wavetable mode |
-| Oscillator 1 Wavetable Index | Oscillator 1 Formant Simple | `70` / `0x11` | **0..127** `stored = lcd` |
-| Oscillator 1 Formant Shift | Oscillator 1 Formant Simple | `6E` / `0x2A` | F-Shift **−64..+63** → `ui+64` |
-| Oscillator 1 Interpolation | Oscillator 1 Formant Simple | `6E` / `0x2C` | **0..127** `stored = lcd` |
-| Oscillator 1 Wavetable / Waveform | Oscillator 1 Formant Complex | `70` / `0x13` | Same enum as Wavetable mode |
-| Oscillator 1 Wavetable Index | Oscillator 1 Formant Complex | `70` / `0x11` | **0..127** `stored = lcd` |
-| Oscillator 1 Formant Shift | Oscillator 1 Formant Complex | `6E` / `0x2A` | F-Shift **−64..+63** → `ui+64` |
-| Oscillator 1 Formant Spread | Oscillator 1 Formant Complex | `6E` / `0x25` | F-Spread **0..127** → `stored = lcd` |
-| Oscillator 1 Local Detune | Oscillator 1 Formant Complex | `6E` / `0x2B` | **0..127** → `stored = lcd` |
-| Oscillator 1 Interpolation | Oscillator 1 Formant Complex | `6E` / `0x2C` | **0..127** `stored = lcd` |
-| Oscillator 2 Model / Mode | Oscillator 2 | | `6E` / `0x23` (Classic `00`, Hypersaw `01`, Wavetable `02`, Wavetable PWM `03`, Grain Simple `04`, Grain Complex `05`, Formant Simple `06`, Formant Complex `07`) |
-| Oscillator 2 Detune in Semitone | Oscillator 2 | | `70` / `0x19` (−48..+48, `ui+64`) |
-| Oscillator 2 Fine Detune | Oscillator 2 | | `70` / `0x1A` (Detune **0..127**, `stored = lcd`) |
-| Oscillator 2 Keyfollow | Oscillator 2 | | `70` / `0x1F` (−64..+63, Norm @ +32) |
+| Oscillator 1 Waveform Shape | Oscillator 1 Classic | `0x19` | `70` / `0x11` (`00`–`7F`; see live-edit) |
+| Oscillator 1 Wave Select | Oscillator 1 Classic | `0x1B` | `70` / `0x13` (64 waves `00`–`3F`) |
+| Oscillator 1 Pulsewidth | Oscillator 1 Classic | `0x1A` | `70` / `0x12` — **50.0 %..100 %** when Shape ≥ `40` — [Pulse Width](../live-edit/oscillators.md#pulse-width-shape--sawtooth) |
+| Oscillator 1 Density | Oscillator 1 Hypersaw | `0x19` | `70` / `0x11` — **1.0..9.0** — [Hypersaw](../live-edit/oscillators.md#oscillator-1--hypersaw) |
+| Oscillator 1 Local Detune | Oscillator 1 Hypersaw | `0x1A` | `70` / `0x12` — **0..127** `stored = lcd` (Hypersaw; Classic `12` = Pulse Width) |
+| Oscillator 1+2 X-Sync Frequency | Oscillator 1 Hypersaw | `0x23` | `70` / `0x1B` — **0..127** when Sync On; `stored = lcd` |
+| Oscillator 1 Wavetable / Waveform | Oscillator 1 Wavetable | `0x1B` | `70` / `0x13` — Index **0–99** → `00`–`63`; names in [parameter-options.md](../parameter-options.md#wavetable-names) |
+| Oscillator 1 Wavetable Index | Oscillator 1 Wavetable | `0x19` | `70` / `0x11` — **0..127** `stored = lcd` (mode `02`; not Shape/Density) |
+| Oscillator 1 Interpolation | Oscillator 1 Wavetable | `0x135` | `6E` / `0x2C` — **0..127** `stored = lcd` (not `70`/`2C` Filter Env) |
+| Oscillator 1 Wavetable / Waveform | Oscillator 1 Wavetable PWM | `0x1B` | `70` / `0x13` — **`00`–`63`** enum; [live-edit](../live-edit/oscillators.md#oscillator-1--wavetable-pwm) |
+| Oscillator 1 Wavetable Index | Oscillator 1 Wavetable PWM | `0x19` | `70` / `0x11` — **0..127** `stored = lcd` |
+| Oscillator 1 Pulsewidth | Oscillator 1 Wavetable PWM | `0x1A` | `70` / `0x12` — **0..127** `stored = lcd` (not Classic 50–100 %) |
+| Oscillator 1 Local Detune | Oscillator 1 Wavetable PWM | `0x134` | `6E` / `0x2B` — **0..127** `stored = lcd` |
+| Oscillator 1 Interpolation | Oscillator 1 Wavetable PWM | `0x135` | `6E` / `0x2C` — **0..127** `stored = lcd` |
+| Oscillator 1 Wavetable / Waveform | Oscillator 1 Grain Simple | `0x1B` | `70` / `0x13` — **`00`–`63`** enum; [live-edit](../live-edit/oscillators.md#oscillator-1--grain-simple) |
+| Oscillator 1 Wavetable Index | Oscillator 1 Grain Simple | `0x19` | `70` / `0x11` — **0..127** `stored = lcd` |
+| Oscillator 1 Formant Shift | Oscillator 1 Grain Simple | `0x133` | `6E` / `0x2A` — F-Shift **−64..+63** → `ui+64` (not `70`/`2A` Resonance) |
+| Oscillator 1 Interpolation | Oscillator 1 Grain Simple | `0x135` | `6E` / `0x2C` — **0..127** `stored = lcd` |
+| Oscillator 1 Wavetable / Waveform | Oscillator 1 Grain Complex | `0x1B` | `70` / `0x13` — **`00`–`63`** enum; [live-edit](../live-edit/oscillators.md#oscillator-1--grain-complex) |
+| Oscillator 1 Wavetable Index | Oscillator 1 Grain Complex | `0x19` | `70` / `0x11` — **0..127** `stored = lcd` |
+| Oscillator 1 Formant Shift | Oscillator 1 Grain Complex | `0x133` | `6E` / `0x2A` — F-Shift **−64..+63** → `ui+64` |
+| Oscillator 1 Formant Spread | Oscillator 1 Grain Complex | `0x12E` | `6E` / `0x25` — F-Spread **0..127** → `stored = lcd` |
+| Oscillator 1 Local Detune | Oscillator 1 Grain Complex | `0x134` | `6E` / `0x2B` — **0..127** → `stored = lcd` |
+| Oscillator 1 Interpolation | Oscillator 1 Grain Complex | `0x135` | `6E` / `0x2C` — **0..127** `stored = lcd` |
+| Oscillator 1 Wavetable / Waveform | Oscillator 1 Formant Simple | `0x1B` | `70` / `0x13` — Same enum as Wavetable mode |
+| Oscillator 1 Wavetable Index | Oscillator 1 Formant Simple | `0x19` | `70` / `0x11` — **0..127** `stored = lcd` |
+| Oscillator 1 Formant Shift | Oscillator 1 Formant Simple | `0x133` | `6E` / `0x2A` — F-Shift **−64..+63** → `ui+64` |
+| Oscillator 1 Interpolation | Oscillator 1 Formant Simple | `0x135` | `6E` / `0x2C` — **0..127** `stored = lcd` |
+| Oscillator 1 Wavetable / Waveform | Oscillator 1 Formant Complex | `0x1B` | `70` / `0x13` — Same enum as Wavetable mode |
+| Oscillator 1 Wavetable Index | Oscillator 1 Formant Complex | `0x19` | `70` / `0x11` — **0..127** `stored = lcd` |
+| Oscillator 1 Formant Shift | Oscillator 1 Formant Complex | `0x133` | `6E` / `0x2A` — F-Shift **−64..+63** → `ui+64` |
+| Oscillator 1 Formant Spread | Oscillator 1 Formant Complex | `0x12E` | `6E` / `0x25` — F-Spread **0..127** → `stored = lcd` |
+| Oscillator 1 Local Detune | Oscillator 1 Formant Complex | `0x134` | `6E` / `0x2B` — **0..127** → `stored = lcd` |
+| Oscillator 1 Interpolation | Oscillator 1 Formant Complex | `0x135` | `6E` / `0x2C` — **0..127** `stored = lcd` |
+| Oscillator 2 Model / Mode | Oscillator 2 | `0x12C` | `6E` / `0x23` (Classic `00`, Hypersaw `01`, Wavetable `02`, Wavetable PWM `03`, Grain Simple `04`, Grain Complex `05`, Formant Simple `06`, Formant Complex `07`) |
+| Oscillator 2 Detune in Semitone | Oscillator 2 | `0x21` | `70` / `0x19` (−48..+48, `ui+64`) |
+| Oscillator 2 Fine Detune | Oscillator 2 | `0x22` | `70` / `0x1A` (Detune **0..127**, `stored = lcd`) |
+| Oscillator 2 Keyfollow | Oscillator 2 | `0x27` | `70` / `0x1F` (−64..+63, Norm @ +32) |
 | Velocity --> Osc2 Waveform Shape | Oscillator 2 | | `71` / `0x30` (Velocity Map **Osc 2 Shape**; ±100 %) |
-| Oscillator 2 Waveform Shape | Oscillator 2 Classic | | `70` / `0x16` (Spectral Wave `00`; expected Classic Shape table) |
-| Oscillator 2 Wave Select | Oscillator 2 Classic | | `70` / `0x18` (Sine `00`; expected 64 waves `00`–`3F`) |
-| Oscillator 2 Pulsewidth | Oscillator 2 Classic | | `70` / `0x17` (expected Classic PW when Shape ≥ `40`) |
-| Oscillator 2 Density | Oscillator 2 Hypersaw | | `70` / `0x16` (Hypersaw; **1.0..9.0**, same curve as Osc 1 Hypersaw Density) |
-| Oscillator 2 Local Detune | Oscillator 2 Hypersaw | | `70` / `0x17` (Hypersaw; **0..127** `stored = lcd`) |
-| Oscillator 1+2 X-Sync Frequency | Oscillator 2 Hypersaw | | `70` / `0x1B` (**0..127** when Sync On; `stored = lcd`; same slot as Classic FM Amount) |
-| Oscillator 2 Wavetable / Waveform | Oscillator 2 Wavetable | | `70` / `0x18` (**`00`–`63`** enum; Sine..Domina7rix) |
-| Oscillator 2 Wavetable Index | Oscillator 2 Wavetable | | `70` / `0x16` (**0..127** `stored = lcd`) |
-| Oscillator 2 Interpolation | Oscillator 2 Wavetable | | `6E` / `0x40` (**0..127** `stored = lcd`) |
-| Oscillator 2 Wavetable / Waveform | Oscillator 2 Wavetable PWM | | `70` / `0x18` (**`00`–`63`** enum; Sine..Domina7rix) |
-| Oscillator 2 Wavetable Index | Oscillator 2 Wavetable PWM | | `70` / `0x16` (**0..127** `stored = lcd`) |
-| Oscillator 2 Pulsewidth | Oscillator 2 Wavetable PWM | | `70` / `0x17` (**0..127** `stored = lcd`) |
-| Oscillator 2 Local Detune | Oscillator 2 Wavetable PWM | | `6E` / `0x3F` (**0..127** `stored = lcd`) |
-| Oscillator 2 Interpolation | Oscillator 2 Wavetable PWM | | `6E` / `0x40` (**0..127** `stored = lcd`) |
-| Oscillator 2 Wavetable / Waveform | Oscillator 2 Grain Simple | | `70` / `0x18` (**`00`–`63`** enum; Sine..Domina7rix) |
-| Oscillator 2 Wavetable Index | Oscillator 2 Grain Simple | | `70` / `0x16` (**0..127** `stored = lcd`) |
-| Oscillator 2 Formant Shift | Oscillator 2 Grain Simple | | `6E` / `0x3E` (**−64..+63** → `stored = ui + 64`) |
-| Oscillator 2 Interpolation | Oscillator 2 Grain Simple | | `6E` / `0x40` (**0..127** `stored = lcd`) |
-| Oscillator 2 Wavetable / Waveform | Oscillator 2 Grain Complex | | `70` / `0x18` (**`00`–`63`** enum; Sine..Domina7rix) |
-| Oscillator 2 Wavetable Index | Oscillator 2 Grain Complex | | `70` / `0x16` (**0..127** `stored = lcd`) |
-| Oscillator 2 Formant Shift | Oscillator 2 Grain Complex | | `6E` / `0x3E` (**−64..+63** → `stored = ui + 64`) |
-| Oscillator 2 Formant Spread | Oscillator 2 Grain Complex | | `6E` / `0x39` (**0..127** `stored = lcd`) |
-| Oscillator 2 Local Detune | Oscillator 2 Grain Complex | | `6E` / `0x3F` (**0..127** `stored = lcd`) |
-| Oscillator 2 Interpolation | Oscillator 2 Grain Complex | | `6E` / `0x40` (**0..127** `stored = lcd`) |
-| Oscillator 2 Wavetable / Waveform | Oscillator 2 Formant Simple | | `70` / `0x18` (**`00`–`63`** enum; Sine..Domina7rix) |
-| Oscillator 2 Wavetable Index | Oscillator 2 Formant Simple | | `70` / `0x16` (**0..127** `stored = lcd`) |
-| Oscillator 2 Formant Shift | Oscillator 2 Formant Simple | | `6E` / `0x3E` (**−64..+63** → `stored = ui + 64`) |
-| Oscillator 2 Interpolation | Oscillator 2 Formant Simple | | `6E` / `0x40` (**0..127** `stored = lcd`) |
-| Oscillator 2 Wavetable / Waveform | Oscillator 2 Formant Complex | | `70` / `0x18` (**`00`–`63`** enum; Sine..Domina7rix) |
-| Oscillator 2 Wavetable Index | Oscillator 2 Formant Complex | | `70` / `0x16` (**0..127** `stored = lcd`) |
-| Oscillator 2 Formant Shift | Oscillator 2 Formant Complex | | `6E` / `0x3E` (**−64..+63** → `stored = ui + 64`) |
-| Oscillator 2 Formant Spread | Oscillator 2 Formant Complex | | `6E` / `0x39` (**0..127** `stored = lcd`) |
-| Oscillator 2 Local Detune | Oscillator 2 Formant Complex | | `6E` / `0x3F` (**0..127** `stored = lcd`) |
-| Oscillator 2 Interpolation | Oscillator 2 Formant Complex | | `6E` / `0x40` (**0..127** `stored = lcd`) |
-| Oscillator 3 Model | Oscillator 3 | | `71` / `0x29` (Mode/Wave; Off `00`, Slave `01`, Saw `02`, Pulse `03`, Sine `04`, Triangle `05`, Wave 3..64 `06`–`43`) |
-| Oscillator 3 Detune in Semitone | Oscillator 3 | | `71` / `0x2B` (visible for Mode/Wave `02`–`43`; **−48..+48**, `ui+64`) |
-| Oscillator 3 Fine Detune | Oscillator 3 | | `71` / `0x2C` (visible for Mode/Wave `02`–`43`; panel **0..−127**, `stored = −ui`) |
-| Oscillator 1 Sync (2>1) | Oscillator Common | | `70` / `0x1C` (Osc 2 Classic Sync; Off `00`, On `01`) |
-| Filter Envelope --> Oscillator 2 Pitch | Oscillator Common | | `70` / `0x1D` (Osc 2 Classic/Hypersaw/Wavetable/Wavetable PWM/Grain Simple/Grain Complex/Formant Simple/Formant Complex; **−100 %** `00`, **0 %** `40`, **+100 %** `7F`) |
-| Oscillator Section Initial Phase | Oscillator Common | | `71` / `0x23` (Phase Init; Off `00`, **1..127** direct) |
-| Velocity --> Pulsewidth | Oscillator Common | | `71` / `0x31` (Velocity Map **Pulse Width**; ±100 %) |
-| Patch Common Portamento | Oscillator Common | | `70` / `0x05` (CC 5; Off `00`, **1..127** direct `stored = lcd`) |
-| Oscillator 2 FM Amount | Oscillator Common FM | | `70` / `0x1B` (Classic **Sync Off:** 0.0..100.0 %; **Sync On:** Sync Frequency **0..127**; other modes **0..127** direct) |
-| Filter Envelope --> FM | Oscillator Common FM | | `70` / `0x1E` (**Sync Off** / no Sync: **FilterEnv>FM**; Classic/Hypersaw **Sync On:** same wire = **FilterEnv>Sync**; **−100..+100 %** like `1D`) |
-| Velocity --> FM Amount | Oscillator Common FM | | `71` / `0x32` (Velocity Map **FM Amount**; ±100 %) |
-| Oscillator 2 FM Mode | Oscillator Common FM | | `71` / `0x22` enum; Classic `00`–`06`, Wavetable/Wavetable PWM/Grain Simple/Grain Complex/Formant Simple/Formant Complex **FreqMod** `00`, **PhaseMod** `01` |
-| Sync Amount / X-Sync Frequency | Oscillator Common Sync | | |
-| Velocity --> FM / Sync | Oscillator Common Sync | | |
-| Filter Envelope --> X-Sync | Oscillator Common Sync | | `70` / `0x1E` when **Sync On** (panel **FilterEnv>Sync**; same wire as FilterEnv>FM) |
-| Unison Mode | Unison | | `70` / `0x61` (CC 97 **Voices**; Off `00`, Twin `01`, **3**–**8** `02`–`07`) |
-| Unison Detune | Unison | | `70` / `0x62` (CC 98; **0..127** when Voices ≥ Twin; `stored = lcd`) |
-| Unison Panorama Spread | Unison | | `70` / `0x63` (CC 99 **Pan Spread**; **0.0..100.0 %**, always visible; likely `× 100 / 128`, `7F` → 100 %) |
-| Unison LFO Phase Offset | Unison | | `70` / `0x64` (CC 100; **−64..+63** → `ui+64`; panel TBD) |
-| Noise Oscillator Volume | Noise | | `70` / `0x25` (CC 37; Off `00`, **1..127** direct `stored = lcd`) |
-| Noise Color | Noise | | `70` / `0x27` (**−64..+63** → `stored = ui + 64`) |
-| Oscillator Punch Intensity | Punch | | `71` / `0x24` (**0.0..100.0 %**; `pct = stored × 100 / 128`, `7F` → 100.0 %; LCD swap at `04`/`05`) |
-| Oscillator 1/2 Balance | Mixer | | `70` / `0x21` (−100..+100 %) |
-| Oscillator 3 Volume | Mixer | | `71` / `0x2A` (visible for Osc 3 Mode/Wave `02`–`43`; **0..127** `stored = lcd`) |
-| Sub Oscillator Volume | Sub-Osc | | `70` / `0x22` (CC 34; **0..127** direct `stored = lcd`) |
-| Oscillator Section Volume / Saturation | Mixer | | `70` / `0x24` (Osc Volume / Saturation menu, **−64..+63**); Mixer section volume uses `71` / `0x7F` |
-| Ring Modulator Volume | Mixer | | `70` / `0x26` (CC 38; Off `00`, **1..127** direct `stored = lcd`) |
+| Oscillator 2 Waveform Shape | Oscillator 2 Classic | `0x1E` | `70` / `0x16` (Spectral Wave `00`; expected Classic Shape table) |
+| Oscillator 2 Wave Select | Oscillator 2 Classic | `0x20` | `70` / `0x18` (Sine `00`; expected 64 waves `00`–`3F`) |
+| Oscillator 2 Pulsewidth | Oscillator 2 Classic | `0x1F` | `70` / `0x17` (expected Classic PW when Shape ≥ `40`) |
+| Oscillator 2 Density | Oscillator 2 Hypersaw | `0x1E` | `70` / `0x16` — **1.0..9.0**, same curve as Osc 1 Hypersaw Density |
+| Oscillator 2 Local Detune | Oscillator 2 Hypersaw | `0x1F` | `70` / `0x17` — **0..127** `stored = lcd` |
+| Oscillator 1+2 X-Sync Frequency | Oscillator 2 Hypersaw | `0x23` | `70` / `0x1B` — **0..127** when Sync On; `stored = lcd`; same slot as Classic FM Amount |
+| Oscillator 2 Wavetable / Waveform | Oscillator 2 Wavetable | `0x20` | `70` / `0x18` — **`00`–`63`** enum; Sine..Domina7rix |
+| Oscillator 2 Wavetable Index | Oscillator 2 Wavetable | `0x1E` | `70` / `0x16` — **0..127** `stored = lcd` |
+| Oscillator 2 Interpolation | Oscillator 2 Wavetable | `0x149` | `6E` / `0x40` — **0..127** `stored = lcd` |
+| Oscillator 2 Wavetable / Waveform | Oscillator 2 Wavetable PWM | `0x20` | `70` / `0x18` — **`00`–`63`** enum; Sine..Domina7rix |
+| Oscillator 2 Wavetable Index | Oscillator 2 Wavetable PWM | `0x1E` | `70` / `0x16` — **0..127** `stored = lcd` |
+| Oscillator 2 Pulsewidth | Oscillator 2 Wavetable PWM | `0x1F` | `70` / `0x17` — **0..127** `stored = lcd` |
+| Oscillator 2 Local Detune | Oscillator 2 Wavetable PWM | `0x148` | `6E` / `0x3F` — **0..127** `stored = lcd` |
+| Oscillator 2 Interpolation | Oscillator 2 Wavetable PWM | `0x149` | `6E` / `0x40` — **0..127** `stored = lcd` |
+| Oscillator 2 Wavetable / Waveform | Oscillator 2 Grain Simple | `0x20` | `70` / `0x18` — **`00`–`63`** enum; Sine..Domina7rix |
+| Oscillator 2 Wavetable Index | Oscillator 2 Grain Simple | `0x1E` | `70` / `0x16` — **0..127** `stored = lcd` |
+| Oscillator 2 Formant Shift | Oscillator 2 Grain Simple | `0x147` | `6E` / `0x3E` — **−64..+63** → `stored = ui + 64` |
+| Oscillator 2 Interpolation | Oscillator 2 Grain Simple | `0x149` | `6E` / `0x40` — **0..127** `stored = lcd` |
+| Oscillator 2 Wavetable / Waveform | Oscillator 2 Grain Complex | `0x20` | `70` / `0x18` — **`00`–`63`** enum; Sine..Domina7rix |
+| Oscillator 2 Wavetable Index | Oscillator 2 Grain Complex | `0x1E` | `70` / `0x16` — **0..127** `stored = lcd` |
+| Oscillator 2 Formant Shift | Oscillator 2 Grain Complex | `0x147` | `6E` / `0x3E` — **−64..+63** → `stored = ui + 64` |
+| Oscillator 2 Formant Spread | Oscillator 2 Grain Complex | `0x142` | `6E` / `0x39` — **0..127** `stored = lcd` |
+| Oscillator 2 Local Detune | Oscillator 2 Grain Complex | `0x148` | `6E` / `0x3F` — **0..127** `stored = lcd` |
+| Oscillator 2 Interpolation | Oscillator 2 Grain Complex | `0x149` | `6E` / `0x40` — **0..127** `stored = lcd` |
+| Oscillator 2 Wavetable / Waveform | Oscillator 2 Formant Simple | `0x20` | `70` / `0x18` — **`00`–`63`** enum; Sine..Domina7rix |
+| Oscillator 2 Wavetable Index | Oscillator 2 Formant Simple | `0x1E` | `70` / `0x16` — **0..127** `stored = lcd` |
+| Oscillator 2 Formant Shift | Oscillator 2 Formant Simple | `0x147` | `6E` / `0x3E` — **−64..+63** → `stored = ui + 64` |
+| Oscillator 2 Interpolation | Oscillator 2 Formant Simple | `0x149` | `6E` / `0x40` — **0..127** `stored = lcd` |
+| Oscillator 2 Wavetable / Waveform | Oscillator 2 Formant Complex | `0x20` | `70` / `0x18` — **`00`–`63`** enum; Sine..Domina7rix |
+| Oscillator 2 Wavetable Index | Oscillator 2 Formant Complex | `0x1E` | `70` / `0x16` — **0..127** `stored = lcd` |
+| Oscillator 2 Formant Shift | Oscillator 2 Formant Complex | `0x147` | `6E` / `0x3E` — **−64..+63** → `stored = ui + 64` |
+| Oscillator 2 Formant Spread | Oscillator 2 Formant Complex | `0x142` | `6E` / `0x39` — **0..127** `stored = lcd` |
+| Oscillator 2 Local Detune | Oscillator 2 Formant Complex | `0x148` | `6E` / `0x3F` — **0..127** `stored = lcd` |
+| Oscillator 2 Interpolation | Oscillator 2 Formant Complex | `0x149` | `6E` / `0x40` — **0..127** `stored = lcd` |
+| Oscillator 3 Model | Oscillator 3 | `0xB1` | `71` / `0x29` (Mode/Wave; Off `00`, Slave `01`, Saw `02`, Pulse `03`, Sine `04`, Triangle `05`, Wave 3..64 `06`–`43`) |
+| Oscillator 3 Detune in Semitone | Oscillator 3 | `0xB3` | `71` / `0x2B` (visible for Mode/Wave `02`–`43`; **−48..+48**, `ui+64`) |
+| Oscillator 3 Fine Detune | Oscillator 3 | `0xB4` | `71` / `0x2C` (visible for Mode/Wave `02`–`43`; panel **0..−127**, `stored = −ui`) |
+| Oscillator 1 Sync (2>1) | Osc 1 / Osc 2 sub-menus | `0x24` | `70` / `0x1C` — **EDIT OSC → Osc 1** (e.g. Hypersaw) and **Osc 2 Classic**; Off `00`, On `01` |
+| Filter Envelope --> Oscillator 2 Pitch | Oscillator 2 Classic | `0x25` | `70` / `0x1D` — **EDIT OSC → Osc 2** (Classic/Hypersaw/Wavetable/…); **−100 %** `00`, **0 %** `40`, **+100 %** `7F` |
+| Oscillator Section Initial Phase | EDIT OSC → Common | `0xAB` | `71` / `0x23` — **Phase Init**; Off `00`, **1..127** direct |
+| Velocity --> Pulsewidth | Velocity Map | | `71` / `0x31` — **Edit Single → Velocity Map → Pulse Width**; ±100 % |
+| Patch Common Portamento | EDIT OSC → Common | `0x0D` | `70` / `0x05` (CC 5; Off `00`, **1..127** direct `stored = lcd`) |
+| Oscillator 2 FM Amount | Oscillator 2 Classic | `0x23` | `70` / `0x1B` — **EDIT OSC → Osc 2**; **Sync Off:** 0.0..100.0 %; **Sync On:** **Sync Frequency** **0..127**; other Osc 2 modes **0..127** direct |
+| Filter Envelope --> FM / X-Sync | Osc 2 Classic / EDIT OSC Common | `0x26` | `70` / `0x1E` — one wire; **Sync Off:** **FilterEnv>FM** on **Osc 2 Classic**; **Sync On:** **FilterEnv>Sync** on **EDIT OSC → Common** (and Osc 1 Hypersaw); **−100..+100 %** like `1D` |
+| Velocity --> FM Amount | Velocity Map | | `71` / `0x32` — **Edit Single → Velocity Map → FM Amount** only (±100 %) |
+| Oscillator 2 FM Mode | Oscillator 2 Classic | `0xAA` | `71` / `0x22` — **EDIT OSC → Osc 2**; Classic `00`–`06`, Wavetable/… **FreqMod** `00`, **PhaseMod** `01` |
+| ~~Sync Amount / X-Sync Frequency~~ | — | — | Same as **Oscillator 2 FM Amount** — `70` / `0x1B` when **Sync On** (`70`/`1C`=`01`) |
+| ~~Velocity --> FM / Sync~~ | — | — | **N/A** on TI mk2 — Velocity Map has **FM Amount** only (`71`/`32`); no separate **FM/Sync** row |
+| ~~Filter Envelope --> X-Sync~~ | — | — | Same wire as **Filter Envelope --> FM / X-Sync** — `70` / `0x1E`; inventory-only duplicate |
+| Noise Oscillator Volume | Noise | `0x2D` | `70` / `0x25` (CC 37; Off `00`, **1..127** direct `stored = lcd`) |
+| Noise Color | Noise | `0x2F` | `70` / `0x27` (**−64..+63** → `stored = ui + 64`) |
+| Oscillator Punch Intensity | Oscillators → Punch | `0xAC` | `71` / `0x24` — **EDIT OSC → Punch**; **0.0..100.0 %** (`pct = stored × 100 / 128`) |
+| Oscillator 1/2 Balance | Mixer | `0x29` | `70` / `0x21` (−100..+100 %) |
+| Oscillator 3 Volume | Mixer | `0xB2` | `71` / `0x2A` (visible for Osc 3 Mode/Wave `02`–`43`; **0..127** `stored = lcd`) |
+| Sub Oscillator Volume | Sub-Osc | `0x2A` | `70` / `0x22` (CC 34; **0..127** direct `stored = lcd`) |
+| Oscillator Section Volume / Saturation | Mixer | `0x2C` | `70` / `0x24` (Osc Volume / Saturation menu, **−64..+63**); Mixer section volume uses `71` / `0x7F` → dump **`0x107`** |
+| Ring Modulator Volume | Mixer | `0x3A` | `70` / `0x32` (CC 38; **not** param `0x26`; Off `00`, **1..127** direct `stored = lcd`) |
 
 ### Filters
 
@@ -263,8 +299,8 @@ Multi edit parameters are in
 | Filter 1 Envelope Amount | Filter 1 | | `70` / `0x2C` |
 | Filter 1 Envelope Polarity | Filter 1 | | `71` / `0x1E` |
 | Filter 1 Cutoff | Filter 1 | | `70` / `0x28` |
-| Filter 1 Resonance | Filter 1 | | `70` / `0x2A` |
-| Filter 1 Keyfollow | Filter 1 | | `70` / `0x2E` |
+| Filter 1 Resonance | Filter 1 | | `70` / `0x2A` — also **Vocoder Q-Factor** when Vocoder active |
+| Filter 1 Keyfollow | Filter 1 | | `70` / `0x2E` — also **Vocoder Spread** when Vocoder active |
 | ~~Analog Mode On/Off Toggle~~ | — | — | **N/A** — analog types are **Filter 1 Mode** values (`04`–`07` Analog * Pole) |
 | Filter 2 Mode | Filter 2 | | `70` / `0x34` (4 modes `00`–`03` only) |
 | Filter 2 Envelope Amount | Filter 2 | | `70` / `0x2D` (linear %) |
@@ -282,7 +318,7 @@ Multi edit parameters are in
 | ~~Filter Link toggle~~ | Filter Common | — | Unconfirmed — may differ from **knob target** `7A` |
 | Filter Balance | Filter Common | | `70` / `0x30` (bipolar `ui+64`) |
 | Pan Spread | Filter Common | | `6E` / `0x7A` (Split routing only) |
-| Filter Envelope Select | Filter / Aux Envelopes | | |
+| ~~Filter Envelope Select~~ | — | — | **N/A** on TI mk2 — no panel control; use **Filter 1/2 Env Polarity** (`71`/`1E`, `71`/`1F`) and [FILTERS SELECT](../live-edit/filters.md#filters-select) (`71`/`7A`) |
 | Filter Envelope Attack | Filter / Aux Envelopes | | `70` / `0x36` (Filter 1 ADSR menu) |
 | Filter Envelope Decay | Filter / Aux Envelopes | | `70` / `0x37` |
 | Filter Envelope Sustain | Filter / Aux Envelopes | | `70` / `0x38` (linear %) |
@@ -363,17 +399,56 @@ Live-edit bytes: [modulators.md](../live-edit/modulators.md). **Dump offsets**:
 | LFO 3 User Destination | LFO 3 Destination | | `71` / `0x0B` — [Assign Target](../parameter-options.md#assign-target-0x0b) |
 | LFO 3 User Destination Amount | LFO 3 Destination | | `71` / `0x0C` — [Amount](../parameter-options.md#amount-0x0c) |
 
-### Modulation Matrix
+### Modulation Matrix {#modulation-matrix}
+
+Live edit: [modulation-matrix.md](../live-edit/modulation-matrix.md). Each slot:
+**one** Source; **three** Destination / Amount pairs. **`cmd`** / **param** are
+**per slot** (and row) — see doc table. **Dump offsets**: **TBD**.
 
 | Control | SubCategory | Dump offset | Live edit |
 | --- | --- | --- | --- |
-| Mod Matrix Slot 1-6 Source | Slot 1-6 | | |
-| Mod Matrix Slot 1-6 Destination 1 | Slot 1-6 | | |
-| Mod Matrix Slot 1-6 Amount 1 | Slot 1-6 | | |
-| Mod Matrix Slot 1-6 Destination 2 | Slot 1-6 | | |
-| Mod Matrix Slot 1-6 Amount 2 | Slot 1-6 | | |
-| Mod Matrix Slot 1-6 Destination 3 | Slot 1-6 | | |
-| Mod Matrix Slot 1-6 Amount 3 | Slot 1-6 | | |
+| Mod Matrix Slot 1 Source | Slot 1 | | `71`/`40` — [Source](../parameter-options.md#mod-matrix-sources) |
+| Mod Matrix Slot 1 Destination 1 | Slot 1 | | `71`/`41` — [Destination](../parameter-options.md#mod-matrix-destinations) |
+| Mod Matrix Slot 1 Amount 1 | Slot 1 | | `71`/`42` — [Amount](../parameter-options.md#mod-matrix-amount) |
+| Mod Matrix Slot 1 Destination 2 | Slot 1 | | `6E`/`5A` |
+| Mod Matrix Slot 1 Amount 2 | Slot 1 | | `6E`/`5B` |
+| Mod Matrix Slot 1 Destination 3 | Slot 1 | | `6E`/`5C` |
+| Mod Matrix Slot 1 Amount 3 | Slot 1 | | `6E`/`5D` |
+| Mod Matrix Slot 2 Source | Slot 2 | | `71`/`43` |
+| Mod Matrix Slot 2 Destination 1 | Slot 2 | | `71`/`44` |
+| Mod Matrix Slot 2 Amount 1 | Slot 2 | | `71`/`45` |
+| Mod Matrix Slot 2 Destination 2 | Slot 2 | | `71`/`46` — ✓ spot-check |
+| Mod Matrix Slot 2 Amount 2 | Slot 2 | | `71`/`47` — ✓ spot-check |
+| Mod Matrix Slot 2 Destination 3 | Slot 2 | | `6E`/`5E` |
+| Mod Matrix Slot 2 Amount 3 | Slot 2 | | `6E`/`5F` |
+| Mod Matrix Slot 3 Source | Slot 3 | | `71`/`48` |
+| Mod Matrix Slot 3 Destination 1 | Slot 3 | | `71`/`49` |
+| Mod Matrix Slot 3 Amount 1 | Slot 3 | | `71`/`4A` |
+| Mod Matrix Slot 3 Destination 2 | Slot 3 | | `71`/`4B` — ✓ spot-check |
+| Mod Matrix Slot 3 Amount 2 | Slot 3 | | `71`/`4C` — ✓ spot-check |
+| Mod Matrix Slot 3 Destination 3 | Slot 3 | | `71`/`4D` |
+| Mod Matrix Slot 3 Amount 3 | Slot 3 | | `71`/`4E` |
+| Mod Matrix Slot 4 Source | Slot 4 | | `71`/`67` |
+| Mod Matrix Slot 4 Destination 1 | Slot 4 | | `71`/`68` |
+| Mod Matrix Slot 4 Amount 1 | Slot 4 | | `71`/`69` |
+| Mod Matrix Slot 4 Destination 2 | Slot 4 | | `6E`/`60` |
+| Mod Matrix Slot 4 Amount 2 | Slot 4 | | `6E`/`61` |
+| Mod Matrix Slot 4 Destination 3 | Slot 4 | | `6E`/`62` |
+| Mod Matrix Slot 4 Amount 3 | Slot 4 | | `6E`/`63` |
+| Mod Matrix Slot 5 Source | Slot 5 | | `71`/`6A` |
+| Mod Matrix Slot 5 Destination 1 | Slot 5 | | `71`/`6B` |
+| Mod Matrix Slot 5 Amount 1 | Slot 5 | | `71`/`6C` |
+| Mod Matrix Slot 5 Destination 2 | Slot 5 | | `6E`/`64` |
+| Mod Matrix Slot 5 Amount 2 | Slot 5 | | `6E`/`65` |
+| Mod Matrix Slot 5 Destination 3 | Slot 5 | | `6E`/`66` |
+| Mod Matrix Slot 5 Amount 3 | Slot 5 | | `6E`/`67` |
+| Mod Matrix Slot 6 Source | Slot 6 | | `71`/`6D` |
+| Mod Matrix Slot 6 Destination 1 | Slot 6 | | `71`/`6E` — ✓ spot-check |
+| Mod Matrix Slot 6 Amount 1 | Slot 6 | | `71`/`6F` — ✓ spot-check |
+| Mod Matrix Slot 6 Destination 2 | Slot 6 | | `6E`/`68` |
+| Mod Matrix Slot 6 Amount 2 | Slot 6 | | `6E`/`69` |
+| Mod Matrix Slot 6 Destination 3 | Slot 6 | | `6E`/`6A` |
+| Mod Matrix Slot 6 Amount 3 | Slot 6 | | `6E`/`6B` |
 
 ### Arpeggiator {#arpeggiator}
 
@@ -528,8 +603,8 @@ Live-edit bytes: [effects.md](../live-edit/effects.md). **Dump offsets**: **TBD*
 | Vocoder Envelope Attack | Vocoder | | [`6E`/`36`](../live-edit/effects.md#vocoder-carrier-attack-cmd0x6e-param-0x36) — **Carrier Attack** |
 | Vocoder Envelope Release | Vocoder | | [`6E`/`37`](../live-edit/effects.md#vocoder-carrier-release-cmd0x6e-param-0x37) — **Carrier Release** |
 | Vocoder Carrier Center Frequency | Vocoder | | [`6E`/`28`](../live-edit/effects.md#vocoder-center-freq-cmd0x6e-param-0x28) — **Center Freq** |
-| Vocoder Carrier Frequency Spread | Vocoder | | [`6E`/`2E`](../live-edit/effects.md#vocoder-spread-cmd0x6e-param-0x2e) — **Spread** |
-| Vocoder Carrier Q-Factor | Vocoder | | [`6E`/`2A`](../live-edit/effects.md#vocoder-q-factor-cmd0x6e-param-0x2a) — **Q-Factor** |
+| Vocoder Carrier Frequency Spread | Vocoder | | [`70`/`2E`](../live-edit/effects.md#vocoder-spread-cmd0x70-param-0x2e) — **Spread**; Filter 1 Keyfollow slot |
+| Vocoder Carrier Q-Factor | Vocoder | | [`70`/`2A`](../live-edit/effects.md#vocoder-q-factor-cmd0x70-param-0x2a) — **Q-Factor**; Filter 1 Resonance slot |
 | Vocoder Modulator Frequency Offset | Vocoder | | [`6E`/`29`](../live-edit/effects.md#vocoder-mod-offset-cmd0x6e-param-0x29) — **Mod Offset** |
 | Vocoder Modulator Input | Vocoder | | [Mode](../parameter-options.md#vocoder-mode) **`04`** In L / **`05`** In L+R / **`06`** In R — same rows as **`01`–`03` |
 
@@ -537,6 +612,10 @@ Live-edit bytes: [effects.md](../live-edit/effects.md). **Dump offsets**: **TBD*
 
 | Control | SubCategory | Dump offset | Live edit |
 | --- | --- | --- | --- |
+| Unison Voices | Edit Single → Unison | `0x201` | `6F` / `0x78` — **Edit Single → Unison → Voices**; Off `00`, Twin `01`, **3**–**8** `02`–`07` (**not** `70`/`61` / CC-as-param) |
+| Unison Detune | Edit Single → Unison | `0x202` | `6F` / `0x79` — panel visible when Voices ≥ Twin; **0..127** `stored = lcd` |
+| Unison Pan Spread | Edit Single → Unison | `0x203` | `6F` / `0x7A` — **0.0..100.0 %** (`× 100 / 128`, `7F` → 100 %) |
+| Unison LFO Phase Offset | Edit Single → Unison | `0x204` | `6F` / `0x7B` — **−64..+63** → `ui+64` |
 | Transpose / Patch Transpose | Common Parameters | | `70` / `0x5D` (CC 93) — **−64..+63** → `ui+64` — [Transpose](edit-single.md#transpose--patch-transpose-0x5d-cmd0x70--cc-93 |
 | ~~Part Detune~~ | — | — | **Multi** detune (`0x72`/`0x26`) — not Edit Single; CSV lists VC Common access only |
 | Multi Tempo / Master Clock | Common Parameters | `0x17` in `DUMP_MULTI` | `72` / `0x0F` — **63..190** bpm → `stored = bpm - 63` — [Multi Tempo](edit-single.md#multi-tempo--master-clock-0x0f-cmd0x72 |

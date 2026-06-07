@@ -328,8 +328,17 @@ map:
 LCD](../parameter-options.md#osc-1-classic--pulse-width-lcd).
 
 ```text
-F0 00 20 33 01 00 70 00 12 00 F7 # min 50.0 %
-F0 00 20 33 01 00 70 00 12 7F F7 # max 100 %
+F0 00 20 33 01 00 70 00 12 00 F7 # 50.0 %
+F0 00 20 33 01 00 70 00 12 40 F7 # 75.6 %
+F0 00 20 33 01 00 70 00 12 7F F7 # 100 %
+```
+
+Single edit buffer (**`<part>=0x40`**) — same **`<value>`** map (spot-check ✓):
+
+```text
+F0 00 20 33 01 00 70 40 12 00 F7 # 50.0 %
+F0 00 20 33 01 00 70 40 12 40 F7 # 75.6 %
+F0 00 20 33 01 00 70 40 12 7F F7 # 100 %
 ```
 
 ### Oscillator 1 — Hypersaw
@@ -374,6 +383,14 @@ F0 00 20 33 01 00 70 00 11 3F F7 # Density 3.0 (LCD)
 F0 00 20 33 01 00 70 00 11 7F F7 # Density 9.0
 ```
 
+Single edit buffer (**`<part>=0x40`**) — same **`<value>`** map (spot-check ✓):
+
+```text
+F0 00 20 33 01 00 70 40 11 00 F7 # Density 1.0
+F0 00 20 33 01 00 70 40 11 3F F7 # Density 3.0
+F0 00 20 33 01 00 70 40 11 7F F7 # Density 9.0
+```
+
 **Local Detune** (`12` in Hypersaw only): same Page A index as Classic
 **Pulse Width** (**`12`** there is **50.0 %** … **100 %**). Only interpret
 **`12`** with **Mode `01`**.
@@ -408,6 +425,14 @@ F0 00 20 33 01 00 70 00 12 7F F7 # Local Detune 127 (max wire)
 ```text
 F0 00 20 33 01 00 70 00 1C 00 F7 # Sync Off
 F0 00 20 33 01 00 70 00 1C 01 F7 # Sync On
+```
+
+Single edit buffer (**`<part>=0x40`**) — same **`<value>`** map (spot-check ✓,
+EDIT OSC → Osc 1 sub-menu):
+
+```text
+F0 00 20 33 01 00 70 40 1C 00 F7 # Sync Off
+F0 00 20 33 01 00 70 40 1C 01 F7 # Sync On
 ```
 
 **Sync Frequency** (`1B`, conditional on **Sync On**): dump
@@ -1544,12 +1569,17 @@ F0 00 20 33 01 00 70 00 27 7F F7 # Noise Color +63
 
 ## Ring Modulator
 
-**Oscillators → Ring Modulator**. Page A param **`0x26`**.
+**Oscillators → Ring Modulator**. Page A param **`0x32`** (not CC **38** =
+**`0x26`** — that was an inventory typo).
 
-### Ring Modulator Volume (`0x26`, `cmd=0x70` / CC 38)
+### Ring Modulator Volume (`0x32`, `cmd=0x70` / CC 38)
 
 Panel **Off**, then **1..127**; wire matches the numeric value (**`00`** = Off).
 Same encoding as [Noise Volume](#noise-volume-0x25-cmd0x70--cc-37).
+
+**`<part>`:** Multi Part *n* → **`0x00`–`0x0F`**; Single edit buffer →
+**`0x40`**. Param **`0x32`** is unchanged — only the part index switches with
+the active edit context (panel-verified TI mk2).
 
 | LCD | `<value>` | Confirmed |
 | --- | --- | --- |
@@ -1563,10 +1593,12 @@ stored = lcd # 1..127; 00 = Off
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 26 00 F7 # Ring Modulator Volume Off
-F0 00 20 33 01 00 70 00 26 01 F7 # Ring Modulator Volume 1
-F0 00 20 33 01 00 70 00 26 02 F7 # Ring Modulator Volume 2
-F0 00 20 33 01 00 70 00 26 7F F7 # Ring Modulator Volume 127
+F0 00 20 33 01 00 70 00 32 00 F7 # Ring Modulator Volume Off (Multi Part 1)
+F0 00 20 33 01 00 70 00 32 01 F7 # Ring Modulator Volume 1 (Multi Part 1)
+F0 00 20 33 01 00 70 01 32 00 F7 # Ring Modulator Volume Off (Multi Part 2)
+F0 00 20 33 01 00 70 40 32 00 F7 # Ring Modulator Volume Off (Single edit buffer)
+F0 00 20 33 01 00 70 40 32 01 F7 # Ring Modulator Volume 1 (Single edit buffer)
+F0 00 20 33 01 00 70 40 32 7F F7 # Ring Modulator Volume 127 (Single edit buffer)
 ```
 
 ## Sub Oscillator

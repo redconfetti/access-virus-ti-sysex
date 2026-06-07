@@ -119,8 +119,9 @@ See [Option name](parameter-options.md#anchor) from live-edit or dump rows.
 | [Vocoder Bands](#vocoder-bands) | **Bands** — `6E`/`3A`; **`00`–`1F`** = **1..32** |
 | [Distortion Type](#distortion-type) | **EDIT FX → Distortion → Type** — `71`/`64`; non-dense wire bytes |
 | [Distortion panel visibility](#distortion-panel-visibility) | **Type** Off vs standard / minimal / reducer panel rows |
-| [Mod Matrix Sources](#mod-matrix-sources) | Mod matrix **Source** |
-| [Mod Matrix Destinations](#mod-matrix-destinations) | Mod matrix **Destination** |
+| [Mod Matrix Sources](#mod-matrix-sources) | Mod matrix **Source** — per-slot **`71`** param (**`40`**, **`43`**, …) |
+| [Mod Matrix Destinations](#mod-matrix-destinations) | Mod matrix **Destination** — per-slot **`71`** / **`6E`** param |
+| [Mod Matrix Amount](#mod-matrix-amount) | Mod matrix **Amount** — per-slot **`71`** / **`6E`** param, **−64..+63** |
 | [Wavetable Names](#wavetable-names) | Osc wavetable wave select |
 
 LCD↔wire curves (not simple enums): [Edit Single
@@ -2333,7 +2334,10 @@ See [filters.md — SELECT](live-edit/filters.md#filters-select).
 (`6E`/`7A` — same param byte, different **`cmd`**).
 
 When [Vocoder Mode](vocoder-mode) ≠ **Off**, the **FILTERS** section is
-unavailable — LCD shows **`Vocoder active. Filters are disabled`**.
+unavailable — LCD shows **`Vocoder active. Filters are disabled`**. **Spread** and
+**Q-Factor** reuse [Filter 1 Keyfollow](live-edit/filters.md#filter-1-keyfollow-cmd0x70-param-0x2e)
+/ [Filter 1 Resonance](live-edit/filters.md#filter-1-resonance-cmd0x70-param-0x2a)
+storage (**`70`/`2E`**, **`70`/`2A`**).
 
 ---
 
@@ -2798,7 +2802,7 @@ rows). **`stored = <value>`** (dense **`00`–`03`**).
 Panel rows per **Input Select**: [Input Follower panel
 visibility](#input-follower-panel-visibility).
 
-**Not** [Ring Modulator Volume](live-edit/oscillators.md#ring-modulator-volume-0x26-cmd0x70--cc-38)
+**Not** [Ring Modulator Volume](live-edit/oscillators.md#ring-modulator-volume-0x32-cmd0x70--cc-38)
 (`70`/`26`). **Not** Edit Multi **Detune** (`72`/`26`).
 
 ---
@@ -3134,7 +3138,8 @@ visibility](#vocoder-panel-visibility).
 ## Vocoder panel visibility {#vocoder-panel-visibility}
 
 **EDIT FX → Others → Vocoder**. Rows depend on [Vocoder Mode](#vocoder-mode).
-**Mode** = **`71`/`27`**; other rows = **`6E`** — see
+**Mode** = **`71`/`27`**; most other rows = **`6E`** — **Spread** / **Q-Factor**
+reuse **`70`/`2E`** / **`70`/`2A`** (filter storage). See
 [effects.md — Vocoder](live-edit/effects.md#vocoder).
 
 | Control | Off (`00`) | Modes `01`–`06` |
@@ -3157,8 +3162,8 @@ row set and encodings.
 
 | Control | `cmd`/`param` | Encoding |
 | --- | --- | --- |
-| **Spread** | `6E`/`2E` | **−64..+63** → `stored = ui + 64` |
-| **Q-Factor** | `6E`/`2A` | **`0`–`127`** direct |
+| **Spread** | `70`/`2E` | **−64..+63** → `stored = ui + 64` — [Filter 1 Keyfollow](live-edit/filters.md#filter-1-keyfollow-cmd0x70-param-0x2e) storage; panel TX also **`70`/`2F`** (ignored) |
+| **Q-Factor** | `70`/`2A` | **`0`–`127`** direct — [Filter 1 Resonance](live-edit/filters.md#filter-1-resonance-cmd0x70-param-0x2a) storage; panel TX also **`70`/`2B`** (ignored) |
 | **Center Freq** | `6E`/`28` | **−64..+63** → `stored = ui + 64` (**`40`** = **+0**) |
 | **Balance** | `6E`/`30` | **`0`–`127`** direct |
 | **Mod Offset** | `6E`/`29` | **−64..+63** → `stored = ui + 64` (**`40`** = **+0**) |
@@ -3651,62 +3656,87 @@ Panel **Name** appears when **Function As…** ≠ Off.
 | 86 | `56` | Warp |
 | 87 | `47` | Width |
 
-## Mod Matrix Sources
+## Mod Matrix Sources {#mod-matrix-sources}
 
-Mod Matrix slot **Source**.
+Mod Matrix slot **Source**. **One** source per slot (three destination routes
+share it). Live edit **`cmd=0x71`**; param **per slot** (**`0x40`**, **`0x43`**,
+**`0x48`**, **`0x67`**, **`0x6A`**, **`0x6D`**) —
+[modulation-matrix.md](live-edit/modulation-matrix.md). **`<value>`** is the
+SysEx wire byte (not the **Index** column).
 
-40 options (`0`–`39`).
+40 options — full wire map confirmed on TI mk2 (Slot 1 sweep):
 
-| Index | Option |
-| --- | --- |
-| 0 | Off |
-| 1 | Pitch Bend |
-| 2 | Channel Pressure |
-| 3 | Mod Wheel |
-| 4 | Breath |
-| 5 | Controller 3 |
-| 6 | Foot Pedal |
-| 7 | Data Entry |
-| 8 | Balance |
-| 9 | Controller 9 |
-| 10 | Expression |
-| 11 | Controller 12 |
-| 12 | Controller 13 |
-| 13 | Controller 14 |
-| 14 | Controller 15 |
-| 15 | Controller 16 |
-| 16 | Hold Pedal |
-| 17 | Portamento Sw |
-| 18 | Sost Pedal |
-| 19 | Amp Envelope |
-| 20 | Filter Envelope |
-| 21 | Envelope 3 |
-| 22 | Envelope 4 |
-| 23 | LFO 1 bipolar |
-| 24 | LFO 1 unipolar |
-| 25 | LFO 2 bipolar |
-| 26 | LFO 2 unipolar |
-| 27 | LFO 3 bipolar |
-| 28 | LFO 3 unipolar |
-| 29 | Velocity On |
-| 30 | Velocity Off |
-| 31 | Key Follow |
-| 32 | Random |
-| 33 | Arp Input |
-| 34 | AnaKey1 Fine |
-| 35 | AnaKey 2 Fine |
-| 36 | AnaKey1 Coarse |
-| 37 | AnaKey2 Coarse |
-| 38 | 1% Constant |
-| 39 | 10% Constant |
+| `<value>` | Option | Index |
+| --- | --- | --- |
+| `00` | Off | 0 |
+| `01` | Pitch Bend | 1 |
+| `02` | Channel Pressure | 2 |
+| `03` | Mod Wheel | 3 |
+| `04` | Breath | 4 |
+| `05` | Controller 3 | 5 |
+| `06` | Foot Pedal | 6 |
+| `07` | Data Entry | 7 |
+| `08` | Balance | 8 |
+| `09` | Controller 9 | 9 |
+| `0A` | Expression | 10 |
+| `0B` | Controller 12 | 11 |
+| `0C` | Controller 13 | 12 |
+| `0D` | Controller 14 | 13 |
+| `0E` | Controller 15 | 14 |
+| `0F` | Controller 16 | 15 |
+| `10` | Hold Pedal | 16 |
+| `11` | Portamento Sw | 17 |
+| `12` | Sost Pedal | 18 |
+| `13` | Amp Envelope | 19 |
+| `14` | Filter Envelope | 20 |
+| `15` | LFO 1 bipolar | 23 |
+| `16` | LFO 2 bipolar | 25 |
+| `17` | LFO 3 bipolar | 27 |
+| `18` | Velocity On | 29 |
+| `19` | Velocity Off | 30 |
+| `1A` | Key Follow | 31 |
+| `1B` | Random | 32 |
+| `1C` | Arp Input | 33 |
+| `1D` | LFO 1 unipolar | 24 |
+| `1E` | LFO 2 unipolar | 26 |
+| `1F` | LFO 3 unipolar | 28 |
+| `20` | 1% Constant | 38 |
+| `21` | 10% Constant | 39 |
+| `22` | AnaKey1 Fine | 34 |
+| `23` | AnaKey 2 Fine | 35 |
+| `24` | AnaKey1 Coarse | 36 |
+| `25` | AnaKey2 Coarse | 37 |
+| `26` | Envelope 3 | 21 |
+| `27` | Envelope 4 | 22 |
+
+```text
+F0 00 20 33 01 00 71 40 40 03 F7 # Mod Wheel
+F0 00 20 33 01 00 71 40 40 15 F7 # LFO 1 bipolar
+```
+
+## Mod Matrix Amount {#mod-matrix-amount}
+
+Mod Matrix **Amount**. **Three** amount fields per slot (one per destination
+row). **`cmd`** / **param** vary by slot and row — full map in
+[modulation-matrix.md](live-edit/modulation-matrix.md). Bipolar
+**−64..+63** → `stored = ui + 64` (**`40`** = **+0**).
+
+| `<value>` | LCD | Confirmed |
+| --- | --- | --- |
+| `00` | −64 | ✓ |
+| `40` | +0 | ✓ |
+| `7F` | +63 | ✓ |
 
 ## Mod Matrix Destinations {#mod-matrix-destinations}
 
-Mod Matrix slot **Destination**.
+Mod Matrix slot **Destination**. **Three** destination fields per slot.
+**`cmd`** / **param** vary by slot and row — full map in
+[modulation-matrix.md](live-edit/modulation-matrix.md). **`<value>`** wire bytes
+match [LFO 1 Assign Target](#assign-target-0x4f) (**`41/xx`** = **`4F/xx`**, etc.)
+— full **121**-destination table there.
 
-122 options (`0`–`121`).
-
-| Index | Option |
+122 options (`0`–`121`) — **Index** / panel name reference (wire byte in Assign
+Target table):
 | --- | --- |
 | 0 | Off |
 | 1 | Amp Env Attack |
@@ -3749,7 +3779,7 @@ Mod Matrix slot **Destination**.
 | 38 | Filterbank Poles |
 | 39 | Filterbank Resonance |
 | 40 | Filterbank Slope |
-| 41 | Filterbank Frequency *(LFO Assign Target wire `60`; LCD **FreqShifter Frequency**)* |
+| 41 | Filterbank Frequency *(wire `60`; [Assign Target](#assign-target-0x4f))* |
 | 42 | LFO 1 > Assign Amount |
 | 43 | LFO 1 Contour |
 | 44 | LFO 1 Rate |
@@ -4075,8 +4105,7 @@ Right of center (`41`–`7F`):
 Hardware sweep for **Osc 1 Pulse Width** (`cmd=0x70`, `param=0x12`, **Shape ≥
 `40`**).
 **Wire:** `pct = 50 + stored × 50 / 127` — see
-[single-live-edit.md — Pulse
-Width](docs/live-edit/edit-single.md#pulse-width-shape--sawtooth).
+[oscillators.md — Pulse Width](live-edit/oscillators.md#pulse-width-shape--sawtooth).
 **LCD:** `round(pct + 0.4, 0.1)` in most of the range (partial map below; not
 every
 detent listed).

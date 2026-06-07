@@ -13,6 +13,7 @@ F0 00 20 33 01 00 72 <part> <param> <value> F7 # multi / common (some params)
 F0 00 20 33 01 00 71 <part> <param> <value> F7 # Page B single (some params)
 F0 00 20 33 01 00 70 <part> <param> <value> F7 # Page A single (when global Page A = SysEx)
 F0 00 20 33 01 00 6E <part> <param> <value> F7 # part single edit buffer
+F0 00 20 33 01 00 6F <part> <param> <value> F7 # extended page (Unison, arp steps, Inputs)
 ```
 
 Param IDs are **not global** — the same hex ID can mean different settings under
@@ -316,12 +317,25 @@ Distinct from **Velocity → Panorama** (`71`/`3D`) and Edit Multi panorama
 
 ## Unison
 
-**Edit Single → Unison** (top-level sub-menu, not under Osc 1 / Osc 2 / Osc 3).
-Stacks **extra voices** for the patch (detuned copies of the oscillator
-section),
-not a per-oscillator mode like **Sync** on Osc 2. **`0x61`–`0x64`** on **`cmd=0x70`**.
+**Edit Single → Unison** — top-level **Edit Single** sub-menu. **Not** under
+**EDIT OSC** (Osc 1 / Osc 2 / Ring Mod / Noise / Common). No oscillator mode
+must be enabled first: set **Voices** to **Off** or **Twin**–**8** directly from
+this menu.
 
-### Voices (`0x61`, `cmd=0x70` / CC 97)
+Stacks **extra detuned copies** of the whole oscillator section for the patch
+(not per-osc **Sync** on Osc 2). Live edit uses **`cmd=0x6F`**, params
+**`0x78`–`0x7B`**. Older docs wrongly listed **`cmd=0x70` / `0x61`–`0x64`**
+(CC numbers mistaken for param bytes — same class of error as Ring Mod
+**`0x26`** vs **`0x32`**).
+
+**`<part>`:** Multi Part *n* → **`0x00`–`0x0F`**; Single edit buffer →
+**`0x40`**.
+
+**`DUMP_SINGLE` offsets** (Single edit buffer, hardware-verified):
+**`0x201`** Voices · **`0x202`** Detune · **`0x203`** Pan Spread ·
+**`0x204`** LFO Phase.
+
+### Voices (`0x78`, `cmd=0x6F`)
 
 Panel **Voices**.
 
@@ -337,15 +351,16 @@ Panel **Voices**.
 | 8 | `07` | ✓ |
 
 ```text
-F0 00 20 33 01 00 70 00 61 00 F7 # Voices Off
-F0 00 20 33 01 00 70 00 61 01 F7 # Voices Twin
-F0 00 20 33 01 00 70 00 61 07 F7 # Voices 8
+F0 00 20 33 01 00 6F 00 78 00 F7 # Voices Off (Multi Part 1)
+F0 00 20 33 01 00 6F 00 78 07 F7 # Voices 8 (Multi Part 1)
+F0 00 20 33 01 00 6F 40 78 00 F7 # Voices Off (Single edit buffer)
+F0 00 20 33 01 00 6F 40 78 07 F7 # Voices 8 (Single edit buffer)
 ```
 
 When **Voices** is **Twin** (`01`) or higher, **Detune** appears on the panel.
 When **Off**, **Detune** is hidden (wire value may still be stored).
 
-### Detune (`0x62`, `cmd=0x70` / CC 98)
+### Detune (`0x79`, `cmd=0x6F`)
 
 **0..127** → `stored = lcd`. Panel visible only when **Voices** ≥ **Twin**.
 
@@ -355,14 +370,14 @@ When **Off**, **Detune** is hidden (wire value may still be stored).
 | 127 | `7F` | partial |
 
 ```text
-F0 00 20 33 01 00 70 00 62 00 F7 # Detune 0
-F0 00 20 33 01 00 70 00 62 7F F7 # Detune 127
+F0 00 20 33 01 00 6F 00 79 00 F7 # Detune 0 (Multi Part 1)
+F0 00 20 33 01 00 6F 40 79 00 F7 # Detune 0 (Single edit buffer)
+F0 00 20 33 01 00 6F 40 79 7F F7 # Detune 127 (Single edit buffer)
 ```
 
-### Pan Spread (`0x63`, `cmd=0x70` / CC 99)
+### Pan Spread (`0x7A`, `cmd=0x6F`)
 
 Panel **0.0..100.0 %** — always visible (even when **Voices** = **Off**).
-hardware anchors confirm otherwise:
 
 ```text
 for 00h..7Eh: pct = stored × 100 / 128
@@ -370,19 +385,27 @@ for 7Fh: pct = 100.0 %
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 63 00 F7 # Pan Spread 0.0 %
-F0 00 20 33 01 00 70 00 63 7F F7 # Pan Spread 100.0 %
+F0 00 20 33 01 00 6F 00 7A 00 F7 # Pan Spread 0.0 % (Multi Part 1)
+F0 00 20 33 01 00 6F 00 7A 7F F7 # Pan Spread 100.0 % (Multi Part 1)
+F0 00 20 33 01 00 6F 40 7A 7F F7 # Pan Spread 100.0 % (Single edit buffer)
 ```
 
-### LFO Phase Offset (`0x64`, `cmd=0x70` / CC 100)
+**Not** Filter Common **Pan Spread** (`6E`/`7A` under Split routing).
 
-Panel control **Unison LFO Phase**
-(not reported in latest sweep — confirm on hardware).
+### LFO Phase Offset (`0x7B`, `cmd=0x6F`)
+
+Panel **Unison LFO Phase**. **−64..+63** → `stored = ui + 64`.
+
+| LCD | `<value>` | Confirmed |
+| --- | --- | --- |
+| −64 | `00` | dump ✓ |
+| 0 | `40` | expected |
+| +63 | `7F` | expected |
 
 ```text
-F0 00 20 33 01 00 70 00 64 00 F7 # LFO Phase −64 (expected)
-F0 00 20 33 01 00 70 00 64 40 F7 # LFO Phase 0 (expected)
-F0 00 20 33 01 00 70 00 64 7F F7 # LFO Phase +63 (expected)
+F0 00 20 33 01 00 6F 40 7B 00 F7 # LFO Phase −64
+F0 00 20 33 01 00 6F 40 7B 40 F7 # LFO Phase 0
+F0 00 20 33 01 00 6F 40 7B 7F F7 # LFO Phase +63
 ```
 
 ## Envelope 3 (ADSR)
@@ -531,7 +554,8 @@ for 7Fh: pct = +100.0 %
 On TI mk2 the
 **Velocity Map** menu exposes the **10** rows above; **`71`/`33`–`35`**
 were not swept in capture and may be unused or reserved on this
-firmware.
+firmware. There is **no** separate **FM/Sync** row — **FM Amount** applies
+regardless of Osc **Sync** state.
 
 ```text
 F0 00 20 33 01 00 71 00 3C 00 F7 # Volume −100.0 %
@@ -543,6 +567,12 @@ F0 00 20 33 01 00 71 00 32 7F F7 # FM Amount +100.0 %
 F0 00 20 33 01 00 71 00 2F 00 F7 # Osc 1 Shape −100.0 %
 F0 00 20 33 01 00 71 00 2F 40 F7 # Osc 1 Shape 0 %
 F0 00 20 33 01 00 71 00 2F 7F F7 # Osc 1 Shape +100.0 %
+```
+
+Single edit buffer (**`<part>=0x40`**) — same map (spot-check ✓):
+
+```text
+F0 00 20 33 01 00 71 40 32 00 F7 # FM Amount −100.0 %
 ```
 
 The same **`00` / `40` / `7F`** anchors apply to every row in the table.

@@ -1159,11 +1159,21 @@ F0 00 20 33 01 00 6E 00 18 7F F7 # +100.0 %
 
 **EDIT FX → Others → Vocoder**. [Panel
 visibility](../parameter-options.md#vocoder-panel-visibility). **Mode** uses
-**`cmd=0x71`** (Page B); other rows use **`cmd=0x6E`** (part single buffer).
+**`cmd=0x71`** (Page B); most other rows use **`cmd=0x6E`** (part single buffer).
+**Spread** and **Q-Factor** use **`cmd=0x70`** (Page A filter storage).
 
 When **Mode** ≠ **Off**, **FILTERS** is disabled on the panel — LCD
 **`Vocoder active. Filters are disabled`** (see
 [Filters SELECT](../filters.md#filters-select)).
+
+**Spread** and **Q-Factor** reuse **Filter 1** Page A storage (same **`cmd`/`param`**
+bytes as [Filter 1 Keyfollow](../filters.md#filter-1-keyfollow-cmd0x70-param-0x2e)
+and [Filter 1 Resonance](../filters.md#filter-1-resonance-cmd0x70-param-0x2a)).
+The panel **TX** pair for each control (Filter 1 + Filter 2 messages, like LFO
+**Cutoff 1+2**), but with **Vocoder** active only the **Filter 1** message
+applies; **Filter 2 Keyfollow** / **Filter 2 Resonance** are ignored. After
+editing **Spread** or **Q-Factor**, the stored value still appears on **Filter 1
+Keyfollow** / **Filter 1 Resonance** if filters are re-enabled.
 
 | Mode | Notes |
 | --- | --- |
@@ -1173,8 +1183,8 @@ When **Mode** ≠ **Off**, **FILTERS** is disabled on the panel — LCD
 | Control | `cmd`/`param` | Notes |
 | --- | --- | --- |
 | **Mode** | [`71`/`27`](#vocoder-mode-cmd0x71-param-0x27) | [enum](../parameter-options.md#vocoder-mode) |
-| **Spread** | [`6E`/`2E`](#vocoder-spread-cmd0x6e-param-0x2e) | **−64..+63** |
-| **Q-Factor** | [`6E`/`2A`](#vocoder-q-factor-cmd0x6e-param-0x2a) | **`0`–`127`** |
+| **Spread** | [`70`/`2E`](#vocoder-spread-cmd0x70-param-0x2e) | **−64..+63** — Filter 1 Keyfollow slot |
+| **Q-Factor** | [`70`/`2A`](#vocoder-q-factor-cmd0x70-param-0x2a) | **`0`–`127`** — Filter 1 Resonance slot |
 | **Center Freq** | [`6E`/`28`](#vocoder-center-freq-cmd0x6e-param-0x28) | **−64..+63** |
 | **Balance** | [`6E`/`30`](#vocoder-balance-cmd0x6e-param-0x30) | **`0`–`127`** |
 | **Mod Offset** | [`6E`/`29`](#vocoder-mod-offset-cmd0x6e-param-0x29) | **−64..+63** |
@@ -1240,38 +1250,49 @@ F0 00 20 33 01 00 6E 00 29 40 F7 # +0
 F0 00 20 33 01 00 6E 00 29 7F F7 # +63
 ```
 
-### Vocoder Q-Factor (`cmd=0x6E`, param `0x2A`) {#vocoder-q-factor-cmd0x6e-param-0x2a}
+### Vocoder Q-Factor (`cmd=0x70`, param `0x2A`) {#vocoder-q-factor-cmd0x70-param-0x2a}
 
 **EDIT FX → Others → Vocoder → Q-Factor** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
-**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**). Same Page A byte
+as [Filter 1 Resonance](../filters.md#filter-1-resonance-cmd0x70-param-0x2a).
 
 | Item | Value |
 | --- | --- |
-| Message format | `F0 00 20 33 01 00 6E <part> 2A <value> F7` |
+| Message format | `F0 00 20 33 01 00 70 <part> 2A <value> F7` |
 | Panel range | **`0`–`127`** → `stored = value` |
-| Confirmed | Panel-confirmed |
+| Panel TX | Also sends [Filter 2 Resonance](../filters.md#filter-2-resonance-cmd0x70-param-0x2b) **`70`/`2B`** — **ignored** when Vocoder active |
+| Confirmed | Hardware TX + **`sendmidi` RX** (TI mk2) |
 
 ```text
-F0 00 20 33 01 00 6E 00 2A 00 F7 # 0
-F0 00 20 33 01 00 6E 00 2A 7F F7 # 127
+F0 00 20 33 01 00 70 00 2A 00 F7 # 0
+F0 00 20 33 01 00 70 00 2A 7F F7 # 127
 ```
 
-### Vocoder Spread (`cmd=0x6E`, param `0x2E`) {#vocoder-spread-cmd0x6e-param-0x2e}
+**Not** a separate **`6E`/`2A`** vocoder param — decode by panel context
+(**Vocoder** vs **FILTERS**). **Not** [EQ Mid Q-Factor](../parameter-options.md#eq-mid-q-factor)
+(**`71`/`5E`**).
+
+### Vocoder Spread (`cmd=0x70`, param `0x2E`) {#vocoder-spread-cmd0x70-param-0x2e}
 
 **EDIT FX → Others → Vocoder → Spread** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
-**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**). Same Page A byte
+as [Filter 1 Keyfollow](../filters.md#filter-1-keyfollow-cmd0x70-param-0x2e).
 
 | Item | Value |
 | --- | --- |
-| Message format | `F0 00 20 33 01 00 6E <part> 2E <value> F7` |
+| Message format | `F0 00 20 33 01 00 70 <part> 2E <value> F7` |
 | Panel range | **−64..+63** → `stored = ui + 64` |
-| Confirmed | Panel-confirmed |
+| Panel TX | Also sends [Filter 2 Keyfollow](../filters.md#filter-2-keyfollow-cmd0x70-param-0x2f) **`70`/`2F`** — **ignored** when Vocoder active |
+| Confirmed | Hardware TX + **`sendmidi` RX** (TI mk2) |
 
 ```text
-F0 00 20 33 01 00 6E 00 2E 00 F7 # −64
-F0 00 20 33 01 00 6E 00 2E 40 F7 # +0
-F0 00 20 33 01 00 6E 00 2E 7F F7 # +63
+F0 00 20 33 01 00 70 00 2E 00 F7 # −64
+F0 00 20 33 01 00 70 00 2E 40 F7 # +0
+F0 00 20 33 01 00 70 00 2E 7F F7 # +63
 ```
+
+**Not** [EQ High Frequency](../parameter-options.md#eq-high-frequency) (**`71`/`2E`**).
+**Not** a separate **`6E`/`2E`** vocoder param.
 
 ### Vocoder Balance (`cmd=0x6E`, param `0x30`) {#vocoder-balance-cmd0x6e-param-0x30}
 
@@ -1387,7 +1408,7 @@ F0 00 20 33 01 00 6E 00 26 02 F7 # In L+R
 F0 00 20 33 01 00 6E 00 26 03 F7 # In R
 ```
 
-**Not** [Ring Modulator Volume](../oscillators.md#ring-modulator-volume-0x26-cmd0x70--cc-38)
+**Not** [Ring Modulator Volume](../oscillators.md#ring-modulator-volume-0x32-cmd0x70--cc-38)
 (`70`/`26`).
 
 ### Input Follower Attack (`cmd=0x6E`, param `0x36`) {#input-follower-attack-cmd0x6e-param-0x36}

@@ -1,7 +1,9 @@
 # Modulators
 
 Edit Single — **Modulators** (**EDIT LFO** on the panel; LFO 1–3 settings and
-modulation amounts).
+destination amounts) and **Modulation Matrix** (six slots).
+
+**Modulation Matrix:** [modulation-matrix.md](modulation-matrix.md).
 
 Part of [Live Edit](README.md). Enumerated options:
 [parameter-options.md](../parameter-options.md).

@@ -79,6 +79,12 @@ LCD may show **128** at the top of the range; highest byte on the wire is
 **FILTERS → EDIT → Filter 1 → Resonance**.
 **`0x2A`**.
 
+When [Vocoder Mode](../parameter-options.md#vocoder-mode) ≠ **Off**, this storage
+byte drives **Vocoder → Q-Factor** instead — see
+[Vocoder Q-Factor](effects.md#vocoder-q-factor-cmd0x70-param-0x2a). Panel **TX**
+for **Q-Factor** also emits **`70`/`2B`** ([Filter 2 Resonance](#filter-2-resonance-cmd0x70-param-0x2b));
+that second message does **not** change **Q-Factor**.
+
 | Item | Value |
 | --- | --- |
 | Message format | `F0 00 20 33 01 00 70 <part> 2A <value> F7` |
@@ -152,11 +158,17 @@ F0 00 20 33 01 00 70 00 2C 40 F7 # 50.0 %
 F0 00 20 33 01 00 70 00 2C 7F F7 # 100.0 %
 ```
 
-### Filter 1 Keyfollow (`cmd=0x70`, param `0x2E`)
+### Filter 1 Keyfollow (`cmd=0x70`, param `0x2E`) {#filter-1-keyfollow-cmd0x70-param-0x2e}
 
 **FILTERS → EDIT → Filter 1 → Keyfollow**.
 **`0x2E`**;
 range **−64..+63** (bipolar).
+
+When [Vocoder Mode](../parameter-options.md#vocoder-mode) ≠ **Off**, this storage
+byte drives **Vocoder → Spread** instead — see
+[Vocoder Spread](effects.md#vocoder-spread-cmd0x70-param-0x2e). Panel **TX** for
+**Spread** also emits **`70`/`2F`** ([Filter 2 Keyfollow](#filter-2-keyfollow-cmd0x70-param-0x2f));
+that second message does **not** change **Spread**.
 
 | Item | Value |
 | --- | --- |
@@ -243,10 +255,14 @@ F0 00 20 33 01 00 70 00 34 02 F7 # Band Pass
 F0 00 20 33 01 00 70 00 34 03 F7 # Band Stop
 ```
 
-### Filter 2 Resonance (`cmd=0x70`, param `0x2B`)
+### Filter 2 Resonance (`cmd=0x70`, param `0x2B`) {#filter-2-resonance-cmd0x70-param-0x2b}
 
 **FILTERS → EDIT → Filter 2 → Resonance**.
 **`0x2B`**.
+
+Panel **TX** when adjusting [Vocoder Q-Factor](effects.md#vocoder-q-factor-cmd0x70-param-0x2a)
+includes this message (linked pair with **`70`/`2A`**) — **ignored** while
+Vocoder is active.
 
 | Item | Value |
 | --- | --- |
@@ -289,10 +305,14 @@ F0 00 20 33 01 00 70 00 2D 40 F7 # 50 %
 F0 00 20 33 01 00 70 00 2D 7F F7 # 100 %
 ```
 
-### Filter 2 Keyfollow (`cmd=0x70`, param `0x2F`)
+### Filter 2 Keyfollow (`cmd=0x70`, param `0x2F`) {#filter-2-keyfollow-cmd0x70-param-0x2f}
 
 **FILTERS → EDIT → Filter 2 → Keyfollow**.
 **`0x2F`**.
+
+Panel **TX** when adjusting [Vocoder Spread](effects.md#vocoder-spread-cmd0x70-param-0x2e)
+includes this message (linked pair with **`70`/`2E`**) — **ignored** while
+Vocoder is active.
 
 | Item | Value |
 | --- | --- |
