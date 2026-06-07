@@ -138,6 +138,10 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
 - **`0x201`–`0x204`** — **Edit Single → Unison** (`6F`/`78`–`7B`): Voices,
  Detune, Pan Spread, LFO Phase
 - **`0x030`–`0x047`** — Filters Page A: cutoff/res/env/ADSR/amp (`70`/`28`–`3F`)
+- **`0x0A6`–`0x0A7`** — Filter 1 / 2 envelope polarity Page B (`71`/`1E`, `71`/`1F`)
+- **`0x0A9`** — Filter Key Follow Base (`71`/`21`)
+- **`0x0BE`–`0x0C1`** — Velocity Map filter depths (`71`/`36`–`39`)
+- **`0x102`** — Filters SELECT knob target (`71`/`7A`)
 - **`0x052`–`0x062`** — LFO 1/2 destination depths (`70`/`4A`–`5A`)
 - **`0x057`–`0x05D`** — LFO 2 settings Page A (`70`/`4F`–`55`)
 - **`0x08F`–`0x095`** — LFO 3 settings Page B (`71`/`07`–`0D`)
@@ -315,18 +319,22 @@ LFO + Mod Matrix + FX 1:
 
 ### Filters
 
+**Filter envelope polarity:** duplicate panel rows under Filter 1 and Filter 2;
+separate dump bytes **`0x0A6`** / **`0x0A7`** — see
+[filters.md — shared panel menus](../live-edit/filters.md#filter-envelope-polarity-shared).
+
 | Control                               | SubCategory                | Dump offset     | Live edit                                                                                                                                                             |
 | ------------------------------------- | -------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Filter 1 Mode                         | Filter 1                   | `0x03B`         | `70` / `0x33`                                                                                                                                                         |
 | Filter 1 Envelope Amount              | Filter 1                   | `0x034`         | `70` / `0x2C`                                                                                                                                                         |
-| Filter 1 Envelope Polarity            | Filter 1                   | **not in dump** | `71` / `0x1E`                                                                                                                                                         |
+| Filter 1 Envelope Polarity            | Filter 1                   | `0x0A6`         | `71`/`1E` `00`/`01`; [shared panel](../live-edit/filters.md#filter-envelope-polarity-shared)                                                                          |
 | Filter 1 Cutoff                       | Filter 1                   | `0x030`         | `70` / `0x28`                                                                                                                                                         |
 | Filter 1 Resonance                    | Filter 1                   | `0x032`         | `70` / `0x2A` — also **Vocoder Q-Factor** when Vocoder active                                                                                                         |
 | Filter 1 Keyfollow                    | Filter 1                   | `0x036`         | `70` / `0x2E` — also **Vocoder Spread** when Vocoder active                                                                                                           |
 | ~~Analog Mode On/Off Toggle~~         | —                          | —               | **N/A** — analog types are **Filter 1 Mode** values (`04`–`07` Analog * Pole)                                                                                         |
 | Filter 2 Mode                         | Filter 2                   | `0x03C`         | `70` / `0x34` (4 modes `00`–`03` only)                                                                                                                                |
 | Filter 2 Envelope Amount              | Filter 2                   | `0x035`         | `70` / `0x2D` (linear %)                                                                                                                                              |
-| Filter 2 Envelope Polarity            | Filter 2                   | **not in dump** | `71` / `0x1F`                                                                                                                                                         |
+| Filter 2 Envelope Polarity            | Filter 2                   | `0x0A7`         | `71`/`1F` `00`/`01`; [shared panel](../live-edit/filters.md#filter-envelope-polarity-shared)                                                                          |
 | ~~Filter 2 Cutoff~~                   | —                          | —               | **N/A** on TI — no separate F2 cutoff; use **Offset** vs F1                                                                                                           |
 | Filter 2 Offset                       | Filter 2                   | `0x031`         | `70` / `0x29` (bipolar `ui+64`)                                                                                                                                       |
 | Filter 2 Resonance                    | Filter 2                   | `0x033`         | `70` / `0x2B` (direct 0–127)                                                                                                                                          |

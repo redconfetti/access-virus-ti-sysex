@@ -189,15 +189,19 @@ F0 00 20 33 01 00 70 00 2E 40 F7 # +0
 F0 00 20 33 01 00 70 00 2E 7F F7 # +63
 ```
 
-### Filter 1 Envelope Polarity (`cmd=0x71`, param `0x1E`)
+### Filter 1 Envelope Polarity (`cmd=0x71`, param `0x1E`) {#filter-envelope-polarity}
 
-**FILTERS → EDIT → Filter 1 → Env Polarity**.
-(filter env polarity); TI uses **`cmd=0x71`** (Page B), not **`0x70`**.
+**FILTERS → EDIT → Filter 1 → Env Polarity** (same control also appears under
+**Filter 2 → Env Polarity** on the panel — see
+[shared menu note](#filter-envelope-polarity-shared)). Page **B** param
+**`0x1E`** (not **`0x70`**).
 
-| Item           | Value                                       |
-| -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 1E <value> F7` |
-| Scope (Part 1) | **`0x00`**                                  |
+| Item           | Value                                               |
+| -------------- | --------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 1E <value> F7`         |
+| Scope (Part 1) | **`0x00`**                                          |
+| Dump offset    | **`0x0A6`** (Single edit buffer **`30 00 40`**)     |
+| Confirmed      | Hardware TX + dump correlate (TI mk2)               |
 
 | LCD (reported) | `<value>` | Confirmed |
 | -------------- | --------- | --------- |
@@ -205,8 +209,10 @@ F0 00 20 33 01 00 70 00 2E 7F F7 # +63
 | Positive       | `01`      | ✓         |
 
 ```text
-F0 00 20 33 01 00 71 00 1E 00 F7 # Negative
-F0 00 20 33 01 00 71 00 1E 01 F7 # Positive
+F0 00 20 33 01 00 71 00 1E 00 F7 # Negative (Multi Part 1)
+F0 00 20 33 01 00 71 00 1E 01 F7 # Positive (Multi Part 1)
+F0 00 20 33 01 00 71 40 1E 00 F7 # Negative (Single edit buffer)
+F0 00 20 33 01 00 71 40 1E 01 F7 # Positive (Single edit buffer)
 ```
 
 ### Filter 2 Offset (`cmd=0x70`, param `0x29`)
@@ -336,12 +342,15 @@ F0 00 20 33 01 00 70 00 2F 7F F7 # +63
 ### Filter 2 Envelope Polarity (`cmd=0x71`, param `0x1F`)
 
 **FILTERS → EDIT → Filter 2 → Env Polarity**. Page **B** param **`0x1F`**
-(Filter 1 polarity is **`0x1E`** on the same **`cmd=0x71`**).
+(separate wire from Filter 1 **`0x1E`** — see
+[shared menu note](#filter-envelope-polarity-shared)).
 
-| Item           | Value                                       |
-| -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 1F <value> F7` |
-| Scope (Part 1) | **`0x00`**                                  |
+| Item           | Value                                               |
+| -------------- | --------------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 71 <part> 1F <value> F7`         |
+| Scope (Part 1) | **`0x00`**                                          |
+| Dump offset    | **`0x0A7`** (Single edit buffer **`30 00 40`**)     |
+| Confirmed      | Hardware TX + dump correlate (TI mk2)               |
 
 | LCD (reported) | `<value>` | Confirmed |
 | -------------- | --------- | --------- |
@@ -349,9 +358,27 @@ F0 00 20 33 01 00 70 00 2F 7F F7 # +63
 | Positive       | `01`      | ✓         |
 
 ```text
-F0 00 20 33 01 00 71 00 1F 00 F7 # Negative
-F0 00 20 33 01 00 71 00 1F 01 F7 # Positive
+F0 00 20 33 01 00 71 00 1F 00 F7 # Negative (Multi Part 1)
+F0 00 20 33 01 00 71 00 1F 01 F7 # Positive (Multi Part 1)
+F0 00 20 33 01 00 71 40 1F 00 F7 # Negative (Single edit buffer)
+F0 00 20 33 01 00 71 40 1F 01 F7 # Positive (Single edit buffer)
 ```
+
+### Filter envelope polarity — shared panel menus {#filter-envelope-polarity-shared}
+
+**Env Polarity** appears on both **Filter 1** and **Filter 2** edit sub-menus.
+Changing it from one menu updates the **LCD readout in both places** (panel
+behaviour). On the wire and in **`DUMP_SINGLE`**, Filter 1 and Filter 2 remain
+**separate**:
+
+| Filter | Live edit | Dump byte   | Values      |
+| ------ | --------- | ----------- | ----------- |
+| 1      | `71`/`1E` | **`0x0A6`** | `00`/`01`   |
+| 2      | `71`/`1F` | **`0x0A7`** | `00`/`01`   |
+
+SysEx to **`71`/`1E`** updates **`0x0A6`** only; **`71`/`1F`** updates
+**`0x0A7`** only (dump correlate on `-INIT-`, Single edit buffer). Panel TX
+when editing from either menu may still emit both — capture if needed.
 
 ## Filter Common
 
