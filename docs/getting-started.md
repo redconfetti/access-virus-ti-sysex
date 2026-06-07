@@ -9,10 +9,10 @@ Prerequisites: [Setup](setup.md) (`sendmidi`, port choice, first messages).
 ## One message, byte by byte
 
 ```text
-F0 00 20 33 01 00 <cmd> <payload> F7
-│ └─ Access ─┘ │ │ │ │
-│ fam dev command + data |
-start (TI) ID end
+F0          00  20  33  01      00   <cmd>            <payload…>  F7
+↑           ↑--------↑  ↑       ↑    ↑                ↑           ↑
+│           Access ID   TI      dev  command          rest        SysEx end
+SysEx start             family       (varies by cmd)
 ```
 
 | Bytes       | Role                                                                |
@@ -34,7 +34,7 @@ F0 00 20 33 01 00 72 <part> <param> <value> F7
 `sendmidi` (no `F0`/`F7`):
 
 ```bash
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 72 00 4a 00
+sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 72 00 4A 00
 #                                                             │  │  │  └── value (0 = Off)
 #                                                             │  │  └─────── param 0x4A
 #                                                             │  └──────────── part 0 = Part 1
