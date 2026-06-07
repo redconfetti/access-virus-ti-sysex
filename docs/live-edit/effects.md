@@ -346,7 +346,8 @@ Analog Boost.
 | -------------- | ---------------------------------------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 61 <value> F7`                                        |
 | Value encoding | **`00`** Off; **`01`–`7F`** → panel **%** (see LCD table)                          |
-| Confirmed      | Hardware TX (sweep **`00`–`7F`** after **`6E`/`1A`/`07`** or **`08`** on **`0F`**) |
+| Dump offset    | `0x0E9`                                                                            |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                                                   |
 
 ```text
 F0 00 20 33 01 00 71 00 61 00 F7 # Off
@@ -383,12 +384,13 @@ F0 00 20 33 01 00 70 00 21 7F F7 # 127
 | -------------- | ---------------------------------------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 62 <value> F7`                                        |
 | Panel range    | **`0`–`127`** → `stored = value`                                                   |
-| Confirmed      | Hardware TX (sweep **`00`–`7F`** after **`6E`/`1A`/`07`** or **`08`** on **`0F`**) |
+| Dump offset    | `0x0EA`                                                                              |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                                                     |
 
 ```text
-F0 00 20 33 01 00 71 00 62 00 F7 # 0
-F0 00 20 33 01 00 71 00 62 40 F7 # 64
-F0 00 20 33 01 00 71 00 62 7F F7 # 127
+F0 00 20 33 01 00 71 40 62 00 F7 # 0
+F0 00 20 33 01 00 71 40 62 40 F7 # 64
+F0 00 20 33 01 00 71 40 62 7F F7 # 127
 ```
 
 ### Chorus {#chorus}
@@ -889,7 +891,7 @@ visibility](../parameter-options.md#others-panel-visibility). Sub-page order
 | ------------------ | ----------------------- | -------------------------------------------------------------------------------------- |
 | **Filter Bank**    | **All types** confirmed | [Filter Bank](#filter-bank) — **`13`–`19`** on **`6E`**                                |
 | **Vocoder**        | **`00`–`06`** confirmed | [Vocoder](#vocoder) — **Mode** **`71`/`27`**; other rows **`6E`/`28`–`3A`**            |
-| **Input Follower** | **`01`–`03`** confirmed | [Input Follower](#input-follower) — **`26`**, **`36`**, **`38`**, **`3A`** on **`6E`** |
+| **Input Follower** | **`01`–`03`** confirmed | [Input Follower](#input-follower) — **`71`/`26`**, **`70`/`36`**, **`38`**, **`3A`** |
 
 #### Filter Bank {#filter-bank}
 
@@ -1164,40 +1166,40 @@ F0 00 20 33 01 00 6E 00 18 7F F7 # +100.0 %
 #### Vocoder {#vocoder}
 
 **EDIT FX → Others → Vocoder**. [Panel
-visibility](../parameter-options.md#vocoder-panel-visibility). **Mode** uses
-**`cmd=0x71`** (Page B); most other rows use **`cmd=0x6E`** (part single buffer).
-**Spread** and **Q-Factor** use **`cmd=0x70`** (Page A filter storage).
+visibility](../parameter-options.md#vocoder-panel-visibility). **Mode** and
+**Input Select** (Input Follower) use **`cmd=0x71`** (Page B). All other rows
+below use **`cmd=0x70`** (Page A). **Not** **`cmd=0x6E`** for these controls on
+TI mk2 SysEx capture.
 
 When **Mode** ≠ **Off**, **FILTERS** is disabled on the panel — LCD
 **`Vocoder active. Filters are disabled`** (see
 [Filters SELECT](../filters.md#filters-select)).
 
-**Spread** and **Q-Factor** reuse **Filter 1** Page A storage (same **`cmd`/`param`**
-bytes as [Filter 1 Keyfollow](../filters.md#filter-1-keyfollow-cmd0x70-param-0x2e)
-and [Filter 1 Resonance](../filters.md#filter-1-resonance-cmd0x70-param-0x2a)).
-The panel **TX** pair for each control (Filter 1 + Filter 2 messages, like LFO
-**Cutoff 1+2**), but with **Vocoder** active only the **Filter 1** message
-applies; **Filter 2 Keyfollow** / **Filter 2 Resonance** are ignored. After
-editing **Spread** or **Q-Factor**, the stored value still appears on **Filter 1
-Keyfollow** / **Filter 1 Resonance** if filters are re-enabled.
+**Spread** (`70`/`2F`) and **Q-Factor** (`70`/`2B`) panel **TX** also emits
+Filter 2 Keyfollow / Filter 2 Resonance messages — **ignored** when Vocoder is
+active. Dump offsets differ from Filter 1 **`2E`** / **`2A`** slots — see
+[single.md](../dumps/single.md#fx-2).
 
 | Mode                                  | Notes                                         |
 | ------------------------------------- | --------------------------------------------- |
 | **Off** (`00`)                        | [Mode](#vocoder-mode-cmd0x71-param-0x27) only |
 | **Oscillator** … **In R** (`01`–`06`) | Mode + nine rows below                        |
 
-| Control              | `cmd`/`param`                                             | Notes                                        |
-| -------------------- | --------------------------------------------------------- | -------------------------------------------- |
-| **Mode**             | [`71`/`27`](#vocoder-mode-cmd0x71-param-0x27)             | [enum](../parameter-options.md#vocoder-mode) |
-| **Spread**           | [`70`/`2E`](#vocoder-spread-cmd0x70-param-0x2e)           | **−64..+63** — Filter 1 Keyfollow slot       |
-| **Q-Factor**         | [`70`/`2A`](#vocoder-q-factor-cmd0x70-param-0x2a)         | **`0`–`127`** — Filter 1 Resonance slot      |
-| **Center Freq**      | [`6E`/`28`](#vocoder-center-freq-cmd0x6e-param-0x28)      | **−64..+63**                                 |
-| **Balance**          | [`6E`/`30`](#vocoder-balance-cmd0x6e-param-0x30)          | **`0`–`127`**                                |
-| **Mod Offset**       | [`6E`/`29`](#vocoder-mod-offset-cmd0x6e-param-0x29)       | **−64..+63**                                 |
-| **Carrier Attack**   | [`6E`/`36`](#vocoder-carrier-attack-cmd0x6e-param-0x36)   | **`0`–`127`**                                |
-| **Carrier Release**  | [`6E`/`37`](#vocoder-carrier-release-cmd0x6e-param-0x37)  | **`0`–`127`**                                |
-| **Spectral Balance** | [`6E`/`39`](#vocoder-spectral-balance-cmd0x6e-param-0x39) | **`0`–`127`**                                |
-| **Bands**            | [`6E`/`3A`](#vocoder-bands-cmd0x6e-param-0x3a)            | **`01`–`32`**                                |
+| Control              | `cmd`/`param`                                             | Dump offset |
+| -------------------- | --------------------------------------------------------- | ----------- |
+| **Mode**             | [`71`/`27`](#vocoder-mode-cmd0x71-param-0x27)             | `0x0AF`     |
+| **Spread**           | [`70`/`2F`](#vocoder-spread-cmd0x70-param-0x2f)           | `0x037`     |
+| **Q-Factor**         | [`70`/`2B`](#vocoder-q-factor-cmd0x70-param-0x2b)         | `0x033`     |
+| **Center Freq**      | [`70`/`28`](#vocoder-center-freq-cmd0x70-param-0x28)      | `0x030`     |
+| **Balance**          | [`70`/`30`](#vocoder-balance-cmd0x70-param-0x30)          | `0x038`     |
+| **Mod Offset**       | [`70`/`29`](#vocoder-mod-offset-cmd0x70-param-0x29)       | `0x031`     |
+| **Carrier Attack**   | [`70`/`36`](#vocoder-carrier-attack-cmd0x70-param-0x36)   | `0x03E`     |
+| **Carrier Release**  | [`70`/`37`](#vocoder-carrier-release-cmd0x70-param-0x37)  | `0x03F`     |
+| **Spectral Balance** | [`70`/`39`](#vocoder-spectral-balance-cmd0x70-param-0x39) | `0x041`     |
+| **Bands**            | [`70`/`3A`](#vocoder-bands-cmd0x70-param-0x3a)            | `0x042`     |
+
+**`<part>`:** **`0x40`** = Single edit buffer; **`0x00`** = Multi Part 1 live
+edit — same **`cmd`/`param`/`value`** bytes.
 
 ### Vocoder Mode (`cmd=0x71`, param `0x27`) {#vocoder-mode-cmd0x71-param-0x27}
 
@@ -1222,240 +1224,247 @@ F0 00 20 33 01 00 71 00 27 05 F7 # In L+R
 F0 00 20 33 01 00 71 00 27 06 F7 # In R
 ```
 
-### Vocoder Center Freq (`cmd=0x6E`, param `0x28`) {#vocoder-center-freq-cmd0x6e-param-0x28}
+```text
+F0 00 20 33 01 00 71 40 27 00 F7 # Off (Single edit buffer)
+F0 00 20 33 01 00 71 40 27 01 F7 # Oscillator
+F0 00 20 33 01 00 71 00 27 01 F7 # Oscillator (Multi Part 1)
+```
+
+### Vocoder Center Freq (`cmd=0x70`, param `0x28`) {#vocoder-center-freq-cmd0x70-param-0x28}
 
 **EDIT FX → Others → Vocoder → Center Freq** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
 **Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 28 <value> F7` |
+| Message format | `F0 00 20 33 01 00 70 <part> 28 <value> F7` |
 | Panel range    | **−64..+63** → `stored = ui + 64`           |
-| Confirmed      | Panel-confirmed — **`40`** = **+0**         |
+| Dump offset    | `0x030`                                     |
+| Confirmed      | Hardware TX + dump diff (TI mk2)            |
 
 ```text
-F0 00 20 33 01 00 6E 00 28 00 F7 # −64
-F0 00 20 33 01 00 6E 00 28 40 F7 # +0
-F0 00 20 33 01 00 6E 00 28 7F F7 # +63
+F0 00 20 33 01 00 70 40 28 00 F7 # −64
+F0 00 20 33 01 00 70 40 28 40 F7 # +0
+F0 00 20 33 01 00 70 40 28 7F F7 # +63
 ```
 
-### Vocoder Mod Offset (`cmd=0x6E`, param `0x29`) {#vocoder-mod-offset-cmd0x6e-param-0x29}
+### Vocoder Mod Offset (`cmd=0x70`, param `0x29`) {#vocoder-mod-offset-cmd0x70-param-0x29}
 
 **EDIT FX → Others → Vocoder → Mod Offset** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
 **Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 29 <value> F7` |
+| Message format | `F0 00 20 33 01 00 70 <part> 29 <value> F7` |
 | Panel range    | **−64..+63** → `stored = ui + 64`           |
-| Confirmed      | Panel-confirmed — **`40`** = **+0**         |
+| Dump offset    | `0x031`                                     |
+| Confirmed      | Hardware TX + dump diff (TI mk2)            |
 
 ```text
-F0 00 20 33 01 00 6E 00 29 00 F7 # −64
-F0 00 20 33 01 00 6E 00 29 40 F7 # +0
-F0 00 20 33 01 00 6E 00 29 7F F7 # +63
+F0 00 20 33 01 00 70 40 29 00 F7 # −64
+F0 00 20 33 01 00 70 40 29 40 F7 # +0
+F0 00 20 33 01 00 70 40 29 7F F7 # +63
 ```
 
-### Vocoder Q-Factor (`cmd=0x70`, param `0x2A`) {#vocoder-q-factor-cmd0x70-param-0x2a}
+### Vocoder Q-Factor (`cmd=0x70`, param `0x2B`) {#vocoder-q-factor-cmd0x70-param-0x2b}
 
 **EDIT FX → Others → Vocoder → Q-Factor** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
-**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**). Same Page A byte
-as [Filter 1 Resonance](../filters.md#filter-1-resonance-cmd0x70-param-0x2a).
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**). Panel **TX** also
+sends [Filter 2 Resonance](../filters.md#filter-2-resonance-cmd0x70-param-0x2b)
+**`70`/`2B`** — the applied vocoder message uses **`70`/`2B`**, not
+**`70`/`2A`** (Filter 1 Resonance).
 
-| Item           | Value                                                                                                                                |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Message format | `F0 00 20 33 01 00 70 <part> 2A <value> F7`                                                                                          |
-| Panel range    | **`0`–`127`** → `stored = value`                                                                                                     |
-| Panel TX       | Also sends [Filter 2 Resonance](../filters.md#filter-2-resonance-cmd0x70-param-0x2b) **`70`/`2B`** — **ignored** when Vocoder active |
-| Confirmed      | Hardware TX + **`sendmidi` RX** (TI mk2)                                                                                             |
+| Item           | Value                                       |
+| -------------- | ------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 2B <value> F7` |
+| Panel range    | **`0`–`127`** → `stored = value`            |
+| Dump offset    | `0x033`                                     |
+| Confirmed      | Hardware TX + dump diff (TI mk2)            |
 
 ```text
-F0 00 20 33 01 00 70 00 2A 00 F7 # 0
-F0 00 20 33 01 00 70 00 2A 7F F7 # 127
+F0 00 20 33 01 00 70 40 2B 00 F7 # 0
+F0 00 20 33 01 00 70 40 2B 7F F7 # 127
 ```
 
-**Not** a separate **`6E`/`2A`** vocoder param — decode by panel context
-(**Vocoder** vs **FILTERS**). **Not** [EQ Mid Q-Factor](../parameter-options.md#eq-mid-q-factor)
-(**`71`/`5E`**).
+**Not** [Filter 1 Resonance](../filters.md#filter-1-resonance-cmd0x70-param-0x2a)
+(**`70`/`2A`**) when **Vocoder** is active.
 
-### Vocoder Spread (`cmd=0x70`, param `0x2E`) {#vocoder-spread-cmd0x70-param-0x2e}
+### Vocoder Spread (`cmd=0x70`, param `0x2F`) {#vocoder-spread-cmd0x70-param-0x2f}
 
 **EDIT FX → Others → Vocoder → Spread** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
-**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**). Same Page A byte
-as [Filter 1 Keyfollow](../filters.md#filter-1-keyfollow-cmd0x70-param-0x2e).
+**Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**). Panel **TX** uses
+**`70`/`2F`**, not [Filter 1 Keyfollow](../filters.md#filter-1-keyfollow-cmd0x70-param-0x2e)
+**`70`/`2E`**.
 
-| Item           | Value                                                                                                                                |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Message format | `F0 00 20 33 01 00 70 <part> 2E <value> F7`                                                                                          |
-| Panel range    | **−64..+63** → `stored = ui + 64`                                                                                                    |
-| Panel TX       | Also sends [Filter 2 Keyfollow](../filters.md#filter-2-keyfollow-cmd0x70-param-0x2f) **`70`/`2F`** — **ignored** when Vocoder active |
-| Confirmed      | Hardware TX + **`sendmidi` RX** (TI mk2)                                                                                             |
+| Item           | Value                                       |
+| -------------- | ------------------------------------------- |
+| Message format | `F0 00 20 33 01 00 70 <part> 2F <value> F7` |
+| Panel range    | **−64..+63** → `stored = ui + 64`           |
+| Dump offset    | `0x037`                                     |
+| Confirmed      | Hardware TX + dump diff (TI mk2)            |
 
 ```text
-F0 00 20 33 01 00 70 00 2E 00 F7 # −64
-F0 00 20 33 01 00 70 00 2E 40 F7 # +0
-F0 00 20 33 01 00 70 00 2E 7F F7 # +63
+F0 00 20 33 01 00 70 40 2F 00 F7 # −64
+F0 00 20 33 01 00 70 40 2F 40 F7 # +0
+F0 00 20 33 01 00 70 40 2F 7F F7 # +63
 ```
 
-**Not** [EQ High Frequency](../parameter-options.md#eq-high-frequency) (**`71`/`2E`**).
-**Not** a separate **`6E`/`2E`** vocoder param.
-
-### Vocoder Balance (`cmd=0x6E`, param `0x30`) {#vocoder-balance-cmd0x6e-param-0x30}
+### Vocoder Balance (`cmd=0x70`, param `0x30`) {#vocoder-balance-cmd0x70-param-0x30}
 
 **EDIT FX → Others → Vocoder → Balance** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
 **Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 30 <value> F7` |
+| Message format | `F0 00 20 33 01 00 70 <part> 30 <value> F7` |
 | Panel range    | **`0`–`127`** → `stored = value`            |
-| Confirmed      | Panel-confirmed                             |
+| Dump offset    | `0x038`                                     |
+| Confirmed      | Hardware TX + dump diff (TI mk2)            |
 
 ```text
-F0 00 20 33 01 00 6E 00 30 00 F7 # 0
-F0 00 20 33 01 00 6E 00 30 7F F7 # 127
+F0 00 20 33 01 00 70 40 30 00 F7 # 0
+F0 00 20 33 01 00 70 40 30 7F F7 # 127
 ```
 
-### Vocoder Carrier Attack (`cmd=0x6E`, param `0x36`) {#vocoder-carrier-attack-cmd0x6e-param-0x36}
+### Vocoder Carrier Attack (`cmd=0x70`, param `0x36`) {#vocoder-carrier-attack-cmd0x70-param-0x36}
 
 **EDIT FX → Others → Vocoder → Carrier Attack** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
 **Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 36 <value> F7` |
+| Message format | `F0 00 20 33 01 00 70 <part> 36 <value> F7` |
 | Panel range    | **`0`–`127`** → `stored = value`            |
-| Confirmed      | Panel-confirmed                             |
+| Dump offset    | `0x03E` — same byte as [Input Follower Attack](#input-follower-attack-cmd0x70-param-0x36) |
+| Confirmed      | Hardware TX + dump diff (TI mk2)            |
 
 ```text
-F0 00 20 33 01 00 6E 00 36 00 F7 # 0
-F0 00 20 33 01 00 6E 00 36 7F F7 # 127
+F0 00 20 33 01 00 70 40 36 00 F7 # 0
+F0 00 20 33 01 00 70 40 36 7F F7 # 127
 ```
 
-### Vocoder Carrier Release (`cmd=0x6E`, param `0x37`) {#vocoder-carrier-release-cmd0x6e-param-0x37}
+### Vocoder Carrier Release (`cmd=0x70`, param `0x37`) {#vocoder-carrier-release-cmd0x70-param-0x37}
 
 **EDIT FX → Others → Vocoder → Carrier Release** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
 **Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 37 <value> F7` |
+| Message format | `F0 00 20 33 01 00 70 <part> 37 <value> F7` |
 | Panel range    | **`0`–`127`** → `stored = value`            |
-| Confirmed      | Panel-confirmed                             |
+| Dump offset    | `0x03F`                                     |
+| Confirmed      | Hardware TX + dump diff (TI mk2)            |
 
 ```text
-F0 00 20 33 01 00 6E 00 37 00 F7 # 0
-F0 00 20 33 01 00 6E 00 37 7F F7 # 127
+F0 00 20 33 01 00 70 40 37 00 F7 # 0
+F0 00 20 33 01 00 70 40 37 7F F7 # 127
 ```
 
-### Vocoder Spectral Balance (`cmd=0x6E`, param `0x39`) {#vocoder-spectral-balance-cmd0x6e-param-0x39}
+### Vocoder Spectral Balance (`cmd=0x70`, param `0x39`) {#vocoder-spectral-balance-cmd0x70-param-0x39}
 
 **EDIT FX → Others → Vocoder → Spectral Balance** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
 **Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 39 <value> F7` |
+| Message format | `F0 00 20 33 01 00 70 <part> 39 <value> F7` |
 | Panel range    | **`0`–`127`** → `stored = value`            |
-| Confirmed      | Panel-confirmed                             |
+| Dump offset    | `0x041`                                     |
+| Confirmed      | Hardware TX + dump diff (TI mk2)            |
 
 ```text
-F0 00 20 33 01 00 6E 00 39 00 F7 # 0
-F0 00 20 33 01 00 6E 00 39 7F F7 # 127
+F0 00 20 33 01 00 70 40 39 00 F7 # 0
+F0 00 20 33 01 00 70 40 39 7F F7 # 127
 ```
 
-### Vocoder Bands (`cmd=0x6E`, param `0x3A`) {#vocoder-bands-cmd0x6e-param-0x3a}
+### Vocoder Bands (`cmd=0x70`, param `0x3A`) {#vocoder-bands-cmd0x70-param-0x3a}
 
 **EDIT FX → Others → Vocoder → Bands** ([Oscillator](../parameter-options.md#vocoder-oscillator-osc-hold) /
 **Osc Hold** / **Noise** / **In L** / **In L+R** / **In R**). Enum: [Vocoder Bands](../parameter-options.md#vocoder-bands).
 
 | Item           | Value                                                      |
 | -------------- | ---------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 3A <value> F7`                |
+| Message format | `F0 00 20 33 01 00 70 <part> 3A <value> F7`                |
 | Value encoding | **`00`–`1F`** → panel **`01`–`32`** (`bands = stored + 1`) |
-| Confirmed      | Panel-confirmed                                            |
+| Dump offset    | `0x042` — same byte as [Input Follower Release](#input-follower-release-cmd0x70-param-0x3a) |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                           |
 
 ```text
-F0 00 20 33 01 00 6E 00 3A 00 F7 # 01
-F0 00 20 33 01 00 6E 00 3A 1F F7 # 32
+F0 00 20 33 01 00 70 40 3A 00 F7 # 01
+F0 00 20 33 01 00 70 40 3A 1F F7 # 32
 ```
 
 #### Input Follower {#input-follower}
 
 **EDIT FX → Others → Input Follower**. [Panel
-visibility](../parameter-options.md#input-follower-panel-visibility). Parameters
-use **`cmd=0x6E`** (part single buffer).
+visibility](../parameter-options.md#input-follower-panel-visibility). **Input
+Select** uses **`cmd=0x71`**; **Attack**, **Release**, and **Sensitivity** use
+**`cmd=0x70`**. **Not** **`cmd=0x6E`** on TI mk2 SysEx capture.
 
-| Control          | `cmd`/`param`                                                | Notes                                                       |
-| ---------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
-| **Input Select** | [`6E`/`26`](#input-follower-input-select-cmd0x6e-param-0x26) | [enum](../parameter-options.md#input-follower-input-select) |
-| **Attack**       | [`6E`/`36`](#input-follower-attack-cmd0x6e-param-0x36)       | **`0`–`127`** when **Input Select** ≠ Off                   |
-| **Release**      | [`6E`/`3A`](#input-follower-release-cmd0x6e-param-0x3a)      | **`0`–`127`** when **Input Select** ≠ Off                   |
-| **Sensitivity**  | [`6E`/`38`](#input-follower-sensitivity-cmd0x6e-param-0x38)  | **0.0..100.0 %** when **Input Select** ≠ Off                |
+| Control          | `cmd`/`param`                                                | Dump offset |
+| ---------------- | ------------------------------------------------------------ | ----------- |
+| **Input Select** | [`71`/`26`](#input-follower-input-select-cmd0x71-param-0x26) | `0x0AE`     |
+| **Attack**       | [`70`/`36`](#input-follower-attack-cmd0x70-param-0x36)       | `0x03E`     |
+| **Release**      | [`70`/`3A`](#input-follower-release-cmd0x70-param-0x3a)      | `0x042`     |
+| **Sensitivity**  | [`70`/`38`](#input-follower-sensitivity-cmd0x70-param-0x38)  | `0x040`     |
 
-Same **`cmd`/`param`** bytes as [Vocoder](#vocoder) rows on **`6E`** — always
-decode by **EDIT FX** sub-page (**Input Follower** vs **Vocoder**).
+Same **`param`** bytes as [Vocoder](#vocoder) rows on **`70`** — decode by
+**EDIT FX** sub-page (**Input Follower** vs **Vocoder**).
 
-### Input Follower Input Select (`cmd=0x6E`, param `0x26`) {#input-follower-input-select-cmd0x6e-param-0x26}
+### Input Follower Input Select (`cmd=0x71`, param `0x26`) {#input-follower-input-select-cmd0x71-param-0x26}
 
 **EDIT FX → Others → Input Follower → Input Select**. Enum:
 [Input Follower Input Select](../parameter-options.md#input-follower-input-select).
 
 | Item           | Value                                                       |
 | -------------- | ----------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 26 <value> F7`                 |
+| Message format | `F0 00 20 33 01 00 71 <part> 26 <value> F7`                 |
 | Value encoding | **`00`** Off; **`01`** In L; **`02`** In L+R; **`03`** In R |
-| Confirmed      | Hardware TX (TI mk2)                                        |
+| Dump offset    | `0x0AE`                                                     |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                            |
 
 ```text
-F0 00 20 33 01 00 6E 00 26 00 F7 # Off
-F0 00 20 33 01 00 6E 00 26 01 F7 # In L
-F0 00 20 33 01 00 6E 00 26 02 F7 # In L+R
-F0 00 20 33 01 00 6E 00 26 03 F7 # In R
+F0 00 20 33 01 00 71 40 26 00 F7 # Off (Single edit buffer)
+F0 00 20 33 01 00 71 40 26 02 F7 # In L+R
 ```
 
 **Not** [Ring Modulator Volume](../oscillators.md#ring-modulator-volume-0x32-cmd0x70--cc-38)
 (`70`/`26`).
 
-### Input Follower Attack (`cmd=0x6E`, param `0x36`) {#input-follower-attack-cmd0x6e-param-0x36}
+### Input Follower Attack (`cmd=0x70`, param `0x36`) {#input-follower-attack-cmd0x70-param-0x36}
 
 **EDIT FX → Others → Input Follower → Attack** when [Input
-Select](#input-follower-input-select-cmd0x6e-param-0x26) ≠ **Off** (**In L** /
-**In L+R** / **In R**).
+Select](#input-follower-input-select-cmd0x71-param-0x26) ≠ **Off**.
 
 | Item           | Value                                              |
 | -------------- | -------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 36 <value> F7`        |
+| Message format | `F0 00 20 33 01 00 70 <part> 36 <value> F7`        |
 | Panel range    | **0..127** → `stored = lcd`                        |
-| Confirmed      | Hardware TX — **`00`** = **0**, **`7F`** = **127** |
+| Dump offset    | `0x03E`                                            |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                    |
 
 ```text
-F0 00 20 33 01 00 6E 00 36 00 F7 # 0
-F0 00 20 33 01 00 6E 00 36 7F F7 # 127
+F0 00 20 33 01 00 70 40 36 00 F7 # 0
+F0 00 20 33 01 00 70 40 36 7F F7 # 127
 ```
 
-**Not** [Vocoder Carrier Attack](#vocoder-carrier-attack-cmd0x6e-param-0x36) on
-the **Vocoder** sub-page (same **`6E`/`36`** wire).
-
-### Input Follower Release (`cmd=0x6E`, param `0x3A`) {#input-follower-release-cmd0x6e-param-0x3a}
+### Input Follower Release (`cmd=0x70`, param `0x3A`) {#input-follower-release-cmd0x70-param-0x3a}
 
 **EDIT FX → Others → Input Follower → Release** when **Input Select** ≠ **Off**.
 
 | Item           | Value                                              |
 | -------------- | -------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 3A <value> F7`        |
+| Message format | `F0 00 20 33 01 00 70 <part> 3A <value> F7`        |
 | Panel range    | **0..127** → `stored = lcd`                        |
-| Confirmed      | Hardware TX — **`00`** = **0**, **`7F`** = **127** |
+| Dump offset    | `0x042`                                            |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                    |
 
 ```text
-F0 00 20 33 01 00 6E 00 3A 00 F7 # 0
-F0 00 20 33 01 00 6E 00 3A 7F F7 # 127
+F0 00 20 33 01 00 70 40 3A 00 F7 # 0
+F0 00 20 33 01 00 70 40 3A 7F F7 # 127
 ```
 
-**Not** [Vocoder Bands](#vocoder-bands-cmd0x6e-param-0x3a) on the **Vocoder**
-sub-page (same **`6E`/`3A`** wire).
-
-### Input Follower Sensitivity (`cmd=0x6E`, param `0x38`) {#input-follower-sensitivity-cmd0x6e-param-0x38}
+### Input Follower Sensitivity (`cmd=0x70`, param `0x38`) {#input-follower-sensitivity-cmd0x70-param-0x38}
 
 **EDIT FX → Others → Input Follower → Sensitivity** when **Input Select** ≠
 **Off**. Percent curve: [Input Follower Sensitivity
@@ -1463,13 +1472,14 @@ sub-page (same **`6E`/`3A`** wire).
 
 | Item           | Value                                                    |
 | -------------- | -------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6E <part> 38 <value> F7`              |
+| Message format | `F0 00 20 33 01 00 70 <part> 38 <value> F7`              |
 | Panel range    | **0.0..100.0 %** → `stored = round(pct × 127 / 100)`     |
-| Confirmed      | Hardware TX — **`00`** = **0 %**, **`7F`** = **100.0 %** |
+| Dump offset    | `0x040`                                                  |
+| Confirmed      | Hardware TX + dump diff (TI mk2)                         |
 
 ```text
-F0 00 20 33 01 00 6E 00 38 00 F7 # 0 %
-F0 00 20 33 01 00 6E 00 38 7F F7 # 100.0 %
+F0 00 20 33 01 00 70 40 38 00 F7 # 0 %
+F0 00 20 33 01 00 70 40 38 7F F7 # 100.0 %
 ```
 
 ### Delay

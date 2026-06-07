@@ -108,6 +108,41 @@ Background shell, `required_permissions: ["all"]`. After each edit: `tail -n 20
 8. Ignore spurious **Noise Volume** (`70`/`25`) when using VALUE +/− near that
  knob.
 
+## Dump correlation batches (send → re-dump → diff)
+
+Automated or scripted runs that send live edits and diff **`DUMP_SINGLE`**
+(edit buffer: `30 00 40`, part **`0x40`**) or **`DUMP_MULTI`**.
+
+1. Start from a **clean baseline** (e.g. RAM-A slot 127 **`-INIT-`**). A dirty
+   edit buffer makes **NONE** look like failure when the sent value already
+   equals the dump byte.
+2. Every `send_param` must include **`00 20 33 01 00`** before `<cmd>`.
+3. For each parameter: send → request dump → diff payload (ignore checksum /
+   header drift bytes documented in capture scripts).
+4. **NONE** = no payload change. Before counting a failure, retry once with a
+   contrasting value (`0x00` vs `0x7F`) if the first send may have matched
+   baseline.
+
+### Stop at 10 failures (user rule)
+
+**If ≥ 10 parameters in one batch return NONE (no dump offset), stop the batch
+immediately.** Do not finish the script, do not bulk-update markdown.
+
+Report to the user a table of every failure so far:
+
+| Parameter | Live edit (`cmd` / `param`) | Sent value | Notes |
+| --------- | --------------------------- | ---------- | ----- |
+
+Include brief notes where useful (e.g. prerequisite not set, shares wire byte
+with another menu, **MULTI** diff instead of single byte).
+
+**Wait for corrective data** from the user (correct `cmd`/`param`, required
+panel state, or confirmation that a control is not stored in the dump) before
+continuing the batch or documenting offsets.
+
+Scripts: [artifacts/captures/dump-correlate.sh](../../artifacts/captures/dump-correlate.sh),
+[dump-correlate-fx.sh](../../artifacts/captures/dump-correlate-fx.sh), etc.
+
 ## Single-parameter verify (send → dump)
 
 1. Load baseline (e.g. **INIT MULTI** #32); note packed flags **`0x45`** per
@@ -141,6 +176,8 @@ for i, (x, y) in enumerate(zip(a, b)):
 
 ## Stop and ask the user when
 
+- **≥ 10 NONE** in one dump-correlation batch — list failures; wait for
+  corrective data (see [Dump correlation batches](#dump-correlation-batches-send--re-dump--diff)).
 - Wrong `sendmidi` syntax (not `hex syx`).
 - Dump diff touches **multiple** bytes for one edit.
 - Packed flags not INIT **`0x45`**.

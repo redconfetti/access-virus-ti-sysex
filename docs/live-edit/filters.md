@@ -412,14 +412,20 @@ F0 00 20 33 01 00 70 00 35 03 F7 # Split Mode
 | +0  | `40`      | ✓         |
 | +63 | `7F`      | ✓         |
 
-### Filter Cutoff Link (`cmd=0x71`, param `0x20`)
+### Filter Cutoff Link (`cmd=0x71`, param `0x20`) {#filter-cutoff-link-cmd0x71-param-0x20}
 
-Page **B** **`0x20`**.
+Page **B** **`0x20`**. Dump offset **`0x0A8`**. Requires **Vocoder Mode** Off
+to reach **FILTERS** on the panel.
 
-| LCD | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| Off | `00`      | ✓         |
-| On  | `01`      | ✓         |
+| LCD | `<value>` | Dump `@0x0A8` |
+| --- | --------- | ------------- |
+| Off | `00`      | ✓             |
+| On  | `01`      | ✓             |
+
+```text
+F0 00 20 33 01 00 71 40 20 00 F7 # Off (Single edit buffer)
+F0 00 20 33 01 00 71 40 20 01 F7 # On
+```
 
 ### Filter Key Follow Base (`cmd=0x71`, param `0x21`)
 

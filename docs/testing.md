@@ -7,6 +7,10 @@ Guide for verifying SysEx documentation against a **Virus TI mk2 desktop**.
 step-by-step workflow — `sendmidi` syntax, capture loop,
 queue, dump diff, and when to stop.
 
+**Batch rule:** during dump correlation, if **≥ 10** parameters return **NONE**
+(no payload change), **stop** and report the failure list to the user for
+corrective data before continuing or updating docs.
+
 ## Quick links
 
 | Topic                         | Doc                                               |

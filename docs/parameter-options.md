@@ -112,11 +112,11 @@ See [Option name](parameter-options.md#anchor) from live-edit or dump rows.
 | [Filter Bank XFade Filter Type](#filter-bank-xfade-filter-type)              | **Pole XFade → Filter Type** — `6E`/`17`; LP / numeric / BP / HP                                                                  |
 | [Filter Bank VariSlope Poles (LCD)](#filter-bank-varislope-poles-lcd)        | **VariSlope → Poles** — `6E`/`17`; **2.00..6.00**                                                                                 |
 | [Filter Bank VariSlope Slope](#filter-bank-varislope-slope)                  | **VariSlope → Slope** — `6E`/`18`; **`0`–`127`** direct                                                                           |
-| [Input Follower Input Select](#input-follower-input-select)                  | **Input Select** — `6E`/`26`; **`00`** Off … **`03`** In R                                                                        |
-| [Input Follower Sensitivity (LCD)](#input-follower-sensitivity-lcd)          | **Sensitivity** — `6E`/`38`; **0.0..100.0 %**                                                                                     |
+| [Input Follower Input Select](#input-follower-input-select)                  | **Input Select** — `71`/`26`; **`00`** Off … **`03`** In R                                                                        |
+| [Input Follower Sensitivity (LCD)](#input-follower-sensitivity-lcd)          | **Sensitivity** — `70`/`38`; **0.0..100.0 %**                                                                                     |
 | [Vocoder Mode](#vocoder-mode)                                                | **Vocoder → Mode** — `71`/`27`; **`00`** Off … **`06`** In R                                                                      |
 | [Vocoder panel visibility](#vocoder-panel-visibility)                        | **Mode** Off only; **`01`–`06`** share nine parameter rows                                                                        |
-| [Vocoder Bands](#vocoder-bands)                                              | **Bands** — `6E`/`3A`; **`00`–`1F`** = **1..32**                                                                                  |
+| [Vocoder Bands](#vocoder-bands)                                              | **Bands** — `70`/`3A`; **`00`–`1F`** = **1..32**                                                                                  |
 | [Distortion Type](#distortion-type)                                          | **EDIT FX → Distortion → Type** — `71`/`64`; non-dense wire bytes                                                                 |
 | [Distortion panel visibility](#distortion-panel-visibility)                  | **Type** Off vs standard / minimal / reducer panel rows                                                                           |
 | [Mod Matrix Sources](#mod-matrix-sources)                                    | Mod matrix **Source** — per-slot **`71`** param (**`40`**, **`43`**, …)                                                           |
@@ -2445,7 +2445,8 @@ Type](#character-type). Live-edit **`cmd`/`param`** per row — see
 **Vintage 1**, **Vintage 2**, **Vintage 3**, **Pad Opener**, **Lead Enhancer**,
 **Bass Enhancer** — panel-confirmed on TI mk2. Selecting one of these types
 applies a fixed character preset; there are **no** further **EDIT FX** menu
-rows — only [`6E`/`1A`](#character-type) SysEx when changing **Type**.
+rows — only [`6E`/`1A`](#character-type) SysEx when changing **Type**. Dump: only
+**`0x123`** changes (`stored = type index **`00`–`06`**).
 
 | Control  | Visible | Notes                             |
 | -------- | ------- | --------------------------------- |
@@ -2767,7 +2768,7 @@ Panel-confirmed on TI mk2 (step **`00`–`05`** after **Mix** ≠ **Off**).
 | ---------- | ------------------ | -------------------- | ------------------------------------------------------------ |
 | 1          | **Filter Bank**    | **No**               | [Filter Bank Type](#filter-bank-type) — **`6E`/`13`**        |
 | 2          | **Vocoder**        | **No**               | [Vocoder Mode](#vocoder-mode) — **`71`/`27`**                |
-| 3          | **Input Follower** | **No**               | [Input Select](#input-follower-input-select) — **`6E`/`26`** |
+| 3          | **Input Follower** | **No**               | [Input Select](#input-follower-input-select) — **`71`/`26`** |
 
 Hardware-tested on TI mk2: switching among these three **EDIT FX** pages sends
 **no** live-edit SysEx. Only parameter edits (e.g. **Filter Bank → Type**) TX
@@ -2790,15 +2791,15 @@ SysEx when paging). Parameter rows per sub-page:
 
 ## Input Follower Input Select {#input-follower-input-select}
 
-**EDIT FX → Others → Input Follower → Input Select**. Live edit **`cmd=0x6E`**,
-param **`0x26`** (part single buffer — same **`cmd`** as [Filter Bank](#filter-bank-type)
-rows). **`stored = <value>`** (dense **`00`–`03`**).
+**EDIT FX → Others → Input Follower → Input Select**. Live edit **`cmd=0x71`**,
+param **`0x26`** (Single edit buffer **`<part>=0x40`**). **`stored = <value>`**
+(dense **`00`–`03`**).
 
 | `<value>` | Option | Confirmed       |
 | --------- | ------ | --------------- |
 | `00`      | Off    | ✓ (hardware TX) |
 | `01`      | In L   | ✓ (hardware TX) |
-| `02`      | In L+R | ✓ (hardware TX) |
+| `02`      | In L+R | ✓ (hardware TX) — `F0 … 71 40 26 02 F7` |
 | `03`      | In R   | ✓ (hardware TX) |
 
 Panel rows per **Input Select**: [Input Follower panel
@@ -2812,8 +2813,8 @@ visibility](#input-follower-panel-visibility).
 ## Input Follower panel visibility {#input-follower-panel-visibility}
 
 **EDIT FX → Others → Input Follower**. Rows depend on [Input
-Select](#input-follower-input-select). Live edit **`cmd=0x6E`** — see
-[effects.md — Input Follower](live-edit/effects.md#input-follower).
+Select](#input-follower-input-select). **Input Select** = **`71`/`26`**; other
+rows = **`70`** — see [effects.md — Input Follower](live-edit/effects.md#input-follower).
 
 | Control          | Off (`00`) | In L / In L+R / In R (`01`–`03`) |
 | ---------------- | ---------- | -------------------------------- |
@@ -2826,25 +2827,25 @@ Active modes (`01`–`03`) share the same encodings:
 
 | Control         | `cmd`/`param` | Encoding                                                                |
 | --------------- | ------------- | ----------------------------------------------------------------------- |
-| **Attack**      | `6E`/`36`     | **0..127** → `stored = lcd`                                             |
-| **Release**     | `6E`/`3A`     | **0..127** → `stored = lcd`                                             |
-| **Sensitivity** | `6E`/`38`     | **0.0..100.0 %** — [Sensitivity (LCD)](#input-follower-sensitivity-lcd) |
+| **Attack**      | `70`/`36`     | **0..127** → `stored = lcd`                                             |
+| **Release**     | `70`/`3A`     | **0..127** → `stored = lcd`                                             |
+| **Sensitivity** | `70`/`38`     | **0.0..100.0 %** — [Sensitivity (LCD)](#input-follower-sensitivity-lcd) |
 
-Same param bytes as [Vocoder](#vocoder-panel-visibility) on **`6E`** (**`36`**
-= Carrier Attack, **`3A`** = Bands) — decode by **EDIT FX** sub-page.
+Same **`param`** bytes as [Vocoder](#vocoder-panel-visibility) on **`70`**
+(**`36`** = Carrier Attack, **`3A`** = Bands) — decode by **EDIT FX** sub-page.
 
 ---
 
 ## Input Follower Sensitivity (LCD) {#input-follower-sensitivity-lcd}
 
 **EDIT FX → Others → Input Follower → Sensitivity** when [Input
-Select](#input-follower-input-select) ≠ **Off**. Live edit **`cmd=0x6E`**, param
+Select](#input-follower-input-select) ≠ **Off**. Live edit **`cmd=0x70`**, param
 **`0x38`**. **`stored = round(pct × 127 / 100)`** — **`00`** = **0 %**,
 **`7F`** = **100.0 %** (panel-confirmed endpoints).
 
 | LCD     | `<value>` | Confirmed       |
 | ------- | --------- | --------------- |
-| 0 %     | `00`      | ✓ (hardware TX) |
+| 0 %     | `00`      | ✓ — `F0 … 70 40 38 00 F7` |
 | 100.0 % | `7F`      | ✓ (hardware TX) |
 
 See [effects.md — Input Follower Attack / Release /
@@ -3140,9 +3141,8 @@ visibility](#vocoder-panel-visibility).
 ## Vocoder panel visibility {#vocoder-panel-visibility}
 
 **EDIT FX → Others → Vocoder**. Rows depend on [Vocoder Mode](#vocoder-mode).
-**Mode** = **`71`/`27`**; most other rows = **`6E`** — **Spread** / **Q-Factor**
-reuse **`70`/`2E`** / **`70`/`2A`** (filter storage). See
-[effects.md — Vocoder](live-edit/effects.md#vocoder).
+**Mode** = **`71`/`27`**; all other rows = **`70`** (**Spread** **`2F`**, **Q**
+**`2B`**) — see [effects.md — Vocoder](live-edit/effects.md#vocoder).
 
 | Control              | Off (`00`) | Modes `01`–`06` |
 | -------------------- | ---------- | --------------- |
@@ -3164,24 +3164,25 @@ row set and encodings.
 
 | Control              | `cmd`/`param` | Encoding                                                                                                                                                            |
 | -------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Spread**           | `70`/`2E`     | **−64..+63** → `stored = ui + 64` — [Filter 1 Keyfollow](live-edit/filters.md#filter-1-keyfollow-cmd0x70-param-0x2e) storage; panel TX also **`70`/`2F`** (ignored) |
-| **Q-Factor**         | `70`/`2A`     | **`0`–`127`** direct — [Filter 1 Resonance](live-edit/filters.md#filter-1-resonance-cmd0x70-param-0x2a) storage; panel TX also **`70`/`2B`** (ignored)              |
-| **Center Freq**      | `6E`/`28`     | **−64..+63** → `stored = ui + 64` (**`40`** = **+0**)                                                                                                               |
-| **Balance**          | `6E`/`30`     | **`0`–`127`** direct                                                                                                                                                |
-| **Mod Offset**       | `6E`/`29`     | **−64..+63** → `stored = ui + 64` (**`40`** = **+0**)                                                                                                               |
-| **Carrier Attack**   | `6E`/`36`     | **`0`–`127`** direct                                                                                                                                                |
-| **Carrier Release**  | `6E`/`37`     | **`0`–`127`** direct                                                                                                                                                |
-| **Spectral Balance** | `6E`/`39`     | **`0`–`127`** direct                                                                                                                                                |
-| **Bands**            | `6E`/`3A`     | [Vocoder Bands](#vocoder-bands)                                                                                                                                     |
+| **Spread**           | `70`/`2F`     | **−64..+63** → `stored = ui + 64` — dump **`0x037`**                                                                                                                |
+| **Q-Factor**         | `70`/`2B`     | **`0`–`127`** direct — dump **`0x033`**                                                                                                                             |
+| **Center Freq**      | `70`/`28`     | **−64..+63** → `stored = ui + 64` (**`40`** = **+0**) — dump **`0x030`**                                                                                            |
+| **Balance**          | `70`/`30`     | **`0`–`127`** direct — dump **`0x038`**                                                                                                                             |
+| **Mod Offset**       | `70`/`29`     | **−64..+63** → `stored = ui + 64` (**`40`** = **+0**) — dump **`0x031`**                                                                                            |
+| **Carrier Attack**   | `70`/`36`     | **`0`–`127`** direct — dump **`0x03E`** — `F0 … 70 40 36 00 F7` = **0**                                                                                            |
+| **Carrier Release**  | `70`/`37`     | **`0`–`127`** direct — dump **`0x03F`** — `F0 … 70 40 37 7F F7` = **127**                                                                                          |
+| **Spectral Balance** | `70`/`39`     | **`0`–`127`** direct — dump **`0x041`** — `F0 … 70 40 39 00 F7` = **0**                                                                                            |
+| **Bands**            | `70`/`3A`     | [Vocoder Bands](#vocoder-bands) — dump **`0x042`** — `F0 … 70 40 3A 00 F7` = **01**                                                                                |
 
 ---
 
 ## Vocoder Bands {#vocoder-bands}
 
 **EDIT FX → Others → Vocoder → Bands** when [Mode](#vocoder-mode) =
-**Oscillator** (`01`) through **In R** (`06`). Live edit **`cmd=0x6E`**, param
+**Oscillator** (`01`) through **In R** (`06`). Live edit **`cmd=0x70`**, param
 **`0x3A`**. **`stored = index`** (**`00`–`1F`**) → panel **`01`–`32`**
-(**`bands = stored + 1`**).
+(**`bands = stored + 1`**). Single edit buffer: **`F0 … 70 40 3A 00 F7`** → **01**
+bands.
 
 | `<value>` | Bands |     |
 | --------- | ----- | --- |
