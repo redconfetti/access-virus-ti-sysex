@@ -137,7 +137,26 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
  (`0x40`→`0x149`)
  - **`0x201`–`0x204`** — **Edit Single → Unison** (`6F`/`78`–`7B`): Voices,
  Detune, Pan Spread, LFO Phase
- - Remaining bytes: filters, envelopes, LFO, matrix, FX — mostly unmapped.
+ - **`0x030`–`0x047`** — Filters Page A: cutoff/res/env/ADSR/amp (`70`/`28`–`3F`)
+ - **`0x052`–`0x062`** — LFO 1/2 destination depths (`70`/`4A`–`5A`)
+ - **`0x057`–`0x05D`** — LFO 2 settings Page A (`70`/`4F`–`55`)
+ - **`0x08F`–`0x095`** — LFO 3 settings Page B (`71`/`07`–`0D`)
+ - **`0x09A`–`0x09D`** — LFO 1/2/3 Clock (`71`/`12`, `13`, `15`)
+ - **`0x0C8`–`0x0D8`, `0x0EF`–`0x0F7`, `0x163`–`0x174`** — Mod Matrix six slots
+   (`71`/`40`–`4E`, `67`–`6F`; rows 2–3 on `6E`/`5A`–`6B`)
+ - **`0x0CC`–`0x0D1`** — LFO 1 settings Page B (`71`/`43`–`49`; **same dump bytes**
+   as Mod Matrix slots 2–3 where param bytes overlap)
+ - **`0x070`–`0x076`** — Chorus Classic Page A (`70`/`67`–`6E`)
+ - **`0x11C`–`0x11E`** — Filter Bank type/mix/frequency (`6E`/`13`–`15`)
+ - **`0x123`** — Character type (`6E`/`1A`)
+ - **`0x14F`–`0x151`** — Distortion treble/high cut/mix (`6E`/`46`–`48`)
+ - **`0x0B5`–`0x0B6`** — EQ Low / High frequency Page B (`71`/`2D`, `2E`)
+ - **`0x0DC`–`0x0E2`, `0x0E4`–`0x0E8`, `0x0EC`–`0x0ED`** — Phaser, EQ gains,
+   Distortion type/intensity Page B (`71`/`54`–`60`, `5C`–`5F`, `64`–`65`)
+ - **`0x0E9`** — Character Intensity Stereo Widener (`71`/`61`)
+ - **`0x159`–`0x162`** — Envelope 3 / 4 (`6E`/`50`–`59`)
+ - **`0x183`** — Filter Common Pan Spread (`6E`/`7A`, Split routing)
+ - **`0x0B7`–`0x0C5`** — **Edit Single → Velocity Map** (`71`/`2F`–`32`, `36`–`39`, `3C`–`3D`)
 - **~0x184–0x1E9 – User arpeggiator pattern** (when **Pattern** = **User**)
  - **`0x189`** — loop length (**1**–**32** steps; `stored = steps − 1`)
  - **`0x18A`…`0x1E9`** — **32** step triplets (**length**, **velocity**,
@@ -186,6 +205,10 @@ byte **`0x108`**). Helper script:
 Per-mode sweeps (switch **`6E`/`1E`** or **`6E`/`23`**, then test controls from
 [oscillators.md](../live-edit/oscillators.md)):
 [`dump-correlate-osc-modes.py`](../../artifacts/captures/dump-correlate-osc-modes.py).
+Velocity Map + Filters:
+[`dump-correlate-velocity-filters.py`](../../artifacts/captures/dump-correlate-velocity-filters.py).
+LFO + Mod Matrix + FX 1:
+[`dump-correlate-lfo-matrix-fx.py`](../../artifacts/captures/dump-correlate-lfo-matrix-fx.py).
 
 | Control | SubCategory | Dump offset | Live edit |
 | --- | --- | --- | --- |
@@ -193,7 +216,7 @@ Per-mode sweeps (switch **`6E`/`1E`** or **`6E`/`23`**, then test controls from
 | Oscillator 1 Model / Mode | Oscillator 1 | `0x127` | `6E` / `0x1E` (see live-edit by mode) |
 | Oscillator 1 Detune in Semitone | Oscillator 1 | `0x1C` | `70` / `0x14` (−48..+48, `ui+64`) |
 | Oscillator 1 Keyfollow | Oscillator 1 | `0x1D` | `70` / `0x15` (Classic; Norm @ +32) |
-| Velocity --> Osc1 Waveform Shape | Oscillator 1 | | `71` / `0x2F` (Velocity Map **Osc 1 Shape**; ±100 % — [Velocity Map](../live-edit/edit-single.md#velocity-map-edit-single) |
+| Velocity --> Osc1 Waveform Shape | Oscillator 1 | `0xB7` | `71` / `0x2F` (Velocity Map **Osc 1 Shape**; ±100 % — [Velocity Map](../live-edit/edit-single.md#velocity-map-edit-single) |
 | Oscillator 1 Waveform Shape | Oscillator 1 Classic | `0x19` | `70` / `0x11` (`00`–`7F`; see live-edit) |
 | Oscillator 1 Wave Select | Oscillator 1 Classic | `0x1B` | `70` / `0x13` (64 waves `00`–`3F`) |
 | Oscillator 1 Pulsewidth | Oscillator 1 Classic | `0x1A` | `70` / `0x12` — **50.0 %..100 %** when Shape ≥ `40` — [Pulse Width](../live-edit/oscillators.md#pulse-width-shape--sawtooth) |
@@ -232,7 +255,7 @@ Per-mode sweeps (switch **`6E`/`1E`** or **`6E`/`23`**, then test controls from
 | Oscillator 2 Detune in Semitone | Oscillator 2 | `0x21` | `70` / `0x19` (−48..+48, `ui+64`) |
 | Oscillator 2 Fine Detune | Oscillator 2 | `0x22` | `70` / `0x1A` (Detune **0..127**, `stored = lcd`) |
 | Oscillator 2 Keyfollow | Oscillator 2 | `0x27` | `70` / `0x1F` (−64..+63, Norm @ +32) |
-| Velocity --> Osc2 Waveform Shape | Oscillator 2 | | `71` / `0x30` (Velocity Map **Osc 2 Shape**; ±100 %) |
+| Velocity --> Osc2 Waveform Shape | Oscillator 2 | `0xB8` | `71` / `0x30` (Velocity Map **Osc 2 Shape**; ±100 %) |
 | Oscillator 2 Waveform Shape | Oscillator 2 Classic | `0x1E` | `70` / `0x16` (Spectral Wave `00`; expected Classic Shape table) |
 | Oscillator 2 Wave Select | Oscillator 2 Classic | `0x20` | `70` / `0x18` (Sine `00`; expected 64 waves `00`–`3F`) |
 | Oscillator 2 Pulsewidth | Oscillator 2 Classic | `0x1F` | `70` / `0x17` (expected Classic PW when Shape ≥ `40`) |
@@ -273,11 +296,11 @@ Per-mode sweeps (switch **`6E`/`1E`** or **`6E`/`23`**, then test controls from
 | Oscillator 1 Sync (2>1) | Osc 1 / Osc 2 sub-menus | `0x24` | `70` / `0x1C` — **EDIT OSC → Osc 1** (e.g. Hypersaw) and **Osc 2 Classic**; Off `00`, On `01` |
 | Filter Envelope --> Oscillator 2 Pitch | Oscillator 2 Classic | `0x25` | `70` / `0x1D` — **EDIT OSC → Osc 2** (Classic/Hypersaw/Wavetable/…); **−100 %** `00`, **0 %** `40`, **+100 %** `7F` |
 | Oscillator Section Initial Phase | EDIT OSC → Common | `0xAB` | `71` / `0x23` — **Phase Init**; Off `00`, **1..127** direct |
-| Velocity --> Pulsewidth | Velocity Map | | `71` / `0x31` — **Edit Single → Velocity Map → Pulse Width**; ±100 % |
+| Velocity --> Pulsewidth | Velocity Map | `0xB9` | `71` / `0x31` — **Edit Single → Velocity Map → Pulse Width**; ±100 % |
 | Patch Common Portamento | EDIT OSC → Common | `0x0D` | `70` / `0x05` (CC 5; Off `00`, **1..127** direct `stored = lcd`) |
 | Oscillator 2 FM Amount | Oscillator 2 Classic | `0x23` | `70` / `0x1B` — **EDIT OSC → Osc 2**; **Sync Off:** 0.0..100.0 %; **Sync On:** **Sync Frequency** **0..127**; other Osc 2 modes **0..127** direct |
 | Filter Envelope --> FM / X-Sync | Osc 2 Classic / EDIT OSC Common | `0x26` | `70` / `0x1E` — one wire; **Sync Off:** **FilterEnv>FM** on **Osc 2 Classic**; **Sync On:** **FilterEnv>Sync** on **EDIT OSC → Common** (and Osc 1 Hypersaw); **−100..+100 %** like `1D` |
-| Velocity --> FM Amount | Velocity Map | | `71` / `0x32` — **Edit Single → Velocity Map → FM Amount** only (±100 %) |
+| Velocity --> FM Amount | Velocity Map | `0xBA` | `71` / `0x32` — **Edit Single → Velocity Map → FM Amount** only (±100 %) |
 | Oscillator 2 FM Mode | Oscillator 2 Classic | `0xAA` | `71` / `0x22` — **EDIT OSC → Osc 2**; Classic `00`–`06`, Wavetable/… **FreqMod** `00`, **PhaseMod** `01` |
 | ~~Sync Amount / X-Sync Frequency~~ | — | — | Same as **Oscillator 2 FM Amount** — `70` / `0x1B` when **Sync On** (`70`/`1C`=`01`) |
 | ~~Velocity --> FM / Sync~~ | — | — | **N/A** on TI mk2 — Velocity Map has **FM Amount** only (`71`/`32`); no separate **FM/Sync** row |
@@ -295,160 +318,162 @@ Per-mode sweeps (switch **`6E`/`1E`** or **`6E`/`23`**, then test controls from
 
 | Control | SubCategory | Dump offset | Live edit |
 | --- | --- | --- | --- |
-| Filter 1 Mode | Filter 1 | | `70` / `0x33` |
-| Filter 1 Envelope Amount | Filter 1 | | `70` / `0x2C` |
-| Filter 1 Envelope Polarity | Filter 1 | | `71` / `0x1E` |
-| Filter 1 Cutoff | Filter 1 | | `70` / `0x28` |
-| Filter 1 Resonance | Filter 1 | | `70` / `0x2A` — also **Vocoder Q-Factor** when Vocoder active |
-| Filter 1 Keyfollow | Filter 1 | | `70` / `0x2E` — also **Vocoder Spread** when Vocoder active |
+| Filter 1 Mode | Filter 1 | `0x03B` | `70` / `0x33` |
+| Filter 1 Envelope Amount | Filter 1 | `0x034` | `70` / `0x2C` |
+| Filter 1 Envelope Polarity | Filter 1 | **not in dump** | `71` / `0x1E` |
+| Filter 1 Cutoff | Filter 1 | `0x030` | `70` / `0x28` |
+| Filter 1 Resonance | Filter 1 | `0x032` | `70` / `0x2A` — also **Vocoder Q-Factor** when Vocoder active |
+| Filter 1 Keyfollow | Filter 1 | `0x036` | `70` / `0x2E` — also **Vocoder Spread** when Vocoder active |
 | ~~Analog Mode On/Off Toggle~~ | — | — | **N/A** — analog types are **Filter 1 Mode** values (`04`–`07` Analog * Pole) |
-| Filter 2 Mode | Filter 2 | | `70` / `0x34` (4 modes `00`–`03` only) |
-| Filter 2 Envelope Amount | Filter 2 | | `70` / `0x2D` (linear %) |
-| Filter 2 Envelope Polarity | Filter 2 | | `71` / `0x1F` |
+| Filter 2 Mode | Filter 2 | `0x03C` | `70` / `0x34` (4 modes `00`–`03` only) |
+| Filter 2 Envelope Amount | Filter 2 | `0x035` | `70` / `0x2D` (linear %) |
+| Filter 2 Envelope Polarity | Filter 2 | **not in dump** | `71` / `0x1F` |
 | ~~Filter 2 Cutoff~~ | — | — | **N/A** on TI — no separate F2 cutoff; use **Offset** vs F1 |
-| Filter 2 Offset | Filter 2 | | `70` / `0x29` (bipolar `ui+64`) |
-| Filter 2 Resonance | Filter 2 | | `70` / `0x2B` (direct 0–127) |
-| Filter 2 Keyfollow | Filter 2 | | `70` / `0x2F` (bipolar `ui+64`) |
-| Oscillator Section Volume | Filter Common | | `70` / `0x24` (Saturation menu; bipolar `ui+64`) |
-| Filter Routing | Filter Common | | `70` / `0x35` (4 routing modes) |
+| Filter 2 Offset | Filter 2 | `0x031` | `70` / `0x29` (bipolar `ui+64`) |
+| Filter 2 Resonance | Filter 2 | `0x033` | `70` / `0x2B` (direct 0–127) |
+| Filter 2 Keyfollow | Filter 2 | `0x037` | `70` / `0x2F` (bipolar `ui+64`) |
+| Oscillator Section Volume | Filter Common | `0x02C` | `70` / `0x24` (Saturation menu; bipolar `ui+64`) |
+| Filter Routing | Filter Common | `0x03D` | `70` / `0x35` (4 routing modes) |
 | Voice Saturation Type / Curve | Filter Common | | **N/A** on TI Saturation menu (only Osc Volume) |
-| Filter knob target (Res / Env Amt) | Filter Common | | [`71`/`7A`](../live-edit/filters.md#filters-select) — **SELECT** (`00` F1 … `02` F1+F2) |
-| Filter Keyfollow Base | Filter Common | | `71` / `0x21` (C-1..G9) |
-| Filter Cutoff Link toggle | Filter Common | | `71` / `0x20` |
+| Filter knob target (Res / Env Amt) | Filter Common | `0x102` | [`71`/`7A`](../live-edit/filters.md#filters-select) — **SELECT** (`00` F1 … `02` F1+F2) |
+| Filter Keyfollow Base | Filter Common | `0x0A9` | `71` / `0x21` (C-1..G9) |
+| Filter Cutoff Link toggle | Filter Common | **not in dump** | `71` / `0x20` |
 | ~~Filter Link toggle~~ | Filter Common | — | Unconfirmed — may differ from **knob target** `7A` |
-| Filter Balance | Filter Common | | `70` / `0x30` (bipolar `ui+64`) |
-| Pan Spread | Filter Common | | `6E` / `0x7A` (Split routing only) |
+| Filter Balance | Filter Common | `0x038` | `70` / `0x30` (bipolar `ui+64`) |
+| Pan Spread | Filter Common | `0x183` | `6E` / `0x7A` (Split routing only) |
 | ~~Filter Envelope Select~~ | — | — | **N/A** on TI mk2 — no panel control; use **Filter 1/2 Env Polarity** (`71`/`1E`, `71`/`1F`) and [FILTERS SELECT](../live-edit/filters.md#filters-select) (`71`/`7A`) |
-| Filter Envelope Attack | Filter / Aux Envelopes | | `70` / `0x36` (Filter 1 ADSR menu) |
-| Filter Envelope Decay | Filter / Aux Envelopes | | `70` / `0x37` |
-| Filter Envelope Sustain | Filter / Aux Envelopes | | `70` / `0x38` (linear %) |
-| Filter Envelope Sustain Slope | Filter / Aux Envelopes | | `70` / `0x39` (bipolar `ui+64`) |
-| Filter Envelope Release | Filter / Aux Envelopes | | `70` / `0x3A` |
-| Envelope 3 Attack | Filter / Aux Envelopes | | `6E` / `0x50` (**0..127** `stored = lcd`) |
-| Envelope 3 Decay | Filter / Aux Envelopes | | `6E` / `0x51` (**0..127** `stored = lcd`) |
-| Envelope 3 Sustain | Filter / Aux Envelopes | | `6E` / `0x52` (**0..100.0 %** → `round(pct × 127 / 100)`) |
-| Envelope 3 Sustain Slope | Filter / Aux Envelopes | | `6E` / `0x53` (**−64..+63** → `ui + 64`) |
-| Envelope 3 Release | Filter / Aux Envelopes | | `6E` / `0x54` (**0..127** `stored = lcd`) |
-| Envelope 4 Attack | Filter / Aux Envelopes | | `6E` / `0x55` (**0..127** `stored = lcd`) |
-| Envelope 4 Decay | Filter / Aux Envelopes | | `6E` / `0x56` (**0..127** `stored = lcd`) |
-| Envelope 4 Sustain | Filter / Aux Envelopes | | `6E` / `0x57` (**0..100.0 %** → `round(pct × 127 / 100)`) |
-| Envelope 4 Sustain Slope | Filter / Aux Envelopes | | `6E` / `0x58` (**−64..+63** → `ui + 64`) |
-| Envelope 4 Release | Filter / Aux Envelopes | | `6E` / `0x59` (**0..127** `stored = lcd`) |
-| Amplifier Envelope Attack | Amplifier Envelope | | `70` / `0x3B` |
-| Amplifier Envelope Decay | Amplifier Envelope | | `70` / `0x3C` |
-| Amplifier Envelope Sustain | Amplifier Envelope | | `70` / `0x3D` (linear %) |
-| Amplifier Envelope Sustain Slope | Amplifier Envelope | | `70` / `0x3E` (bipolar `ui+64`) |
-| Amplifier Envelope Release | Amplifier Envelope | | `70` / `0x3F` |
-| Velocity --> Filter 1 Envelope Amount | Velocity / Filter Envelope | | `71` / `0x36` (±100 % — [Velocity Map](edit-single.md#velocity-map-edit-single) |
-| Velocity --> Filter 1 Resonance | Velocity / Filter Envelope | | `71` / `0x38` (±100 %) |
-| Velocity --> Filter 2 Envelope Amount | Velocity / Filter Envelope | | `71` / `0x37` (±100 %) |
-| Velocity --> Filter 2 Resonance | Velocity / Filter Envelope | | `71` / `0x39` (±100 %) |
-| Velocity --> Volume | Velocity / Amplifier | | `71` / `0x3C` (±100 %) |
-| Velocity --> Panorama | Velocity / Amplifier | | `71` / `0x3D` (±100 %) |
+| Filter Envelope Attack | Filter / Aux Envelopes | `0x03E` | `70` / `0x36` (Filter 1 ADSR menu) |
+| Filter Envelope Decay | Filter / Aux Envelopes | `0x03F` | `70` / `0x37` |
+| Filter Envelope Sustain | Filter / Aux Envelopes | `0x040` | `70` / `0x38` (linear %) |
+| Filter Envelope Sustain Slope | Filter / Aux Envelopes | `0x041` | `70` / `0x39` (bipolar `ui+64`) |
+| Filter Envelope Release | Filter / Aux Envelopes | `0x042` | `70` / `0x3A` |
+| Envelope 3 Attack | Filter / Aux Envelopes | `0x159` | `6E` / `0x50` (**0..127** `stored = lcd`) |
+| Envelope 3 Decay | Filter / Aux Envelopes | `0x15A` | `6E` / `0x51` (**0..127** `stored = lcd`) |
+| Envelope 3 Sustain | Filter / Aux Envelopes | `0x15B` | `6E` / `0x52` (**0..100.0 %** → `round(pct × 127 / 100)`) |
+| Envelope 3 Sustain Slope | Filter / Aux Envelopes | `0x15C` | `6E` / `0x53` (**−64..+63** → `ui + 64`) |
+| Envelope 3 Release | Filter / Aux Envelopes | `0x15D` | `6E` / `0x54` (**0..127** `stored = lcd`) |
+| Envelope 4 Attack | Filter / Aux Envelopes | `0x15E` | `6E` / `0x55` (**0..127** `stored = lcd`) |
+| Envelope 4 Decay | Filter / Aux Envelopes | `0x15F` | `6E` / `0x56` (**0..127** `stored = lcd`) |
+| Envelope 4 Sustain | Filter / Aux Envelopes | `0x160` | `6E` / `0x57` (**0..100.0 %** → `round(pct × 127 / 100)`) |
+| Envelope 4 Sustain Slope | Filter / Aux Envelopes | `0x161` | `6E` / `0x58` (**−64..+63** → `ui + 64`) |
+| Envelope 4 Release | Filter / Aux Envelopes | `0x162` | `6E` / `0x59` (**0..127** `stored = lcd`) |
+| Amplifier Envelope Attack | Amplifier Envelope | `0x043` | `70` / `0x3B` |
+| Amplifier Envelope Decay | Amplifier Envelope | `0x044` | `70` / `0x3C` |
+| Amplifier Envelope Sustain | Amplifier Envelope | `0x045` | `70` / `0x3D` (linear %) |
+| Amplifier Envelope Sustain Slope | Amplifier Envelope | `0x046` | `70` / `0x3E` (bipolar `ui+64`) |
+| Amplifier Envelope Release | Amplifier Envelope | `0x047` | `70` / `0x3F` |
+| Velocity --> Filter 1 Envelope Amount | Velocity / Filter Envelope | `0xBE` | `71` / `0x36` (±100 % — [Velocity Map](../live-edit/edit-single.md#velocity-map-edit-single) |
+| Velocity --> Filter 1 Resonance | Velocity / Filter Envelope | `0xC0` | `71` / `0x38` (±100 %) |
+| Velocity --> Filter 2 Envelope Amount | Velocity / Filter Envelope | `0xBF` | `71` / `0x37` (±100 %) |
+| Velocity --> Filter 2 Resonance | Velocity / Filter Envelope | `0xC1` | `71` / `0x39` (±100 %) |
+| Velocity --> Volume | Velocity / Amplifier | `0xC4` | `71` / `0x3C` (±100 %) |
+| Velocity --> Panorama | Velocity / Amplifier | `0xC5` | `71` / `0x3D` (±100 %) |
 | Patch Volume | Amplifier | | CC 91 |
 | Patch Panorama | Amplifier | | Same as Common **Panorama** — `70` / `0x0A` |
 
 ### LFO {#lfo}
 
-Live-edit bytes: [modulators.md](../live-edit/modulators.md). **Dump offsets**:
-**TBD**.
+Live-edit bytes: [modulators.md](../live-edit/modulators.md). **Dump offsets**
+(hardware-verified; LFO 1 Page B bytes **overlap** Mod Matrix slots 2–3 — see
+[modulation-matrix.md](../live-edit/modulation-matrix.md#page-b-byte-reuse)).
 
 | Control | SubCategory | Dump offset | Live edit |
 | --- | --- | --- | --- |
-| LFO 1 Rate | LFO 1 | | `71` / `0x43` — [LFO Rate](../parameter-options.md#lfo-rate) ( **Clock** = **Off** only) |
-| LFO 1 Clock Divider | LFO 1 | | `71` / `0x12` — [LFO Clock](../parameter-options.md#lfo-clock) (**Off** reveals [Rate](../parameter-options.md#lfo-rate)) |
-| LFO 1 Keyfollow | LFO 1 | | `71` / `0x48` — [LFO Key Follow](../parameter-options.md#key-follow-0x48) |
-| LFO 1 Trigger Phase | LFO 1 | | `71` / `0x49` — [LFO Trigger Phase](../parameter-options.md#trigger-phase-0x49) |
-| LFO 1 Waveform Shape | LFO 1 | | `71` / `0x44` — [LFO Shape](../parameter-options.md#lfo-shape) |
-| LFO 1 Waveform Contour | LFO 1 | | `71` / `0x47` — [LFO Contour](../parameter-options.md#contour-0x47) |
-| LFO 1 Mode | LFO 1 | | `71` / `0x46` — [LFO Mode](../parameter-options.md#mode-0x46) |
-| LFO 1 Envelope Mode toggle | LFO 1 | | `71` / `0x45` — [LFO Envelope Mode](../parameter-options.md#envelope-mode-0x45) |
-| LFO 1 --> Osc 1 | LFO 1 Destination | | `70` / `0x4A` — [Osc 1 Pitch](../parameter-options.md#lfo-1-destination) |
-| LFO 1 --> Osc 2 | LFO 1 Destination | | `70` / `0x4B` — [Osc 2 Pitch](../parameter-options.md#lfo-1-destination) |
-| LFO 1 to Oscillator 1&2 lock | LFO 1 Destination | | linked **`4A`** + **`4B`** (panel **Osc 1+2 Pitch**) |
-| LFO 1 --> Pulsewidth | LFO 1 Destination | | `70` / `0x4C` — [Pulse Width](../parameter-options.md#lfo-1-destination) |
-| LFO 1 --> Filter Resonance 1+2 | LFO 1 Destination | | `70` / `0x4D` — [Resonance](../parameter-options.md#lfo-1-destination) |
-| LFO 1 --> Filter Envelope Gain / Filter Gain Depth | LFO 1 Destination | | `70` / `0x4E` — [Filter Gain](../parameter-options.md#lfo-1-destination) |
-| LFO 1 User Destination | LFO 1 Destination | | `71` / `0x4F` — [Assign Target](../parameter-options.md#lfo-1-destination) |
-| LFO 1 User Destination Amount | LFO 1 Destination | | `71` / `0x50` — [Amount](../parameter-options.md#lfo-1-destination) |
-| LFO 2 Rate | LFO 2 | | `70` / `0x4F` — [LFO Rate](../parameter-options.md#lfo-rate) (**Clock** = **Off** only) |
-| LFO 2 Clock Divider | LFO 2 | | `71` / `0x13` — [LFO Clock](../parameter-options.md#lfo-clock) |
-| LFO 2 Keyfollow | LFO 2 | | `70` / `0x54` — [LFO Key Follow](../parameter-options.md#key-follow-0x48) |
-| LFO 2 Trigger Phase | LFO 2 | | `70` / `0x55` — [LFO Trigger Phase](../parameter-options.md#trigger-phase-0x49) |
-| LFO 2 Waveform Shape | LFO 2 | | `70` / `0x50` — [LFO Shape](../parameter-options.md#lfo-shape) |
-| LFO 2 Waveform Contour | LFO 2 | | `70` / `0x53` — [LFO Contour](../parameter-options.md#contour-0x47) |
-| LFO 2 Mode | LFO 2 | | `70` / `0x52` — [LFO Mode](../parameter-options.md#mode-0x46) |
-| LFO 2 Envelope Mode toggle | LFO 2 | | `70` / `0x51` — [LFO Envelope Mode](../parameter-options.md#envelope-mode-0x45) |
-| LFO 2 --> Filter Cutoff 1 | LFO 2 Destination | | `70` / `0x58` — [Cutoff 1](../parameter-options.md#lfo-2-destination) |
-| LFO 2 --> Filter Cutoff 2 | LFO 2 Destination | | `70` / `0x59` — [Cutoff 2](../parameter-options.md#lfo-2-destination) |
-| LFO 2 to Filter 1&2 lock | LFO 2 Destination | | linked **`58`** + **`59`** (panel **Cutoff 1+2**) |
-| LFO 2 --> Shape 1+2 Depth | LFO 2 Destination | | `70` / `0x56` — [Shape 1+2](../parameter-options.md#lfo-2-destination) |
-| LFO 2 --> Panorama | LFO 2 Destination | | `70` / `0x5A` — [Panorama](../parameter-options.md#lfo-2-destination) |
-| LFO 2 --> FM Amount | LFO 2 Destination | | `70` / `0x57` — [FM Amount](../parameter-options.md#lfo-2-destination) |
-| LFO 2 User Destination | LFO 2 Destination | | `71` / `0x51` — [Assign Target](../parameter-options.md#lfo-2-destination) |
-| LFO 2 User Destination Amount | LFO 2 Destination | | `71` / `0x52` — [Amount](../parameter-options.md#lfo-2-destination) |
-| LFO 3 Rate | LFO 3 | | `71` / `0x07` — [LFO Rate](../parameter-options.md#lfo-rate) (**Clock** = **Off** only) |
-| LFO 3 Clock Divider | LFO 3 | | `71` / `0x15` — [LFO Clock](../parameter-options.md#lfo-clock) |
-| LFO 3 Keyfollow | LFO 3 | | `71` / `0x0A` — [LFO Key Follow](../parameter-options.md#key-follow-0x48) |
-| LFO 3 Waveform Shape | LFO 3 | | `71` / `0x08` — [LFO Shape](../parameter-options.md#lfo-shape) |
-| LFO 3 Mode | LFO 3 | | `71` / `0x09` — [LFO Mode](../parameter-options.md#mode-0x46) |
+| LFO 1 Rate | LFO 1 | `0x0CB` | `71` / `0x43` — [LFO Rate](../parameter-options.md#lfo-rate) ( **Clock** = **Off** only) |
+| LFO 1 Clock Divider | LFO 1 | `0x09A` | `71` / `0x12` — [LFO Clock](../parameter-options.md#lfo-clock) (**Off** reveals [Rate](../parameter-options.md#lfo-rate)) |
+| LFO 1 Keyfollow | LFO 1 | `0x0D0` | `71` / `0x48` — [LFO Key Follow](../parameter-options.md#key-follow-0x48) |
+| LFO 1 Trigger Phase | LFO 1 | `0x0D1` | `71` / `0x49` — [LFO Trigger Phase](../parameter-options.md#trigger-phase-0x49) |
+| LFO 1 Waveform Shape | LFO 1 | `0x0CC` | `71` / `0x44` — [LFO Shape](../parameter-options.md#lfo-shape) |
+| LFO 1 Waveform Contour | LFO 1 | `0x0CF` | `71` / `0x47` — [LFO Contour](../parameter-options.md#contour-0x47) |
+| LFO 1 Mode | LFO 1 | `0x0CE` | `71` / `0x46` — [LFO Mode](../parameter-options.md#mode-0x46) |
+| LFO 1 Envelope Mode toggle | LFO 1 | `0x0CD` | `71` / `0x45` — [LFO Envelope Mode](../parameter-options.md#envelope-mode-0x45) |
+| LFO 1 --> Osc 1 | LFO 1 Destination | `0x052` | `70` / `0x4A` — [Osc 1 Pitch](../parameter-options.md#lfo-1-destination) |
+| LFO 1 --> Osc 2 | LFO 1 Destination | `0x053` | `70` / `0x4B` — [Osc 2 Pitch](../parameter-options.md#lfo-1-destination) |
+| LFO 1 to Oscillator 1&2 lock | LFO 1 Destination | `0x052` + `0x053` | linked **`4A`** + **`4B`** (panel **Osc 1+2 Pitch**) |
+| LFO 1 --> Pulsewidth | LFO 1 Destination | `0x054` | `70` / `0x4C` — [Pulse Width](../parameter-options.md#lfo-1-destination) |
+| LFO 1 --> Filter Resonance 1+2 | LFO 1 Destination | `0x055` | `70` / `0x4D` — [Resonance](../parameter-options.md#lfo-1-destination) |
+| LFO 1 --> Filter Envelope Gain / Filter Gain Depth | LFO 1 Destination | `0x056` | `70` / `0x4E` — [Filter Gain](../parameter-options.md#lfo-1-destination) |
+| LFO 1 User Destination | LFO 1 Destination | `0x0D7` | `71` / `0x4F` — [Assign Target](../parameter-options.md#lfo-1-destination) |
+| LFO 1 User Destination Amount | LFO 1 Destination | `0x0D8` | `71` / `0x50` — [Amount](../parameter-options.md#lfo-1-destination) |
+| LFO 2 Rate | LFO 2 | `0x057` | `70` / `0x4F` — [LFO Rate](../parameter-options.md#lfo-rate) (**Clock** = **Off** only) |
+| LFO 2 Clock Divider | LFO 2 | `0x09B` | `71` / `0x13` — [LFO Clock](../parameter-options.md#lfo-clock) |
+| LFO 2 Keyfollow | LFO 2 | `0x05C` | `70` / `0x54` — [LFO Key Follow](../parameter-options.md#key-follow-0x48) |
+| LFO 2 Trigger Phase | LFO 2 | `0x05D` | `70` / `0x55` — [LFO Trigger Phase](../parameter-options.md#trigger-phase-0x49) |
+| LFO 2 Waveform Shape | LFO 2 | `0x058` | `70` / `0x50` — [LFO Shape](../parameter-options.md#lfo-shape) |
+| LFO 2 Waveform Contour | LFO 2 | `0x05B` | `70` / `0x53` — [LFO Contour](../parameter-options.md#contour-0x47) |
+| LFO 2 Mode | LFO 2 | `0x05A` | `70` / `0x52` — [LFO Mode](../parameter-options.md#mode-0x46) |
+| LFO 2 Envelope Mode toggle | LFO 2 | `0x059` | `70` / `0x51` — [LFO Envelope Mode](../parameter-options.md#envelope-mode-0x45) |
+| LFO 2 --> Filter Cutoff 1 | LFO 2 Destination | `0x060` | `70` / `0x58` — [Cutoff 1](../parameter-options.md#lfo-2-destination) |
+| LFO 2 --> Filter Cutoff 2 | LFO 2 Destination | `0x061` | `70` / `0x59` — [Cutoff 2](../parameter-options.md#lfo-2-destination) |
+| LFO 2 to Filter 1&2 lock | LFO 2 Destination | `0x060` + `0x061` | linked **`58`** + **`59`** (panel **Cutoff 1+2**) |
+| LFO 2 --> Shape 1+2 Depth | LFO 2 Destination | `0x05E` | `70` / `0x56` — [Shape 1+2](../parameter-options.md#lfo-2-destination) |
+| LFO 2 --> Panorama | LFO 2 Destination | `0x062` | `70` / `0x5A` — [Panorama](../parameter-options.md#lfo-2-destination) |
+| LFO 2 --> FM Amount | LFO 2 Destination | `0x05F` | `70` / `0x57` — [FM Amount](../parameter-options.md#lfo-2-destination) |
+| LFO 2 User Destination | LFO 2 Destination | `0x0D9` | `71` / `0x51` — [Assign Target](../parameter-options.md#lfo-2-destination) |
+| LFO 2 User Destination Amount | LFO 2 Destination | `0x0DA` | `71` / `0x52` — [Amount](../parameter-options.md#lfo-2-destination) |
+| LFO 3 Rate | LFO 3 | `0x08F` | `71` / `0x07` — [LFO Rate](../parameter-options.md#lfo-rate) (**Clock** = **Off** only) |
+| LFO 3 Clock Divider | LFO 3 | `0x09D` | `71` / `0x15` — [LFO Clock](../parameter-options.md#lfo-clock) |
+| LFO 3 Keyfollow | LFO 3 | `0x092` | `71` / `0x0A` — [LFO Key Follow](../parameter-options.md#key-follow-0x48) |
+| LFO 3 Waveform Shape | LFO 3 | `0x090` | `71` / `0x08` — [LFO Shape](../parameter-options.md#lfo-shape) |
+| LFO 3 Mode | LFO 3 | `0x091` | `71` / `0x09` — [LFO Mode](../parameter-options.md#mode-0x46) |
 | LFO 3 Waveform Contour | LFO 3 | | **N/A** — not on TI mk2 panel |
 | LFO 3 Trigger Phase | LFO 3 | | **N/A** — not on TI mk2 panel |
 | LFO 3 Envelope Mode toggle | LFO 3 | | **N/A** — not on TI mk2 panel |
-| LFO 3 Fade In Time | LFO 3 Destination | | `71` / `0x0D` — [Fade In](../parameter-options.md#fade-in-0x0d) (panel **Fade In**; **`0`–`127`**) |
-| LFO 3 User Destination | LFO 3 Destination | | `71` / `0x0B` — [Assign Target](../parameter-options.md#assign-target-0x0b) |
-| LFO 3 User Destination Amount | LFO 3 Destination | | `71` / `0x0C` — [Amount](../parameter-options.md#amount-0x0c) |
+| LFO 3 Fade In Time | LFO 3 Destination | `0x095` | `71` / `0x0D` — [Fade In](../parameter-options.md#fade-in-0x0d) (panel **Fade In**; **`0`–`127`**) |
+| LFO 3 User Destination | LFO 3 Destination | `0x093` | `71` / `0x0B` — [Assign Target](../parameter-options.md#assign-target-0x0b) |
+| LFO 3 User Destination Amount | LFO 3 Destination | `0x094` | `71` / `0x0C` — [Amount](../parameter-options.md#amount-0x0c) |
 
 ### Modulation Matrix {#modulation-matrix}
 
 Live edit: [modulation-matrix.md](../live-edit/modulation-matrix.md). Each slot:
 **one** Source; **three** Destination / Amount pairs. **`cmd`** / **param** are
-**per slot** (and row) — see doc table. **Dump offsets**: **TBD**.
+**per slot** (and row) — see doc table. Dump offsets hardware-verified
+(`30 00 40` / `<part>=0x40`).
 
 | Control | SubCategory | Dump offset | Live edit |
 | --- | --- | --- | --- |
-| Mod Matrix Slot 1 Source | Slot 1 | | `71`/`40` — [Source](../parameter-options.md#mod-matrix-sources) |
-| Mod Matrix Slot 1 Destination 1 | Slot 1 | | `71`/`41` — [Destination](../parameter-options.md#mod-matrix-destinations) |
-| Mod Matrix Slot 1 Amount 1 | Slot 1 | | `71`/`42` — [Amount](../parameter-options.md#mod-matrix-amount) |
-| Mod Matrix Slot 1 Destination 2 | Slot 1 | | `6E`/`5A` |
-| Mod Matrix Slot 1 Amount 2 | Slot 1 | | `6E`/`5B` |
-| Mod Matrix Slot 1 Destination 3 | Slot 1 | | `6E`/`5C` |
-| Mod Matrix Slot 1 Amount 3 | Slot 1 | | `6E`/`5D` |
-| Mod Matrix Slot 2 Source | Slot 2 | | `71`/`43` |
-| Mod Matrix Slot 2 Destination 1 | Slot 2 | | `71`/`44` |
-| Mod Matrix Slot 2 Amount 1 | Slot 2 | | `71`/`45` |
-| Mod Matrix Slot 2 Destination 2 | Slot 2 | | `71`/`46` — ✓ spot-check |
-| Mod Matrix Slot 2 Amount 2 | Slot 2 | | `71`/`47` — ✓ spot-check |
-| Mod Matrix Slot 2 Destination 3 | Slot 2 | | `6E`/`5E` |
-| Mod Matrix Slot 2 Amount 3 | Slot 2 | | `6E`/`5F` |
-| Mod Matrix Slot 3 Source | Slot 3 | | `71`/`48` |
-| Mod Matrix Slot 3 Destination 1 | Slot 3 | | `71`/`49` |
-| Mod Matrix Slot 3 Amount 1 | Slot 3 | | `71`/`4A` |
-| Mod Matrix Slot 3 Destination 2 | Slot 3 | | `71`/`4B` — ✓ spot-check |
-| Mod Matrix Slot 3 Amount 2 | Slot 3 | | `71`/`4C` — ✓ spot-check |
-| Mod Matrix Slot 3 Destination 3 | Slot 3 | | `71`/`4D` |
-| Mod Matrix Slot 3 Amount 3 | Slot 3 | | `71`/`4E` |
-| Mod Matrix Slot 4 Source | Slot 4 | | `71`/`67` |
-| Mod Matrix Slot 4 Destination 1 | Slot 4 | | `71`/`68` |
-| Mod Matrix Slot 4 Amount 1 | Slot 4 | | `71`/`69` |
-| Mod Matrix Slot 4 Destination 2 | Slot 4 | | `6E`/`60` |
-| Mod Matrix Slot 4 Amount 2 | Slot 4 | | `6E`/`61` |
-| Mod Matrix Slot 4 Destination 3 | Slot 4 | | `6E`/`62` |
-| Mod Matrix Slot 4 Amount 3 | Slot 4 | | `6E`/`63` |
-| Mod Matrix Slot 5 Source | Slot 5 | | `71`/`6A` |
-| Mod Matrix Slot 5 Destination 1 | Slot 5 | | `71`/`6B` |
-| Mod Matrix Slot 5 Amount 1 | Slot 5 | | `71`/`6C` |
-| Mod Matrix Slot 5 Destination 2 | Slot 5 | | `6E`/`64` |
-| Mod Matrix Slot 5 Amount 2 | Slot 5 | | `6E`/`65` |
-| Mod Matrix Slot 5 Destination 3 | Slot 5 | | `6E`/`66` |
-| Mod Matrix Slot 5 Amount 3 | Slot 5 | | `6E`/`67` |
-| Mod Matrix Slot 6 Source | Slot 6 | | `71`/`6D` |
-| Mod Matrix Slot 6 Destination 1 | Slot 6 | | `71`/`6E` — ✓ spot-check |
-| Mod Matrix Slot 6 Amount 1 | Slot 6 | | `71`/`6F` — ✓ spot-check |
-| Mod Matrix Slot 6 Destination 2 | Slot 6 | | `6E`/`68` |
-| Mod Matrix Slot 6 Amount 2 | Slot 6 | | `6E`/`69` |
-| Mod Matrix Slot 6 Destination 3 | Slot 6 | | `6E`/`6A` |
-| Mod Matrix Slot 6 Amount 3 | Slot 6 | | `6E`/`6B` |
+| Mod Matrix Slot 1 Source | Slot 1 | `0x0C8` | `71`/`40` — [Source](../parameter-options.md#mod-matrix-sources) |
+| Mod Matrix Slot 1 Destination 1 | Slot 1 | `0x0C9` | `71`/`41` — [Destination](../parameter-options.md#mod-matrix-destinations) |
+| Mod Matrix Slot 1 Amount 1 | Slot 1 | `0x0CA` | `71`/`42` — [Amount](../parameter-options.md#mod-matrix-amount) |
+| Mod Matrix Slot 1 Destination 2 | Slot 1 | `0x163` | `6E`/`5A` |
+| Mod Matrix Slot 1 Amount 2 | Slot 1 | `0x164` | `6E`/`5B` |
+| Mod Matrix Slot 1 Destination 3 | Slot 1 | `0x165` | `6E`/`5C` |
+| Mod Matrix Slot 1 Amount 3 | Slot 1 | `0x166` | `6E`/`5D` |
+| Mod Matrix Slot 2 Source | Slot 2 | `0x0CB` | `71`/`43` |
+| Mod Matrix Slot 2 Destination 1 | Slot 2 | `0x0CC` | `71`/`44` |
+| Mod Matrix Slot 2 Amount 1 | Slot 2 | `0x0CD` | `71`/`45` |
+| Mod Matrix Slot 2 Destination 2 | Slot 2 | `0x0CE` | `71`/`46` — ✓ spot-check |
+| Mod Matrix Slot 2 Amount 2 | Slot 2 | `0x0CF` | `71`/`47` — ✓ spot-check |
+| Mod Matrix Slot 2 Destination 3 | Slot 2 | `0x167` | `6E`/`5E` |
+| Mod Matrix Slot 2 Amount 3 | Slot 2 | `0x168` | `6E`/`5F` |
+| Mod Matrix Slot 3 Source | Slot 3 | `0x0D0` | `71`/`48` |
+| Mod Matrix Slot 3 Destination 1 | Slot 3 | `0x0D1` | `71`/`49` |
+| Mod Matrix Slot 3 Amount 1 | Slot 3 | `0x0D2` | `71`/`4A` |
+| Mod Matrix Slot 3 Destination 2 | Slot 3 | `0x0D3` | `71`/`4B` — ✓ spot-check |
+| Mod Matrix Slot 3 Amount 2 | Slot 3 | `0x0D4` | `71`/`4C` — ✓ spot-check |
+| Mod Matrix Slot 3 Destination 3 | Slot 3 | `0x0D5` | `71`/`4D` |
+| Mod Matrix Slot 3 Amount 3 | Slot 3 | `0x0D6` | `71`/`4E` |
+| Mod Matrix Slot 4 Source | Slot 4 | `0x0EF` | `71`/`67` |
+| Mod Matrix Slot 4 Destination 1 | Slot 4 | `0x0F0` | `71`/`68` |
+| Mod Matrix Slot 4 Amount 1 | Slot 4 | `0x0F1` | `71`/`69` |
+| Mod Matrix Slot 4 Destination 2 | Slot 4 | `0x169` | `6E`/`60` |
+| Mod Matrix Slot 4 Amount 2 | Slot 4 | `0x16A` | `6E`/`61` |
+| Mod Matrix Slot 4 Destination 3 | Slot 4 | `0x16B` | `6E`/`62` |
+| Mod Matrix Slot 4 Amount 3 | Slot 4 | `0x16C` | `6E`/`63` |
+| Mod Matrix Slot 5 Source | Slot 5 | `0x0F2` | `71`/`6A` |
+| Mod Matrix Slot 5 Destination 1 | Slot 5 | `0x0F3` | `71`/`6B` |
+| Mod Matrix Slot 5 Amount 1 | Slot 5 | `0x0F4` | `71`/`6C` |
+| Mod Matrix Slot 5 Destination 2 | Slot 5 | `0x16D` | `6E`/`64` |
+| Mod Matrix Slot 5 Amount 2 | Slot 5 | `0x16E` | `6E`/`65` |
+| Mod Matrix Slot 5 Destination 3 | Slot 5 | `0x16F` | `6E`/`66` |
+| Mod Matrix Slot 5 Amount 3 | Slot 5 | `0x170` | `6E`/`67` |
+| Mod Matrix Slot 6 Source | Slot 6 | `0x0F5` | `71`/`6D` |
+| Mod Matrix Slot 6 Destination 1 | Slot 6 | `0x0F6` | `71`/`6E` — ✓ spot-check |
+| Mod Matrix Slot 6 Amount 1 | Slot 6 | `0x0F7` | `71`/`6F` — ✓ spot-check |
+| Mod Matrix Slot 6 Destination 2 | Slot 6 | `0x171` | `6E`/`68` |
+| Mod Matrix Slot 6 Amount 2 | Slot 6 | `0x172` | `6E`/`69` |
+| Mod Matrix Slot 6 Destination 3 | Slot 6 | `0x173` | `6E`/`6A` |
+| Mod Matrix Slot 6 Amount 3 | Slot 6 | `0x174` | `6E`/`6B` |
 
 ### Arpeggiator {#arpeggiator}
 
@@ -470,56 +495,57 @@ dump layout: [user pattern in `DUMP_SINGLE`](../live-edit/arpeggiator.md#arpeggi
 
 ### FX 1
 
-Live-edit bytes: [effects.md](../live-edit/effects.md). **Dump offsets** for FX
-rows: still **TBD**.
+Live-edit bytes: [effects.md](../live-edit/effects.md). Shared Page A chorus
+bytes (`0x070`–`0x076`) apply across chorus types; type at **`0x06F`**
+(`70`/`67`).
 
 | Control | SubCategory | Dump offset | Live edit |
 | --- | --- | --- | --- |
-| Character Type | Characters | | [`6E`/`1A`](../live-edit/effects.md#character-type-cmd0x6e-param-0x1a) |
-| Character Intensity | Characters | | Analog Boost [`70`/`15`](../live-edit/effects.md#character-intensity-cmd0x70-param-0x15); Stereo Widener / Speaker Cabinet [`71`/`61`](../live-edit/effects.md#character-intensity-stereo-widener-cmd0x71-param-0x61); [LCD](../parameter-options.md#character-intensity-lcd) |
-| Character Tune / Frequency | Characters | | Analog Boost [`70`/`21`](../live-edit/effects.md#character-frequency-cmd0x70-param-0x21); Stereo Widener / Speaker Cabinet [`71`/`62`](../live-edit/effects.md#character-frequency-stereo-widener-cmd0x71-param-0x62) |
-| Chorus Type | Chorus | | [`70`/`67`](../live-edit/effects.md#chorus-type-cmd0x70-param-0x67) — **`01`–`06`** ([enum](../parameter-options.md#chorus-type)) |
-| Chorus Mix | Chorus Classic | | [`70`/`69`](../live-edit/effects.md#chorus-mix-cmd0x70-param-0x69) |
-| Chorus Delay | Chorus Classic | | [`70`/`6C`](../live-edit/effects.md#chorus-delay-cmd0x70-param-0x6c) |
-| Chorus Feedback | Chorus Classic | | [`70`/`6D`](../live-edit/effects.md#chorus-feedback-cmd0x70-param-0x6d) |
-| Chorus LFO Rate | Chorus Classic | | [`70`/`6A`](../live-edit/effects.md#chorus-rate-cmd0x70-param-0x6a) |
-| Chorus LFO Depth | Chorus Classic | | [`70`/`6B`](../live-edit/effects.md#chorus-depth-cmd0x70-param-0x6b) |
-| Chorus LFO Shape | Chorus Classic | | [`70`/`6E`](../live-edit/effects.md#chorus-lfo-wave-cmd0x70-param-0x6e) |
-| Chorus Mix | Chorus Vintage | | [`70`/`68`](../live-edit/effects.md#chorus-mix-vintage-cmd0x70-param-0x68) |
-| Chorus X Over | Chorus Vintage | | [`70`/`6F`](../live-edit/effects.md#chorus-x-over-cmd0x70-param-0x6f) |
-| Chorus LFO Rate | Chorus Vintage | | [`70`/`6A`](../live-edit/effects.md#chorus-rate-cmd0x70-param-0x6a) |
-| Chorus LFO Depth | Chorus Vintage | | [`70`/`6B`](../live-edit/effects.md#chorus-depth-cmd0x70-param-0x6b) |
-| Chorus Mix | Chorus Hyper | | [`70`/`68`](../live-edit/effects.md#chorus-mix-vintage-cmd0x70-param-0x68) |
-| Chorus X Over | Chorus Hyper | | [`70`/`6F`](../live-edit/effects.md#chorus-x-over-cmd0x70-param-0x6f) |
-| Chorus Amount | Chorus Hyper | | [`70`/`6C`](../live-edit/effects.md#chorus-amount-cmd0x70-param-0x6c) — [LCD](../parameter-options.md#chorus-amount-lcd) |
-| Chorus LFO Depth | Chorus Hyper | | [`70`/`6B`](../live-edit/effects.md#chorus-depth-cmd0x70-param-0x6b) |
-| Chorus X Over | Chorus Air | | [`70`/`6F`](../live-edit/effects.md#chorus-x-over-cmd0x70-param-0x6f) |
-| Chorus LFO Depth | Chorus Air | | [`70`/`6B`](../live-edit/effects.md#chorus-depth-cmd0x70-param-0x6b) |
-| Chorus X Over | Chorus Vibrato | | [`70`/`6F`](../live-edit/effects.md#chorus-x-over-cmd0x70-param-0x6f) |
-| Chorus LFO Rate | Chorus Vibrato | | [`70`/`6A`](../live-edit/effects.md#chorus-rate-cmd0x70-param-0x6a) |
-| Chorus LFO Depth | Chorus Vibrato | | [`70`/`6B`](../live-edit/effects.md#chorus-depth-vibrato-cmd0x70-param-0x6b) |
-| Chorus Mix | Chorus Rotary Speaker | | [`70`/`68`](../live-edit/effects.md#chorus-mix-vintage-cmd0x70-param-0x68) — **`0`–`127`** |
-| Chorus Speed | Chorus Rotary Speaker | | [`70`/`6A`](../live-edit/effects.md#chorus-speed-rotary-cmd0x70-param-0x6a) |
-| Chorus Low/High Balance | Chorus Rotary Speaker | | [`70`/`6D`](../live-edit/effects.md#chorus-low-high-balance-rotary-cmd0x70-param-0x6d) — [LCD](../parameter-options.md#chorus-rotary-low-high-balance-lcd) |
-| Chorus Mic Angle | Chorus Rotary Speaker | | [`70`/`6C`](../live-edit/effects.md#chorus-mic-angle-rotary-cmd0x70-param-0x6c) — [LCD](../parameter-options.md#chorus-rotary-mic-angle-lcd) |
-| Chorus Distance | Chorus Rotary Speaker | | [`70`/`6B`](../live-edit/effects.md#chorus-distance-rotary-cmd0x70-param-0x6b) — [LCD](../parameter-options.md#chorus-rotary-distance-lcd) |
-| Distortion Type | Distortion | | [`71`/`64`](../live-edit/effects.md#distortion-type-cmd0x71-param-0x64) — [enum](../parameter-options.md#distortion-type) |
-| Distortion Mix | Distortion | | [`6E`/`48`](../live-edit/effects.md#distortion-mix-cmd0x6e-param-0x48) — [panel](../parameter-options.md#distortion-panel-visibility) |
-| Distortion Intensity | Distortion | | [`71`/`65`](../live-edit/effects.md#distortion-intensity-cmd0x71-param-0x65) — **Drive** on overdrive **`14`–`19`** |
-| Distortion Treble Booster | Distortion | | [`6E`/`46`](../live-edit/effects.md#distortion-treble-boost-cmd0x6e-param-0x46) |
-| Distortion High Cut | Distortion | | [`6E`/`47`](../live-edit/effects.md#distortion-high-cut-cmd0x6e-param-0x47) — standard + overdrive |
+| Character Type | Characters | `0x123` | [`6E`/`1A`](../live-edit/effects.md#character-type-cmd0x6e-param-0x1a) |
+| Character Intensity | Characters | `0x01D` / `0x0E9` | Analog Boost [`70`/`15`](../live-edit/effects.md#character-intensity-cmd0x70-param-0x15) → **`0x01D`**; Stereo Widener / Speaker Cabinet [`71`/`61`](../live-edit/effects.md#character-intensity-stereo-widener-cmd0x71-param-0x61) → **`0x0E9`**; [LCD](../parameter-options.md#character-intensity-lcd) |
+| Character Tune / Frequency | Characters | `0x029` | Analog Boost [`70`/`21`](../live-edit/effects.md#character-frequency-cmd0x70-param-0x21); Stereo Widener / Speaker Cabinet [`71`/`62`](../live-edit/effects.md#character-frequency-stereo-widener-cmd0x71-param-0x62) |
+| Chorus Type | Chorus | `0x06F` | [`70`/`67`](../live-edit/effects.md#chorus-type-cmd0x70-param-0x67) — **`01`–`06`** ([enum](../parameter-options.md#chorus-type)) |
+| Chorus Mix | Chorus Classic | `0x071` | [`70`/`69`](../live-edit/effects.md#chorus-mix-cmd0x70-param-0x69) |
+| Chorus Delay | Chorus Classic | `0x074` | [`70`/`6C`](../live-edit/effects.md#chorus-delay-cmd0x70-param-0x6c) |
+| Chorus Feedback | Chorus Classic | `0x075` | [`70`/`6D`](../live-edit/effects.md#chorus-feedback-cmd0x70-param-0x6d) |
+| Chorus LFO Rate | Chorus Classic | `0x072` | [`70`/`6A`](../live-edit/effects.md#chorus-rate-cmd0x70-param-0x6a) |
+| Chorus LFO Depth | Chorus Classic | `0x073` | [`70`/`6B`](../live-edit/effects.md#chorus-depth-cmd0x70-param-0x6b) |
+| Chorus LFO Shape | Chorus Classic | `0x076` | [`70`/`6E`](../live-edit/effects.md#chorus-lfo-wave-cmd0x70-param-0x6e) |
+| Chorus Mix | Chorus Vintage | `0x070` | [`70`/`68`](../live-edit/effects.md#chorus-mix-vintage-cmd0x70-param-0x68) |
+| Chorus X Over | Chorus Vintage | `0x077` | [`70`/`6F`](../live-edit/effects.md#chorus-x-over-cmd0x70-param-0x6f) |
+| Chorus LFO Rate | Chorus Vintage | `0x072` | [`70`/`6A`](../live-edit/effects.md#chorus-rate-cmd0x70-param-0x6a) |
+| Chorus LFO Depth | Chorus Vintage | `0x073` | [`70`/`6B`](../live-edit/effects.md#chorus-depth-cmd0x70-param-0x6b) |
+| Chorus Mix | Chorus Hyper | `0x070` | [`70`/`68`](../live-edit/effects.md#chorus-mix-vintage-cmd0x70-param-0x68) |
+| Chorus X Over | Chorus Hyper | `0x077` | [`70`/`6F`](../live-edit/effects.md#chorus-x-over-cmd0x70-param-0x6f) |
+| Chorus Amount | Chorus Hyper | `0x074` | [`70`/`6C`](../live-edit/effects.md#chorus-amount-cmd0x70-param-0x6c) — [LCD](../parameter-options.md#chorus-amount-lcd) |
+| Chorus LFO Depth | Chorus Hyper | `0x073` | [`70`/`6B`](../live-edit/effects.md#chorus-depth-cmd0x70-param-0x6b) |
+| Chorus X Over | Chorus Air | `0x077` | [`70`/`6F`](../live-edit/effects.md#chorus-x-over-cmd0x70-param-0x6f) |
+| Chorus LFO Depth | Chorus Air | `0x073` | [`70`/`6B`](../live-edit/effects.md#chorus-depth-cmd0x70-param-0x6b) |
+| Chorus X Over | Chorus Vibrato | `0x077` | [`70`/`6F`](../live-edit/effects.md#chorus-x-over-cmd0x70-param-0x6f) |
+| Chorus LFO Rate | Chorus Vibrato | `0x072` | [`70`/`6A`](../live-edit/effects.md#chorus-rate-cmd0x70-param-0x6a) |
+| Chorus LFO Depth | Chorus Vibrato | `0x073` | [`70`/`6B`](../live-edit/effects.md#chorus-depth-vibrato-cmd0x70-param-0x6b) |
+| Chorus Mix | Chorus Rotary Speaker | `0x070` | [`70`/`68`](../live-edit/effects.md#chorus-mix-vintage-cmd0x70-param-0x68) — **`0`–`127`** |
+| Chorus Speed | Chorus Rotary Speaker | `0x072` | [`70`/`6A`](../live-edit/effects.md#chorus-speed-rotary-cmd0x70-param-0x6a) |
+| Chorus Low/High Balance | Chorus Rotary Speaker | `0x075` | [`70`/`6D`](../live-edit/effects.md#chorus-low-high-balance-rotary-cmd0x70-param-0x6d) — [LCD](../parameter-options.md#chorus-rotary-low-high-balance-lcd) |
+| Chorus Mic Angle | Chorus Rotary Speaker | `0x074` | [`70`/`6C`](../live-edit/effects.md#chorus-mic-angle-rotary-cmd0x70-param-0x6c) — [LCD](../parameter-options.md#chorus-rotary-mic-angle-lcd) |
+| Chorus Distance | Chorus Rotary Speaker | `0x073` | [`70`/`6B`](../live-edit/effects.md#chorus-distance-rotary-cmd0x70-param-0x6b) — [LCD](../parameter-options.md#chorus-rotary-distance-lcd) |
+| Distortion Type | Distortion | `0x0EC` | [`71`/`64`](../live-edit/effects.md#distortion-type-cmd0x71-param-0x64) — [enum](../parameter-options.md#distortion-type) |
+| Distortion Mix | Distortion | `0x151` | [`6E`/`48`](../live-edit/effects.md#distortion-mix-cmd0x6e-param-0x48) — [panel](../parameter-options.md#distortion-panel-visibility) |
+| Distortion Intensity | Distortion | `0x0ED` | [`71`/`65`](../live-edit/effects.md#distortion-intensity-cmd0x71-param-0x65) — **Drive** on overdrive **`14`–`19`** |
+| Distortion Treble Booster | Distortion | `0x14F` | [`6E`/`46`](../live-edit/effects.md#distortion-treble-boost-cmd0x6e-param-0x46) |
+| Distortion High Cut | Distortion | `0x150` | [`6E`/`47`](../live-edit/effects.md#distortion-high-cut-cmd0x6e-param-0x47) — standard + overdrive |
 | Distortion Quality | Distortion | | [`6E`/`49`](../live-edit/effects.md#distortion-quality-cmd0x6e-param-0x49) — **Bit** / **Rate Reducer** |
 | Distortion Tone | Distortion Overdrives | | [`6E`/`4A`](../live-edit/effects.md#distortion-tone-cmd0x6e-param-0x4a) — **Mint** / **Saffron** / **Onion** / **Pepper** |
-| Phaser Mix | Phaser | | [`71`/`55`](../live-edit/effects.md#phaser-mix-cmd0x71-param-0x55) — [LCD](../parameter-options.md#phaser-mix-lcd) |
-| Phaser Stages | Phaser | | [`71`/`54`](../live-edit/effects.md#phaser-stages-cmd0x71-param-0x54) — Mix ≠ Off |
-| Phaser Frequency | Phaser | | [`71`/`58`](../live-edit/effects.md#phaser-frequency-cmd0x71-param-0x58) — Mix ≠ Off |
-| Phaser Feedback (FB) | Phaser | | [`71`/`59`](../live-edit/effects.md#phaser-feedback-cmd0x71-param-0x59) — Mix ≠ Off |
-| Phaser Spread | Phaser | | [`71`/`5A`](../live-edit/effects.md#phaser-spread-cmd0x71-param-0x5a) — Mix ≠ Off |
-| Phaser LFO Rate | Phaser | | [`71`/`56`](../live-edit/effects.md#phaser-mod-rate-cmd0x71-param-0x56) — **Mod Rate**; Mix ≠ Off |
-| Phaser LFO Depth | Phaser | | [`71`/`57`](../live-edit/effects.md#phaser-mod-depth-cmd0x71-param-0x57) — **Mod Depth**; Mix ≠ Off |
-| Filter Bank Type | Filter Bank | | [`6E`/`13`](../live-edit/effects.md#filter-bank-type-cmd0x6e-param-0x13) — [enum](../parameter-options.md#filter-bank-type) |
-| Filter Bank Mix / Amount | Filter Bank | | [`6E`/`14`](../live-edit/effects.md#filter-bank-mix-cmd0x6e-param-0x14) — [LCD](../parameter-options.md#filter-bank-mix-lcd) |
-| Filter Bank Frequency | Filter Bank | | [`6E`/`15`](../live-edit/effects.md#filter-bank-frequency-bipolar-cmd0x6e-param-0x15) bipolar; [Vowel](../live-edit/effects.md#filter-bank-vowel-frequency-cmd0x6e-param-0x15) |
+| Phaser Mix | Phaser | `0x0DD` | [`71`/`55`](../live-edit/effects.md#phaser-mix-cmd0x71-param-0x55) — [LCD](../parameter-options.md#phaser-mix-lcd) |
+| Phaser Stages | Phaser | `0x0DC` | [`71`/`54`](../live-edit/effects.md#phaser-stages-cmd0x71-param-0x54) — Mix ≠ Off |
+| Phaser Frequency | Phaser | `0x0E0` | [`71`/`58`](../live-edit/effects.md#phaser-frequency-cmd0x71-param-0x58) — Mix ≠ Off |
+| Phaser Feedback (FB) | Phaser | `0x0E1` | [`71`/`59`](../live-edit/effects.md#phaser-feedback-cmd0x71-param-0x59) — Mix ≠ Off |
+| Phaser Spread | Phaser | `0x0E2` | [`71`/`5A`](../live-edit/effects.md#phaser-spread-cmd0x71-param-0x5a) — Mix ≠ Off |
+| Phaser LFO Rate | Phaser | `0x0DE` | [`71`/`56`](../live-edit/effects.md#phaser-mod-rate-cmd0x71-param-0x56) — **Mod Rate**; Mix ≠ Off |
+| Phaser LFO Depth | Phaser | `0x0DF` | [`71`/`57`](../live-edit/effects.md#phaser-mod-depth-cmd0x71-param-0x57) — **Mod Depth**; Mix ≠ Off |
+| Filter Bank Type | Filter Bank | `0x11C` | [`6E`/`13`](../live-edit/effects.md#filter-bank-type-cmd0x6e-param-0x13) — [enum](../parameter-options.md#filter-bank-type) |
+| Filter Bank Mix / Amount | Filter Bank | `0x11D` | [`6E`/`14`](../live-edit/effects.md#filter-bank-mix-cmd0x6e-param-0x14) — [LCD](../parameter-options.md#filter-bank-mix-lcd) |
+| Filter Bank Frequency | Filter Bank | `0x11E` | [`6E`/`15`](../live-edit/effects.md#filter-bank-frequency-bipolar-cmd0x6e-param-0x15) bipolar; [Vowel](../live-edit/effects.md#filter-bank-vowel-frequency-cmd0x6e-param-0x15) |
 | Filter Bank Stereo Phase | Filter Bank | | [`6E`/`16`](../live-edit/effects.md#filter-bank-stereo-phase-cmd0x6e-param-0x16) |
 | Frequency Shifter Left Shape | Filter Bank Frequency Shifter | | [`6E`/`17`](../live-edit/effects.md#filter-bank-shape-l-cmd0x6e-param-0x17) — **Shape L** |
 | Frequency Shifter Right Shape | Filter Bank Frequency Shifter | | [`6E`/`18`](../live-edit/effects.md#filter-bank-shape-r-cmd0x6e-param-0x18) — **Shape R** |
@@ -536,13 +562,13 @@ rows: still **TBD**.
 | Filter Bank Resonance | Filter Bank VariSlopes | | [`6E`/`19`](../live-edit/effects.md#filter-bank-resonance-cmd0x6e-param-0x19) |
 | Filter Bank Filter Poles | Filter Bank VariSlopes | | [`6E`/`17`](../live-edit/effects.md#filter-bank-poles-cmd0x6e-param-0x17) — [Poles LCD](../parameter-options.md#filter-bank-varislope-poles-lcd) |
 | Filter Bank Filter Slope | Filter Bank VariSlopes | | [`6E`/`18`](../live-edit/effects.md#filter-bank-slope-cmd0x6e-param-0x18) — [Slope](../parameter-options.md#filter-bank-varislope-slope) |
-| EQ Low Gain (db) | Equalizer | | [`71`/`5F`](../live-edit/effects.md#eq-low-gain-cmd0x71-param-0x5f) — **−16..+16 dB**, **Off** @ **`40`** |
-| EQ Low Frequency (Hz) | Equalizer | | [`71`/`2D`](../live-edit/effects.md#eq-low-frequency-cmd0x71-param-0x2d) — **32..458 Hz** |
-| EQ Mid Gain (db) | Equalizer | | [`71`/`5C`](../live-edit/effects.md#eq-mid-gain-cmd0x71-param-0x5c) — same as [Low Gain](../parameter-options.md#eq-low-gain) |
-| EQ Mid Frequency (Hz) | Equalizer | | [`71`/`5D`](../live-edit/effects.md#eq-mid-frequency-cmd0x71-param-0x5d) — **19 Hz..24.0 kHz** |
-| EQ Mid Q-Factor | Equalizer | | [`71`/`5E`](../live-edit/effects.md#eq-mid-q-factor-cmd0x71-param-0x5e) — **0.28..15.4** |
-| EQ High Gain (db) | Equalizer | | [`71`/`60`](../live-edit/effects.md#eq-high-gain-cmd0x71-param-0x60) — same as [Low Gain](../parameter-options.md#eq-low-gain) |
-| EQ High Frequency (Hz) | Equalizer | | [`71`/`2E`](../live-edit/effects.md#eq-high-frequency-cmd0x71-param-0x2e) — **1831 Hz..24.0 kHz** |
+| EQ Low Gain (db) | Equalizer | `0x0E7` | [`71`/`5F`](../live-edit/effects.md#eq-low-gain-cmd0x71-param-0x5f) — **−16..+16 dB**, **Off** @ **`40`** |
+| EQ Low Frequency (Hz) | Equalizer | `0x0B5` | [`71`/`2D`](../live-edit/effects.md#eq-low-frequency-cmd0x71-param-0x2d) — **32..458 Hz** |
+| EQ Mid Gain (db) | Equalizer | `0x0E4` | [`71`/`5C`](../live-edit/effects.md#eq-mid-gain-cmd0x71-param-0x5c) — same as [Low Gain](../parameter-options.md#eq-low-gain) |
+| EQ Mid Frequency (Hz) | Equalizer | `0x0E5` | [`71`/`5D`](../live-edit/effects.md#eq-mid-frequency-cmd0x71-param-0x5d) — **19 Hz..24.0 kHz** |
+| EQ Mid Q-Factor | Equalizer | `0x0E6` | [`71`/`5E`](../live-edit/effects.md#eq-mid-q-factor-cmd0x71-param-0x5e) — **0.28..15.4** |
+| EQ High Gain (db) | Equalizer | `0x0E8` | [`71`/`60`](../live-edit/effects.md#eq-high-gain-cmd0x71-param-0x60) — same as [Low Gain](../parameter-options.md#eq-low-gain) |
+| EQ High Frequency (Hz) | Equalizer | `0x0B6` | [`71`/`2E`](../live-edit/effects.md#eq-high-frequency-cmd0x71-param-0x2e) — **1831 Hz..24.0 kHz** |
 | Input Follower Select | Envelope Follower | | [`6E`/`26`](../live-edit/effects.md#input-follower-input-select-cmd0x6e-param-0x26) — [enum](../parameter-options.md#input-follower-input-select) |
 | Input Follower Sensitivity | Envelope Follower | | [`6E`/`38`](../live-edit/effects.md#input-follower-sensitivity-cmd0x6e-param-0x38) — **0..100 %** when **Input Select** ≠ Off |
 | Input Follower Envelope Attack | Envelope Follower | | [`6E`/`36`](../live-edit/effects.md#input-follower-attack-cmd0x6e-param-0x36) — **0..127** when **Input Select** ≠ Off |

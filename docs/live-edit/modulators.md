@@ -20,7 +20,8 @@ F0 00 20 33 01 00 6E <part> <param> <value> F7 # part single edit buffer
 Param IDs are **not global** — the same hex ID can mean different settings under
 different `cmd` bytes.
 
-Page **B#7–13** (*Lfo3* settings …) remain **TBD** for dump correlation.
+Page **B#7–13** (*Lfo3* settings …) dump offsets: see
+[Single parameter map — LFO](../dumps/single.md#lfo).
 Documented LFO settings: [LFO live edit routing](../parameter-options.md#lfo-live-edit-routing),
 [LFO Clock](../parameter-options.md#lfo-clock),
 [LFO Shape](../parameter-options.md#lfo-shape),
