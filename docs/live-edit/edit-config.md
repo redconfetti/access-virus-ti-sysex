@@ -121,6 +121,7 @@ panel where **Hardware TX** is still blank below.
 | `0x6A`   | MIDI Clock             | See [MIDI Clock](#midi-clock-0x6a)                          | Unverified   | —                |
 | `0x75`   | Knob Response          | See [Knob Response](#knob-response-0x75)                    | Unverified   | No (panel); RX ✓ |
 | `0x76`   | Memory Protect         | See [Memory Protect](#memory-protect-0x76)                  | Unverified   | —                |
+| `0x7A`   | Play mode              | See [Play mode](#play-mode-0x7a)                            | Unverified   | —                |
 | `0x7C`   | Global MIDI Channel    | See [Global MIDI Channel](#global-midi-channel-0x7c)        | Unverified   | No (panel)       |
 | `0x7D`   | LED Mode               | See [LED Mode](#led-mode-0x7d)                              | Unverified   | —                |
 | `0x7E`   | LCD Contrast           | See [LCD Contrast](#lcd-contrast-0x7e)                      | Unverified   | —                |
@@ -148,6 +149,32 @@ F0 00 20 33 01 00 73 40 10 00 F7 # Single-buffer scope 0x40 (tentative)
 **Not confirmed:** exact meaning of value **`0x00`**; whether **`0x10`**
 is “enter Multi mode” or a broader **edit focus** indicator. Sequencer
 transitions did **not** repeat the `73 … 10` message.
+
+For **host → synth** mode selection, use [Play mode (`0x7A`)](#play-mode-0x7a)
+instead.
+
+### Play mode (`0x7A`) {#play-mode-0x7a}
+
+**Front-panel play/edit mode** — **Single**, **Sequencer** (**MULTI+SINGLE**),
+or **Multi**. Host sends **`cmd=0x73`**, param **`0x7A`**, value below.
+
+**Not** the same param byte under other commands — e.g. **FILTERS SELECT**
+uses **`71`/`7A`**, Filter Common **Pan Spread** uses **`6E`/`7A`**.
+
+| `<value>` | Mode       | Panel label        |
+| --------- | ---------- | ------------------ |
+| `00`      | Single     | **SINGLE**         |
+| `01`      | Sequencer  | **MULTI+SINGLE**   |
+| `02`      | Multi      | **MULTI**          |
+
+```text
+F0 00 20 33 01 00 73 00 7A 00 F7 # Single
+F0 00 20 33 01 00 73 00 7A 01 F7 # Sequencer (MULTI+SINGLE)
+F0 00 20 33 01 00 73 00 7A 02 F7 # Multi
+```
+
+Panel mode changes may also emit **`73 … 10 …`** — see
+[Edit mode `0x10`](#edit-mode-0x10-tentative) (synth → host, tentative).
 
 ### All EQs (`0x19`)
 

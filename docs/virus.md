@@ -56,13 +56,23 @@ Message-level layouts:
 See [arrangements.md — Embedded vs Reference
 Multis](dumps/arrangements.md#embedded-vs-reference-multis).
 
-## Front-panel modes (observed SysEx)
+## Front-panel modes
 
-The TI desktop exposes **Multi**, **Single**, and **Sequencer** (combined
-**MULTI+SINGLE**) play/edit modes. Mode changes can emit global SysEx
-(**`cmd=0x73`**, param **`0x10`**) — see
-[global-live-edit.md — Edit mode
-0x10](live-edit/edit-config.md#edit-mode-0x10-tentative).
+The TI desktop exposes **Multi**, **Single**, and **Sequencer**
+(**MULTI+SINGLE**) play/edit modes.
+
+**Host → synth** — select mode with **`cmd=0x73`**, param **`0x7A`**:
+
+| Mode      | SysEx body      |
+| --------- | --------------- |
+| Single    | `73 00 7A 00`   |
+| Sequencer | `73 00 7A 01`   |
+| Multi     | `73 00 7A 02`   |
+
+See [Play mode (`0x7A`)](live-edit/edit-config.md#play-mode-0x7a).
+
+**Synth → host** (panel) may emit **`cmd=0x73`**, param **`0x10`**, or empty
+`F0 F7` frames — see [Edit mode `0x10`](live-edit/edit-config.md#edit-mode-0x10-tentative).
 
 | Panel action                 | Typical SysEx from Virus          |
 | ---------------------------- | --------------------------------- |
