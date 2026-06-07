@@ -52,12 +52,12 @@ Front-panel **SELECT** switches which sub-page the shared knobs edit. **`stored 
 index`**. Pause **≥ 1 s** between probe messages. For **EFFECTS**, documents
 **`6E`/`75`** / **`6E`/`76`** focus only — not physical knob routing.
 
-| Section | Live edit | Values (confirmed) |
-| --- | --- | --- |
-| Oscillators | `71`/`7F` | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/oscillators.md#oscillators-select) |
-| Filters | `71`/`7A` | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/filters.md#filters-select); **disabled** when Vocoder active |
-| Effects g1 | `6E`/`75` | `00` Delay … `04` High EQ |
-| Effects g2 | `6E`/`76` | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/effects.md#effects-select) |
+| Section     | Live edit | Values (confirmed)                                                                                                    |
+| ----------- | --------- | --------------------------------------------------------------------------------------------------------------------- |
+| Oscillators | `71`/`7F` | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/oscillators.md#oscillators-select)                    |
+| Filters     | `71`/`7A` | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/filters.md#filters-select); **disabled** when Vocoder active |
+| Effects g1  | `6E`/`75` | `00` Delay … `04` High EQ                                                                                             |
+| Effects g2  | `6E`/`76` | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/effects.md#effects-select)                          |
 
 ```bash
 sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 71 00 7F 01 # Osc 2
@@ -132,12 +132,12 @@ for i, (x, y) in enumerate(zip(a, b)):
 
 ## Smoke tests
 
-| # | Message (summary) | Panel check |
-| --- | --- | --- |
-| 1 | P1 Hold `4A` `00` | Hold Disabled |
-| 2 | P1 Hold `4A` `01` | Hold Enabled |
-| 3 | P16 Enable `48` `00` | Part 16 Off |
-| 4 | P1 Vol `27` `48` | Part 1 Vol +8 |
+| #   | Message (summary)    | Panel check   |
+| --- | -------------------- | ------------- |
+| 1   | P1 Hold `4A` `00`    | Hold Disabled |
+| 2   | P1 Hold `4A` `01`    | Hold Enabled  |
+| 3   | P16 Enable `48` `00` | Part 16 Off   |
+| 4   | P1 Vol `27` `48`     | Part 1 Vol +8 |
 
 ## Stop and ask the user when
 
@@ -149,11 +149,11 @@ for i, (x, y) in enumerate(zip(a, b)):
 
 ## Doc targets after confirm
 
-| Work | Update |
-| --- | --- |
-| Live edit bytes | [docs/live-edit/](../../docs/live-edit/README.md) |
-| Dump offsets | [docs/dumps/](../../docs/dumps/README.md) |
-| Enum tables | [docs/parameter-options.md](../../docs/parameter-options.md) |
+| Work            | Update                                                       |
+| --------------- | ------------------------------------------------------------ |
+| Live edit bytes | [docs/live-edit/](../../docs/live-edit/README.md)            |
+| Dump offsets    | [docs/dumps/](../../docs/dumps/README.md)                    |
+| Enum tables     | [docs/parameter-options.md](../../docs/parameter-options.md) |
 
 Follow [documentation-standards](../documentation-standards/SKILL.md) when
 writing markdown.

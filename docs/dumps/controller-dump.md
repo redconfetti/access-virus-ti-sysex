@@ -14,18 +14,18 @@ describe the current state of one part’s Single edit buffer. Useful for findin
 F0 00 20 33 01 <device> 37 00 <part> F7
 ```
 
-| Byte | Value | Meaning |
-| --- | --- | --- |
-| `37` | Controller Dump Request | Fixed |
-| `00` | Subcommand | Fixed in TI mk2 captures (**TBD** if other values exist) |
-| `<part>` | Part / buffer selector | Same as [Single Request](bank.md#single-request-0x30) edit-buffer slots |
+| Byte     | Value                   | Meaning                                                                 |
+| -------- | ----------------------- | ----------------------------------------------------------------------- |
+| `37`     | Controller Dump Request | Fixed                                                                   |
+| `00`     | Subcommand              | Fixed in TI mk2 captures (**TBD** if other values exist)                |
+| `<part>` | Part / buffer selector  | Same as [Single Request](bank.md#single-request-0x30) edit-buffer slots |
 
 ### `<part>` (TI mk2, confirmed)
 
-| `<part>` | Target |
-| --- | --- |
+| `<part>`          | Target                                 |
+| ----------------- | -------------------------------------- |
 | **`0x00`–`0x0F`** | Multi **Part 1–16** Single edit buffer |
-| **`0x40`** | **Single mode** Single edit buffer |
+| **`0x40`**        | **Single mode** Single edit buffer     |
 
 ```bash
 # Multi Part 1 — all parameters as SysEx stream
@@ -62,10 +62,10 @@ See [testing.md](../testing.md) and
 
 ## Related
 
-| Message | What you get |
-| --- | --- |
-| **`0x30`** Single Request | One **524-byte** `DUMP_SINGLE` snapshot |
-| **`0x37`** Controller Dump Request | **Parameter-by-parameter** SysEx stream |
+| Message                            | What you get                               |
+| ---------------------------------- | ------------------------------------------ |
+| **`0x30`** Single Request          | One **524-byte** `DUMP_SINGLE` snapshot    |
+| **`0x37`** Controller Dump Request | **Parameter-by-parameter** SysEx stream    |
 | **`0x72`/`0x20`/`0x21`** live edit | Bank/program metadata only (no full state) |
 
 Request command table: [bank.md](bank.md#controller-dump-request-0x37).

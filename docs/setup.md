@@ -26,12 +26,12 @@ adds them).
 **Byte values:** use an **`0x` prefix on every data byte** you care about.
 sendmidi’s parsing is easy to get wrong:
 
-| You type | Often becomes | You wanted |
-| --- | --- | --- |
-| `20` | `0x14` (decimal 20) | param **`0x20`** (Bank) |
-| `21` | `0x15` (decimal 21) | param **`0x21`** (Program) |
-| `40` | `0x28` (decimal 40) | program **64** → **`0x40`** |
-| `72` | `0x48` (decimal 72) | cmd **`0x72`** |
+| You type | Often becomes       | You wanted                  |
+| -------- | ------------------- | --------------------------- |
+| `20`     | `0x14` (decimal 20) | param **`0x20`** (Bank)     |
+| `21`     | `0x15` (decimal 21) | param **`0x21`** (Program)  |
+| `40`     | `0x28` (decimal 40) | program **64** → **`0x40`** |
+| `72`     | `0x48` (decimal 72) | cmd **`0x72`**              |
 
 Example — Part 1 → RAM A, program **64**:
 

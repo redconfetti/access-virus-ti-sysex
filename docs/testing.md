@@ -9,19 +9,19 @@ queue, dump diff, and when to stop.
 
 ## Quick links
 
-| Topic | Doc |
-| --- | --- |
-| Install, ports, first message | [setup.md](setup.md) |
-| OsTIrus (no hardware) | [ostirus.md](ostirus.md) |
-| Live edit by menu | [live-edit/README.md](live-edit/README.md) |
-| Dump maps | [dumps/README.md](dumps/README.md) |
-| Doc writing rules | `.cursor/skills/documentation-standards/SKILL.md` |
-| Parameter enums | [parameter-options.md](parameter-options.md) |
+| Topic                         | Doc                                               |
+| ----------------------------- | ------------------------------------------------- |
+| Install, ports, first message | [setup.md](setup.md)                              |
+| OsTIrus (no hardware)         | [ostirus.md](ostirus.md)                          |
+| Live edit by menu             | [live-edit/README.md](live-edit/README.md)        |
+| Dump maps                     | [dumps/README.md](dumps/README.md)                |
+| Doc writing rules             | `.cursor/skills/documentation-standards/SKILL.md` |
+| Parameter enums               | [parameter-options.md](parameter-options.md)      |
 
 ## Message types (reference)
 
-| Purpose | Cmd | Length | Doc |
-| --- | --- | --- | --- |
-| Live multi edit | `72` | 11 bytes | [edit-multi.md](live-edit/edit-multi.md) |
-| Request multi dump | `31` | 11 bytes | [arrangements.md](dumps/arrangements.md#request_multi-byte-table) |
-| Multi dump reply | `11` | 267 bytes | [arrangements.md](dumps/arrangements.md) |
+| Purpose            | Cmd  | Length    | Doc                                                               |
+| ------------------ | ---- | --------- | ----------------------------------------------------------------- |
+| Live multi edit    | `72` | 11 bytes  | [edit-multi.md](live-edit/edit-multi.md)                          |
+| Request multi dump | `31` | 11 bytes  | [arrangements.md](dumps/arrangements.md#request_multi-byte-table) |
+| Multi dump reply   | `11` | 267 bytes | [arrangements.md](dumps/arrangements.md)                          |

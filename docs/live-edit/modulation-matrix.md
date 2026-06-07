@@ -40,8 +40,8 @@ three times.
 Full enum sweeps on all six slots; spot-checks on **Slot 2 row 2**, **Slot 3 row
 2**, and **Slot 6 row 1** (hardware TX + **`sendmidi` RX**).
 
-| Slot | Source | Dest 1 | Amt 1 | Dest 2 | Amt 2 | Dest 3 | Amt 3 |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| Slot  | Source    | Dest 1    | Amt 1     | Dest 2    | Amt 2     | Dest 3    | Amt 3     |
+| ----- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
 | **1** | `71`/`40` | `71`/`41` | `71`/`42` | `6E`/`5A` | `6E`/`5B` | `6E`/`5C` | `6E`/`5D` |
 | **2** | `71`/`43` | `71`/`44` | `71`/`45` | `71`/`46` | `71`/`47` | `6E`/`5E` | `6E`/`5F` |
 | **3** | `71`/`48` | `71`/`49` | `71`/`4A` | `71`/`4B` | `71`/`4C` | `71`/`4D` | `71`/`4E` |
@@ -109,10 +109,10 @@ matching slot/row param). Panel label **Filterbank Frequency** uses wire **`60`*
 Bipolar **−64..+63** → `stored = ui + 64` (**`00`** = −64, **`40`** = +0,
 **`7F`** = +63). Same family as [LFO Contour](../parameter-options.md#contour-0x47).
 
-| `<value>` | LCD | Confirmed |
-| --- | --- | --- |
-| `00` | −64 | ✓ |
-| `19` | −39 | ✓ (slot 6 row 1) |
-| `2F` | −17 | ✓ (slot 3 row 2) |
-| `40` | +0 | ✓ |
-| `7F` | +63 | ✓ |
+| `<value>` | LCD | Confirmed        |
+| --------- | --- | ---------------- |
+| `00`      | −64 | ✓                |
+| `19`      | −39 | ✓ (slot 6 row 1) |
+| `2F`      | −17 | ✓ (slot 3 row 2) |
+| `40`      | +0  | ✓                |
+| `7F`      | +63 | ✓                |

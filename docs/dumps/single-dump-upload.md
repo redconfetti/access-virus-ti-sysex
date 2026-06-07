@@ -5,10 +5,10 @@ TI mk2 reply/upload is **`DUMP_SINGLE`** — **524 bytes**, not 256 + checksum.
 
 ## Request vs dump
 
-| Message | Cmd | Direction | Body |
-| --- | --- | --- | --- |
-| **Single Request** | `0x30` | Host → synth (ask) | `30 <bank> <slot>` only |
-| **Single Dump** | `0x10` | Synth → host or **host → synth** | Full program bytes |
+| Message            | Cmd    | Direction                        | Body                    |
+| ------------------ | ------ | -------------------------------- | ----------------------- |
+| **Single Request** | `0x30` | Host → synth (ask)               | `30 <bank> <slot>` only |
+| **Single Dump**    | `0x10` | Synth → host or **host → synth** | Full program bytes      |
 
 **Single Request** pulls a stored program or edit buffer over MIDI.
 
@@ -19,18 +19,19 @@ the **destination** on upload, not “load from bank X slot Y by reference”:
 F0 00 20 33 01 <device> 10 <bank> <slot> <TI payload 0x09..0x208> <cs> F7
 ```
 
-| `bank` (`0x07`) | `slot` (`0x08`) | Upload target |
-| --- | --- | --- |
-| `00` | `00`–`0F` | Multi **Part 1–16** edit buffer |
-| `00` | `40` | **Single mode** edit buffer |
-| `01`–`04` | `00`–`7F` | **Store** to RAM A–D (classic; TI store path **TBD**) |
+| `bank` (`0x07`) | `slot` (`0x08`) | Upload target                                         |
+| --------------- | --------------- | ----------------------------------------------------- |
+| `00`            | `00`–`0F`       | Multi **Part 1–16** edit buffer                       |
+| `00`            | `40`            | **Single mode** edit buffer                           |
+| `01`–`04`       | `00`–`7F`       | **Store** to RAM A–D (classic; TI store path **TBD**) |
 
 A short message like `F0 … 10 01 40 F7` (no payload) will **not** load RAM A
 program 64 — there is nothing to parse.
 
 ## Load RAM A program 64 into Multi Part 1 (TI mk2)
 
-Two steps (same idea as AURA: full **`0x10`** after bank/program metadata):
+Two steps — **Single Request**, then re-send a full **`0x10`** with the
+destination header:
 
 **1. Single Request** — read stored program:
 
