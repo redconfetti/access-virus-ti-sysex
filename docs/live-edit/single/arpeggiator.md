@@ -2,10 +2,10 @@
 
 Edit Single — **Arpeggiator** (**EDIT ARP** on the panel).
 
-Part of [Live Edit](README.md). Enumerated options:
-[parameter-options.md](../parameter-options.md).
-Dump worksheet: [Single parameter map](../dumps/single.md#arpeggiator)
-· Multi: [Edit Multi](edit-multi.md).
+Part of [Documentation](../../../README.md#documentation). Enumerated options:
+[parameter-options.md](../../reference/parameter-options.md).
+Dump worksheet: [Single parameter map](../../dumps/single.md#arpeggiator)
+· Multi: [Edit Multi](../multis.md).
 
 ```text
 F0 00 20 33 01 00 71 <part> <param> <value> F7 # Page B (EDIT ARP settings)
@@ -14,22 +14,22 @@ F0 00 20 33 01 00 6F <part> <param> <value> F7 # User-pattern step data
 ```
 
 Param IDs are **not global** — **`0x0F`** on **`cmd=0x71`** is **Arpeggiator Mode**, not
-[Multi Tempo / Master Clock](edit-single.md#multi-tempo--master-clock-0x0f-cmd0x72) on
+[Multi Tempo / Master Clock](single.md#multi-tempo--master-clock) on
 **`cmd=0x72`**. User-pattern **Loop Length** uses **`6E`/`7F`** — not
-[Oscillators SELECT](../oscillators.md#oscillators-select) (`71`/`7F`).
+[Oscillators SELECT](oscillators.md#select-717f) (`71`/`7F`).
 
 ## Panel reference
 
 **LCD:** **EDIT ARP**. Which rows appear depends on **Mode** — see
-[Arpeggiator panel visibility](../parameter-options.md#arpeggiator-panel-visibility).
+[Arpeggiator panel visibility](../../reference/parameter-options.md#arpeggiator-panel-visibility).
 **Mode** = **Off** → **Mode** only. **Mode** = **Down** → **Mode** + **Hold**.
 Full settings (**Up**, **Up&Down**, **As Played**, **Random**, **Chord**) → six
 rows. **Arp>Matrix** → **Pattern** + **Resolution** only — see
-[Arpeggiator panel visibility](../parameter-options.md#arpeggiator-panel-visibility).
+[Arpeggiator panel visibility](../../reference/parameter-options.md#arpeggiator-panel-visibility).
 
 ## Settings
 
-**`DUMP_SINGLE`** offsets (Single edit buffer **`30 00 40`**, `<part>=0x40`; TI mk2
+**Single Dump** offsets (Single edit buffer **`30 00 40`**, `<part>=0x40`; TI mk2
 dump correlate):
 
 | Control     | Live edit | Dump offset |
@@ -42,10 +42,12 @@ dump correlate):
 | Swing       | `71`/`06` | **`0x08E`** |
 | Resolution  | `71`/`11` | **`0x099`** |
 
-### Mode (`0x0F`, `cmd=0x71`) {#arpeggiator-mode-cmd0x71-param-0x0f}
+### Mode
+
+**Live edit:** `cmd=0x71`, param `0x0F`.
 
 **EDIT ARP → Mode**. **`stored = index`**
-— full list in [Arpeggiator Mode](../parameter-options.md#arpeggiator-mode).
+— full list in [Arpeggiator Mode](../../reference/parameter-options.md#arpeggiator-mode).
 **Off** (`00`) disables the arpeggiator; any other mode runs the arp with that
 pattern direction. The front-panel **ARP** on/off control selects **Up** (`01`)
 when enabled in hardware tests.
@@ -67,11 +69,13 @@ F0 00 20 33 01 00 71 00 0F 06 F7 # Chord
 F0 00 20 33 01 00 71 00 0F 07 F7 # Arp>Matrix
 ```
 
-### Pattern (`0x02`, `cmd=0x71`) {#arpeggiator-pattern-cmd0x71-param-0x02}
+### Pattern
+
+**Live edit:** `cmd=0x71`, param `0x02`.
 
 **EDIT ARP → Pattern**. **`stored = <value>`** — **User** (`00`), presets **2**–
 **64** (`01`–`3F`; LCD = **`stored + 1`**). Full map:
-[Arpeggiator Pattern](../parameter-options.md#arpeggiator-pattern). Hidden when
+[Arpeggiator Pattern](../../reference/parameter-options.md#arpeggiator-pattern). Hidden when
 **Mode** = **Off** or **Down** (visible on full settings modes and **Arp>Matrix**).
 
 | Item           | Value                                                |
@@ -86,11 +90,13 @@ F0 00 20 33 01 00 71 00 02 01 F7 # 2
 F0 00 20 33 01 00 71 00 02 3F F7 # 64
 ```
 
-### Octaves (`0x03`, `cmd=0x71`) {#arpeggiator-octaves-cmd0x71-param-0x03}
+### Octaves
+
+**Live edit:** `cmd=0x71`, param `0x03`.
 
 **EDIT ARP → Octaves**.
 **`stored = octaves − 1`** (**`00`–`03`** → LCD **1**–**4**). Enum:
-[Arpeggiator Octaves](../parameter-options.md#arpeggiator-octaves). Full settings
+[Arpeggiator Octaves](../../reference/parameter-options.md#arpeggiator-octaves). Full settings
 modes only — hidden when **Mode** = **Off**, **Down**, or **Arp>Matrix**.
 
 | Item           | Value                                       |
@@ -104,11 +110,13 @@ F0 00 20 33 01 00 71 00 03 00 F7 # 1 octave
 F0 00 20 33 01 00 71 00 03 03 F7 # 4 octaves
 ```
 
-### Resolution (`0x11`, `cmd=0x71`) {#arpeggiator-resolution-cmd0x71-param-0x11}
+### Resolution
+
+**Live edit:** `cmd=0x71`, param `0x11`.
 
 **EDIT ARP → Resolution**. **`stored = <value>`** — tempo grid **1/128** …
 **1/2**; full map in
-[Arpeggiator Resolution](../parameter-options.md#arpeggiator-resolution). Hidden
+[Arpeggiator Resolution](../../reference/parameter-options.md#arpeggiator-resolution). Hidden
 when **Mode** = **Off** or **Down** (visible on full settings modes and
 **Arp>Matrix**).
 
@@ -123,10 +131,12 @@ F0 00 20 33 01 00 71 00 11 01 F7 # 1/128
 F0 00 20 33 01 00 71 00 11 11 F7 # 1/2
 ```
 
-### Note Length (`0x05`, `cmd=0x71`) {#arpeggiator-note-length-cmd0x71-param-0x05}
+### Note Length
+
+**Live edit:** `cmd=0x71`, param `0x05`.
 
 **EDIT ARP → Note Length**. Bipolar **`stored = ui + 64`** — LCD curve:
-[Arpeggiator Note Length](../parameter-options.md#arpeggiator-note-length-lcd).
+[Arpeggiator Note Length](../../reference/parameter-options.md#arpeggiator-note-length-lcd).
 Full settings modes only — hidden when **Mode** = **Off**, **Down**, or
 **Arp>Matrix**.
 
@@ -142,11 +152,13 @@ F0 00 20 33 01 00 71 00 05 40 F7 # +0.0 %
 F0 00 20 33 01 00 71 00 05 7F F7 # +100.0 %
 ```
 
-### Swing Factor (`0x06`, `cmd=0x71`) {#arpeggiator-swing-factor-cmd0x71-param-0x06}
+### Swing Factor
+
+**Live edit:** `cmd=0x71`, param `0x06`.
 
 **EDIT ARP → Swing Factor**. **`00`** = **Off**; **`01`–`7F`** = swing amount —
 mostly **XX.X %**, with five **16x** shorthand labels (**16B**–**16F**) at sparse
-wire values. LCD map: [Arpeggiator Swing Factor](../parameter-options.md#arpeggiator-swing-factor-lcd).
+wire values. LCD map: [Arpeggiator Swing Factor](../../reference/parameter-options.md#arpeggiator-swing-factor-lcd).
 Full settings modes only — hidden when **Mode** = **Off**, **Down**, or
 **Arp>Matrix**.
 
@@ -164,10 +176,12 @@ F0 00 20 33 01 00 71 00 06 42 F7 # 16D
 F0 00 20 33 01 00 71 00 06 7F F7 # 75.0 %
 ```
 
-### Hold (`0x04`, `cmd=0x71`) {#arpeggiator-hold-cmd0x71-param-0x04}
+### Hold
+
+**Live edit:** `cmd=0x71`, param `0x04`.
 
 **EDIT ARP → Hold**. **`00`** = **Off**,
-**`01`** = **On** — [Arpeggiator Hold](../parameter-options.md#arpeggiator-hold).
+**`01`** = **On** — [Arpeggiator Hold](../../reference/parameter-options.md#arpeggiator-hold).
 Hidden when **Mode** = **Off** or **Arp>Matrix**. On **Down**, the only setting
 besides **Mode**; on full settings modes, last row of the block.
 
@@ -186,37 +200,39 @@ F0 00 20 33 01 00 71 40 04 01 F7 # On
 
 User-pattern programming (**Pattern** = **User**). Settings use **`cmd=0x71`**;
 **loop length** uses **`cmd=0x6E`**; per-step data uses **`cmd=0x6F`** (three
-params per step — [step triplet](../parameter-options.md#arpeggiator-step-triplet)).
+params per step — [step triplet](../../reference/parameter-options.md#arpeggiator-step-triplet)).
 
-The same values live in **`DUMP_SINGLE`** — host editors typically patch the
+The same values live in **Single Dump** — host editors typically patch the
 524-byte single buffer and transmit the whole dump, rather than stepping through
 **32** live-edit messages per field.
 
-### User pattern in `DUMP_SINGLE` {#arpeggiator-user-pattern-dump}
+### User pattern in Single Dump
 
-Correlated from **`-INIT-`** baseline ([`init-multi-arrangement.syx`](../artifacts/sysex/init-multi-arrangement.syx)
+Correlated from **`-INIT-`** baseline ([`init-multi-arrangement.syx`](../../../artifacts/sysex/init-multi-arrangement.syx)
 Part 1, 524-byte single). Dump byte order matches the live-edit triplet
 (**length**, **velocity**, **enable**).
 
 | Field         | Dump offset (step *n*)    | Encoding                                                    |
 | ------------- | ------------------------- | ----------------------------------------------------------- |
 | Loop length   | **`0x189`**               | **`stored = steps − 1`**                                    |
-| Step length   | **`0x18A + (n − 1) × 3`** | same as [Step Length](#arpeggiator-step-length-cmd0x6f)     |
-| Step velocity | **+1** from step base     | same as [Step Velocity](#arpeggiator-step-velocity-cmd0x6f) |
-| Step enable   | **+2** from step base     | same as [Step Enable](#arpeggiator-step-enable-cmd0x6f)     |
+| Step length   | **`0x18A + (n − 1) × 3`** | same as [Step Length](#step-length)     |
+| Step velocity | **+1** from step base     | same as [Step Velocity](#step-velocity) |
+| Step enable   | **+2** from step base     | same as [Step Enable](#step-enable)     |
 
 Step **1** → **`0x18A`…`0x18C`**; step **32** → **`0x1E7`…`0x1E9`**. On
 **`-INIT-`**, loop length = **`0x1F`** (32 steps); each step length =
 **`0x40`** (+0 %), velocity = **`0x64`** (100), enable alternates **`01`** /
 **`00`**.
 
-Worksheet: [Single parameter map](../dumps/single.md#arpeggiator).
+Worksheet: [Single parameter map](../../dumps/single.md#arpeggiator).
 
-### Loop Length (`0x7F`, `cmd=0x6E`) {#arpeggiator-loop-length-cmd0x6e-param-0x7f}
+### Loop Length
+
+**Live edit:** `cmd=0x6E`, param `0x7F`.
 
 User arpeggiator pattern **loop length** — **1**–**32** steps.
 **`stored = steps − 1`** (**`00`–`1F`**). Enum anchors:
-[Arpeggiator Loop Length](../parameter-options.md#arpeggiator-loop-length).
+[Arpeggiator Loop Length](../../reference/parameter-options.md#arpeggiator-loop-length).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
@@ -231,13 +247,15 @@ F0 00 20 33 01 00 6E 00 7F 0F F7 # 16 steps
 F0 00 20 33 01 00 6E 00 7F 1F F7 # 32 steps
 ```
 
-### Step Length (`cmd=0x6F`) {#arpeggiator-step-length-cmd0x6f}
+### Step Length
+
+**Live edit:** `cmd=0x6F`.
 
 User-pattern **step length** — steps **1**–**32**. Param **`(step − 1) × 3`**
 (step **1** → **`00`**, step **32** → **`5D`**). Standard Virus bipolar **%**
 encoding **`stored = ui + 64`** — same family as [Arpeggiator Note
-Length](../parameter-options.md#arpeggiator-note-length-lcd). Map:
-[Arpeggiator Step Length](../parameter-options.md#arpeggiator-step-length).
+Length](../../reference/parameter-options.md#arpeggiator-note-length-lcd). Map:
+[Arpeggiator Step Length](../../reference/parameter-options.md#arpeggiator-step-length).
 
 | Item           | Value                                                    |
 | -------------- | -------------------------------------------------------- |
@@ -252,11 +270,13 @@ F0 00 20 33 01 00 6F 00 5D 40 F7 # Step 32 length +0.0 %
 F0 00 20 33 01 00 6F 00 5D 7F F7 # Step 32 length +100.0 %
 ```
 
-### Step Velocity (`cmd=0x6F`) {#arpeggiator-step-velocity-cmd0x6f}
+### Step Velocity
+
+**Live edit:** `cmd=0x6F`.
 
 User-pattern **step velocity** — steps **1**–**32**. Param
 **`0x01 + (step − 1) × 3`**; **`stored = lcd`** (**`00`–`7F`**). Map:
-[Arpeggiator Step Velocity](../parameter-options.md#arpeggiator-step-velocity).
+[Arpeggiator Step Velocity](../../reference/parameter-options.md#arpeggiator-step-velocity).
 
 | Item           | Value                                            |
 | -------------- | ------------------------------------------------ |
@@ -271,11 +291,13 @@ F0 00 20 33 01 00 6F 00 01 7F F7 # Step 1 velocity 127
 F0 00 20 33 01 00 6F 00 5E 7F F7 # Step 32 velocity 127
 ```
 
-### Step Enable (`cmd=0x6F`) {#arpeggiator-step-enable-cmd0x6f}
+### Step Enable
+
+**Live edit:** `cmd=0x6F`.
 
 User-pattern **step on/off** — steps **1**–**32**. Param
 **`0x02 + (step − 1) × 3`**; **`00`** off, **`01`** on. Map:
-[Arpeggiator Step Enable](../parameter-options.md#arpeggiator-step-enable).
+[Arpeggiator Step Enable](../../reference/parameter-options.md#arpeggiator-step-enable).
 
 | Item           | Value                                            |
 | -------------- | ------------------------------------------------ |

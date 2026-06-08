@@ -3,10 +3,10 @@
 Edit Single — **Filters** (Common, Filter 1/2, Filter/Amp envelopes,
 **Saturation**).
 
-Part of [Live Edit](README.md). Enumerated options:
-[parameter-options.md](../parameter-options.md).
-Dump worksheet: [Single parameter map](../dumps/single.md#single-parameter-map)
-· Multi: [Edit Multi](edit-multi.md).
+Part of [Documentation](../../../README.md#documentation). Enumerated options:
+[parameter-options.md](../../reference/parameter-options.md).
+Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-map)
+· Multi: [Edit Multi](../multis.md).
 
 ```text
 F0 00 20 33 01 00 72 <part> <param> <value> F7 # multi / common (some params)
@@ -24,15 +24,15 @@ different `cmd` bytes.
 envelope**. Filter 1, Filter 2, **Common**, and **Filter 1 ADSR** confirmed on
 TI mk2 desktop; remaining **FILTERS** rows (e.g. modulation, velocity targets) —
 see
-[testing.md — Filters queue](../testing.md#filters--order-filter-1-first).
+[hardware-mapping-workflow — SELECT](../../../.cursor/skills/hardware-mapping-workflow/SKILL.md#select-buttons-section-focus).
 
-### SELECT (`71`/`7A`) {#filters-select}
+### SELECT (`71`/`7A`)
 
 **FILTERS** section — **SELECT** toggles **Filter 1** / **Filter 2** (press
 both together for **Filter 1 + Filter 2**). Also sets which filter the front-
 panel **Resonance** and **Envelope Amount** knobs edit. Live edit **`cmd=0x71`**,
 param **`0x7A`**. Enum:
-[Filters SELECT](../parameter-options.md#filters-select).
+[Filters SELECT](../../reference/parameter-options.md#select-717a).
 
 | Item           | Value                                                         |
 | -------------- | ------------------------------------------------------------- |
@@ -47,14 +47,16 @@ F0 00 20 33 01 00 71 00 7A 02 F7 # 7A/02 — Filter 1 + Filter 2
 ```
 
 **Not** **Not**
-[Pan Spread](#pan-spread-cmd0x6e-param-0x7a) (`6E`/`7A` — same param byte,
+[Pan Spread](#pan-spread-1) (`6E`/`7A` — same param byte,
 different **`cmd`**).
 
-When [Vocoder Mode](../parameter-options.md#vocoder-mode) ≠ **Off**, the
+When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode-1) ≠ **Off**, the
 **FILTERS** section is unavailable — LCD **`Vocoder active. Filters are
 disabled`**.
 
-### Filter 1 Cutoff (`cmd=0x70`, param `0x28`)
+### Filter 1 Cutoff
+
+**Live edit:** `cmd=0x70`, param `0x28`.
 
 **FILTERS → EDIT → Filter 1 → Cutoff**.
 **`0x28`**.
@@ -74,15 +76,17 @@ F0 00 20 33 01 00 70 00 28 7F F7 # Cutoff max (127 on wire)
 LCD may show **128** at the top of the range; highest byte on the wire is
 **`0x7F`**.
 
-### Filter 1 Resonance (`cmd=0x70`, param `0x2A`) {#filter-1-resonance-cmd0x70-param-0x2a}
+### Filter 1 Resonance
+
+**Live edit:** `cmd=0x70`, param `0x2A`.
 
 **FILTERS → EDIT → Filter 1 → Resonance**.
 **`0x2A`**.
 
-When [Vocoder Mode](../parameter-options.md#vocoder-mode) ≠ **Off**, this storage
+When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode-1) ≠ **Off**, this storage
 byte drives **Vocoder → Q-Factor** instead — see
-[Vocoder Q-Factor](effects.md#vocoder-q-factor-cmd0x70-param-0x2a). Panel **TX**
-for **Q-Factor** also emits **`70`/`2B`** ([Filter 2 Resonance](#filter-2-resonance-cmd0x70-param-0x2b));
+[Vocoder Q-Factor](effects.md#vocoder-q-factor). Panel **TX**
+for **Q-Factor** also emits **`70`/`2B`** ([Filter 2 Resonance](#filter-2-resonance));
 that second message does **not** change **Q-Factor**.
 
 | Item           | Value                                       |
@@ -96,7 +100,9 @@ that second message does **not** change **Q-Factor**.
 F0 00 20 33 01 00 70 00 2A 7F F7 # Resonance 127 (landing)
 ```
 
-### Filter 1 Mode (`cmd=0x70`, param `0x33`)
+### Filter 1 Mode
+
+**Live edit:** `cmd=0x70`, param `0x33`.
 
 **FILTERS → EDIT → Filter 1 → Mode** (or **Filter 1 Mode**).
 index **51** = **`0x33`**. Classic 1999: **0** LP, **1** HP, **2** BP, **3** BS.
@@ -133,7 +139,9 @@ F0 00 20 33 01 00 70 00 33 06 F7 # Analog 3 Pole
 F0 00 20 33 01 00 70 00 33 07 F7 # Analog 4 Pole
 ```
 
-### Filter 1 Envelope Amount (`cmd=0x70`, param `0x2C`) {#filter-1-envelope-amount-cmd0x70-param-0x2c}
+### Filter 1 Envelope Amount
+
+**Live edit:** `cmd=0x70`, param `0x2C`.
 
 **FILTERS → EDIT → Filter 1 → Envelope Amount**. Page
 **A**
@@ -158,16 +166,18 @@ F0 00 20 33 01 00 70 00 2C 40 F7 # 50.0 %
 F0 00 20 33 01 00 70 00 2C 7F F7 # 100.0 %
 ```
 
-### Filter 1 Keyfollow (`cmd=0x70`, param `0x2E`) {#filter-1-keyfollow-cmd0x70-param-0x2e}
+### Filter 1 Keyfollow
+
+**Live edit:** `cmd=0x70`, param `0x2E`.
 
 **FILTERS → EDIT → Filter 1 → Keyfollow**.
 **`0x2E`**;
 range **−64..+63** (bipolar).
 
-When [Vocoder Mode](../parameter-options.md#vocoder-mode) ≠ **Off**, this storage
+When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode-1) ≠ **Off**, this storage
 byte drives **Vocoder → Spread** instead — see
-[Vocoder Spread](effects.md#vocoder-spread-cmd0x70-param-0x2e). Panel **TX** for
-**Spread** also emits **`70`/`2F`** ([Filter 2 Keyfollow](#filter-2-keyfollow-cmd0x70-param-0x2f));
+[Vocoder Spread](effects.md#vocoder-spread). Panel **TX** for
+**Spread** also emits **`70`/`2F`** ([Filter 2 Keyfollow](#filter-2-keyfollow));
 that second message does **not** change **Spread**.
 
 | Item           | Value                                             |
@@ -189,11 +199,13 @@ F0 00 20 33 01 00 70 00 2E 40 F7 # +0
 F0 00 20 33 01 00 70 00 2E 7F F7 # +63
 ```
 
-### Filter 1 Envelope Polarity (`cmd=0x71`, param `0x1E`) {#filter-envelope-polarity}
+### Filter 1 Envelope Polarity
+
+**Live edit:** `cmd=0x71`, param `0x1E`.
 
 **FILTERS → EDIT → Filter 1 → Env Polarity** (same control also appears under
 **Filter 2 → Env Polarity** on the panel — see
-[shared menu note](#filter-envelope-polarity-shared)). Page **B** param
+[shared menu note](#filter-1-envelope-polarity-shared-panel-menus)). Page **B** param
 **`0x1E`** (not **`0x70`**).
 
 | Item           | Value                                               |
@@ -215,7 +227,9 @@ F0 00 20 33 01 00 71 40 1E 00 F7 # Negative (Single edit buffer)
 F0 00 20 33 01 00 71 40 1E 01 F7 # Positive (Single edit buffer)
 ```
 
-### Filter 2 Offset (`cmd=0x70`, param `0x29`)
+### Filter 2 Offset
+
+**Live edit:** `cmd=0x70`, param `0x29`.
 
 **FILTERS → EDIT → Filter 2 → Offset** (relative cutoff vs Filter 1). Page
 **A** param **`0x29`**. Bipolar **−64..+63**:
@@ -241,7 +255,9 @@ F0 00 20 33 01 00 70 00 29 40 F7 # +0
 F0 00 20 33 01 00 70 00 29 7F F7 # +63
 ```
 
-### Filter 2 Mode (`cmd=0x70`, param `0x34`)
+### Filter 2 Mode
+
+**Live edit:** `cmd=0x70`, param `0x34`.
 
 **FILTERS → EDIT → Filter 2 → Mode**.
 **`0x34`**.
@@ -261,12 +277,14 @@ F0 00 20 33 01 00 70 00 34 02 F7 # Band Pass
 F0 00 20 33 01 00 70 00 34 03 F7 # Band Stop
 ```
 
-### Filter 2 Resonance (`cmd=0x70`, param `0x2B`) {#filter-2-resonance-cmd0x70-param-0x2b}
+### Filter 2 Resonance
+
+**Live edit:** `cmd=0x70`, param `0x2B`.
 
 **FILTERS → EDIT → Filter 2 → Resonance**.
 **`0x2B`**.
 
-Panel **TX** when adjusting [Vocoder Q-Factor](effects.md#vocoder-q-factor-cmd0x70-param-0x2a)
+Panel **TX** when adjusting [Vocoder Q-Factor](effects.md#vocoder-q-factor)
 includes this message (linked pair with **`70`/`2A`**) — **ignored** while
 Vocoder is active.
 
@@ -287,7 +305,9 @@ F0 00 20 33 01 00 70 00 2B 00 F7 # 0
 F0 00 20 33 01 00 70 00 2B 7F F7 # 127
 ```
 
-### Filter 2 Envelope Amount (`cmd=0x70`, param `0x2D`)
+### Filter 2 Envelope Amount
+
+**Live edit:** `cmd=0x70`, param `0x2D`.
 
 **FILTERS → EDIT → Filter 2 → Envelope Amount**.
 **`0x2D`**.
@@ -311,12 +331,14 @@ F0 00 20 33 01 00 70 00 2D 40 F7 # 50 %
 F0 00 20 33 01 00 70 00 2D 7F F7 # 100 %
 ```
 
-### Filter 2 Keyfollow (`cmd=0x70`, param `0x2F`) {#filter-2-keyfollow-cmd0x70-param-0x2f}
+### Filter 2 Keyfollow
+
+**Live edit:** `cmd=0x70`, param `0x2F`.
 
 **FILTERS → EDIT → Filter 2 → Keyfollow**.
 **`0x2F`**.
 
-Panel **TX** when adjusting [Vocoder Spread](effects.md#vocoder-spread-cmd0x70-param-0x2e)
+Panel **TX** when adjusting [Vocoder Spread](effects.md#vocoder-spread)
 includes this message (linked pair with **`70`/`2E`**) — **ignored** while
 Vocoder is active.
 
@@ -339,11 +361,13 @@ F0 00 20 33 01 00 70 00 2F 40 F7 # +0
 F0 00 20 33 01 00 70 00 2F 7F F7 # +63
 ```
 
-### Filter 2 Envelope Polarity (`cmd=0x71`, param `0x1F`)
+### Filter 2 Envelope Polarity
+
+**Live edit:** `cmd=0x71`, param `0x1F`.
 
 **FILTERS → EDIT → Filter 2 → Env Polarity**. Page **B** param **`0x1F`**
 (separate wire from Filter 1 **`0x1E`** — see
-[shared menu note](#filter-envelope-polarity-shared)).
+[shared menu note](#filter-1-envelope-polarity-shared-panel-menus)).
 
 | Item           | Value                                               |
 | -------------- | --------------------------------------------------- |
@@ -364,11 +388,11 @@ F0 00 20 33 01 00 71 40 1F 00 F7 # Negative (Single edit buffer)
 F0 00 20 33 01 00 71 40 1F 01 F7 # Positive (Single edit buffer)
 ```
 
-### Filter envelope polarity — shared panel menus {#filter-envelope-polarity-shared}
+### Filter envelope polarity — shared panel menus
 
 **Env Polarity** appears on both **Filter 1** and **Filter 2** edit sub-menus.
 Changing it from one menu updates the **LCD readout in both places** (panel
-behaviour). On the wire and in **`DUMP_SINGLE`**, Filter 1 and Filter 2 remain
+behaviour). On the wire and in **Single Dump**, Filter 1 and Filter 2 remain
 **separate**:
 
 | Filter | Live edit | Dump byte   | Values      |
@@ -385,9 +409,9 @@ when editing from either menu may still emit both — capture if needed.
 **LCD:** **FILTERS** → **Common** (after Filter 1 / 2). Confirmed on TI mk2
 desktop unless noted.
 
-### Filter Routing (`cmd=0x70`, param `0x35`)
+### Filter Routing
 
-.
+**Live edit:** `cmd=0x70`, param `0x35`.
 
 | UI (reported) | `<value>` | Confirmed |
 | ------------- | --------- | --------- |
@@ -401,9 +425,11 @@ F0 00 20 33 01 00 70 00 35 00 F7 # Serial 4
 F0 00 20 33 01 00 70 00 35 03 F7 # Split Mode
 ```
 
-### Filter Balance (`cmd=0x70`, param `0x30`)
+### Filter Balance
 
-. Bipolar **−64..+63**:
+**Live edit:** `cmd=0x70`, param `0x30`.
+
+Bipolar **−64..+63**:
 `stored = ui + 64`.
 
 | LCD | `<value>` | Confirmed |
@@ -412,7 +438,9 @@ F0 00 20 33 01 00 70 00 35 03 F7 # Split Mode
 | +0  | `40`      | ✓         |
 | +63 | `7F`      | ✓         |
 
-### Filter Cutoff Link (`cmd=0x71`, param `0x20`) {#filter-cutoff-link-cmd0x71-param-0x20}
+### Filter Cutoff Link
+
+**Live edit:** `cmd=0x71`, param `0x20`.
 
 Page **B** **`0x20`**. Dump offset **`0x0A8`**. Requires **Vocoder Mode** Off
 to reach **FILTERS** on the panel.
@@ -427,7 +455,9 @@ F0 00 20 33 01 00 71 40 20 00 F7 # Off (Single edit buffer)
 F0 00 20 33 01 00 71 40 20 01 F7 # On
 ```
 
-### Filter Key Follow Base (`cmd=0x71`, param `0x21`)
+### Filter Key Follow Base
+
+**Live edit:** `cmd=0x71`, param `0x21`.
 
 Page **B** **`0x21`**. **Semitone index** from **C-1** (`00`) through **G9**
 (`7F`) — chromatic steps, not bipolar offset.
@@ -439,12 +469,14 @@ Page **B** **`0x21`**. **Semitone index** from **C-1** (`00`) through **G9**
 | C4  | `3C`      | ✓         |
 | G9  | `7F`      | ✓         |
 
-### Pan Spread (`cmd=0x6E`, param `0x7A`)
+### Pan Spread
+
+**Live edit:** `cmd=0x6E`, param `0x7A`.
 
 TI control. **Only on the panel when
-[Filter Routing](#filter-routing-cmd0x70-param-0x35) = Split Mode.** Direct
+[Filter Routing](#filter-routing) = Split Mode.** Direct
 **0–127**. Same param ID **`0x7A`** as
-[Filters SELECT](#filters-select)
+[Filters SELECT](#select-717a)
 (`71`/`7A`) but **different `cmd`** — always check the command byte.
 
 | UI  | `<value>` | Confirmed |
@@ -457,7 +489,9 @@ F0 00 20 33 01 00 6E 00 7A 00 F7 # 0
 F0 00 20 33 01 00 6E 00 7A 7F F7 # 127
 ```
 
-### Saturation — Osc Volume (`cmd=0x70`, param `0x24`) {#saturation--osc-volume-cmd0x70-param-0x24}
+### Saturation — Osc Volume
+
+**Live edit:** `cmd=0x70`, param `0x24`.
 
 **FILTERS → Saturation** (sub-menu; also a dedicated front-panel knob). Page
 **A** param **`0x24`**. Bipolar **−64..+63**:
@@ -471,18 +505,20 @@ F0 00 20 33 01 00 6E 00 7A 7F F7 # 127
 
 **Also:**
 [Oscillator Section
-Volume](oscillators.md#oscillator-section-volume-cmd0x71-param-0x7f)
+Volume](oscillators.md#oscillator-section-volume)
 from **Oscillators → Mixer** uses **`71` / `7F`** (different message). Oscillator
-page **SELECT**: [SELECT (`71`/`7F`)](oscillators.md#oscillators-select).
+page **SELECT**: [SELECT (`71`/`7F`)](oscillators.md#select-717f).
 
-## Filter 1 envelope (ADSR) {#filter-1-envelope-adsr}
+## Filter 1 envelope (ADSR)
 
 **LCD:** **FILTERS** → **Filter Envelope** — ADSR for **Filter 1** (distinct
 from **Filter 1 → Envelope Amount** `0x2C` on the Filter 1 edit page). Params
 **`0x36`–`0x3A`**. All use **`cmd=0x70`**, scope
 **`0x00`** (Part 1).
 
-### Attack (`0x36`) / Decay (`0x37`) / Release (`0x3A`)
+### Attack (`0x36`) / Decay (`0x37`) / Release
+
+**Live edit:** param `0x3A`.
 
 Direct **0–127** (UI matches wire).
 
@@ -492,7 +528,9 @@ Direct **0–127** (UI matches wire).
 | Decay   | `37`  | `00` | `7F`   |
 | Release | `3A`  | `00` | `7F`   |
 
-### Sustain (`0x38`)
+### Sustain
+
+**Live edit:** param `0x38`.
 
 **Linear percent:** `stored = round(percent × 127 / 100)`.
 
@@ -502,7 +540,9 @@ Direct **0–127** (UI matches wire).
 | 50.0 %  | `40`      |
 | 100.0 % | `7F`      |
 
-### Sustain Slope (`0x39`)
+### Sustain Slope
+
+**Live edit:** param `0x39`.
 
 Bipolar **−64..+63**: `stored = ui + 64`.
 
@@ -520,14 +560,16 @@ F0 00 20 33 01 00 70 00 39 40 F7 # Sustain Slope +0
 F0 00 20 33 01 00 70 00 3A 7F F7 # Release 127
 ```
 
-## Amplifier envelope (ADSR) {#amplifier-envelope-adsr}
+## Amplifier envelope (ADSR)
 
 **LCD:** **Amp Envelope** (Single Edit).
 **`0x3B`–`0x3F`**. Same encodings as [Filter 1
 envelope](#filter-1-envelope-adsr).
 **`cmd=0x70`**, scope **`0x00`** (Part 1).
 
-### Attack (`0x3B`) / Decay (`0x3C`) / Release (`0x3F`)
+### Attack (`0x3B`) / Decay (`0x3C`) / Release
+
+**Live edit:** param `0x3F`.
 
 Direct **0–127**.
 
@@ -537,7 +579,9 @@ Direct **0–127**.
 | Decay   | `3C`  | `00` | `7F`   |
 | Release | `3F`  | `00` | `7F`   |
 
-### Sustain (`0x3D`)
+### Sustain
+
+**Live edit:** param `0x3D`.
 
 **Linear percent:** `stored = round(percent × 127 / 100)`.
 
@@ -547,7 +591,9 @@ Direct **0–127**.
 | 50.0 %  | `40`      |
 | 100.0 % | `7F`      |
 
-### Sustain Slope (`0x3E`)
+### Sustain Slope
+
+**Live edit:** param `0x3E`.
 
 Bipolar **−64..+63**: `stored = ui + 64`.
 

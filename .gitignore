@@ -1,4 +1,4 @@
 # Local MIDI capture scratch — agents/humans write here during mapping work.
 # Not committed; conclusions belong in docs/.
-artifacts/captures/*
-!artifacts/captures/.gitkeep
+artifacts/*
+!artifacts/.gitkeep

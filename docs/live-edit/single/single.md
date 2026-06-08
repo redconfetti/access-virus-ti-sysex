@@ -3,10 +3,10 @@
 Edit Single — **Common**, **Unison**, **Envelope 3/4**, **Velocity Map**, **Soft
 Knobs**, and related patch settings.
 
-Part of [Live Edit](README.md). Enumerated options:
-[parameter-options.md](../parameter-options.md).
-Dump worksheet: [Single parameter map](../dumps/single.md#single-parameter-map)
-· Multi: [Edit Multi](edit-multi.md).
+Part of [Documentation](../../../README.md#documentation). Enumerated options:
+[parameter-options.md](../../reference/parameter-options.md).
+Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-map)
+· Multi: [Edit Multi](../multis.md).
 
 ```text
 F0 00 20 33 01 00 72 <part> <param> <value> F7 # multi / common (some params)
@@ -22,11 +22,13 @@ different `cmd` bytes.
 ## Common (Edit Single)
 
 Per-part **Common** page settings (Edit Single). Pitch-bender and smooth-mode
-bytes **are** stored in **`DUMP_SINGLE`** (hardware-verified on `-INIT-`,
-`<part>=0x40`); they are **not** in per-part **`DUMP_MULTI`** slices — see
-[edit-multi.md](edit-multi.md).
+bytes **are** stored in **Single Dump** (hardware-verified on `-INIT-`,
+`<part>=0x40`); they are **not** in per-part **Multi Dump** slices — see
+[multis.md](../multis.md).
 
-### Transpose / Patch Transpose (`0x5D`, `cmd=0x70` / CC 93)
+### Transpose / Patch Transpose
+
+**Live edit:** `cmd=0x70`, param `0x5D` (CC 93).
 
 Edit Single → Common → **Transpose** (same as **Patch Transpose**). Page A param
 **`0x5D`** (decimal **93** = CC number). **−64..+63** → `stored = ui + 64`.
@@ -39,8 +41,7 @@ Dump offset **`0x065`** (`30 00 40` / `<part>=0x40`).
 | +63 | `7F`      | ✓         |
 
 With **Page A = Controller Data**, the panel sends **CC 93** instead of SysEx.
-Distinct from Edit Multi **Transpose** (`72` / `0x25`, dump `0x79 + part`). See
-[control-change.md — Patch Transpose](control-change.md#patch-transpose-cc-93).
+Distinct from Edit Multi **Transpose** (`72` / `0x25`, dump `0x79 + part`).
 
 ```text
 F0 00 20 33 01 00 70 00 5D 00 F7 # Transpose −64
@@ -48,7 +49,9 @@ F0 00 20 33 01 00 70 00 5D 40 F7 # Transpose +0
 F0 00 20 33 01 00 70 00 5D 7F F7 # Transpose +63
 ```
 
-### Key Mode (`0x5E`, `cmd=0x70` / CC 94)
+### Key Mode
+
+**Live edit:** `cmd=0x70`, param `0x5E` (CC 94).
 
 **Key Mode** (Page A param **94** / `0x5E`). Virus panel: **Oscillators** →
 **EDIT** → Common → **Key Mode**; also a **MONO** shortcut on the
@@ -65,8 +68,7 @@ oscillator section (see below). Dump offset **`0x066`**.
 
 Scope byte is the edited **part** (`00` for Part 1 in captures). Global
 **MIDI Controller Page A** = **Controller Data** → **CC 94** on the part
-channel instead; **SysEx** → **`cmd=0x70`** as above. See
-[control-change.md — Key Mode](control-change.md#key-mode-cc-94).
+channel instead; **SysEx** → **`cmd=0x70`** as above.
 
 **MONO button (hardware shortcut)**
 
@@ -81,7 +83,9 @@ by **`70/5E 00`** (Poly), and MONO on restored **`70/5E 04`**. Treat
 **`6E` / `0x7A`** here as companion shortcut state for the remembered mono
 mode; the actual Key Mode value is still **`70` / `0x5E`**.
 
-### Phase Init (`0x23`, `cmd=0x71`) {#phase-init-0x23-cmd0x71}
+### Phase Init
+
+**Live edit:** `cmd=0x71`, param `0x23`.
 
 **Oscillators → EDIT → Common → Phase Init**. Page B parameter **`0x23`**.
 Panel **Off**, then **1..127**.
@@ -98,7 +102,9 @@ F0 00 20 33 01 00 71 00 23 01 F7 # Phase Init 1
 F0 00 20 33 01 00 71 00 23 7F F7 # Phase Init 127
 ```
 
-### Portamento (`0x05`, `cmd=0x70` / CC 5)
+### Portamento
+
+**Live edit:** `cmd=0x70`, param `0x05` (CC 5).
 
 **Oscillators → EDIT → Common → Portamento**. Page A param **`0x05`**. Panel **Off**, then **1..127**; wire matches the
 numeric value (**not** a percent curve).
@@ -120,10 +126,12 @@ F0 00 20 33 01 00 70 00 05 01 F7 # Portamento 1
 F0 00 20 33 01 00 70 00 05 7F F7 # Portamento 127
 ```
 
-### Punch Intensity (`0x24`, `cmd=0x71`)
+### Punch Intensity
+
+**Live edit:** `cmd=0x71`, param `0x24`.
 
 **Oscillators → Punch → Punch Intensity**. Page B param **`0x24`**. Panel **0.0..100.0 %** — **not** the same byte as
-[Osc Volume](#osc-volume-0x24-cmd0x70) (`cmd=0x70`).
+[Osc Volume](#osc-volume) (`cmd=0x70`).
 
 ```text
 for 00h..7Eh: pct = stored × 100 / 128
@@ -154,10 +162,12 @@ F0 00 20 33 01 00 71 00 24 40 F7 # Punch 50.0 %
 F0 00 20 33 01 00 71 00 24 7F F7 # Punch 100.0 %
 ```
 
-### Osc Volume (`0x24`, `cmd=0x70`) {#osc-volume-0x24-cmd0x70}
+### Osc Volume
+
+**Live edit:** `cmd=0x70`, param `0x24`.
 
 **Oscillators → EDIT → Common → Osc Volume**. Same parameter as
-[Saturation — Osc Volume](filters.md#saturation--osc-volume-cmd0x70-param-0x24):
+[Saturation — Osc Volume](filters.md#saturation-osc-volume):
 panel **−64..+63**, wire **`stored = ui + 64`**.
 
 | LCD | `<value>` | Confirmed |
@@ -172,12 +182,14 @@ F0 00 20 33 01 00 70 00 24 40 F7 # Osc Volume 0
 F0 00 20 33 01 00 70 00 24 7F F7 # Osc Volume +63
 ```
 
-### Smooth Mode (`0x19`, `cmd=0x71`)
+### Smooth Mode
+
+**Live edit:** `cmd=0x71`, param `0x19`.
 
 Edit Single → Common → **Smooth Mode** (Page B **#25** *Control Smooth Mode*).
 **`stored = index`** — full list in
 [Control Smooth Mode / clock
-quantize](../parameter-options.md#control-smooth-mode--clock-quantize).
+quantize](../../reference/parameter-options.md#control-smooth-mode--clock-quantize).
 Dump offset **`0x0A1`**.
 
 ```text
@@ -189,10 +201,12 @@ F0 00 20 33 01 00 71 00 19 14 F7 # Quantise 1/1
 Some hosts cannot send **Off** (`00`). Do not confuse with global **All EQs**
 (`73` / `0x19`).
 
-### Bend Down (`0x1B`, `cmd=0x71`)
+### Bend Down
+
+**Live edit:** `cmd=0x71`, param `0x1B`.
 
 Edit Single → Common → **Bend Down** (Page B **#27**). **−64..+63** →
-`stored = ui + 64`. Dump offset **`0x0A3`** (not in **`DUMP_MULTI`**).
+`stored = ui + 64`. Dump offset **`0x0A3`** (not in **Multi Dump**).
 
 | UI  | `<value>` | Confirmed |
 | --- | --------- | --------- |
@@ -206,7 +220,9 @@ F0 00 20 33 01 00 71 00 1B 40 F7 # Bend Down +0
 F0 00 20 33 01 00 71 00 1B 7F F7 # Bend Down +63
 ```
 
-### Bend Up (`0x1A`, `cmd=0x71`)
+### Bend Up
+
+**Live edit:** `cmd=0x71`, param `0x1A`.
 
 Edit Single → Common → **Bend Up** (Page B **#26**). Same encoding as Bend Down.
 Dump offset **`0x0A2`**.
@@ -223,13 +239,15 @@ F0 00 20 33 01 00 71 00 1A 40 F7 # Bend Up +0
 F0 00 20 33 01 00 71 00 1A 7F F7 # Bend Up +63
 ```
 
-Also documented for Edit Multi: [edit-multi.md — Bend Up / Bend
-Down](edit-multi.md#bend-up-0x1a-cmd0x71).
+Also documented for Edit Multi: [multis.md — Bend Up / Bend
+Down](../multis.md#bend-up).
 
-### Bender Scale (`0x1C`, `cmd=0x71`)
+### Bender Scale
+
+**Live edit:** `cmd=0x71`, param `0x1C`.
 
 Edit Single → Common → **Bender Scale** (Page B **#28**). **`stored = index`** —
-see [Bender Scale](../parameter-options.md#bender-scale). Dump offset **`0x0A4`**.
+see [Bender Scale](../../reference/parameter-options.md#bender-scale-1). Dump offset **`0x0A4`**.
 
 | Mode        | `<value>` | Confirmed |
 | ----------- | --------- | --------- |
@@ -241,17 +259,19 @@ F0 00 20 33 01 00 71 00 1C 00 F7 # Linear
 F0 00 20 33 01 00 71 00 1C 01 F7 # Exponential
 ```
 
-### Multi Tempo / Master Clock (`0x0F`, `cmd=0x72`)
+### Multi Tempo / Master Clock
+
+**Live edit:** `cmd=0x72`, param `0x0F`.
 
 **Edit Single → Common → Multi Tempo** (panel **Master Clock** for the loaded
 Multi). Same live edit as [Master Clock
-Tempo](edit-multi.md#master-clock-tempo-0x0f)
+Tempo](../multis.md#master-clock-tempo)
 in Edit Multi — global, not per-part.
 
 | BPM | `<value>` | Confirmed                      |
 | --- | --------- | ------------------------------ |
 | 63  | `00`      | ✓                              |
-| 120 | `39`      | (INIT default in `DUMP_MULTI`) |
+| 120 | `39`      | (INIT default in Multi Dump) |
 | 190 | `7F`      | ✓                              |
 
 ```text
@@ -264,10 +284,12 @@ F0 00 20 33 01 00 72 00 0F 39 F7 # Multi Tempo 120 bpm
 F0 00 20 33 01 00 72 00 0F 7F F7 # Multi Tempo 190 bpm
 ```
 
-Dump offset in **`DUMP_MULTI`**: **`0x18`** (`stored` same; follows name at
+Dump offset in **Multi Dump**: **`0x18`** (`stored` same; follows name at
 `0x0D`–`0x16` and null at `0x17`).
 
-### Patch Volume (`0x5B`, `cmd=0x70` / CC 91)
+### Patch Volume
+
+**Live edit:** `cmd=0x70`, param `0x5B` (CC 91).
 
 **Edit Single → Common → Patch Volume**. Page A param **`0x5B`** (decimal **91**
 = CC number). Panel **0..127**; wire matches LCD (**not** a percent curve).
@@ -283,7 +305,6 @@ stored = lcd # 0..127
 ```
 
 With **Page A = Controller Data**, the panel sends **CC 91** instead of SysEx.
-See [control-change.md — Patch Volume](control-change.md#patch-volume-cc-91).
 Distinct from Multi **Part Level** (`0x99 + part` / live `0x27`).
 
 ```text
@@ -291,7 +312,9 @@ F0 00 20 33 01 00 70 00 5B 00 F7 # Patch Volume 0
 F0 00 20 33 01 00 70 00 5B 7F F7 # Patch Volume 127
 ```
 
-### Panorama (`0x0A`, `cmd=0x70` / CC 10)
+### Panorama
+
+**Live edit:** `cmd=0x70`, param `0x0A` (CC 10).
 
 **Edit Single → Common → Panorama**. Page A param **`0x0A`** (decimal **10** =
 CC number). Bipolar pan **−64..+63** (panel **L< 100.0 %** … **100.0 % >R**):
@@ -304,7 +327,7 @@ CC number). Bipolar pan **−64..+63** (panel **L< 100.0 %** … **100.0 % >R**)
 | 100.0 % >R     | `7F`      | ✓         |
 
 Full **wire → LCD** table (**`00`–`7F`**, hardware-confirmed): [Panorama
-LCD](../parameter-options.md#edit-single--panorama-lcd).
+LCD](../../reference/parameter-options.md#edit-single--panorama-lcd).
 Right **`41`–`7E`** mirrors left **`0x80 − R`** (`L<` → `% >R`); endpoints
 **`00`** /
 **`7F`** = **100.0 %**.
@@ -337,11 +360,13 @@ Stacks **extra detuned copies** of the whole oscillator section for the patch
 **`<part>`:** Multi Part *n* → **`0x00`–`0x0F`**; Single edit buffer →
 **`0x40`**.
 
-**`DUMP_SINGLE` offsets** (Single edit buffer, hardware-verified):
+**Single Dump offsets** (Single edit buffer, hardware-verified):
 **`0x201`** Voices · **`0x202`** Detune · **`0x203`** Pan Spread ·
 **`0x204`** LFO Phase.
 
-### Voices (`0x78`, `cmd=0x6F`)
+### Voices
+
+**Live edit:** `cmd=0x6F`, param `0x78`.
 
 Panel **Voices**.
 
@@ -366,7 +391,9 @@ F0 00 20 33 01 00 6F 40 78 07 F7 # Voices 8 (Single edit buffer)
 When **Voices** is **Twin** (`01`) or higher, **Detune** appears on the panel.
 When **Off**, **Detune** is hidden (wire value may still be stored).
 
-### Detune (`0x79`, `cmd=0x6F`)
+### Detune
+
+**Live edit:** `cmd=0x6F`, param `0x79`.
 
 **0..127** → `stored = lcd`. Panel visible only when **Voices** ≥ **Twin**.
 
@@ -381,7 +408,9 @@ F0 00 20 33 01 00 6F 40 79 00 F7 # Detune 0 (Single edit buffer)
 F0 00 20 33 01 00 6F 40 79 7F F7 # Detune 127 (Single edit buffer)
 ```
 
-### Pan Spread (`0x7A`, `cmd=0x6F`)
+### Pan Spread
+
+**Live edit:** `cmd=0x6F`, param `0x7A`.
 
 Panel **0.0..100.0 %** — always visible (even when **Voices** = **Off**).
 
@@ -398,7 +427,9 @@ F0 00 20 33 01 00 6F 40 7A 7F F7 # Pan Spread 100.0 % (Single edit buffer)
 
 **Not** Filter Common **Pan Spread** (`6E`/`7A` under Split routing).
 
-### LFO Phase Offset (`0x7B`, `cmd=0x6F`)
+### LFO Phase Offset
+
+**Live edit:** `cmd=0x6F`, param `0x7B`.
 
 Panel **Unison LFO Phase**. **−64..+63** → `stored = ui + 64`.
 
@@ -429,7 +460,9 @@ but on the **part edit buffer** — **`cmd=0x6E`**, not **`cmd=0x70`**.
 | Sustain Slope | `6E`  | `53`    | **−64..+63** → `stored = ui + 64`           | ✓         |
 | Release       | `6E`  | `54`    | **0..127** → `stored = lcd`                 | ✓         |
 
-### Attack (`0x50`) / Decay (`0x51`) / Release (`0x54`)
+### Attack (`0x50`) / Decay (`0x51`) / Release
+
+**Live edit:** param `0x54`.
 
 Direct **0–127** (UI matches wire).
 
@@ -442,7 +475,9 @@ F0 00 20 33 01 00 6E 00 54 00 F7 # Release 0
 F0 00 20 33 01 00 6E 00 54 7F F7 # Release 127
 ```
 
-### Sustain (`0x52`)
+### Sustain
+
+**Live edit:** param `0x52`.
 
 **Linear percent:** `stored = round(percent × 127 / 100)`.
 
@@ -452,7 +487,9 @@ F0 00 20 33 01 00 6E 00 54 7F F7 # Release 127
 | 50.0 %  | `40`      |
 | 100.0 % | `7F`      |
 
-### Sustain Slope (`0x53`)
+### Sustain Slope
+
+**Live edit:** param `0x53`.
 
 Bipolar **−64..+63**: `stored = ui + 64`.
 
@@ -484,7 +521,9 @@ layout as [Envelope 3](#envelope-3-adsr), next param block **`0x55`–`0x59`**.
 | Sustain Slope | `6E`  | `58`    | **−64..+63** → `stored = ui + 64`           | ✓         |
 | Release       | `6E`  | `59`    | **0..127** → `stored = lcd`                 | ✓         |
 
-### Attack (`0x55`) / Decay (`0x56`) / Release (`0x59`)
+### Attack (`0x55`) / Decay (`0x56`) / Release
+
+**Live edit:** param `0x59`.
 
 Direct **0–127** (UI matches wire).
 
@@ -497,7 +536,9 @@ F0 00 20 33 01 00 6E 00 59 00 F7 # Release 0
 F0 00 20 33 01 00 6E 00 59 7F F7 # Release 127
 ```
 
-### Sustain (`0x57`)
+### Sustain
+
+**Live edit:** param `0x57`.
 
 **Linear percent:** `stored = round(percent × 127 / 100)`.
 
@@ -507,7 +548,9 @@ F0 00 20 33 01 00 6E 00 59 7F F7 # Release 127
 | 50.0 %  | `40`      |
 | 100.0 % | `7F`      |
 
-### Sustain Slope (`0x58`)
+### Sustain Slope
+
+**Live edit:** param `0x58`.
 
 Bipolar **−64..+63**: `stored = ui + 64`.
 
@@ -527,7 +570,7 @@ F0 00 20 33 01 00 6E 00 58 7F F7 # Sustain Slope +63
 ```
 
 **Note:** **`cmd=0x6F`** **`7C`/`7D`/`7E`** are **Inputs** (see
-[Inputs](edit-config.md#inputs-edit-single)). Other **`6F`** params (e.g.
+[Inputs](../global.md#inputs-edit-single)). Other **`6F`** params (e.g.
 **`78`/`79`/`7A`**)
 appear in some captures but are **unconfirmed** for Envelope 4 — the
 **`6E` `55`–`59`** block matches full ADSR sweeps on hardware.
@@ -592,15 +635,17 @@ bus (rear/surround send in a multi-output setup — separate from the main
 mode use **`<part>=0x40`** (Single edit buffer — same scope as other Single
 sound edits). Enum:
 [Secondary output
-routing](../parameter-options.md#secondary-output-routing).
-**Output** is **not in `DUMP_SINGLE`** (hardware-tested: `73`/`2D` does not
+routing](../../reference/parameter-options.md#secondary-output-routing).
+**Output** is **not in Single Dump** (hardware-tested: `73`/`2D` does not
 change the `30 00 40` payload). **Balance** **is** in the dump at **`0x0C2`**
 (`71`/`3A`).
 
-### Output (`0x2D`, `cmd=0x73`)
+### Output
+
+**Live edit:** `cmd=0x73`, param `0x2D`.
 
 Enum: [Secondary output
-routing](../parameter-options.md#secondary-output-routing)
+routing](../../reference/parameter-options.md#secondary-output-routing)
 (**Off** … **Out 3 R** = `00`–`09`; USB through `12`).
 
 ```text
@@ -612,7 +657,9 @@ F0 00 20 33 01 00 73 40 2D 09 F7 # Out 3 R
 Edit Multi per-part captures use **`73 00 2D`** (Part 1 scope). Values are
 the same enum.
 
-### Balance (`0x3A`, `cmd=0x71`)
+### Balance
+
+**Live edit:** `cmd=0x71`, param `0x3A`.
 
 **Surround → Balance** (rear/surround channel placement). Bipolar
 **−64..+63**: `stored = ui + 64` (same family as Filter Keyfollow).
@@ -645,7 +692,7 @@ also works). Dump **`0x103`** (Cat 1) / **`0x104`** (Cat 2).
 | Name Cat 2 | `7C`    | ✓         |
 
 Both use [Patch name
-categories](../parameter-options.md#patch-name-categories)
+categories](../../reference/parameter-options.md#patch-name-categories)
 (**Off** … **Favourites 3**, `00`–`16`).
 
 ```text
@@ -664,10 +711,10 @@ destination** parameter in real time.
 Dump offsets (hardware-verified, `-INIT-`, `<part>=0x40`):
 **Function As…** **`0x0C6`** / **`0x0C7`** / **`0x0C8`**; **Name**
 **`0x0BB`** / **`0x0BC`** / **`0x0BD`**. Knob 3 **Function As…** shares
-**`0x0C8`** with [Mod Matrix slot 1 Source](../modulation-matrix.md) (`71`/`40`).
+**`0x0C8`** with [Mod Matrix slot 1 Source](mod-matrix.md) (`71`/`40`).
 
 **Function As…** uses a **destination wire byte** (see
-[Soft Knob Destinations](../parameter-options.md#soft-knob-destinations)).
+[Soft Knob Destinations](../../reference/parameter-options.md#soft-knob-destinations)).
 The **value** SysEx slot is usually a **different `param`** on **`cmd=0x71`**
 (see [soft-knob runtime example](#soft-knob-runtime-distortion-intensity) when
 **Function As…** = Distortion Intensity; full **EFFECTS → Distortion** mapping
@@ -688,8 +735,8 @@ above knob 1; sweeping the knob sends **`71`/`65`** (**0 %** → `00`,
 
 | Control          | `cmd` | `param` | Notes                                                                                                                                     |
 | ---------------- | ----- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Function As…** | `71`  | `3E`    | Wire byte per [Soft Knob Destinations](../parameter-options.md#soft-knob-destinations) (not list index); e.g. Distortion Intensity → `57` |
-| **Name**         | `71`  | `33`    | Wire byte per [Soft Knob Names](../parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off          |
+| **Function As…** | `71`  | `3E`    | Wire byte per [Soft Knob Destinations](../../reference/parameter-options.md#soft-knob-destinations) (not list index); e.g. Distortion Intensity → `57` |
+| **Name**         | `71`  | `33`    | Wire byte per [Soft Knob Names](../../reference/parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off          |
 | *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (≠ Function As wire); example → [`65`](#soft-knob-runtime-distortion-intensity)                |
 
 ```text
@@ -712,7 +759,7 @@ F0 00 20 33 01 00 71 00 33 57 F7 # Name Speaker (wire 57)
 | Control          | `cmd` | `param` | Notes                                                                                                                            |
 | ---------------- | ----- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | **Function As…** | `71`  | `3F`    | Same destination list as Knob 1                                                                                                  |
-| **Name**         | `71`  | `34`    | Wire byte per [Soft Knob Names](../parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| **Name**         | `71`  | `34`    | Wire byte per [Soft Knob Names](../../reference/parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
 | *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination)                                                                     |
 
 ```text
@@ -728,7 +775,7 @@ F0 00 20 33 01 00 71 00 34 47 F7 # Name Width
 | Control          | `cmd` | `param` | Notes                                                                                                                            |
 | ---------------- | ----- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | **Function As…** | `71`  | `40`    | Same destination list as Knob 1                                                                                                  |
-| **Name**         | `71`  | `35`    | Wire byte per [Soft Knob Names](../parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| **Name**         | `71`  | `35`    | Wire byte per [Soft Knob Names](../../reference/parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
 | *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination)                                                                     |
 
 ```text
@@ -738,16 +785,16 @@ F0 00 20 33 01 00 71 00 35 00 F7 # Name >Para
 F0 00 20 33 01 00 71 00 35 47 F7 # Name Width
 ```
 
-### Soft-knob runtime: Distortion Intensity {#soft-knob-runtime-distortion-intensity}
+### Soft-knob runtime: Distortion Intensity
 
 Captured via **Soft Knob 1** sweep — same value param as
 [EDIT FX → Distortion →
-Intensity](effects.md#distortion-intensity-cmd0x71-param-0x65)
+Intensity](effects.md#distortion-intensity)
 (**`71`/`65`**). **Type** is
-[`71`/`64`](effects.md#distortion-type-cmd0x71-param-0x64).
+[`71`/`64`](effects.md#distortion-type-1).
 
 When **Function As…** =
-[Distortion Intensity](../parameter-options.md#soft-knob-destinations)
+[Distortion Intensity](../../reference/parameter-options.md#soft-knob-destinations)
 (wire
 **`57`** on `71`/`3E`/`3F`/`40`), the knob sends **`71`/`65`**:
 

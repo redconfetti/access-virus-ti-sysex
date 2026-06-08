@@ -1,9 +1,9 @@
 ---
 name: documentation-standards
 description: >-
- Documents Access Virus TI SysEx in this repo: parameter-options.md for enums,
+ Documents Access Virus TI SysEx in this repo: reference/parameter-options.md for enums,
  live-edit by panel section, SysEx examples per parameter. Use when adding or
- editing docs/single-live-edit, docs/dumps, or parameter option tables.
+ editing docs/live-edit, docs/dumps, or parameter option tables.
 disable-model-invocation: true
 ---
 
@@ -15,14 +15,14 @@ Apply when writing or restructuring documentation in this repository.
 
 | File / area                                                  | Role                                                                          |
 | ------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| [docs/parameter-options.md](../../docs/parameter-options.md) | **All** option/value lookup tables (enums, panel visibility, LCD curves)      |
-| [docs/live-edit/](../../docs/live-edit/README.md)            | Live SysEx per **panel section** — `cmd` / `param` / encoding + **examples**  |
-| [docs/dumps/](../../docs/dumps/README.md)                    | `DUMP_SINGLE` / `DUMP_MULTI` layout and parameter **inventory** (offsets TBD) |
-| [docs/setup.md](../../docs/setup.md)                         | Tools, ports, first `sendmidi` message                                        |
+| [docs/reference/parameter-options.md](../../docs/reference/parameter-options.md) | **All** option/value lookup tables (enums, panel visibility, LCD curves)      |
+| [Documentation](../../README.md#documentation)            | Live SysEx per **panel section** — `cmd` / `param` / encoding + **examples**  |
+| [Documentation](../../README.md#documentation)                    | Single Dump / Multi Dump layout and parameter **inventory** (offsets TBD) |
+| [README.md](../../README.md)                         | Tools, ports, first `sendmidi` message                                        |
 | [docs/getting-started.md](../../docs/getting-started.md)     | SysEx primer (`cmd`, requests vs live edit)                                   |
 
 **Do not** put enum option tables in live-edit files — link to
-`parameter-options.md#anchor` instead.
+`reference/parameter-options.md#anchor` instead.
 
 ## Virus TI logical sections
 
@@ -30,18 +30,18 @@ Organize live-edit and dump inventory rows to match the synth’s menus:
 
 | Section                                                       | Live-edit doc                                         | Dump inventory (`single.md`)                                       |
 | ------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------ |
-| **Config**                                                    | [edit-config.md](../../docs/live-edit/edit-config.md) | Global / Patch Utility — Config                                    |
-| **Single** (Common, Soft Knobs, Unison, Env 3/4, Velocity, …) | [edit-single.md](../../docs/live-edit/edit-single.md) | Common, Soft Knobs, …                                              |
-| **Multi**                                                     | [edit-multi.md](../../docs/live-edit/edit-multi.md)   | (multi map in [arrangements.md](../../docs/dumps/arrangements.md)) |
-| **Oscillators**                                               | [oscillators.md](../../docs/live-edit/oscillators.md) | Oscillators                                                        |
-| **Filters**                                                   | [filters.md](../../docs/live-edit/filters.md)         | Filters, Amplifier                                                 |
-| **Effects**                                                   | [effects.md](../../docs/live-edit/effects.md)         | FX 1 / FX 2                                                        |
-| **Modulators**                                                | [modulators.md](../../docs/live-edit/modulators.md)   | LFO                                                                |
-| **Matrix**                                                    | *TBD*                                                 | Modulation Matrix                                                  |
-| **Arpeggiator**                                               | [arpeggiator.md](../../docs/live-edit/arpeggiator.md) | Arpeggiator                                                        |
+| **Config**                                                    | [global.md](../../docs/live-edit/global.md) | Global / Patch Utility — Config                                    |
+| **Single** (Common, Soft Knobs, Unison, Env 3/4, Velocity, …) | [single.md](../../docs/live-edit/single/single.md) | Common, Soft Knobs, …                                              |
+| **Multi**                                                     | [multis.md](../../docs/live-edit/multis.md)   | (multi map in [multi.md](../../docs/dumps/multi.md)) |
+| **Oscillators**                                               | [oscillators.md](../../docs/live-edit/single/oscillators.md) | Oscillators                                                        |
+| **Filters**                                                   | [filters.md](../../docs/live-edit/single/filters.md)         | Filters, Amplifier                                                 |
+| **Effects**                                                   | [effects.md](../../docs/live-edit/single/effects.md)         | FX 1 / FX 2                                                        |
+| **Modulators**                                                | [modulators.md](../../docs/live-edit/single/modulators.md)   | LFO                                                                |
+| **Matrix**                                                    | [mod-matrix.md](../../docs/live-edit/single/mod-matrix.md)   | Modulation Matrix                                                  |
+| **Arpeggiator**                                               | [arpeggiator.md](../../docs/live-edit/single/arpeggiator.md) | Arpeggiator                                                        |
 
 Add new parameters under the correct section file — do not append unrelated
-blocks to `effects.md` or `edit-single.md`.
+blocks to `effects.md` or `single.md`.
 
 ## Every parameter section must include
 
@@ -51,7 +51,7 @@ blocks to `effects.md` or `edit-single.md`.
  in docs for readability; note `sendmidi` omits them). See template below.
 4. **Confirmed** — Hardware TX / panel / capture when known; otherwise mark
  **TBD**.
-5. **Enums** — link to [parameter-options.md](../../docs/parameter-options.md);
+5. **Enums** — link to [parameter-options.md](../../docs/reference/parameter-options.md);
  table lives there, not duplicated.
 
 Example SysEx block (Distortion Mix):
@@ -65,7 +65,9 @@ F0 00 20 33 01 00 6E 00 48 7F F7 # 100.0 %
 ### Parameter block template
 
 ```markdown
-### Control name (`cmd=0x..`, param `0x..`) {#anchor-id}
+### Control name
+
+**Live edit:** `cmd=0x..`, param `0x..`.
 
 **Panel → Submenu → Control**. One-line encoding summary.
 
@@ -80,13 +82,15 @@ F0 00 20 33 01 00 … F7 # comment
 \`\`\`
 ```
 
-Use explicit `{#anchor-id}` when cross-linked from other files.
+Use clean heading text only (no `{#…}` custom anchors, no `cmd`/param in the
+title). Wire bytes live on the **Live edit:** line under the heading. Duplicate
+titles within one file get `-1`, `-2`, … suffixes in auto-generated slugs.
 
 ## parameter-options.md rules
 
 - One section per enum or panel-visibility family.
 - Tables: index or wire `<value>`, option label, confirmation column when known.
-- Anchor headings for stable links from live-edit and dumps.
+- Use descriptive heading text for stable auto-generated anchor slugs.
 - Panel visibility tables (which controls appear per mode) belong **here**, not
  in live-edit prose.
 

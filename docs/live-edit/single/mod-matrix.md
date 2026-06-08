@@ -3,12 +3,12 @@
 Edit Single — **Modulation Matrix** — **six slots**. Each slot has **one**
 **Source** and **three** **Destination** / **Amount** pairs (modulation routes).
 
-Part of [Live Edit](README.md). Source and destination enums:
-[Mod Matrix Sources](../parameter-options.md#mod-matrix-sources),
-[Mod Matrix Destinations](../parameter-options.md#mod-matrix-destinations).
-Amount encoding: [Mod Matrix Amount](../parameter-options.md#mod-matrix-amount).
-Dump worksheet: [single.md — Modulation Matrix](../dumps/single.md#modulation-matrix).
-All **42** Source / Destination / Amount cells confirmed in **`DUMP_SINGLE`**
+Part of [Documentation](../../../README.md#documentation). Source and destination enums:
+[Mod Matrix Sources](../../reference/parameter-options.md#mod-matrix-sources),
+[Mod Matrix Destinations](../../reference/parameter-options.md#mod-matrix-destinations).
+Amount encoding: [Mod Matrix Amount](../../reference/parameter-options.md#mod-matrix-amount).
+Dump worksheet: [single.md — Modulation Matrix](../../dumps/single.md#modulation-matrix).
+All **42** Source / Destination / Amount cells confirmed in **Single Dump**
 (`30 00 40` / `<part>=0x40`).
 
 ```text
@@ -58,7 +58,7 @@ TI mk2 (Single edit buffer **`30 00 40`**).
 - **Rows 2–3** use **`6E`** for slots **1**, **2** (row 3 only), **4**–**6** —
   not for Slot **3** (all rows stay on **`71`**).
 - **`<value>`** namespaces are unchanged: source enum; destination = [LFO Assign
-  Target](../parameter-options.md#assign-target-0x4f) wire map; amount bipolar
+  Target](../../reference/parameter-options.md#assign-target) wire map; amount bipolar
   offset.
 
 ### Page B byte reuse
@@ -96,20 +96,20 @@ F0 00 20 33 01 00 71 40 6F 19 F7
 
 ### Source
 
-**`<value>`** wire map: [Mod Matrix Sources](../parameter-options.md#mod-matrix-sources)
+**`<value>`** wire map: [Mod Matrix Sources](../../reference/parameter-options.md#mod-matrix-sources)
 (not the table **Index** column). Param **`0x40`** is **Slot 1** only — see table
 above for slots **2**–**6**.
 
 ### Destination
 
-**`<value>`** wire map: same namespace as [LFO 1 Assign Target](../parameter-options.md#assign-target-0x4f)
+**`<value>`** wire map: same namespace as [LFO 1 Assign Target](../../reference/parameter-options.md#assign-target)
 (**`4F/xx`** = **`41/xx`** = **`5A/xx`**, etc., for the same target on the
 matching slot/row param). Panel label **Filterbank Frequency** uses wire **`60`**.
 
 ### Amount
 
 Bipolar **−64..+63** → `stored = ui + 64` (**`00`** = −64, **`40`** = +0,
-**`7F`** = +63). Same family as [LFO Contour](../parameter-options.md#contour-0x47).
+**`7F`** = +63). Same family as [LFO Contour](../../reference/parameter-options.md#contour-1).
 
 | `<value>` | LCD | Confirmed        |
 | --------- | --- | ---------------- |

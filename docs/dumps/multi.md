@@ -1,32 +1,33 @@
 # Arrangements & Multis
 
-Part of [Dumps](README.md). Multi mode on the Virus TI: program types, **Edit
+Part of [Documentation](../../../README.md#documentation). Multi mode on the Virus TI: program types, **Edit
 Multi** parameters, and
-byte-level `DUMP_MULTI` mapping.
+byte-level Multi Dump mapping.
 
 ## Multi Dump
 
-### `DUMP_MULTI` byte reference
+### Multi Dump byte reference
 
-Byte reference for Virus TI/TI2 Multi SysEx messages (`DUMP_MULTI`, 267
+Byte reference for Virus TI/TI2 Multi SysEx messages (Multi Dump, 267
 bytes). **Edit Multi** parameters are mapped in
 [Multi parameter map](#multi-parameter-map) and
 [Confirmed payload
-fields](#confirmed-payload-fields-offsets-in-full-267-byte-dump_multi).
-Remaining gaps: **Keyboard to MIDI** (no dump byte on the desktop module),
-**Direct Monitoring** (VC-only; byte not confirmed), and payload metadata
-in [Unmapped payload](#unmapped-payload).
+fields](#confirmed-payload-fields-offsets-in-full-267-byte-multi-dump).
+Remaining gaps: **Keyboard to MIDI** (no dump byte on the desktop module) and
+payload metadata in [Unmapped payload](#unmapped-payload). **Secondary Output**,
+**Bend Up/Down** (Multi), and **Direct Monitoring** are **not** in this
+267-byte block — see [Runtime-only Edit Multi](#runtime-only-edit-multi).
 
 ## Embedded vs Reference Multis
 
 The TI **Multi bank** has **128 slots**. Every slot — and the **Multi edit
-buffer** — uses the same **267-byte** `DUMP_MULTI` layout, including
+buffer** — uses the same **267-byte** Multi Dump layout, including
 per-part **Bank** and **Program** bytes at `0x29..` / `0x39..`.
 
 | Slots      | Storage model | Typical MIDI export                                                                                                                                                                                    |
 | ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **1–16**   | **Embedded**  | **Type: Arrangement** — one `DUMP_MULTI` plus **sixteen `DUMP_SINGLE`** messages (524 bytes each). Slots 1–16 hold **full Single program data** for all sixteen parts, matching those sixteen singles. |
-| **17–128** | **Reference** | **`DUMP_MULTI` only** — multi settings and bank/program pointers per part; Singles remain in RAM/ROM banks.                                                                                            |
+| **1–16**   | **Embedded**  | **Type: Arrangement** — one Multi Dump plus **sixteen Single Dump** messages (524 bytes each). Slots 1–16 hold **full Single program data** for all sixteen parts, matching those sixteen singles. |
+| **17–128** | **Reference** | **Multi Dump only** — multi settings and bank/program pointers per part; Singles remain in RAM/ROM banks.                                                                                            |
 
 **Requesting a dump**
 
@@ -39,7 +40,7 @@ per-part **Bank** and **Program** bytes at `0x29..` / `0x39..`.
 A **`REQUEST_MULTI`** reply is always the **267-byte** multi block first;
 **Arrangement**-style export (edit buffer or slots **1–16**) adds the
 sixteen singles in **part order** — see
-[Arrangement export](single.md#arrangement-export-dump_single--16).
+[Arrangement export](single.md#arrangement-export-single-dump--16).
 
 ### Multi parameter map
 
@@ -53,7 +54,7 @@ Fields match the **Virus TI Edit Multi** screen (TI manual).
 | Master Clock Tempo        | Global        | `0x18`                       |
 | Keyboard to MIDI          | Global        | **Not in dump** (desktop)    |
 | Enable                    | Part-specific | `0xF8 + part`                |
-| Direct Monitoring         | Part-specific | **Unmapped** (VC only)       |
+| Direct Monitoring         | Part-specific | **Not in dump**              |
 | Bank                      | Part-specific | `0x29 + (part−1)`            |
 | Program                   | Part-specific | `0x39 + (part−1)`            |
 | Volume                    | Part-specific | `0x99 + (part−1)`            |
@@ -76,7 +77,7 @@ Fields match the **Virus TI Edit Multi** screen (TI manual).
 
 ASCII name for the multi — **10 bytes** at **`0x0D`–`0x16`** (case as entered on
 the panel), null at **`0x17`**. **No live-edit SysEx** on TI mk2 desktop (panel
-rename → **`DUMP_MULTI`** only; **`receivemidi`** capture empty on rename).
+rename → **Multi Dump** only; **`receivemidi`** capture empty on rename).
 
 Hardware-verified (edit buffer, INIT MULTI baseline → **`Init Mult4`**):
 
@@ -101,7 +102,7 @@ Edit flag **`0x0A`** also toggles (`00` → `01`) on rename.
 Global tempo for all parts in the Multi (**63–190** bpm), overriding
 Single-program Master Clock settings. Dump at **`0x18`**
 (`stored = bpm - 63`; `120`→`0x39`, `124`→`0x3D`); INIT MULTI baseline.
-Live edit: **`72` / `0x0F`** — see [edit-multi.md](../live-edit/edit-multi.md).
+Live edit: **`72` / `0x0F`** — see [multis.md](../live-edit/multis.md).
 
 ##### Keyboard to MIDI
 
@@ -121,13 +122,31 @@ dump fields. Solo may disable other parts by toggling **Enable**.
 
 ##### Direct Monitoring
 
-Per-part Edit Multi setting. When enabled, that part’s audio is routed from
-the **analog outputs** directly, bypassing the USB return path through the
-DAW (avoids USB buffer latency for live performance). Not all host apps expose
-this control.
-**`DUMP_MULTI` byte not confirmed** — prime candidate in
-[unmapped payload](#unmapped-payload)
-(e.g. `0x19..0x28` or a packed per-part flag not yet decoded).
+Per-part Edit Multi setting (VC **Live** / direct monitoring). When enabled,
+that part’s audio is routed from the **analog outputs** directly, bypassing
+the USB return path through the DAW (avoids USB buffer latency for live
+performance). Not all host apps expose this control.
+
+**Not in Multi Dump.** Treat as **runtime / VC state** — same class as
+[Secondary Output](#secondary-output-not-in-multi-dump) and Multi **Bend
+Up/Down** (stored in **Single Dump** when editing a Single, not in the
+267-byte multi block). Do not map to [unmapped payload](#unmapped-payload)
+regions.
+
+##### Secondary Output (not in Multi Dump) {#secondary-output-not-in-multi-dump}
+
+Per-part **secondary** output routing — live edit only (`73` / `0x2D`; same
+param as Edit Single → Surround → Output). Hardware-tested on TI mk2 desktop:
+**no** change to **Multi Dump** vs baseline. See
+[multis.md](../live-edit/multis.md#secondary-output).
+
+##### Bend Up / Down (Multi — not in Multi Dump) {#bend-limits-not-in-multi-dump}
+
+Edit Multi exposes the same pitch-bend limit controls as Edit Single
+(`71` / `0x1A`, `0x1B`). Values live in **Single Dump** when editing a
+part’s Single; they do **not** appear in **Multi Dump**. Hardware-tested:
+identical multi dump vs INIT after `71 00 1A` / `1B` sweeps. See
+[multis.md](../live-edit/multis.md).
 
 ##### Bank
 
@@ -225,7 +244,7 @@ On (INIT): `0x45` (Part 1; Part 16 at `0x108` same delta).
 
 ### Part bank index
 
-One byte per part (`0x29..0x38`) in **every** `DUMP_MULTI`. **Formula:** RAM
+One byte per part (`0x29..0x38`) in **every** Multi Dump. **Formula:** RAM
 A–D = `0x00`–`0x03`; ROM *letter* = `0x04 + (letter - 'A')` for ROM A–Z.
 
 | Index       | Bank  | Confirmed |
@@ -249,11 +268,11 @@ stored byte); same for all multi bank slots.
 ### Message-level structure
 
 - `REQUEST_MULTI` message length: 11 bytes
-- `DUMP_MULTI` message length: 267 bytes
-- `DUMP_MULTI` command: `0x11`
+- Multi Dump message length: 267 bytes
+- Multi Dump command: `0x11`
 - `REQUEST_MULTI` command: `0x31`
-- Slots **1–16** export: one `DUMP_MULTI` + 16 `DUMP_SINGLE` messages
-- Slots **17–128** (and typical bank requests): one `DUMP_MULTI` only
+- Slots **1–16** export: one Multi Dump + 16 Single Dump messages
+- Slots **17–128** (and typical bank requests): one Multi Dump only
 
 ### `REQUEST_MULTI` byte table
 
@@ -270,12 +289,12 @@ stored byte); same for all multi bank slots.
 | `0x0A`       | `F7`        | SysEx end                | Fixed (stored slot: message may be **10 bytes**, no checksum)                    |
 
 **Edit buffer request** (Virus TI, confirmed): body
-`00 20 33 01 00 31 00 7F 7C` → 267-byte `DUMP_MULTI` with `00 7F` echoed at
+`00 20 33 01 00 31 00 7F 7C` → 267-byte Multi Dump with `00 7F` echoed at
 `0x07`–`0x08`. Checksum on bytes `0x01..0x08` (manufacturer through slot):
 `checksum = (128 - (sum(bytes) & 0x7F)) & 0x7F` → **`0x7C`** for `00 7F`.
 
 ```bash
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 31 00 7f 7c
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 31 00 7f 7c
 ```
 
 **Stored Multi bank request** (confirmed): bank **`01`**,
@@ -284,19 +303,19 @@ slot = **slot number** as one byte (`1`→`0x01`, `9`→`0x09`, `48`→`0x30`).
 
 ```bash
 # Slot 9
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 31 01 09
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 31 01 09
 # Slot 48
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 31 01 30
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 31 01 30
 ```
 
-Reply: 267-byte `DUMP_MULTI` with `0x07`/`0x08` echoing **`01`** / slot byte.
+Reply: 267-byte Multi Dump with `0x07`/`0x08` echoing **`01`** / slot byte.
 All slots use the same **`0x29..0x38`** (bank) and **`0x39..0x48`**
 (program) layout (examples below).
 
-### Multi bank slot examples (`DUMP_MULTI` only)
+### Multi bank slot examples (Multi Dump only)
 
 Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
-**1–16** may also stream sixteen `DUMP_SINGLE` on full export):
+**1–16** may also stream sixteen Single Dump on full export):
 
 | Slot | Name (example) | Bank bytes (16 parts) | Program bytes (notes) |
 | ---- | -------------- | --------------------- | --------------------- |
@@ -306,7 +325,7 @@ Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
 | 17   | `Ref2`         | mixed (RAM/ROM)       | mixed per part        |
 | 48   | `Multi`        | all `0x00`            | `0x00..0x0F` per part |
 
-### `DUMP_MULTI` byte table (267 bytes)
+### Multi Dump byte table (267 bytes)
 
 | Offset        | Bytes       | Meaning                  | Value range / notes               |
 | ------------- | ----------- | ------------------------ | --------------------------------- |
@@ -314,14 +333,14 @@ Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
 | `0x01..0x03`  | `00 20 33`  | Access manufacturer ID   | Fixed                             |
 | `0x04`        | `01`        | Virus family marker      | Fixed in observed TI/TI2 messages |
 | `0x05`        | `device_id` | Device ID                | `00` observed                     |
-| `0x06`        | `11`        | Dump Multi command       | Fixed for `DUMP_MULTI`            |
+| `0x06`        | `11`        | Dump Multi command       | Fixed for Multi Dump            |
 | `0x07`        | `bank`      | Multi bank selector      | Echoes request bank               |
 | `0x08`        | `slot`      | Multi slot/program index | Echoes request slot               |
 | `0x09..0x108` | payload     | Multi payload bytes      | 256-byte payload block            |
 | `0x109`       | checksum    | Checksum byte            | Changes with payload              |
 | `0x10A`       | `F7`        | SysEx end                | Fixed                             |
 
-### Confirmed payload fields (offsets in full 267-byte `DUMP_MULTI`)
+### Confirmed payload fields (offsets in full 267-byte Multi Dump)
 
 | Offset(s)     | Field                          | Encoding                              | Supported values                                                                                                       |
 | ------------- | ------------------------------ | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -377,16 +396,31 @@ from INIT before flag diffs if Priority High was left on (`0x65` at
 Several booleans share one byte; **`0x61` is not unique** (Priority High
 with Hold off). Diff from INIT (`0x45`) when toggling one flag.
 
+### Runtime-only Edit Multi
+
+These panel / host controls have live SysEx (where documented) but **no**
+byte in **Multi Dump** on TI mk2 desktop — confirmed by edit → re-dump
+diffs (INIT MULTI baseline):
+
+| Control              | Live edit              | In Multi Dump                               |
+| -------------------- | ---------------------- | ---------------                               |
+| Secondary Output     | `73` / `0x2D`          | **No**                                        |
+| Bend Up / Down       | `71` / `0x1A`, `0x1B`  | **No** (in Single Dump for the part Single) |
+| Direct Monitoring    | VC **Live** (VC-only)  | **No**                                        |
+
+Do not assign these to unmapped payload offsets below.
+
 ### Unmapped payload
 
-All **Edit Multi** parameters are assigned above except **Keyboard to
-MIDI** and **Direct Monitoring** (VC-only; byte not found). Remaining
-bytes are metadata or keyboard-only storage.
+All **dump-resident** Edit Multi fields are mapped above except **Keyboard to
+MIDI** (desktop: identical enable/disable dumps). Remaining bytes are
+metadata or unknown storage — **not** Secondary Output, Multi bend limits, or
+Direct Monitoring.
 
 | Offset(s)    | INIT MULTI (typical)                              | Notes                                                                                                                                                           |
 | ------------ | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `0x09..0x0C` | `02 00 00 20`                                     | Payload header; `0x0A` toggles on edit                                                                                                                          |
-| `0x19..0x28` | `01 3C 00 10 00 01 01 00 40 40 40 40 40 0F 40 40` | 16 bytes between tempo and bank; `0x26` = edited part (`00`–`0F`); candidate for **Direct Monitoring** (VC) — see [slot 32 INIT](#init-multi-slot-32-reference) |
+| `0x19..0x28` | `01 3C 00 10 00 01 01 00 40 40 40 40 40 0F 40 40` | 16 bytes between tempo and bank; `0x26` = edited part (`00`–`0F`); remainder **uninterpreted** — see [slot 32 INIT](#init-multi-slot-32-reference)              |
 | `0xB9..0xC7` | **15 × `0x00`**                                   | Between Init Volume and Output — candidate for Keyboard to MIDI                                                                                                 |
 | `0xE8..0xF7` | **16 × `0x00`**                                   | Between Pan and flags — candidate for Keyboard to MIDI                                                                                                          |
 
@@ -394,17 +428,17 @@ Elimination captures confirmed **`0xB9..0xC7`** and **`0xE8..0xF7`** do
 not hold Pan, Output, Enable, or Master Clock.
 
 **Hardware correlation (edit buffer, INIT MULTI):** live edits for **Bend
-Up/Down** (`cmd=0x71`, `0x1A`/`0x1B`), **Secondary Output** (`0x73`/`0x72`,
-`0x2D`), and **Keyboard** (`0x72`, `0x40`) produced **identical**
-`DUMP_MULTI` vs baseline — none of the unmapped regions changed. These
-settings are **runtime-only** on the desktop module (or stored outside this
-267-byte block). Global **`0x73`** settings (e.g. All Delays `0x1B`) also
-did not alter the multi dump.
+Up/Down**, **Secondary Output**, **Direct Monitoring** (where available), and
+**Keyboard** (`0x72`, `0x40`) produced **identical** Multi Dump vs
+baseline — none of the unmapped regions changed. These settings are
+**runtime-only** on the desktop module (or stored outside this 267-byte
+block). Global **`0x73`** settings (e.g. All Delays `0x1B`) also did not
+alter the multi dump.
 
 **Keyboard to MIDI** cannot be probed on the desktop module (enable/disable
 dumps are identical). On **TI Keyboard / Polar**, toggle Edit Multi
 **Keyboard to MIDI** and dump. CONFIG **Local** / **Mode** are separate
-globals — see [edit-config.md](../live-edit/edit-config.md).
+globals — see [global.md](../live-edit/global.md).
 
 #### INIT MULTI slot 32 reference
 

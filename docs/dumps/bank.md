@@ -1,9 +1,9 @@
 # Banks & storage
 
-Part of [Dumps](README.md). RAM/ROM banks, **REQUEST** commands, store/load —
+Part of [Documentation](../../../README.md#documentation). RAM/ROM banks, **REQUEST** commands, store/load —
 not per-parameter dump offsets.
 
-Architecture: [virus.md](../virus.md).
+Architecture: [virus.md](../misc/virus.md).
 
 ## Request messages
 
@@ -11,17 +11,19 @@ All requests use header `F0 00 20 33 01 <device> … F7`.
 
 | Cmd        | Name                        | Body (after device)           | Reply                                                                                         |
 | ---------- | --------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------- |
-| **`0x30`** | **Single Request**          | `30 <bank> <slot>`            | `DUMP_SINGLE` (`0x10`) — stored banks **`01`–`1E`**                                           |
-| **`0x10`** | **Single Dump** (upload)    | Full 524-byte message         | Writes edit buffer / RAM — [single-dump-upload.md](single-dump-upload.md)                     |
-| **`0x31`** | **Multi Request**           | `31 <bank> <slot> [checksum]` | `DUMP_MULTI` (`0x11`) — [arrangements.md](arrangements.md#request_multi-byte-table)           |
-| **`0x32`** | **Single Bank Request**     | `32 <bank>`                   | **128 × `DUMP_SINGLE`** — banks **`01`–`1E`** (RAM + ROM)                                     |
+| **`0x30`** | **Single Request**          | `30 <bank> <slot>`            | Single Dump (`0x10`) — stored banks **`01`–`1E`**                                           |
+| **`0x10`** | **Single Dump** (upload)    | Full 524-byte message         | Writes edit buffer / RAM — [single.md — upload](single.md#single-dump-upload-0x10)                     |
+| **`0x31`** | **Multi Request**           | `31 <bank> <slot> [checksum]` | Multi Dump (`0x11`) — [multi.md](multi.md#request_multi-byte-table)           |
+| **`0x32`** | **Single Bank Request**     | `32 <bank>`                   | **128 × Single Dump** — banks **`01`–`1E`** (RAM + ROM)                                     |
 | **`0x33`** | Multi Bank Request          | `33 <bank>`                   | Bulk Multi bank — **TBD**                                                                     |
-| **`0x34`** | **Arrangement Request**     | `34 00` (TI)                  | `DUMP_MULTI` + 16 × `DUMP_SINGLE` — [single.md](single.md#arrangement-export-dump_single--16) |
+| **`0x34`** | **Arrangement Request**     | `34 00` (TI)                  | Multi Dump + 16 × Single Dump — [single.md](single.md#arrangement-export-single-dump--16) |
 | **`0x35`** | Global Request              | `35`                          | **No reply on TI mk2** ✗ (classic Access docs only)                                           |
 | **`0x36`** | Total Request               | `36`                          | **No reply on TI mk2** ✗ (classic Access docs only)                                           |
 | **`0x37`** | **Controller Dump Request** | `37 00 <part>`                | SysEx parameter stream — [controller-dump.md](controller-dump.md)                             |
 
-### Single Request (`0x30`) {#single-request-0x30}
+### Single Request
+
+**Live edit:** param `0x30`.
 
 Access documentation (and older Virus SysEx references) call this message
 **SINGLE REQUEST** — same as **`cmd=0x30`** here.
@@ -39,7 +41,7 @@ F0 00 20 33 01 <device> 30 <bank> <slot> F7
 
 **Stored-bank byte** on **`0x30`** / **`0x32`**: **`request_bank = dump_index + 1`**
 where **`dump_index`** is the sequential index in
-[Part bank index](arrangements.md#part-bank-index) (RAM A = `0x00` … ROM Z =
+[Part bank index](multi.md#part-bank-index) (RAM A = `0x00` … ROM Z =
 `0x1D`). Edit-buffer requests use **`bank = 00`** instead — not this formula.
 
 Live edit **`<part>`** for **`0x70`/`0x71`/`0x6E`**: Multi parts
@@ -49,19 +51,19 @@ Live edit **`<part>`** for **`0x70`/`0x71`/`0x6E`**: Multi parts
 
 ```bash
 # Single mode edit buffer
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 30 00 40
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 30 00 40
 
 # Multi Part 1 edit-buffer single
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 30 00 00
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 30 00 00
 ```
 
-### No “load program by slot” SysEx in Single mode {#single-mode-program-recall}
+### No “load program by slot” SysEx in Single mode
 
 There is **no** short SysEx that means “load RAM bank *X* program *Y* into the
-Single edit buffer” without transferring the full **524-byte** `DUMP_SINGLE`
+Single edit buffer” without transferring the full **524-byte** Single Dump
 body. **`0x10`** upload always carries the entire program; a header-only
 message like `F0 … 10 01 40 F7` has **no payload to parse** — see
-[single-dump-upload.md](single-dump-upload.md).
+[single.md — upload](single.md#single-dump-upload-0x10).
 
 **Single mode program recall uses MIDI Program Change** (and Bank Select if
 your setup maps banks that way) — the same mechanism as picking a slot on the
@@ -72,10 +74,12 @@ To copy a RAM slot into the edit buffer without Program Change, **Single
 Request** (`0x30`) the slot, then **Single Dump** (`0x10`) upload with header
 **`10 00 40`** (Single edit buffer) — full transfer, not a reference.
 
-### Single Bank Request (`0x32`) {#single-bank-request-0x32}
+### Single Bank Request
+
+**Live edit:** param `0x32`.
 
 Classic Access docs: **SINGLE BANK REQUEST** — ask the synth to send **all 128**
-Singles in one stored bank. TI mk2 reply: **128 × 524-byte** `DUMP_SINGLE`
+Singles in one stored bank. TI mk2 reply: **128 × 524-byte** Single Dump
 (hardware-confirmed for **`32 01`** RAM A and **`32 1E`** ROM Z; stream
 framing **TBD**).
 
@@ -83,7 +87,7 @@ framing **TBD**).
 F0 00 20 33 01 <device> 32 <bank> F7
 ```
 
-**`<bank>`** uses the same encoding as [Single Request](#single-request-0x30)
+**`<bank>`** uses the same encoding as [Single Request](#single-request)
 stored banks. Valid range on TI mk2: **`01`–`1E`** (30 banks = 4 RAM + 26 ROM).
 
 | Request `bank` | Bank    | Dump index    | TI mk2                                                        |
@@ -98,19 +102,19 @@ Example: **`32 0F`** = ROM **K**.
 
 ```bash
 # Entire RAM A bank
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 0x32 0x01
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x32 0x01
 
 # Entire ROM Z bank
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 0x32 0x1E
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x32 0x1E
 
-receivemidi dev "Virus TI USB Plugin I/O" syx
+receivemidi dev "<MIDI port>" syx
 ```
 
 **Note:** Some hosts issue **128 × Single Request** (`0x30`) per slot instead of
 **`0x32`** — both can be valid; bulk bank request avoids per-slot handshakes
 when the host accepts a long SysEx stream.
 
-### Global / Total Request (`0x35` / `0x36`) {#global-total-request-0x35-0x36}
+### Global / Total Request (`0x35` / `0x36`)
 
 Classic Access SysEx references (WAF80 and descendants) define host **request**
 messages for CONFIG / global settings and a full-device snapshot:
@@ -123,37 +127,39 @@ F0 00 20 33 01 <device> 36 F7   # Total Request
 **TI mk2 hardware (confirmed): neither message produces a SysEx reply.**
 
 ```bash
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 35
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 36
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 35
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 36
 # → no response
 ```
 
 There is **no documented bulk CONFIG dump reply** for TI mk2 in this project yet.
 Do **not** confuse these **request command bytes** with live-edit params under
 **`cmd=0x73`**: **`0x35`** = Random PG Scope, **`0x36`** = Random PG Strength
-— see [edit-config.md](../live-edit/edit-config.md).
+— see [global.md](../live-edit/global.md).
 
 **Alternatives for CONFIG / globals on TI mk2:**
 
 | Approach                                     | Notes                                                                                                                                                                                        |
 | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Live edit `0x73`**                         | Set one global: `73 00 <param> <value>` — [edit-config.md](../live-edit/edit-config.md). No bulk read-back request documented.                                                               |
+| **Live edit `0x73`**                         | Set one global: `73 00 <param> <value>` — [global.md](../live-edit/global.md). No bulk read-back request documented.                                                               |
 | **Controller Dump `0x37`**                   | Streams live-edit SysEx for a **Single edit buffer**, not CONFIG globals — [controller-dump.md](controller-dump.md).                                                                         |
 | **EDIT CONFIG → Receive/Transmit MIDI Dump** | Panel menu exists; wire format **not captured** here — may differ from classic `0x35`/`0x36`.                                                                                                |
-| **`DUMP_MULTI` diff**                        | Some globals may appear in multi payload regions — correlation **planned**, not a dedicated global dump — [edit-config.md](../live-edit/edit-config.md#correlation-with-dump_multi-planned). |
+| **Multi Dump diff**                        | Some globals may appear in multi payload regions — correlation **planned**, not a dedicated global dump — [global.md](../live-edit/global.md#correlation-with-multi-dump-planned). |
 
-### Controller Dump Request (`0x37`) {#controller-dump-request-0x37}
+### Controller Dump Request
+
+**Live edit:** param `0x37`.
 
 Classic **CONTROLLER DUMP REQUEST**. TI mk2: **`37 00 <part>`** → **many**
 short SysEx replies (live-edit style), not one bulk message. **`<part>`**:
 Multi **`0x00`–`0x0F`**, Single mode **`0x40`** (same as edit-buffer
-[Single Request](#single-request-0x30)).
+[Single Request](#single-request)).
 
 Full notes and mapping workflow: [controller-dump.md](controller-dump.md).
 
 ```bash
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 0x37 0x00 0x00
-sendmidi dev "Virus TI USB Plugin I/O" hex syx 00 20 33 01 00 0x37 0x00 0x40
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x37 0x00 0x00
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x37 0x00 0x40
 ```
 
 ## RAM Single banks (A–D)
@@ -171,7 +177,7 @@ ROM excluded from [single map](single.md#single-parameter-map).
 
 ## Multi bank
 
-[Arrangements & Multis](arrangements.md) — **128** slots; slots **1–16** embed
-16× `DUMP_SINGLE`.
+[Arrangements & Multis](multi.md) — **128** slots; slots **1–16** embed
+16× Single Dump.
 
 Per-slot **store** / **dump-to-buffer** byte maps: **TBD**.

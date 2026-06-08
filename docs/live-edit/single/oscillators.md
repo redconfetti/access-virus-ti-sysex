@@ -3,10 +3,10 @@
 Edit Single — **Oscillators** (Osc 1–3), **Noise**, **Ring Modulator**, **Sub
 Oscillator**, mixer levels.
 
-Part of [Live Edit](README.md). Enumerated options:
-[parameter-options.md](../parameter-options.md).
-Dump worksheet: [Single parameter map](../dumps/single.md#single-parameter-map)
-· Multi: [Edit Multi](edit-multi.md).
+Part of [Documentation](../../../README.md#documentation). Enumerated options:
+[parameter-options.md](../../reference/parameter-options.md).
+Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-map)
+· Multi: [Edit Multi](../multis.md).
 
 ```text
 F0 00 20 33 01 00 72 <part> <param> <value> F7 # multi / common (some params)
@@ -29,13 +29,13 @@ rows that appear on the panel for the active Mode/Shape.
 
 Capture path: **`Mode` / `Shape` / `Control` → LCD value**. Use **+/−** when
 possible. Knob sweeps: use the **last** SysEx line. Master inventory:
-[single-dump.md — Oscillators](../dumps/single.md#oscillators).
+[single dump — Oscillators](../../dumps/single.md#oscillators).
 
-### SELECT (`71`/`7F`) {#oscillators-select}
+### SELECT (`71`/`7F`)
 
 **OSCILLATORS** section — front-panel **SELECT** cycles which oscillator the
 edit page targets. Live edit **`cmd=0x71`**, param **`0x7F`** (Page B). Enum:
-[Oscillators SELECT](../parameter-options.md#oscillators-select).
+[Oscillators SELECT](../../reference/parameter-options.md#select-717f).
 
 | Item           | Value                                            |
 | -------------- | ------------------------------------------------ |
@@ -50,7 +50,7 @@ F0 00 20 33 01 00 71 00 7F 02 F7 # 7F/02 — Oscillator 3
 ```
 
 Same **`cmd`/`param`** as [Oscillator Section
-Volume](#oscillator-section-volume-cmd0x71-param-0x7f) — **SELECT** uses
+Volume](#oscillator-section-volume) — **SELECT** uses
 **`00`–`02`** as index; **Mixer → Oscillator Section Volume** uses bipolar
 **`stored = ui + 64`** on the same byte.
 
@@ -143,7 +143,7 @@ when
 **Shape ≥ `40`** (Sawtooth and Saw>Pulse — not at Spectral Wave `00`).
 **Pulse Width** **`70`/`12`** — formulas in
 [Pulse Width](#pulse-width-shape--sawtooth); LCD lookup table in
-[parameter-options.md](../parameter-options.md#osc-1-classic--pulse-width-lcd).
+[parameter-options.md](../../reference/parameter-options.md#osc-1-classic--pulse-width-lcd).
 
 | LCD                | `<value>` | Confirmed |
 | ------------------ | --------- | --------- |
@@ -325,7 +325,7 @@ Endpoints **`00`** / **`7F`** show **50.0 %** / **100 %** on the wire
 values directly. Same label can appear on two detents. Partial **wire → LCD**
 map:
 [parameter-options.md — Osc 1 Pulse Width
-LCD](../parameter-options.md#osc-1-classic--pulse-width-lcd).
+LCD](../../reference/parameter-options.md#osc-1-classic--pulse-width-lcd).
 
 ```text
 F0 00 20 33 01 00 70 00 12 00 F7 # 50.0 %
@@ -372,7 +372,7 @@ often **~0.1–0.5 below** predicted; **`44`–`57`**, **`74`+** are within
 **~0.1**. Duplicate labels appear on some detents (**`5C`/`5D`**,
 **`67`/`68`**, **`77`/`78`**, etc.). Full **128**-entry map:
 [parameter-options.md — Density
-LCD](../parameter-options.md#osc-1-hypersaw--density-lcd).
+LCD](../../reference/parameter-options.md#osc-1-hypersaw--density-lcd).
 
 **Do not** use `stored = round((lcd − 1) × 127 / 8)` from LCD alone
 (e.g. LCD **3.0** → **`3F`**, not **`20`**).
@@ -487,7 +487,7 @@ F0 00 20 33 01 00 70 00 11 7F F7 # Index 127
 
 **Wavetable** (`13`): same Page A index as Classic **Wave Select**. Names:
 [parameter-options.md — Wavetable
-Names](../parameter-options.md#wavetable-names).
+Names](../../reference/parameter-options.md#wavetable-names).
 
 ```text
 F0 00 20 33 01 00 70 00 13 00 F7 # Wavetable Sine
@@ -495,7 +495,7 @@ F0 00 20 33 01 00 70 00 13 63 F7 # Wavetable Domina7rix
 ```
 
 **Interpolation** (`6E`/`2C`): part-buffer byte — not **`0x70`** Page A (same
-index as [Filter 1 Envelope Amount](filters.md#filter-1-envelope-amount-cmd0x70-param-0x2c)
+index as [Filter 1 Envelope Amount](filters.md#filter-1-envelope-amount)
 on **`0x70`**).
 
 ```text
@@ -580,7 +580,7 @@ Hardware-verified panel controls:
 | Balance       | `70`  | `21`    | **−100.0 %..+100.0 %**            | ✓         |
 
 **F-Shift** (`6E`/`2A`): same param index as [Filter 1
-Resonance](filters.md#filter-1-resonance-cmd0x70-param-0x2a) on **`0x70`** —
+Resonance](filters.md#filter-1-resonance) on **`0x70`** —
 use **`cmd`** to disambiguate.
 
 ```text
@@ -799,7 +799,7 @@ stored = round((pct − 50) × 127 / 50) # clamp 00..7F
 
 Endpoints **`00`** / **`7F`** = **50.0 %** / **100 %**. LCD curve and duplicate
 detents: [parameter-options.md — Osc 1 Pulse Width
-LCD](../parameter-options.md#osc-1-classic--pulse-width-lcd) (same panel
+LCD](../../reference/parameter-options.md#osc-1-classic--pulse-width-lcd) (same panel
 behavior).
 
 ```text
@@ -990,7 +990,7 @@ lcd ≈ round(1 + (internal − 1) × (stored / 127), 0.1)
 ```
 
 Full **wire → LCD** map: [parameter-options.md — Osc 1 Hypersaw
-Density LCD](../parameter-options.md#osc-1-hypersaw--density-lcd) (same panel
+Density LCD](../../reference/parameter-options.md#osc-1-hypersaw--density-lcd) (same panel
 curve on TI mk2).
 
 ```text
@@ -1071,7 +1071,7 @@ F0 00 20 33 01 00 70 00 16 7F F7 # Index 127
 
 **Wavetable** (`18`): **`stored`** = table index **`00`–`63`**. Names match
 [parameter-options.md — Wavetable
-Names](../parameter-options.md#wavetable-names) (**Sine** → **Domina7rix**).
+Names](../../reference/parameter-options.md#wavetable-names) (**Sine** → **Domina7rix**).
 
 ```text
 F0 00 20 33 01 00 70 00 18 00 F7 # Wavetable Sine
@@ -1529,7 +1529,9 @@ F0 00 20 33 01 00 71 00 2C 7F F7 # Oscillator 3 Detune −127
 
 **Oscillators → Noise**. Page A parameters.
 
-### Noise Volume (`0x25`, `cmd=0x70` / CC 37)
+### Noise Volume
+
+**Live edit:** `cmd=0x70`, param `0x25` (CC 37).
 
 Panel **Off**, then **1..127**; wire matches the numeric value (**`00`** = Off).
 
@@ -1549,11 +1551,13 @@ F0 00 20 33 01 00 70 00 25 01 F7 # Noise Volume 1
 F0 00 20 33 01 00 70 00 25 7F F7 # Noise Volume 127
 ```
 
-### Noise Color (`0x27`, `cmd=0x70`)
+### Noise Color
+
+**Live edit:** `cmd=0x70`, param `0x27`.
 
 Panel **−64..+63** → **`stored = ui + 64`** (same bipolar pattern as
 [Key Follow](#oscillator-2--classic) / [Osc
-Volume](edit-single.md#osc-volume-0x24-cmd0x70)).
+Volume](single.md#osc-volume)).
 
 | LCD | `<value>` | Confirmed |
 | --- | --------- | --------- |
@@ -1572,10 +1576,12 @@ F0 00 20 33 01 00 70 00 27 7F F7 # Noise Color +63
 **Oscillators → Ring Modulator**. Page A param **`0x32`** (not CC **38** =
 **`0x26`** — that was an inventory typo).
 
-### Ring Modulator Volume (`0x32`, `cmd=0x70` / CC 38)
+### Ring Modulator Volume
+
+**Live edit:** `cmd=0x70`, param `0x32` (CC 38).
 
 Panel **Off**, then **1..127**; wire matches the numeric value (**`00`** = Off).
-Same encoding as [Noise Volume](#noise-volume-0x25-cmd0x70--cc-37).
+Same encoding as [Noise Volume](#noise-volume).
 
 **`<part>`:** Multi Part *n* → **`0x00`–`0x0F`**; Single edit buffer →
 **`0x40`**. Param **`0x32`** is unchanged — only the part index switches with
@@ -1605,9 +1611,11 @@ F0 00 20 33 01 00 70 40 32 7F F7 # Ring Modulator Volume 127 (Single edit buffer
 
 **Oscillators → Sub Oscillator**. Page A **`0x22`**
 and **`0x23`** (Shape, CC **35**). **Not** Page B **`71` / `0x23`** (that is
-[Phase Init](edit-single.md#phase-init-0x23-cmd0x71)).
+[Phase Init](single.md#phase-init)).
 
-### Sub Oscillator Volume (`0x22`, `cmd=0x70` / CC 34)
+### Sub Oscillator Volume
+
+**Live edit:** `cmd=0x70`, param `0x22` (CC 34).
 
 Panel **0..127**; wire matches the numeric value (**`00`** = **0**, not “Off”).
 
@@ -1625,10 +1633,11 @@ F0 00 20 33 01 00 70 00 22 00 F7 # Sub Oscillator Volume 0
 F0 00 20 33 01 00 70 00 22 7F F7 # Sub Oscillator Volume 127
 ```
 
-Also available as **MIDI CC 34** when Page A = **Controller Data** — see
-[control-change.md](control-change.md#sub-oscillator-volume-cc-34).
+Also available as **MIDI CC 34** when Page A = **Controller Data**.
 
-### Sub Oscillator Shape (`0x23`, `cmd=0x70` / CC 35)
+### Sub Oscillator Shape
+
+**Live edit:** `cmd=0x70`, param `0x23` (CC 35).
 
 Two shapes only; no further values on the panel.
 
@@ -1644,13 +1653,15 @@ F0 00 20 33 01 00 70 00 23 01 F7 # Shape Triangle
 
 ### Mixer (Oscillators menu)
 
-### Oscillator Section Volume (`cmd=0x71`, param `0x7F`) {#oscillator-section-volume-cmd0x71-param-0x7f}
+### Oscillator Section Volume
+
+**Live edit:** `cmd=0x71`, param `0x7F`.
 
 **Oscillators → Mixer → Oscillator Section Volume** (main osc mixer level).
-Same **`71`/`7F`** wire as [SELECT (`71`/`7F`)](#oscillators-select) — volume
+Same **`71`/`7F`** wire as [SELECT (`71`/`7F`)](#select-717f) — volume
 uses bipolar **`stored = ui + 64`**, not index **`00`–`02`**. Same bipolar
 range as [Saturation — Osc
-Volume](filters.md#saturation--osc-volume-cmd0x70-param-0x24)
+Volume](filters.md#saturation-osc-volume)
 but edited via **Page B** SysEx here, not **`70` / `24`**.
 
 | Item                    | Value                                                 |

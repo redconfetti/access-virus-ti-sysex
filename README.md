@@ -1,31 +1,55 @@
 # Access Virus SysEx
 
 Reverse engineered **Access Virus TI mk2** SysEx specifications with assistance
-from Cursor AI. The same messages apply in principle to
-**[OsTIrus](docs/ostirus.md)**
-(TI/TI2/Snow firmware emulation in a DAW) — no hardware required for MIDI/SysEx
-control, only a suitable host port.
+from Cursor AI.
 
-- **[Setup](docs/setup.md)** — `sendmidi` / `receivemidi`, ports, first SysEx
-- **[Getting started](docs/getting-started.md)** — message layout, `cmd` bytes,
- requests vs dumps vs live edit
+- [Getting started (SysEx primer)](docs/getting-started.md)
+- [General notes about Virus architecture](docs/misc/virus.md)
+- Live edit
+  - Singles
+    - [Live edit — Single](docs/live-edit/single/single.md)
+    - [Live edit — Oscillators](docs/live-edit/single/oscillators.md)
+    - [Live edit — Filters](docs/live-edit/single/filters.md)
+    - [Live edit — Effects](docs/live-edit/single/effects.md)
+    - [Live edit — Arpeggiator](docs/live-edit/single/arpeggiator.md)
+    - [Live edit — Modulators (LFO)](docs/live-edit/single/modulators.md)
+    - [Live edit — Modulation Matrix](docs/live-edit/single/mod-matrix.md)
+  - [Live edit — Multis](docs/live-edit/multis.md)
+  - [Live edit — Global](docs/live-edit/global.md)
+- Dump
+  - [Dump — Single](docs/dumps/single.md)
+  - [Dump — Multis & arrangements](docs/dumps/multi.md)
+  - [Dump — Banks & requests](docs/dumps/bank.md)
+  - [Dump — Controller dump](docs/dumps/controller-dump.md)
+- [Parameter options (enums, panel tables)](docs/reference/parameter-options.md)
+- [OsTIrus (DSP56300 TI/TI2 emulation)](docs/misc/ostirus.md)
 
-## Documentation {#documentation}
+## Setup
 
-| Topic                                   | Document                                                         |
-| --------------------------------------- | ---------------------------------------------------------------- |
-| Setup (`sendmidi`, ports)               | [docs/setup.md](docs/setup.md)                                   |
-| Getting started (SysEx primer)          | [docs/getting-started.md](docs/getting-started.md)               |
-| Hardware testing (index)                | [docs/testing.md](docs/testing.md)                               |
-| General notes about Virus architecture  | [docs/virus.md](docs/virus.md)                                   |
-| Live edit — CONFIG / global (`0x73`)    | [docs/live-edit/edit-config.md](docs/live-edit/edit-config.md)   |
-| Live edit — Edit Single                 | [docs/live-edit/edit-single.md](docs/live-edit/edit-single.md)   |
-| Live edit — Oscillators / Filters / FX  | [docs/live-edit/](docs/live-edit/README.md)                      |
-| Live edit — Edit Multi (`0x72`)         | [docs/live-edit/edit-multi.md](docs/live-edit/edit-multi.md)     |
-| Dump — Single (`DUMP_SINGLE`)           | [docs/dumps/single.md](docs/dumps/single.md)                     |
-| Dump — Multis & arrangements            | [docs/dumps/arrangements.md](docs/dumps/arrangements.md)         |
-| Dump — Banks & requests                 | [docs/dumps/bank.md](docs/dumps/bank.md)                         |
-| MIDI Control Change (CC)                | [docs/control-change.md](docs/control-change.md)                 |
-| Parameter options (enums, panel tables) | [docs/parameter-options.md](docs/parameter-options.md)           |
-| Unmapped / outstanding gaps             | [docs/unmapped.md](docs/unmapped.md)                             |
-| OsTIrus (DSP56300 TI/TI2 emulation)     | [docs/ostirus.md](docs/ostirus.md)                               |
+Install [Homebrew](https://brew.sh/) MIDI helpers:
+
+```bash
+brew install sendmidi receivemidi
+```
+
+List ports:
+
+```bash
+sendmidi list
+receivemidi list
+```
+
+Use the same port name for `sendmidi` and `receivemidi` (from the lists above).
+
+Send SysEx with **`hex`** before **`syx`**, and **omit `F0`/`F7`** (sendmidi
+adds them). Prefix data bytes with **`0x`** so values are not parsed as decimal
+(e.g. `0x72` for cmd **`0x72`**, not `72` → `0x48`).
+
+Request the edit-buffer Multi (Multi Dump):
+
+```bash
+sendmidi dev "<MIDI port>" hex syx \
+  00 20 33 01 00 0x31 0x00 0x7f
+
+receivemidi dev "<MIDI port>" dump
+```

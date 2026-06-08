@@ -1,6 +1,6 @@
 # Edit Multi
 
-Part of [Live Edit](README.md).
+Part of [Documentation](../../README.md#documentation).
 
 Live SysEx notes for Multi edit behavior on Virus TI mk2.
 
@@ -19,9 +19,9 @@ F0 00 20 33 01 00 71 <part> <param> <value> F7
 - `<value>` — parameter value (encoding depends on parameter)
 
 Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
-[edit-single.md](edit-single.md).
+[single.md](single/single.md).
 
-Enumerated options: [parameter-options.md](../parameter-options.md).
+Enumerated options: [parameter-options.md](../reference/parameter-options.md).
 
 ## Summary
 
@@ -49,32 +49,42 @@ Enumerated options: [parameter-options.md](../parameter-options.md).
 | `0x4D`   | `0xF8 + part` (packed flags) | Priority         | Note-steal priority                          |
 | `0x4E`   | `0xF8 + part` (packed flags) | Program Change   | Program Change response                      |
 
-**Not in this table:** **Direct Monitoring** (VC-only; dump byte
-unmapped — [arrangements.md](../dumps/arrangements.md#direct-monitoring)).
+**Not in this table (not in Multi Dump):** **Secondary Output** (`73` /
+`0x2D`), **Bend Up/Down** (`71` / `0x1A`, `0x1B` — in **Single Dump**
+only), **Direct Monitoring** (VC **Live**). See
+[Runtime-only Edit Multi](../dumps/multi.md#runtime-only-edit-multi).
 **Solo** in some host UIs manipulates **`0x48` Enable** on other parts.
 
 ## Parameters
 
-### Master Clock Tempo (`0x0F`)
+### Master Clock Tempo
+
+**Live edit:** param `0x0F`.
 
 - Global parameter.
-- Dump correlation: `0x18` in `DUMP_MULTI` (follows 10-byte name at `0x0D`–`0x16`
+- Dump correlation: `0x18` in Multi Dump (follows 10-byte name at `0x0D`–`0x16`
   and null at `0x17`).
 - Supported values: see [Tempo (`bpm - 63`)](#tempo-bpm---63).
 
-### Low Key (`0x23`)
+### Low Key
+
+**Live edit:** param `0x23`.
 
 - Per-part note-range lower bound.
 - Dump correlation: `0x59 + part`.
 - Supported values: see [Key Range (direct 7-bit)](#key-range-direct-7-bit).
 
-### High Key (`0x24`)
+### High Key
+
+**Live edit:** param `0x24`.
 
 - Per-part note-range upper bound.
 - Dump correlation: `0x69 + part`.
 - Supported values: see [Key Range (direct 7-bit)](#key-range-direct-7-bit).
 
-### Transpose (`0x25`)
+### Transpose
+
+**Live edit:** param `0x25`.
 
 - Per-part transpose in live edit.
 - Dump correlation: `0x79 + part`.
@@ -82,7 +92,9 @@ unmapped — [arrangements.md](../dumps/arrangements.md#direct-monitoring)).
 - Supported values: see **Value Reference → Bipolar `-63..+64` (live
 encoding)**.
 
-### Detune (`0x26`)
+### Detune
+
+**Live edit:** param `0x26`.
 
 - Per-part detune in live edit.
 - Dump correlation: `0x89 + part`.
@@ -90,7 +102,9 @@ encoding)**.
 - Supported values: see **Value Reference → Bipolar `-63..+64` (live
 encoding)**.
 
-### Bend Up (`0x1A`, `cmd=0x71`)
+### Bend Up
+
+**Live edit:** `cmd=0x71`, param `0x1A`.
 
 - Per-part **pitch bend up** limit (Edit Single → Common).
 - Sent via **`cmd=0x71`**, not `0x72`:
@@ -99,8 +113,10 @@ encoding)**.
  F0 00 20 33 01 00 71 <part> <param> <value> F7
  ```
 
-- Dump correlation: **not in `DUMP_MULTI`** (edit buffer; hardware-tested:
- `71 00 1A` at `00` / `7F` — identical dump vs INIT baseline).
+- **Not in Multi Dump** — eliminated on TI mk2 desktop (identical dump vs
+  INIT baseline; values live in **Single Dump** when editing that part’s
+  Single). See
+  [multi.md — Bend limits](../dumps/multi.md#bend-limits-not-in-multi-dump).
 - Encoding: **`stored = ui + 64`** (center `0x40` = 0); UI **−64..+63** →
  `0x00..0x7F`.
 
@@ -120,13 +136,16 @@ F0 00 20 33 01 00 71 00 1A 42 F7 # +2
 F0 00 20 33 01 00 71 00 1A 7F F7 # +63
 ```
 
-### Bend Down (`0x1B`, `cmd=0x71`)
+### Bend Down
+
+**Live edit:** `cmd=0x71`, param `0x1B`.
 
 - Per-part **pitch bend down** limit (Edit Single → Common).
-- Same transport and encoding as [Bend Up](#bend-up-0x1a-cmd0x71) (`cmd=0x71`,
+- Same transport and encoding as [Bend Up](#bend-up) (`cmd=0x71`,
  **`stored = ui + 64`**, UI **−64..+63**).
-- Dump correlation: **not in `DUMP_MULTI`** (hardware-tested: `71 00 1B` at
- `00` / `7F` — no dump change).
+- **Not in Multi Dump** — eliminated (hardware-tested: `71 00 1B` at
+  `00` / `7F` — no dump change). Stored in **Single Dump** for the part
+  Single, not the multi block.
 
 | UI  | `<value>` (Part 1) |
 | --- | ------------------ |
@@ -144,32 +163,40 @@ F0 00 20 33 01 00 71 00 1B 42 F7 # +2
 F0 00 20 33 01 00 71 00 1B 7F F7 # +63
 ```
 
-### Volume (`0x27`)
+### Volume
+
+**Live edit:** param `0x27`.
 
 - Per-part volume / level.
 - Dump correlation: `0x99 + (part−1)` — Parts **1–16** at `0x99..0xA8`.
 - Supported values: see **Value Reference → Bipolar `-63..+64` (live
 encoding)**.
 
-### Init Volume (`0x28`)
+### Init Volume
+
+**Live edit:** param `0x28`.
 
 - Per-part init MIDI volume when Multi is selected.
 - Dump correlation: `0xA9 + (part−1)` — Parts **1–16** at `0xA9..0xB8`.
 - Supported values: see **Value Reference → Init Volume (direct 7-bit)**.
 
-### Bank (`0x20`) {#bank-0x20}
+### Bank
+
+**Live edit:** param `0x20`.
 
 - Per-part Single **bank** for the part.
 - Message: **`72 <part> 20 <bank_index>`** — **`<part>`** = Multi part
  **`0x00`–`0x0F`** (Part 1 = **`0x00`**), not Single-mode scope **`0x40`**.
 - Dump correlation: **`0x29 + (part−1)`** — see
- [Part bank index](../dumps/arrangements.md#part-bank-index) in
- `arrangements.md`.
+ [Part bank index](../dumps/multi.md#part-bank-index) in
+ `multi.md`.
 - Live value = dump bank index (`0x00` = RAM A, `0x01` = RAM B, `0x04` =
  ROM A, etc.).
 - Virus Part 1: live `72 00 20 01` → LCD **RAM-B** (confirmed).
 
-### Program (`0x21`) {#program-0x21}
+### Program
+
+**Live edit:** param `0x21`.
 
 - Per-part Single **program** number.
 - Message: **`72 <part> 21 <program>`** — same **`<part>`** rule as Bank.
@@ -179,7 +206,7 @@ encoding)**.
  confirmed).
 
 **Load from RAM/ROM (Multi mode, Part 1)** — set bank/program via **`0x72`**, then
-upload with **`DUMP_SINGLE`** (`0x10`); hardware load-from-bank via **`0x72` alone**
+upload with **Single Dump** (`0x10`); hardware load-from-bank via **`0x72` alone**
 is **not confirmed** on TI mk2:
 
 ```text
@@ -187,7 +214,9 @@ F0 00 20 33 01 00 72 00 20 00 F7  # Part 1 → RAM A
 F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
 ```
 
-### MIDI Channel (`0x22`)
+### MIDI Channel
+
+**Live edit:** param `0x22`.
 
 - Per-part MIDI channel assignment.
 - Dump correlation: `0x49 + (part−1)` — Part 1 at **`0x49`**.
@@ -195,18 +224,22 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
  `0x0F` = channel 16 (Part 1: all 16 steps confirmed on Virus LCD).
 - Supported values: see [MIDI Channel (zero-based)](#midi-channel-zero-based).
 
-### Output Routing (`0x29`)
+### Output Routing
+
+**Live edit:** param `0x29`.
 
 - Per-part output routing selection.
 - Dump correlation: `0xC8 + part`.
 - Supported values: see [Output Routing Enum
-(`0x29`)](#output-routing-enum-0x29).
+(`0x29`)](#output-routing-enum).
 
-### Secondary Output (`0x2D`)
+### Secondary Output
+
+**Live edit:** param `0x2D`.
 
 - Per-part **secondary** output routing (Edit Multi). On TI mk2 the same
  setting appears as **Edit Single → Surround → Output** (rear/surround bus);
- see [Surround (Edit Single)](edit-single.md#surround-edit-single).
+ see [Surround (Edit Single)](single/single.md#surround-edit-single).
 - Sent via **`cmd=0x73`**, not `0x72`:
 
  ```text
@@ -217,12 +250,16 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
  Part 1 captures confirmed; Single mode uses **`<part>=0x40`**. Whether other
  Multi parts use a different part byte with the same param is **not confirmed**.
 
-- Dump correlation: **not in `DUMP_MULTI`** (hardware-tested: `73 00 2D`
- Off/`01`, and `72 00 2D 01` — no dump change vs INIT baseline).
+- **Not in Multi Dump** — eliminated (hardware-tested: `73 00 2D` and
+  `72 00 2D` — no dump change vs INIT baseline). Same class as Edit Single
+  Surround **Output** (also absent from **Single Dump**). See
+  [multi.md](../dumps/multi.md#secondary-output-not-in-multi-dump).
 - Supported values: see
- [Secondary Output Enum (`0x2D`)](#secondary-output-enum-0x2d).
+ [Secondary Output Enum (`0x2D`)](#secondary-output-enum).
 
-### Panorama (`0x2B`)
+### Panorama
+
+**Live edit:** param `0x2B`.
 
 - Per-part panorama setting.
 - Dump correlation: `0xD8 + part`.
@@ -232,11 +269,13 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
 
 - Observed as global control (`part=00`).
 - Keyboard local / global keyboard behavior (label TBD on panel).
-- On TI desktop module, **`72 00 40` on/off does not change `DUMP_MULTI`**
+- On TI desktop module, **`72 00 40` on/off does not change Multi Dump**
  (hardware-tested).
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
-### Enable (`0x48`)
+### Enable
+
+**Live edit:** param `0x48`.
 
 - Per-part packed-flag control (dump bit **`0x01`**: `0x44` off / `0x45` on
  at INIT).
@@ -244,25 +283,33 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
 - Host **Mute** / **Solo** UIs may toggle this flag.
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
-### Volume RX (`0x49`)
+### Volume RX
+
+**Live edit:** param `0x49`.
 
 - Per-part receive MIDI CC#7.
 - Dump correlation: packed flag at `0xF8 + part` (`+2` when enabled).
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
-### Hold Pedal (`0x4A`)
+### Hold Pedal
+
+**Live edit:** param `0x4A`.
 
 - Per-part sustain pedal behavior (MIDI CC#64).
 - Dump correlation: packed flags at `0xF8 + part`.
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
-### Priority (`0x4D`)
+### Priority
+
+**Live edit:** param `0x4D`.
 
 - Per-part voice priority.
 - Dump correlation: packed flag at `0xF8 + part` (`+0x20` for High).
 - Supported values: see [Priority Enum](#priority-enum).
 
-### Program Change (`0x4E`)
+### Program Change
+
+**Live edit:** param `0x4E`.
 
 - Per-part Program Change response.
 - Dump correlation: packed flag at `0xF8 + part` (`±0x40` behavior).
@@ -278,7 +325,9 @@ The TI manual distinguishes:
 Current live mapping does not fully disambiguate these on all hardware
 variants, so `0x40` remains keyboard-related with target TBD.
 
-### Example messages (`0x72`)
+### Example messages
+
+**Live edit:** param `0x72`.
 
 - `F0 00 20 33 01 00 72 00 25 00 F7` — Part 1 transpose minimum
 - `F0 00 20 33 01 00 72 01 25 7F F7` — Part 2 transpose maximum
@@ -352,7 +401,7 @@ Used by: `0x28`.
 | `01`  | 2            |
 | `0F`  | 16           |
 
-Stored the same way in `DUMP_MULTI` at `0x49 + (part−1)`. Used by: `0x22`.
+Stored the same way in Multi Dump at `0x49 + (part−1)`. Used by: `0x22`.
 
 ### Key Range (direct 7-bit)
 
@@ -362,7 +411,9 @@ Stored the same way in `DUMP_MULTI` at `0x49 + (part−1)`. Used by: `0x22`.
 
 Used by: `0x23` (Low Key), `0x24` (High Key).
 
-### Output Routing Enum (`0x29`)
+### Output Routing Enum
+
+**Live edit:** param `0x29`.
 
 | Value     | Routing          |
 | --------- | ---------------- |
@@ -375,12 +426,14 @@ Used by: `0x23` (Low Key), `0x24` (High Key).
 
 Used by: `0x29`.
 
-### Secondary Output Enum (`0x2D`)
+### Secondary Output Enum
+
+**Live edit:** param `0x2D`.
 
 Full panel labels: [Secondary output
-routing](../parameter-options.md#secondary-output-routing).
+routing](../reference/parameter-options.md#secondary-output-routing).
 **`00`** = Off; otherwise same routes as
-[primary output](#output-routing-enum-0x29), **`stored = primary_index + 1`**
+[primary output](#output-routing-enum), **`stored = primary_index + 1`**
 (through **`12`** = USB 3 R).
 
 Part 1 captures (`cmd=0x73`):

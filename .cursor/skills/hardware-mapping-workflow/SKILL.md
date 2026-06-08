@@ -3,27 +3,26 @@ name: hardware-mapping-workflow
 description: >-
  Maps Access Virus TI mk2 SysEx by hardware capture with sendmidi/receivemidi.
  Use when confirming parameters, live-edit bytes, dump offsets,
- work, panel-to-host capture, or Virus TI USB MIDI testing.
+ work, panel-to-host capture, or MIDI SysEx testing.
 disable-model-invocation: true
 ---
 
 # Hardware mapping workflow
 
-Maps **Virus TI mk2 desktop** SysEx against real hardware. Scope: **`Virus TI
-USB Plugin I/O`** via the TI plugin unless the user says otherwise. **OsTIrus:**
-same bytes, different port — [docs/ostirus.md](../../docs/ostirus.md).
+Maps **Virus TI mk2 desktop** SysEx against real hardware. Use the MIDI port
+from `sendmidi list` / `receivemidi list`. See also
+[OsTIrus](../../docs/misc/ostirus.md).
 
-Install and first message: [docs/setup.md](../../docs/setup.md).
+Install and first message: [README — Setup](../../README.md#setup).
 
 ## Prerequisites
 
-1. Virus TI powered on, USB connected, **`Virus TI USB Plugin I/O`** in port
- lists.
-2. `brew install sendmidi receivemidi` (see Setup doc).
+1. Virus TI powered on, USB connected, target port visible in `sendmidi list`.
+2. `brew install sendmidi receivemidi` (see [README — Setup](../../README.md#setup)).
 3. Agent commands need `required_permissions: ["all"]` (MIDI + `/tmp` capture).
 
 ```bash
-VIRUS_DEV='Virus TI USB Plugin I/O'
+MIDI_DEV='<MIDI port>'
 sendmidi list && receivemidi list
 ```
 
@@ -33,7 +32,7 @@ sendmidi list && receivemidi list
 - Without **`hex`**, decimals corrupt the body (`20` → `0x14`).
 
 ```bash
-sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 72 00 4a 00
+sendmidi dev "$MIDI_DEV" hex syx 00 20 33 01 00 72 00 4a 00
 # → F0 00 20 33 01 00 72 00 4A 00 F7
 ```
 
@@ -54,31 +53,21 @@ index`**. Pause **≥ 1 s** between probe messages. For **EFFECTS**, documents
 
 | Section     | Live edit | Values (confirmed)                                                                                                    |
 | ----------- | --------- | --------------------------------------------------------------------------------------------------------------------- |
-| Oscillators | `71`/`7F` | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/oscillators.md#oscillators-select)                    |
-| Filters     | `71`/`7A` | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/filters.md#filters-select); **disabled** when Vocoder active |
+| Oscillators | `71`/`7F` | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/single/oscillators.md#oscillators-select)                    |
+| Filters     | `71`/`7A` | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/single/filters.md#filters-select); **disabled** when Vocoder active |
 | Effects g1  | `6E`/`75` | `00` Delay … `04` High EQ                                                                                             |
-| Effects g2  | `6E`/`76` | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/effects.md#effects-select)                          |
+| Effects g2  | `6E`/`76` | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/single/effects.md#effects-select)                          |
 
 ```bash
-sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 71 00 7F 01 # Osc 2
-sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 71 00 7A 02 # Filter 1 + 2
-sendmidi dev "$VIRUS_DEV" hex syx 00 20 33 01 00 6E 00 76 02 # Chorus
+sendmidi dev "$MIDI_DEV" hex syx 00 20 33 01 00 71 00 7F 01 # Osc 2
+sendmidi dev "$MIDI_DEV" hex syx 00 20 33 01 00 71 00 7A 02 # Filter 1 + 2
+sendmidi dev "$MIDI_DEV" hex syx 00 20 33 01 00 6E 00 76 02 # Chorus
 ```
 
 ## Before mapping
 
 Set global **MIDI Controller Page A/B** to **SysEx** (not Controller Data) so
-panel edits emit Access SysEx — [edit-config.md](../../docs/live-edit/edit-config.md).
-
-## Confirmation queue
-
-1. Use worksheet rows and prior captures as **hypothesis**.
-2. Confirm on **TI mk2 desktop**; record in TI docs.
-3. Work **one LCD menu** at a time — align with [single.md](../../docs/dumps/single.md) categories.
-4. Finish a menu group before flushing markdown.
-
-Report captures as **`Mode: …` / `Shape: …` / `Control: …` → value`** for
-nested osc menus. Use **+/−** for single steps when possible.
+panel edits emit Access SysEx — [global.md](../../docs/live-edit/global.md).
 
 ## Interactive capture (panel → host)
 
@@ -88,30 +77,16 @@ LCD values only**.
 ```bash
 LOG=/tmp/virus-live-capture.txt
 : > "$LOG"
-receivemidi dev "$VIRUS_DEV" syx 2>&1 | tee -a "$LOG"
+receivemidi dev "$MIDI_DEV" syx 2>&1 | tee -a "$LOG"
 ```
 
 Background shell, `required_permissions: ["all"]`. After each edit: `tail -n 20
 "$LOG"` — use **last** line of a burst; ignore empty `F0 F7`-only unless alone.
 
-### User / agent rules
-
-1. Agent names **category** + **parameter** before each capture.
-2. User edits on Virus (Edit Single, Part 1 unless noted).
-3. **Knob** = many messages → **last** = landing value.
-4. **Ranged** params: capture **several LCD landings** (0 %, 50 %, 100 %, …).
-5. Session notes in chat; **flush to markdown when a menu group is done**.
-6. CC vs SysEx: some controls differ by Page A mode — check
- [control-change.md](../../docs/control-change.md).
-7. **Duplicate LCD / adjacent wire bytes** is normal — document every wire
- `00`–`7F` detent; do not assume one LCD ↔ one byte.
-8. Ignore spurious **Noise Volume** (`70`/`25`) when using VALUE +/− near that
- knob.
-
 ## Dump correlation batches (send → re-dump → diff)
 
-Automated or scripted runs that send live edits and diff **`DUMP_SINGLE`**
-(edit buffer: `30 00 40`, part **`0x40`**) or **`DUMP_MULTI`**.
+Automated or scripted runs that send live edits and diff **Single Dump**
+(edit buffer: `30 00 40`, part **`0x40`**) or **Multi Dump**.
 
 1. Start from a **clean baseline** (e.g. RAM-A slot 127 **`-INIT-`**). A dirty
    edit buffer makes **NONE** look like failure when the sent value already
@@ -148,11 +123,11 @@ Scripts: [artifacts/captures/dump-correlate.sh](../../artifacts/captures/dump-co
 1. Load baseline (e.g. **INIT MULTI** #32); note packed flags **`0x45`** per
  part at `0xF9` / `0x108` in 267-byte dump.
 2. Send **one** `hex syx` live edit; user confirms panel.
-3. Capture `DUMP_MULTI`:
- - Panel: `receivemidi dev "$VIRUS_DEV" dump`
+3. Capture Multi Dump:
+ - Panel: `receivemidi dev "$MIDI_DEV" dump`
  - Request buffer: `sendmidi … 31 00 7f 7c`
  - Bank slot: bank `01`, slot byte, no checksum — see
- [arrangements.md](../../docs/dumps/arrangements.md)
+ [multi.md](../../docs/dumps/multi.md)
 4. Diff payload — **one** offset should change (+ checksum). Prefer Virus
  panel dumps over host export when diffing.
 
@@ -182,15 +157,15 @@ for i, (x, y) in enumerate(zip(a, b)):
 - Dump diff touches **multiple** bytes for one edit.
 - Packed flags not INIT **`0x45`**.
 - No `0x11` / 267-byte reply to `REQUEST_MULTI`.
-- Plugin port missing.
+- MIDI port missing.
 
 ## Doc targets after confirm
 
 | Work            | Update                                                       |
 | --------------- | ------------------------------------------------------------ |
-| Live edit bytes | [docs/live-edit/](../../docs/live-edit/README.md)            |
-| Dump offsets    | [docs/dumps/](../../docs/dumps/README.md)                    |
-| Enum tables     | [docs/parameter-options.md](../../docs/parameter-options.md) |
+| Live edit bytes | [Documentation](../../README.md#documentation)            |
+| Dump offsets    | [Documentation](../../README.md#documentation)                    |
+| Enum tables     | [docs/reference/parameter-options.md](../../docs/reference/parameter-options.md) |
 
 Follow [documentation-standards](../documentation-standards/SKILL.md) when
 writing markdown.
