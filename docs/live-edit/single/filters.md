@@ -11,6 +11,10 @@ Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
 `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
+SysEx examples target the [Single edit buffer](README.md) (**`<part>` =
+**`0x40`**). To edit a Multi part instead, see
+[README — Multi parts](README.md#multi-edit-buffer-parts).
+
 ## Contents
 
 * [SELECT (`71`/`7A`)](#select-717a)
@@ -62,9 +66,9 @@ param **`0x7A`**. Enum:
 | Value encoding | **`00`** Filter 1 · **`01`** Filter 2 · **`02`** Filter 1 + 2 |
 
 ```text
-F0 00 20 33 01 00 71 00 7A 00 F7 # 7A/00 — Filter 1
-F0 00 20 33 01 00 71 00 7A 01 F7 # 7A/01 — Filter 2
-F0 00 20 33 01 00 71 00 7A 02 F7 # 7A/02 — Filter 1 + Filter 2
+F0 00 20 33 01 00 71 40 7A 00 F7 # 7A/00 — Filter 1
+F0 00 20 33 01 00 71 40 7A 01 F7 # 7A/01 — Filter 2
+F0 00 20 33 01 00 71 40 7A 02 F7 # 7A/02 — Filter 1 + Filter 2
 ```
 
 **Not** [Pan Spread](#pan-spread) (`6E`/`7A` — same param byte,
@@ -81,15 +85,15 @@ disabled`**.
 **FILTERS → EDIT → Filter 1 → Cutoff**.
 **`0x28`**.
 
-| Item           | Value                                                    |
-| -------------- | -------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 28 <value> F7`              |
-| Scope (Part 1) | **`0x00`**                                               |
-| Value encoding | Direct **`0`–`127`** (UI **0** → `00`; sweep max → `7F`) |
+| Item                       | Value                                                    |
+| -------------------------- | -------------------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 70 <part> 28 <value> F7`              |
+| Scope (Single edit buffer) | **`0x40`**                                               |
+| Value encoding             | Direct **`0`–`127`** (UI **0** → `00`; sweep max → `7F`) |
 
 ```text
-F0 00 20 33 01 00 70 00 28 00 F7 # Cutoff 0 (landing)
-F0 00 20 33 01 00 70 00 28 7F F7 # Cutoff max (127 on wire)
+F0 00 20 33 01 00 70 40 28 00 F7 # Cutoff 0 (landing)
+F0 00 20 33 01 00 70 40 28 7F F7 # Cutoff max (127 on wire)
 ```
 
 LCD may show **128** at the top of the range; highest byte on the wire is
@@ -108,14 +112,14 @@ byte drives **Vocoder → Q-Factor** instead — see
 for **Q-Factor** also emits **`70`/`2B`** ([Filter 2 Resonance](#filter-2-resonance));
 that second message does **not** change **Q-Factor**.
 
-| Item           | Value                                       |
-| -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 2A <value> F7` |
-| Scope (Part 1) | **`0x00`**                                  |
-| Value encoding | Direct **`0`–`127`** (UI **127** → `7F`)    |
+| Item                       | Value                                       |
+| -------------------------- | ------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 70 <part> 2A <value> F7` |
+| Scope (Single edit buffer) | **`0x40`**                                  |
+| Value encoding             | Direct **`0`–`127`** (UI **127** → `7F`)    |
 
 ```text
-F0 00 20 33 01 00 70 00 2A 7F F7 # Resonance 127 (landing)
+F0 00 20 33 01 00 70 40 2A 7F F7 # Resonance 127 (landing)
 ```
 
 ### Filter 1 Mode
@@ -146,14 +150,14 @@ on/off — analog filtering is selected via Filter 1 mode names (not a VC/CSV
 toggle).
 
 ```text
-F0 00 20 33 01 00 70 00 33 00 F7 # Low Pass
-F0 00 20 33 01 00 70 00 33 01 F7 # High Pass
-F0 00 20 33 01 00 70 00 33 02 F7 # Band Pass
-F0 00 20 33 01 00 70 00 33 03 F7 # Band Stop
-F0 00 20 33 01 00 70 00 33 04 F7 # Analog 1 Pole
-F0 00 20 33 01 00 70 00 33 05 F7 # Analog 2 Pole
-F0 00 20 33 01 00 70 00 33 06 F7 # Analog 3 Pole
-F0 00 20 33 01 00 70 00 33 07 F7 # Analog 4 Pole
+F0 00 20 33 01 00 70 40 33 00 F7 # Low Pass
+F0 00 20 33 01 00 70 40 33 01 F7 # High Pass
+F0 00 20 33 01 00 70 40 33 02 F7 # Band Pass
+F0 00 20 33 01 00 70 40 33 03 F7 # Band Stop
+F0 00 20 33 01 00 70 40 33 04 F7 # Analog 1 Pole
+F0 00 20 33 01 00 70 40 33 05 F7 # Analog 2 Pole
+F0 00 20 33 01 00 70 40 33 06 F7 # Analog 3 Pole
+F0 00 20 33 01 00 70 40 33 07 F7 # Analog 4 Pole
 ```
 
 ### Filter 1 Envelope Amount
@@ -164,11 +168,11 @@ F0 00 20 33 01 00 70 00 33 07 F7 # Analog 4 Pole
 **A**
 index **44** = **`0x2C`**.
 
-| Item           | Value                                                     |
-| -------------- | --------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 2C <value> F7`               |
-| Scope (Part 1) | **`0x00`**                                                |
-| Value encoding | **Linear percent:** `stored = round(percent × 127 / 100)` |
+| Item                       | Value                                                     |
+| -------------------------- | --------------------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 70 <part> 2C <value> F7`               |
+| Scope (Single edit buffer) | **`0x40`**                                                |
+| Value encoding             | **Linear percent:** `stored = round(percent × 127 / 100)` |
 
 | LCD (reported) | `<value>` |
 | -------------- | --------- |
@@ -177,9 +181,9 @@ index **44** = **`0x2C`**.
 | 100.0 %        | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 2C 00 F7 # 0.0 %
-F0 00 20 33 01 00 70 00 2C 40 F7 # 50.0 %
-F0 00 20 33 01 00 70 00 2C 7F F7 # 100.0 %
+F0 00 20 33 01 00 70 40 2C 00 F7 # 0.0 %
+F0 00 20 33 01 00 70 40 2C 40 F7 # 50.0 %
+F0 00 20 33 01 00 70 40 2C 7F F7 # 100.0 %
 ```
 
 ### Filter 1 Keyfollow
@@ -196,11 +200,11 @@ byte drives **Vocoder → Spread** instead — see
 **Spread** also emits **`70`/`2F`** ([Filter 2 Keyfollow](#filter-2-keyfollow));
 that second message does **not** change **Spread**.
 
-| Item           | Value                                             |
-| -------------- | ------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 2E <value> F7`       |
-| Scope (Part 1) | **`0x00`**                                        |
-| Value encoding | **Bipolar:** `stored = ui + 64` (UI **−64..+63**) |
+| Item                       | Value                                             |
+| -------------------------- | ------------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 70 <part> 2E <value> F7`       |
+| Scope (Single edit buffer) | **`0x40`**                                        |
+| Value encoding             | **Bipolar:** `stored = ui + 64` (UI **−64..+63**) |
 
 | LCD (reported) | `<value>` |
 | -------------- | --------- |
@@ -209,9 +213,9 @@ that second message does **not** change **Spread**.
 | +63            | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 2E 00 F7 # −64
-F0 00 20 33 01 00 70 00 2E 40 F7 # +0
-F0 00 20 33 01 00 70 00 2E 7F F7 # +63
+F0 00 20 33 01 00 70 40 2E 00 F7 # −64
+F0 00 20 33 01 00 70 40 2E 40 F7 # +0
+F0 00 20 33 01 00 70 40 2E 7F F7 # +63
 ```
 
 ### Filter 1 Envelope Polarity
@@ -223,11 +227,11 @@ F0 00 20 33 01 00 70 00 2E 7F F7 # +63
 [shared menu note](#filter-envelope-polarity--shared-panel-menus)). Page **B** param
 **`0x1E`** (not **`0x70`**).
 
-| Item           | Value                                               |
-| -------------- | --------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 1E <value> F7`         |
-| Scope (Part 1) | **`0x00`**                                          |
-| Dump offset    | **`0x0A6`** (Single edit buffer **`30 00 40`**)     |
+| Item                       | Value                                               |
+| -------------------------- | --------------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 71 <part> 1E <value> F7`         |
+| Scope (Single edit buffer) | **`0x40`**                                          |
+| Dump offset                | **`0x0A6`** (Single edit buffer **`30 00 40`**)     |
 
 | LCD (reported) | `<value>` |
 | -------------- | --------- |
@@ -235,10 +239,8 @@ F0 00 20 33 01 00 70 00 2E 7F F7 # +63
 | Positive       | `01`      |
 
 ```text
-F0 00 20 33 01 00 71 00 1E 00 F7 # Negative (Multi Part 1)
-F0 00 20 33 01 00 71 00 1E 01 F7 # Positive (Multi Part 1)
-F0 00 20 33 01 00 71 40 1E 00 F7 # Negative (Single edit buffer)
-F0 00 20 33 01 00 71 40 1E 01 F7 # Positive (Single edit buffer)
+F0 00 20 33 01 00 71 40 1E 00 F7 # Negative
+F0 00 20 33 01 00 71 40 1E 01 F7 # Positive
 ```
 
 ### Filter 2 Offset
@@ -250,11 +252,11 @@ F0 00 20 33 01 00 71 40 1E 01 F7 # Positive (Single edit buffer)
 `stored = ui + 64` (same as Filter 1 Keyfollow). No separate Filter 2
 Cutoff on TI.
 
-| Item           | Value                                       |
-| -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 29 <value> F7` |
-| Scope (Part 1) | **`0x00`**                                  |
-| Value encoding | **Bipolar:** `stored = ui + 64`             |
+| Item                       | Value                                       |
+| -------------------------- | ------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 70 <part> 29 <value> F7` |
+| Scope (Single edit buffer) | **`0x40`**                                  |
+| Value encoding             | **Bipolar:** `stored = ui + 64`             |
 
 | LCD | `<value>` |
 | --- | --------- |
@@ -263,9 +265,9 @@ Cutoff on TI.
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 29 00 F7 # −64
-F0 00 20 33 01 00 70 00 29 40 F7 # +0
-F0 00 20 33 01 00 70 00 29 7F F7 # +63
+F0 00 20 33 01 00 70 40 29 00 F7 # −64
+F0 00 20 33 01 00 70 40 29 40 F7 # +0
+F0 00 20 33 01 00 70 40 29 7F F7 # +63
 ```
 
 ### Filter 2 Mode
@@ -284,10 +286,10 @@ F0 00 20 33 01 00 70 00 29 7F F7 # +63
 | Band Stop     | `03`      |
 
 ```text
-F0 00 20 33 01 00 70 00 34 00 F7 # Low Pass
-F0 00 20 33 01 00 70 00 34 01 F7 # High Pass
-F0 00 20 33 01 00 70 00 34 02 F7 # Band Pass
-F0 00 20 33 01 00 70 00 34 03 F7 # Band Stop
+F0 00 20 33 01 00 70 40 34 00 F7 # Low Pass
+F0 00 20 33 01 00 70 40 34 01 F7 # High Pass
+F0 00 20 33 01 00 70 40 34 02 F7 # Band Pass
+F0 00 20 33 01 00 70 40 34 03 F7 # Band Stop
 ```
 
 ### Filter 2 Resonance
@@ -301,11 +303,11 @@ Panel **TX** when adjusting [Vocoder Q-Factor](effects.md#vocoder-q-factor)
 includes this message (linked pair with **`70`/`2A`**) — **ignored** while
 Vocoder is active.
 
-| Item           | Value                                       |
-| -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 2B <value> F7` |
-| Scope (Part 1) | **`0x00`**                                  |
-| Value encoding | Direct **`0`–`127`**                        |
+| Item                       | Value                                       |
+| -------------------------- | ------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 70 <part> 2B <value> F7` |
+| Scope (Single edit buffer) | **`0x40`**                                  |
+| Value encoding             | Direct **`0`–`127`**                        |
 
 | LCD | `<value>` |
 | --- | --------- |
@@ -313,8 +315,8 @@ Vocoder is active.
 | 127 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 2B 00 F7 # 0
-F0 00 20 33 01 00 70 00 2B 7F F7 # 127
+F0 00 20 33 01 00 70 40 2B 00 F7 # 0
+F0 00 20 33 01 00 70 40 2B 7F F7 # 127
 ```
 
 ### Filter 2 Envelope Amount
@@ -324,11 +326,11 @@ F0 00 20 33 01 00 70 00 2B 7F F7 # 127
 **FILTERS → EDIT → Filter 2 → Envelope Amount**.
 **`0x2D`**.
 
-| Item           | Value                                                     |
-| -------------- | --------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 2D <value> F7`               |
-| Scope (Part 1) | **`0x00`**                                                |
-| Value encoding | **Linear percent:** `stored = round(percent × 127 / 100)` |
+| Item                       | Value                                                     |
+| -------------------------- | --------------------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 70 <part> 2D <value> F7`               |
+| Scope (Single edit buffer) | **`0x40`**                                                |
+| Value encoding             | **Linear percent:** `stored = round(percent × 127 / 100)` |
 
 | LCD   | `<value>` |
 | ----- | --------- |
@@ -337,9 +339,9 @@ F0 00 20 33 01 00 70 00 2B 7F F7 # 127
 | 100 % | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 2D 00 F7 # 0 %
-F0 00 20 33 01 00 70 00 2D 40 F7 # 50 %
-F0 00 20 33 01 00 70 00 2D 7F F7 # 100 %
+F0 00 20 33 01 00 70 40 2D 00 F7 # 0 %
+F0 00 20 33 01 00 70 40 2D 40 F7 # 50 %
+F0 00 20 33 01 00 70 40 2D 7F F7 # 100 %
 ```
 
 ### Filter 2 Keyfollow
@@ -353,11 +355,11 @@ Panel **TX** when adjusting [Vocoder Spread](effects.md#vocoder-spread)
 includes this message (linked pair with **`70`/`2E`**) — **ignored** while
 Vocoder is active.
 
-| Item           | Value                                       |
-| -------------- | ------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 70 <part> 2F <value> F7` |
-| Scope (Part 1) | **`0x00`**                                  |
-| Value encoding | **Bipolar:** `stored = ui + 64`             |
+| Item                       | Value                                       |
+| -------------------------- | ------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 70 <part> 2F <value> F7` |
+| Scope (Single edit buffer) | **`0x40`**                                  |
+| Value encoding             | **Bipolar:** `stored = ui + 64`             |
 
 | LCD | `<value>` |
 | --- | --------- |
@@ -366,9 +368,9 @@ Vocoder is active.
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 2F 00 F7 # −64
-F0 00 20 33 01 00 70 00 2F 40 F7 # +0
-F0 00 20 33 01 00 70 00 2F 7F F7 # +63
+F0 00 20 33 01 00 70 40 2F 00 F7 # −64
+F0 00 20 33 01 00 70 40 2F 40 F7 # +0
+F0 00 20 33 01 00 70 40 2F 7F F7 # +63
 ```
 
 ### Filter 2 Envelope Polarity
@@ -379,11 +381,11 @@ F0 00 20 33 01 00 70 00 2F 7F F7 # +63
 (separate wire from Filter 1 **`0x1E`** — see
 [shared menu note](#filter-envelope-polarity--shared-panel-menus)).
 
-| Item           | Value                                               |
-| -------------- | --------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 1F <value> F7`         |
-| Scope (Part 1) | **`0x00`**                                          |
-| Dump offset    | **`0x0A7`** (Single edit buffer **`30 00 40`**)     |
+| Item                       | Value                                               |
+| -------------------------- | --------------------------------------------------- |
+| Message format             | `F0 00 20 33 01 00 71 <part> 1F <value> F7`         |
+| Scope (Single edit buffer) | **`0x40`**                                          |
+| Dump offset                | **`0x0A7`** (Single edit buffer **`30 00 40`**)     |
 
 | LCD (reported) | `<value>` |
 | -------------- | --------- |
@@ -391,10 +393,8 @@ F0 00 20 33 01 00 70 00 2F 7F F7 # +63
 | Positive       | `01`      |
 
 ```text
-F0 00 20 33 01 00 71 00 1F 00 F7 # Negative (Multi Part 1)
-F0 00 20 33 01 00 71 00 1F 01 F7 # Positive (Multi Part 1)
-F0 00 20 33 01 00 71 40 1F 00 F7 # Negative (Single edit buffer)
-F0 00 20 33 01 00 71 40 1F 01 F7 # Positive (Single edit buffer)
+F0 00 20 33 01 00 71 40 1F 00 F7 # Negative
+F0 00 20 33 01 00 71 40 1F 01 F7 # Positive
 ```
 
 ### Filter envelope polarity — shared panel menus
@@ -429,8 +429,8 @@ when editing from either menu may still emit both.
 | Split Mode    | `03`      |
 
 ```text
-F0 00 20 33 01 00 70 00 35 00 F7 # Serial 4
-F0 00 20 33 01 00 70 00 35 03 F7 # Split Mode
+F0 00 20 33 01 00 70 40 35 00 F7 # Serial 4
+F0 00 20 33 01 00 70 40 35 03 F7 # Split Mode
 ```
 
 ### Filter Balance
@@ -459,7 +459,7 @@ to reach **FILTERS** on the panel.
 | On  | `01`      | ✓             |
 
 ```text
-F0 00 20 33 01 00 71 40 20 00 F7 # Off (Single edit buffer)
+F0 00 20 33 01 00 71 40 20 00 F7 # Off
 F0 00 20 33 01 00 71 40 20 01 F7 # On
 ```
 
@@ -501,8 +501,8 @@ TI control. **Only on the panel when
 | 127 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 6E 00 7A 00 F7 # 0
-F0 00 20 33 01 00 6E 00 7A 7F F7 # 127
+F0 00 20 33 01 00 6E 40 7A 00 F7 # 0
+F0 00 20 33 01 00 6E 40 7A 7F F7 # 127
 ```
 
 ### Saturation — Osc Volume
@@ -519,18 +519,18 @@ F0 00 20 33 01 00 6E 00 7A 7F F7 # 127
 | `<0>` | `40`      |
 | +63   | `7F`      |
 
-**Also:**
-[Oscillator Section
-Volume](oscillators.md#oscillator-section-volume)
-from **Oscillators → Mixer** uses **`71` / `7F`** (different message). Oscillator
-page **SELECT**: [SELECT (`71`/`7F`)](oscillators.md#select-717f).
+**Also:** [Osc Volume](oscillators.md#osc-volume) from **Oscillators → EDIT →
+Common** uses the same **`70` / `0x24`** wire. [Oscillator Section
+Volume](oscillators.md#oscillator-section-volume) from **Oscillators → Mixer**
+uses **`71` / `7F`** (different message). Oscillator page **SELECT**:
+[SELECT (`71`/`7F`)](oscillators.md#select-717f).
 
 ## Filter 1 envelope (ADSR)
 
 **LCD:** **FILTERS** → **Filter Envelope** — ADSR for **Filter 1** (distinct
 from **Filter 1 → Envelope Amount** `0x2C` on the Filter 1 edit page). Params
 **`0x36`–`0x3A`**. All use **`cmd=0x70`**, scope
-**`0x00`** (Part 1).
+**`0x40`** (Single edit buffer).
 
 ### Attack (`0x36`) / Decay (`0x37`) / Release
 
@@ -569,11 +569,11 @@ from **Filter 1 → Envelope Amount** `0x2C` on the Filter 1 edit page). Params
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 36 00 F7 # Attack 0
-F0 00 20 33 01 00 70 00 37 7F F7 # Decay 127
-F0 00 20 33 01 00 70 00 38 40 F7 # Sustain 50 %
-F0 00 20 33 01 00 70 00 39 40 F7 # Sustain Slope +0
-F0 00 20 33 01 00 70 00 3A 7F F7 # Release 127
+F0 00 20 33 01 00 70 40 36 00 F7 # Attack 0
+F0 00 20 33 01 00 70 40 37 7F F7 # Decay 127
+F0 00 20 33 01 00 70 40 38 40 F7 # Sustain 50 %
+F0 00 20 33 01 00 70 40 39 40 F7 # Sustain Slope +0
+F0 00 20 33 01 00 70 40 3A 7F F7 # Release 127
 ```
 
 ## Amplifier envelope (ADSR)
@@ -581,7 +581,7 @@ F0 00 20 33 01 00 70 00 3A 7F F7 # Release 127
 **LCD:** **Amp Envelope** (Single Edit).
 **`0x3B`–`0x3F`**. Same encodings as [Filter 1
 envelope](#filter-1-envelope-adsr).
-**`cmd=0x70`**, scope **`0x00`** (Part 1).
+**`cmd=0x70`**, scope **`0x40`** (Single edit buffer).
 
 ### Attack (`0x3B`) / Decay (`0x3C`) / Release
 
@@ -620,7 +620,7 @@ envelope](#filter-1-envelope-adsr).
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 3B 7F F7 # Attack 127
-F0 00 20 33 01 00 70 00 3D 40 F7 # Sustain 50 %
-F0 00 20 33 01 00 70 00 3F 00 F7 # Release 0
+F0 00 20 33 01 00 70 40 3B 7F F7 # Attack 127
+F0 00 20 33 01 00 70 40 3D 40 F7 # Sustain 50 %
+F0 00 20 33 01 00 70 40 3F 00 F7 # Release 0
 ```

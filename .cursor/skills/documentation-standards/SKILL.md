@@ -49,6 +49,8 @@ nested READMEs under `docs/`.
 
 * [docs/live-edit/](../../docs/live-edit/)
   * [docs/live-edit/single/](../../docs/live-edit/single/)
+    * [README.md](../../docs/live-edit/single/README.md) — Single edit buffer
+      (`0x40`) vs Multi parts; read first
     * [single.md](../../docs/live-edit/single/single.md) — Common, Unison,
       Envelope 3/4, Velocity Map, Soft Knobs, etc.
     * [oscillators.md](../../docs/live-edit/single/oscillators.md) — Osc 1–3,

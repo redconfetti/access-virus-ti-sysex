@@ -1,7 +1,7 @@
 # Edit Single
 
-Edit Single — **Common**, **Unison**, **Envelope 3/4**, **Velocity Map**, **Soft
-Knobs**, and related patch settings.
+Edit Single — **Common**, **Envelope 3/4**, **Velocity Map**, **Soft Knobs**,
+and related patch settings.
 
 Part of [Documentation](../../../README.md#documentation). Enumerated options:
 [parameter-options.md](../../reference/parameter-options.md).
@@ -11,27 +11,24 @@ Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
 `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
+SysEx examples target the [Single edit buffer](README.md) (**`<part>` =
+**`0x40`**). To edit a Multi part instead, see
+[README — Multi parts](README.md#multi-edit-buffer-parts).
+
 ## Contents
 
 * [Common (Edit Single)](#common-edit-single)
+  * [Multi Tempo / Master Clock](#multi-tempo--master-clock)
+  * [Patch Volume](#patch-volume)
+  * [Panorama](#panorama)
   * [Transpose / Patch Transpose](#transpose--patch-transpose)
   * [Key Mode](#key-mode)
   * [Phase Init](#phase-init)
   * [Portamento](#portamento)
-  * [Punch Intensity](#punch-intensity)
-  * [Osc Volume](#osc-volume)
   * [Smooth Mode](#smooth-mode)
   * [Bend Down](#bend-down)
   * [Bend Up](#bend-up)
   * [Bender Scale](#bender-scale)
-  * [Multi Tempo / Master Clock](#multi-tempo--master-clock)
-  * [Patch Volume](#patch-volume)
-  * [Panorama](#panorama)
-* [Unison](#unison)
-  * [Voices](#voices)
-  * [Detune](#detune)
-  * [Pan Spread](#pan-spread)
-  * [LFO Phase Offset](#lfo-phase-offset)
 * [Envelope 3 (ADSR)](#envelope-3-adsr)
   * [Attack (`0x50`) / Decay (`0x51`) / Release](#attack-0x50--decay-0x51--release)
   * [Sustain](#sustain)
@@ -59,6 +56,91 @@ Per-part **Common** page settings (Edit Single). Pitch-bender and smooth-mode
 bytes **are** stored in **Single Dump**; they are **not** in per-part **Multi Dump** slices — see
 [multis.md](../multis.md).
 
+### Multi Tempo / Master Clock
+
+**Live edit:** `cmd=0x72`, param `0x0F`.
+
+**Edit Single → Common → Multi Tempo** (panel **Master Clock** for the loaded
+Multi). Same live edit as [Master Clock
+Tempo](../multis.md#master-clock-tempo)
+in Edit Multi — global, not per-part.
+
+| BPM | `<value>` |
+| --- | --------- |
+| 63  | `00`      |
+| 120 | `39`      |
+| 190 | `7F`      |
+
+```text
+stored = bpm - 63 # 63..190 → 00..7F
+```
+
+```text
+F0 00 20 33 01 00 72 00 0F 00 F7 # Multi Tempo 63 bpm
+F0 00 20 33 01 00 72 00 0F 39 F7 # Multi Tempo 120 bpm
+F0 00 20 33 01 00 72 00 0F 7F F7 # Multi Tempo 190 bpm
+```
+
+Dump offset in **Multi Dump**: **`0x18`** (`stored` same; follows name at
+`0x0D`–`0x16` and null at `0x17`).
+
+### Patch Volume
+
+**Live edit:** `cmd=0x70`, param `0x5B` (CC 91).
+
+**Edit Single → Common → Patch Volume**. Page A param **`0x5B`** (decimal **91**
+= CC number). Panel **0..127**; wire matches LCD (**not** a percent curve).
+Dump offset **`0x063`** (`-INIT-` default **`0x64`** = 100).
+
+| LCD | `<value>` |
+| --- | --------- |
+| 0   | `00`      |
+| 127 | `7F`      |
+
+```text
+stored = lcd # 0..127
+```
+
+With **Page A = Controller Data**, the panel sends **CC 91** instead of SysEx.
+Distinct from Multi **Part Level** (`0x99 + part` / live `0x27`).
+
+```text
+F0 00 20 33 01 00 70 40 5B 00 F7 # Patch Volume 0
+F0 00 20 33 01 00 70 40 5B 7F F7 # Patch Volume 127
+```
+
+### Panorama
+
+**Live edit:** `cmd=0x70`, param `0x0A` (CC 10).
+
+**Edit Single → Common → Panorama**. Page A param **`0x0A`** (decimal **10** =
+CC number). Bipolar pan **−64..+63** (panel **L< 100.0 %** … **100.0 % >R**):
+`stored = ui + 64`. Dump offset **`0x012`**.
+
+| LCD (reported) | `<value>` |
+| -------------- | --------- |
+| L< 100.0 %     | `00`      |
+| `<0>`          | `40`      |
+| 100.0 % >R     | `7F`      |
+
+Full **wire → LCD** table (**`00`–`7F`**, hardware-confirmed): [Panorama
+LCD](../../reference/parameter-options.md#edit-single--panorama-lcd).
+Right **`41`–`7E`** mirrors left **`0x80 − R`** (`L<` → `% >R`); endpoints
+**`00`** /
+**`7F`** = **100.0 %**.
+
+```text
+F0 00 20 33 01 00 70 40 0A 00 F7 # Panorama L< 100.0 %
+F0 00 20 33 01 00 70 40 0A 01 F7 # Panorama L< 98.4 %
+F0 00 20 33 01 00 70 40 0A 40 F7 # Panorama <0>
+F0 00 20 33 01 00 70 40 0A 7E F7 # Panorama 96.9 % >R
+F0 00 20 33 01 00 70 40 0A 7F F7 # Panorama 100.0 % >R
+```
+
+With **Page A = Controller Data**, the panel sends **CC 10** instead of SysEx.
+Distinct from **Velocity → Panorama** (`71`/`3D`) and Edit Multi panorama
+(`72`/`2B`).
+
 ### Transpose / Patch Transpose
 
 **Live edit:** `cmd=0x70`, param `0x5D` (CC 93).
@@ -77,9 +159,9 @@ With **Page A = Controller Data**, the panel sends **CC 93** instead of SysEx.
 Distinct from Edit Multi **Transpose** (`72` / `0x25`, dump `0x79 + part`).
 
 ```text
-F0 00 20 33 01 00 70 00 5D 00 F7 # Transpose −64
-F0 00 20 33 01 00 70 00 5D 40 F7 # Transpose +0
-F0 00 20 33 01 00 70 00 5D 7F F7 # Transpose +63
+F0 00 20 33 01 00 70 40 5D 00 F7 # Transpose −64
+F0 00 20 33 01 00 70 40 5D 40 F7 # Transpose +0
+F0 00 20 33 01 00 70 40 5D 7F F7 # Transpose +63
 ```
 
 Full wire map:
@@ -133,9 +215,9 @@ Panel **Off**, then **1..127**.
 | 127 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 71 00 23 00 F7 # Phase Init Off
-F0 00 20 33 01 00 71 00 23 01 F7 # Phase Init 1
-F0 00 20 33 01 00 71 00 23 7F F7 # Phase Init 127
+F0 00 20 33 01 00 71 40 23 00 F7 # Phase Init Off
+F0 00 20 33 01 00 71 40 23 01 F7 # Phase Init 1
+F0 00 20 33 01 00 71 40 23 7F F7 # Phase Init 127
 ```
 
 ### Portamento
@@ -157,65 +239,9 @@ stored = lcd # 1..127; 00 = Off
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 05 00 F7 # Portamento Off
-F0 00 20 33 01 00 70 00 05 01 F7 # Portamento 1
-F0 00 20 33 01 00 70 00 05 7F F7 # Portamento 127
-```
-
-### Punch Intensity
-
-**Live edit:** `cmd=0x71`, param `0x24`.
-
-**Oscillators → Punch → Punch Intensity**. Page B param **`0x24`**. Panel **0.0..100.0 %** — **not** the same byte as
-[Osc Volume](#osc-volume) (`cmd=0x70`).
-
-```text
-for 00h..7Eh: pct = stored × 100 / 128
-for 7Fh: pct = 100.0 %
-stored = round(pct × 128 / 100) # cap at 7Fh for 100.0 %
-```
-
-Eighth-step anchors (hardware LCD, 2026-06):
-
-| Wire | LCD %  | Wire | LCD %   |
-| ---- | ------ | ---- | ------- |
-| `00` | 0.0 %  | `20` | 25.0 %  |
-| `03` | 2.3 %  | `30` | 37.5 %  |
-| `09` | 7.0 %  | `40` | 50.0 %  |
-| `10` | 12.5 % | `50` | 62.5 %  |
-| `11` | 13.4 % | `60` | 75.0 %  |
-| `1C` | 21.9 % | `70` | 87.5 %  |
-| `1A` | 20.3 % | `78` | 93.8 %  |
-| `7E` | 98.4 % | `7F` | 100.0 % |
-
-**LCD quirk:** at **`04`** the panel showed **3.9 %** (expected **3.1 %** from
-`× 100 / 128`); at **`05`** it showed **3.1 %** (expected **3.9 %**) — labels
-appear **swapped** for that pair only; wire bytes still follow the `/128` curve.
-
-```text
-F0 00 20 33 01 00 71 00 24 00 F7 # Punch 0.0 %
-F0 00 20 33 01 00 71 00 24 40 F7 # Punch 50.0 %
-F0 00 20 33 01 00 71 00 24 7F F7 # Punch 100.0 %
-```
-
-### Osc Volume
-
-**Live edit:** `cmd=0x70`, param `0x24`.
-
-**Oscillators → EDIT → Common → Osc Volume**. Same parameter as
-[Saturation — Osc Volume](filters.md#saturation--osc-volume):
-panel **−64..+63**, wire **`stored = ui + 64`**.
-
-| LCD | `<value>` |
-| --- | --------- |
-| −64 | `00`      |
-| 0   | `40`      |
-| +63 | `7F`      |
-
-```text
-F0 00 20 33 01 00 70 00 24 00 F7 # Osc Volume −64
-F0 00 20 33 01 00 70 00 24 40 F7 # Osc Volume 0
-F0 00 20 33 01 00 70 00 24 7F F7 # Osc Volume +63
+F0 00 20 33 01 00 70 40 05 00 F7 # Portamento Off
+F0 00 20 33 01 00 70 40 05 01 F7 # Portamento 1
+F0 00 20 33 01 00 70 40 05 7F F7 # Portamento 127
 ```
 
 ### Smooth Mode
@@ -229,9 +255,9 @@ quantize](../../reference/parameter-options.md#control-smooth-mode--clock-quanti
 Dump offset **`0x0A1`**.
 
 ```text
-F0 00 20 33 01 00 71 00 19 00 F7 # Off
-F0 00 20 33 01 00 71 00 19 04 F7 # Quantise 1/64
-F0 00 20 33 01 00 71 00 19 14 F7 # Quantise 1/1
+F0 00 20 33 01 00 71 40 19 00 F7 # Off
+F0 00 20 33 01 00 71 40 19 04 F7 # Quantise 1/64
+F0 00 20 33 01 00 71 40 19 14 F7 # Quantise 1/1
 ```
 
 Some hosts cannot send **Off** (`00`). Do not confuse with global **All EQs**
@@ -251,9 +277,9 @@ Edit Single → Common → **Bend Down** (Page B **#27**). **−64..+63** →
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 71 00 1B 00 F7 # Bend Down −64
-F0 00 20 33 01 00 71 00 1B 40 F7 # Bend Down +0
-F0 00 20 33 01 00 71 00 1B 7F F7 # Bend Down +63
+F0 00 20 33 01 00 71 40 1B 00 F7 # Bend Down −64
+F0 00 20 33 01 00 71 40 1B 40 F7 # Bend Down +0
+F0 00 20 33 01 00 71 40 1B 7F F7 # Bend Down +63
 ```
 
 ### Bend Up
@@ -270,9 +296,9 @@ Dump offset **`0x0A2`**.
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 71 00 1A 00 F7 # Bend Up −64
-F0 00 20 33 01 00 71 00 1A 40 F7 # Bend Up +0
-F0 00 20 33 01 00 71 00 1A 7F F7 # Bend Up +63
+F0 00 20 33 01 00 71 40 1A 00 F7 # Bend Up −64
+F0 00 20 33 01 00 71 40 1A 40 F7 # Bend Up +0
+F0 00 20 33 01 00 71 40 1A 7F F7 # Bend Up +63
 ```
 
 Also documented for Edit Multi: [multis.md — Bend Up / Bend
@@ -291,194 +317,8 @@ see [Bender Scale](../../reference/parameter-options.md#bender-scale). Dump offs
 | Exponential | `01`      |
 
 ```text
-F0 00 20 33 01 00 71 00 1C 00 F7 # Linear
-F0 00 20 33 01 00 71 00 1C 01 F7 # Exponential
-```
-
-### Multi Tempo / Master Clock
-
-**Live edit:** `cmd=0x72`, param `0x0F`.
-
-**Edit Single → Common → Multi Tempo** (panel **Master Clock** for the loaded
-Multi). Same live edit as [Master Clock
-Tempo](../multis.md#master-clock-tempo)
-in Edit Multi — global, not per-part.
-
-| BPM | `<value>` |
-| --- | --------- |
-| 63  | `00`      |
-| 120 | `39`      |
-| 190 | `7F`      |
-
-```text
-stored = bpm - 63 # 63..190 → 00..7F
-```
-
-```text
-F0 00 20 33 01 00 72 00 0F 00 F7 # Multi Tempo 63 bpm
-F0 00 20 33 01 00 72 00 0F 39 F7 # Multi Tempo 120 bpm
-F0 00 20 33 01 00 72 00 0F 7F F7 # Multi Tempo 190 bpm
-```
-
-Dump offset in **Multi Dump**: **`0x18`** (`stored` same; follows name at
-`0x0D`–`0x16` and null at `0x17`).
-
-### Patch Volume
-
-**Live edit:** `cmd=0x70`, param `0x5B` (CC 91).
-
-**Edit Single → Common → Patch Volume**. Page A param **`0x5B`** (decimal **91**
-= CC number). Panel **0..127**; wire matches LCD (**not** a percent curve).
-Dump offset **`0x063`** (`-INIT-` default **`0x64`** = 100).
-
-| LCD | `<value>` |
-| --- | --------- |
-| 0   | `00`      |
-| 127 | `7F`      |
-
-```text
-stored = lcd # 0..127
-```
-
-With **Page A = Controller Data**, the panel sends **CC 91** instead of SysEx.
-Distinct from Multi **Part Level** (`0x99 + part` / live `0x27`).
-
-```text
-F0 00 20 33 01 00 70 00 5B 00 F7 # Patch Volume 0
-F0 00 20 33 01 00 70 00 5B 7F F7 # Patch Volume 127
-```
-
-### Panorama
-
-**Live edit:** `cmd=0x70`, param `0x0A` (CC 10).
-
-**Edit Single → Common → Panorama**. Page A param **`0x0A`** (decimal **10** =
-CC number). Bipolar pan **−64..+63** (panel **L< 100.0 %** … **100.0 % >R**):
-`stored = ui + 64`. Dump offset **`0x012`**.
-
-| LCD (reported) | `<value>` |
-| -------------- | --------- |
-| L< 100.0 %     | `00`      |
-| `<0>`          | `40`      |
-| 100.0 % >R     | `7F`      |
-
-Full **wire → LCD** table (**`00`–`7F`**, hardware-confirmed): [Panorama
-LCD](../../reference/parameter-options.md#edit-single--panorama-lcd).
-Right **`41`–`7E`** mirrors left **`0x80 − R`** (`L<` → `% >R`); endpoints
-**`00`** /
-**`7F`** = **100.0 %**.
-
-```text
-F0 00 20 33 01 00 70 00 0A 00 F7 # Panorama L< 100.0 %
-F0 00 20 33 01 00 70 00 0A 01 F7 # Panorama L< 98.4 %
-F0 00 20 33 01 00 70 00 0A 40 F7 # Panorama <0>
-F0 00 20 33 01 00 70 00 0A 7E F7 # Panorama 96.9 % >R
-F0 00 20 33 01 00 70 00 0A 7F F7 # Panorama 100.0 % >R
-```
-
-With **Page A = Controller Data**, the panel sends **CC 10** instead of SysEx.
-Distinct from **Velocity → Panorama** (`71`/`3D`) and Edit Multi panorama
-(`72`/`2B`).
-
-## Unison
-
-**Edit Single → Unison** — top-level **Edit Single** sub-menu. **Not** under
-**EDIT OSC** (Osc 1 / Osc 2 / Ring Mod / Noise / Common). No oscillator mode
-must be enabled first: set **Voices** to **Off** or **Twin**–**8** directly from
-this menu.
-
-Stacks **extra detuned copies** of the whole oscillator section for the patch
-(not per-osc **Sync** on Osc 2). Live edit uses **`cmd=0x6F`**, params
-**`0x78`–`0x7B`**. Older docs wrongly listed **`cmd=0x70` / `0x61`–`0x64`**
-(CC numbers mistaken for param bytes — same class of error as Ring Mod
-**`0x26`** vs **`0x32`**).
-
-**`<part>`:** Multi Part *n* → **`0x00`–`0x0F`**; Single edit buffer →
-**`0x40`**.
-
-**Single Dump offsets** (Single edit buffer **`30 00 40`**):
-**`0x201`** Voices · **`0x202`** Detune · **`0x203`** Pan Spread ·
-**`0x204`** LFO Phase.
-
-### Voices
-
-**Live edit:** `cmd=0x6F`, param `0x78`.
-
-Panel **Voices**.
-
-| LCD  | `<value>` |
-| ---- | --------- |
-| Off  | `00`      |
-| Twin | `01`      |
-| 3    | `02`      |
-| 4    | `03`      |
-| 5    | `04`      |
-| 6    | `05`      |
-| 7    | `06`      |
-| 8    | `07`      |
-
-```text
-F0 00 20 33 01 00 6F 00 78 00 F7 # Voices Off (Multi Part 1)
-F0 00 20 33 01 00 6F 00 78 07 F7 # Voices 8 (Multi Part 1)
-F0 00 20 33 01 00 6F 40 78 00 F7 # Voices Off (Single edit buffer)
-F0 00 20 33 01 00 6F 40 78 07 F7 # Voices 8 (Single edit buffer)
-```
-
-When **Voices** is **Twin** (`01`) or higher, **Detune** appears on the panel.
-When **Off**, **Detune** is hidden (wire value may still be stored).
-
-### Detune
-
-**Live edit:** `cmd=0x6F`, param `0x79`.
-
-**0..127** → `stored = lcd`. Panel visible only when **Voices** ≥ **Twin**.
-
-| LCD | `<value>` |
-| --- | --------- |
-| 0   | `00`      |
-| 127 | `7F`      |
-
-```text
-F0 00 20 33 01 00 6F 00 79 00 F7 # Detune 0 (Multi Part 1)
-F0 00 20 33 01 00 6F 40 79 00 F7 # Detune 0 (Single edit buffer)
-F0 00 20 33 01 00 6F 40 79 7F F7 # Detune 127 (Single edit buffer)
-```
-
-### Pan Spread
-
-**Live edit:** `cmd=0x6F`, param `0x7A`.
-
-Panel **0.0..100.0 %** — always visible (even when **Voices** = **Off**).
-
-```text
-for 00h..7Eh: pct = stored × 100 / 128
-for 7Fh: pct = 100.0 %
-```
-
-```text
-F0 00 20 33 01 00 6F 00 7A 00 F7 # Pan Spread 0.0 % (Multi Part 1)
-F0 00 20 33 01 00 6F 00 7A 7F F7 # Pan Spread 100.0 % (Multi Part 1)
-F0 00 20 33 01 00 6F 40 7A 7F F7 # Pan Spread 100.0 % (Single edit buffer)
-```
-
-**Not** Filter Common **Pan Spread** (`6E`/`7A` under Split routing).
-
-### LFO Phase Offset
-
-**Live edit:** `cmd=0x6F`, param `0x7B`.
-
-Panel **Unison LFO Phase**. **−64..+63** → `stored = ui + 64`.
-
-| LCD | `<value>` |
-| --- | --------- |
-| −64 | `00`      |
-| 0   | `40`      |
-| +63 | `7F`      |
-
-```text
-F0 00 20 33 01 00 6F 40 7B 00 F7 # LFO Phase −64
-F0 00 20 33 01 00 6F 40 7B 40 F7 # LFO Phase 0
-F0 00 20 33 01 00 6F 40 7B 7F F7 # LFO Phase +63
+F0 00 20 33 01 00 71 40 1C 00 F7 # Linear
+F0 00 20 33 01 00 71 40 1C 01 F7 # Exponential
 ```
 
 ## Envelope 3 (ADSR)
@@ -503,12 +343,12 @@ but on the **part edit buffer** — **`cmd=0x6E`**, not **`cmd=0x70`**.
 **Edit Single → Envelope 3** — Attack, Decay, Release. Direct **0–127** (UI matches wire).
 
 ```text
-F0 00 20 33 01 00 6E 00 50 00 F7 # Attack 0
-F0 00 20 33 01 00 6E 00 50 7F F7 # Attack 127
-F0 00 20 33 01 00 6E 00 51 00 F7 # Decay 0
-F0 00 20 33 01 00 6E 00 51 7F F7 # Decay 127
-F0 00 20 33 01 00 6E 00 54 00 F7 # Release 0
-F0 00 20 33 01 00 6E 00 54 7F F7 # Release 127
+F0 00 20 33 01 00 6E 40 50 00 F7 # Attack 0
+F0 00 20 33 01 00 6E 40 50 7F F7 # Attack 127
+F0 00 20 33 01 00 6E 40 51 00 F7 # Decay 0
+F0 00 20 33 01 00 6E 40 51 7F F7 # Decay 127
+F0 00 20 33 01 00 6E 40 54 00 F7 # Release 0
+F0 00 20 33 01 00 6E 40 54 7F F7 # Release 127
 ```
 
 ### Sustain
@@ -536,12 +376,12 @@ F0 00 20 33 01 00 6E 00 54 7F F7 # Release 127
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 6E 00 52 00 F7 # Sustain 0 %
-F0 00 20 33 01 00 6E 00 52 40 F7 # Sustain 50.0 %
-F0 00 20 33 01 00 6E 00 52 7F F7 # Sustain 100.0 %
-F0 00 20 33 01 00 6E 00 53 00 F7 # Sustain Slope −64
-F0 00 20 33 01 00 6E 00 53 40 F7 # Sustain Slope +0
-F0 00 20 33 01 00 6E 00 53 7F F7 # Sustain Slope +63
+F0 00 20 33 01 00 6E 40 52 00 F7 # Sustain 0 %
+F0 00 20 33 01 00 6E 40 52 40 F7 # Sustain 50.0 %
+F0 00 20 33 01 00 6E 40 52 7F F7 # Sustain 100.0 %
+F0 00 20 33 01 00 6E 40 53 00 F7 # Sustain Slope −64
+F0 00 20 33 01 00 6E 40 53 40 F7 # Sustain Slope +0
+F0 00 20 33 01 00 6E 40 53 7F F7 # Sustain Slope +63
 ```
 
 ## Envelope 4 (ADSR)
@@ -564,12 +404,12 @@ layout as [Envelope 3](#envelope-3-adsr), next param block **`0x55`–`0x59`**.
 **Edit Single → Envelope 4** — Attack, Decay, Release. Direct **0–127** (UI matches wire).
 
 ```text
-F0 00 20 33 01 00 6E 00 55 00 F7 # Attack 0
-F0 00 20 33 01 00 6E 00 55 7F F7 # Attack 127
-F0 00 20 33 01 00 6E 00 56 00 F7 # Decay 0
-F0 00 20 33 01 00 6E 00 56 7F F7 # Decay 127
-F0 00 20 33 01 00 6E 00 59 00 F7 # Release 0
-F0 00 20 33 01 00 6E 00 59 7F F7 # Release 127
+F0 00 20 33 01 00 6E 40 55 00 F7 # Attack 0
+F0 00 20 33 01 00 6E 40 55 7F F7 # Attack 127
+F0 00 20 33 01 00 6E 40 56 00 F7 # Decay 0
+F0 00 20 33 01 00 6E 40 56 7F F7 # Decay 127
+F0 00 20 33 01 00 6E 40 59 00 F7 # Release 0
+F0 00 20 33 01 00 6E 40 59 7F F7 # Release 127
 ```
 
 ### Sustain
@@ -597,12 +437,12 @@ F0 00 20 33 01 00 6E 00 59 7F F7 # Release 127
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 6E 00 57 00 F7 # Sustain 0 %
-F0 00 20 33 01 00 6E 00 57 40 F7 # Sustain 50.0 %
-F0 00 20 33 01 00 6E 00 57 7F F7 # Sustain 100.0 %
-F0 00 20 33 01 00 6E 00 58 00 F7 # Sustain Slope −64
-F0 00 20 33 01 00 6E 00 58 40 F7 # Sustain Slope +0
-F0 00 20 33 01 00 6E 00 58 7F F7 # Sustain Slope +63
+F0 00 20 33 01 00 6E 40 57 00 F7 # Sustain 0 %
+F0 00 20 33 01 00 6E 40 57 40 F7 # Sustain 50.0 %
+F0 00 20 33 01 00 6E 40 57 7F F7 # Sustain 100.0 %
+F0 00 20 33 01 00 6E 40 58 00 F7 # Sustain Slope −64
+F0 00 20 33 01 00 6E 40 58 40 F7 # Sustain Slope +0
+F0 00 20 33 01 00 6E 40 58 7F F7 # Sustain Slope +63
 ```
 
 **Note:** **`cmd=0x6F`** **`7C`/`7D`/`7E`** are **Inputs** (see
@@ -643,15 +483,14 @@ firmware. There is **no** separate **FM/Sync** row — **FM Amount** applies
 regardless of Osc **Sync** state.
 
 ```text
-F0 00 20 33 01 00 71 00 3C 00 F7 # Volume −100.0 %
-F0 00 20 33 01 00 71 00 3C 40 F7 # Volume 0 %
-F0 00 20 33 01 00 71 00 3C 7F F7 # Volume +100.0 %
-F0 00 20 33 01 00 71 00 32 00 F7 # FM Amount −100.0 %
-F0 00 20 33 01 00 71 00 32 40 F7 # FM Amount 0 %
-F0 00 20 33 01 00 71 00 32 7F F7 # FM Amount +100.0 %
-F0 00 20 33 01 00 71 00 2F 00 F7 # Osc 1 Shape −100.0 %
-F0 00 20 33 01 00 71 00 2F 40 F7 # Osc 1 Shape 0 %
-F0 00 20 33 01 00 71 00 2F 7F F7 # Osc 1 Shape +100.0 %
+F0 00 20 33 01 00 71 40 3C 00 F7 # Volume −100.0 %
+F0 00 20 33 01 00 71 40 3C 40 F7 # Volume 0 %
+F0 00 20 33 01 00 71 40 3C 7F F7 # Volume +100.0 %
+F0 00 20 33 01 00 71 40 32 40 F7 # FM Amount 0 %
+F0 00 20 33 01 00 71 40 32 7F F7 # FM Amount +100.0 %
+F0 00 20 33 01 00 71 40 2F 00 F7 # Osc 1 Shape −100.0 %
+F0 00 20 33 01 00 71 40 2F 40 F7 # Osc 1 Shape 0 %
+F0 00 20 33 01 00 71 40 2F 7F F7 # Osc 1 Shape +100.0 %
 ```
 
 Single edit buffer (**`<part>=0x40`**) — same map (spot-check ✓):
@@ -731,9 +570,9 @@ categories](../../reference/parameter-options.md#patch-name-categories)
 (**Off** … **Favourites 3**, `00`–`16`).
 
 ```text
-F0 00 20 33 01 00 71 00 7B 00 F7 # Name Cat 1 Off
-F0 00 20 33 01 00 71 00 7B 01 F7 # Name Cat 1 Acid
-F0 00 20 33 01 00 71 00 7C 16 F7 # Name Cat 2 Favourites 3
+F0 00 20 33 01 00 71 40 7B 00 F7 # Name Cat 1 Off
+F0 00 20 33 01 00 71 40 7B 01 F7 # Name Cat 1 Acid
+F0 00 20 33 01 00 71 40 7C 16 F7 # Name Cat 2 Favourites 3
 ```
 
 ## Soft Knobs (Edit Single)
@@ -775,18 +614,18 @@ above knob 1; sweeping the knob sends **`71`/`65`** (**0 %** → `00`,
 | *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (≠ Function As wire); example → [`65`](#soft-knob-runtime-distortion-intensity)                             |
 
 ```text
-F0 00 20 33 01 00 71 00 3E 57 F7 # Knob 1 Function As Distortion Intensity
-F0 00 20 33 01 00 71 00 65 00 F7 # Distortion Intensity 0 %
-F0 00 20 33 01 00 71 00 65 7F F7 # Distortion Intensity 100.0 %
-F0 00 20 33 01 00 71 00 3E 00 F7 # Knob 1 Function As Off
-F0 00 20 33 01 00 71 00 3E 40 F7 # Aftertouch
-F0 00 20 33 01 00 71 00 3E 7F F7 # Freq Shifter Mix (index 59)
-F0 00 20 33 01 00 71 00 3E 58 F7 # FreqShifter Frequency (index 61)
-F0 00 20 33 01 00 71 00 3E 46 F7 # Velo > Volume (index 127)
-F0 00 20 33 01 00 71 00 33 00 F7 # Name >Para
-F0 00 20 33 01 00 71 00 33 01 F7 # Name +3rds
-F0 00 20 33 01 00 71 00 33 47 F7 # Name Width (wire 47)
-F0 00 20 33 01 00 71 00 33 57 F7 # Name Speaker (wire 57)
+F0 00 20 33 01 00 71 40 3E 57 F7 # Knob 1 Function As Distortion Intensity
+F0 00 20 33 01 00 71 40 65 00 F7 # Distortion Intensity 0 %
+F0 00 20 33 01 00 71 40 65 7F F7 # Distortion Intensity 100.0 %
+F0 00 20 33 01 00 71 40 3E 00 F7 # Knob 1 Function As Off
+F0 00 20 33 01 00 71 40 3E 40 F7 # Aftertouch
+F0 00 20 33 01 00 71 40 3E 7F F7 # Freq Shifter Mix (index 59)
+F0 00 20 33 01 00 71 40 3E 58 F7 # FreqShifter Frequency (index 61)
+F0 00 20 33 01 00 71 40 3E 46 F7 # Velo > Volume (index 127)
+F0 00 20 33 01 00 71 40 33 00 F7 # Name >Para
+F0 00 20 33 01 00 71 40 33 01 F7 # Name +3rds
+F0 00 20 33 01 00 71 40 33 47 F7 # Name Width (wire 47)
+F0 00 20 33 01 00 71 40 33 57 F7 # Name Speaker (wire 57)
 ```
 
 ### Soft Knob 2
@@ -798,11 +637,11 @@ F0 00 20 33 01 00 71 00 33 57 F7 # Name Speaker (wire 57)
 | *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination)                                                                                  |
 
 ```text
-F0 00 20 33 01 00 71 00 3F 00 F7 # Knob 2 Function As Off
-F0 00 20 33 01 00 71 00 3F 46 F7 # Velo > Volume (index 127)
-F0 00 20 33 01 00 71 00 34 00 F7 # Name >Para
-F0 00 20 33 01 00 71 00 34 01 F7 # Name +3rds
-F0 00 20 33 01 00 71 00 34 47 F7 # Name Width
+F0 00 20 33 01 00 71 40 3F 00 F7 # Knob 2 Function As Off
+F0 00 20 33 01 00 71 40 3F 46 F7 # Velo > Volume (index 127)
+F0 00 20 33 01 00 71 40 34 00 F7 # Name >Para
+F0 00 20 33 01 00 71 40 34 01 F7 # Name +3rds
+F0 00 20 33 01 00 71 40 34 47 F7 # Name Width
 ```
 
 ### Soft Knob 3
@@ -814,10 +653,10 @@ F0 00 20 33 01 00 71 00 34 47 F7 # Name Width
 | *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination)                                                                                  |
 
 ```text
-F0 00 20 33 01 00 71 00 40 00 F7 # Knob 3 Function As Off
-F0 00 20 33 01 00 71 00 40 46 F7 # Velo > Volume (index 127)
-F0 00 20 33 01 00 71 00 35 00 F7 # Name >Para
-F0 00 20 33 01 00 71 00 35 47 F7 # Name Width
+F0 00 20 33 01 00 71 40 40 00 F7 # Knob 3 Function As Off
+F0 00 20 33 01 00 71 40 40 46 F7 # Velo > Volume (index 127)
+F0 00 20 33 01 00 71 40 35 00 F7 # Name >Para
+F0 00 20 33 01 00 71 40 35 47 F7 # Name Width
 ```
 
 ### Soft-knob runtime: Distortion Intensity
@@ -842,6 +681,6 @@ When **Function As…** =
 **`7F`**). Destination wire **`57`** ≠ value param **`65`**.
 
 ```text
-F0 00 20 33 01 00 71 00 65 00 F7 # 0 % (soft knob)
-F0 00 20 33 01 00 71 00 65 7F F7 # 100.0 % (soft knob)
+F0 00 20 33 01 00 71 40 65 00 F7 # 0 % (soft knob)
+F0 00 20 33 01 00 71 40 65 7F F7 # 100.0 % (soft knob)
 ```

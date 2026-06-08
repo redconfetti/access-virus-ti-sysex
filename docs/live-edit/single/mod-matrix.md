@@ -14,6 +14,10 @@ All **42** Source / Destination / Amount cells confirmed in **Single Dump**
 Paging: [virus.md](../../misc/virus.md#part--byte). **`cmd`** and **param** depend on **slot** and **row** — there is
 no single global **`41`** / **`42`** pair for all slots.
 
+SysEx examples target the [Single edit buffer](README.md) (**`<part>` =
+**`0x40`**). To edit a Multi part instead, see
+[README — Multi parts](README.md#multi-edit-buffer-parts).
+
 ## Contents
 
 * [Slot layout](#slot-layout)

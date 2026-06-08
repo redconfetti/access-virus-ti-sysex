@@ -6,7 +6,7 @@ assistance from Cursor AI.
 - [Getting started](docs/getting-started.md)
 - [General notes about Virus architecture](docs/misc/virus.md)
 - Live edit
-  - Singles
+  - [Singles](docs/live-edit/single/README.md)
     - [Single](docs/live-edit/single/single.md)
     - [Oscillators](docs/live-edit/single/oscillators.md)
     - [Filters](docs/live-edit/single/filters.md)

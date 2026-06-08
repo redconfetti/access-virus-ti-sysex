@@ -13,6 +13,10 @@ Parameter map: [Single parameter map](../../dumps/single.md#lfo)
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
 `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
+SysEx examples target the [Single edit buffer](README.md) (**`<part>` =
+**`0x40`**). To edit a Multi part instead, see
+[README — Multi parts](README.md#multi-edit-buffer-parts).
+
 Page **B#7–13** (*Lfo3* settings …) dump offsets: see
 [Single parameter map — LFO](../../dumps/single.md#lfo).
 Documented LFO settings: [LFO live edit routing](../../reference/parameter-options.md#lfo-live-edit-routing),

@@ -1,7 +1,7 @@
 # Oscillators
 
 Edit Single — **Oscillators** (Osc 1–3), **Noise**, **Ring Modulator**, **Sub
-Oscillator**, mixer levels.
+Oscillator**, **Punch**, **Osc Volume**, **Unison**, and mixer levels.
 
 Part of [Documentation](../../../README.md#documentation). Enumerated options:
 [parameter-options.md](../../reference/parameter-options.md).
@@ -10,6 +10,10 @@ Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
 `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
+
+SysEx examples target the [Single edit buffer](README.md) (**`<part>` =
+**`0x40`**). To edit a Multi part instead, see
+[README — Multi parts](README.md#multi-edit-buffer-parts).
 
 **LCD:** **OSCILLATORS** → **Oscillator 1** / **2** / **Common** / **Mixer**.
 
@@ -59,8 +63,15 @@ rows that appear on the panel for the active Mode/Shape.
 * [Sub Oscillator](#sub-oscillator)
   * [Sub Oscillator Volume](#sub-oscillator-volume)
   * [Sub Oscillator Shape](#sub-oscillator-shape)
+  * [Punch Intensity](#punch-intensity)
+  * [Osc Volume](#osc-volume)
   * [Mixer (Oscillators menu)](#mixer-oscillators-menu)
   * [Oscillator Section Volume](#oscillator-section-volume)
+* [Unison](#unison)
+  * [Voices](#voices)
+  * [Detune](#detune)
+  * [Pan Spread](#pan-spread)
+  * [LFO Phase Offset](#lfo-phase-offset)
 
 ---
 
@@ -76,9 +87,8 @@ edit page targets. Live edit **`cmd=0x71`**, param **`0x7F`** (Page B). Enum:
 | Value encoding | **`00`** Osc 1 · **`01`** Osc 2 · **`02`** Osc 3 |
 
 ```text
-F0 00 20 33 01 00 71 00 7F 00 F7 # 7F/00 — Oscillator 1
-F0 00 20 33 01 00 71 00 7F 01 F7 # 7F/01 — Oscillator 2
-F0 00 20 33 01 00 71 00 7F 02 F7 # 7F/02 — Oscillator 3
+F0 00 20 33 01 00 71 40 7F 01 F7 # 7F/01 — Oscillator 2
+F0 00 20 33 01 00 71 40 7F 02 F7 # 7F/02 — Oscillator 3
 ```
 
 Same **`cmd`/`param`** as [Oscillator Section
@@ -139,14 +149,14 @@ Modes **`02`–`07`** — fill LCD labels when stepped with **+/−**. Param
 on **`0x6E`** only (not **`0x71`** Filter 1 env polarity).
 
 ```text
-F0 00 20 33 01 00 6E 00 1E 00 F7 # Mode Classic
-F0 00 20 33 01 00 6E 00 1E 01 F7 # Mode Hypersaw
-F0 00 20 33 01 00 6E 00 1E 02 F7 # Mode Wavetable
-F0 00 20 33 01 00 6E 00 1E 03 F7 # Mode Wavetable PWM (panel: Wave PWM)
-F0 00 20 33 01 00 6E 00 1E 04 F7 # Mode Grain Simple
-F0 00 20 33 01 00 6E 00 1E 05 F7 # Mode Grain Complex
-F0 00 20 33 01 00 6E 00 1E 06 F7 # Mode Formant Simple
-F0 00 20 33 01 00 6E 00 1E 07 F7 # Mode Formant Complex
+F0 00 20 33 01 00 6E 40 1E 00 F7 # Mode Classic
+F0 00 20 33 01 00 6E 40 1E 01 F7 # Mode Hypersaw
+F0 00 20 33 01 00 6E 40 1E 02 F7 # Mode Wavetable
+F0 00 20 33 01 00 6E 40 1E 03 F7 # Mode Wavetable PWM (panel: Wave PWM)
+F0 00 20 33 01 00 6E 40 1E 04 F7 # Mode Grain Simple
+F0 00 20 33 01 00 6E 40 1E 05 F7 # Mode Grain Complex
+F0 00 20 33 01 00 6E 40 1E 06 F7 # Mode Formant Simple
+F0 00 20 33 01 00 6E 40 1E 07 F7 # Mode Formant Complex
 ```
 
 ### Oscillator 1 — Classic
@@ -302,19 +312,19 @@ not per-patch default (store test: saved **−21** → `2B`, reload —
 **Semitone** (`14`): **−48..+48** → `stored = semitone + 64` (**`10`..`70`**).
 
 ```text
-F0 00 20 33 01 00 70 00 14 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 14 40 F7 # Semitone +0
-F0 00 20 33 01 00 70 00 14 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 14 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 14 40 F7 # Semitone +0
+F0 00 20 33 01 00 70 40 14 70 F7 # Semitone +48
 ```
 
 **Key Follow** (`15`): **−64..+63** → `stored = ui + 64`. Panel **Norm** labels
 **+32** (wire **`0x60`**) — not the wire center (**+0** @ **`0x40`**).
 
 ```text
-F0 00 20 33 01 00 70 00 15 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 15 40 F7 # Key Follow +0
-F0 00 20 33 01 00 70 00 15 60 F7 # Key Follow Norm (+32)
-F0 00 20 33 01 00 70 00 15 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 15 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 15 40 F7 # Key Follow +0
+F0 00 20 33 01 00 70 40 15 60 F7 # Key Follow Norm (+32)
+F0 00 20 33 01 00 70 40 15 7F F7 # Key Follow +63
 ```
 
 Full wire map:
@@ -331,9 +341,9 @@ pct = stored × 200 / 127 − 100
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 40 F7 # Balance +0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 40 F7 # Balance +0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
 ```
 
 #### Controls at Shape ≥ Sawtooth (`40`)
@@ -362,9 +372,6 @@ map:
 LCD](../../reference/parameter-options.md#osc-1-classic--pulse-width--lcd).
 
 ```text
-F0 00 20 33 01 00 70 00 12 00 F7 # 50.0 %
-F0 00 20 33 01 00 70 00 12 40 F7 # 75.6 %
-F0 00 20 33 01 00 70 00 12 7F F7 # 100 %
 ```
 
 Single edit buffer (**`<part>=0x40`**) — same **`<value>`** map (spot-check ✓):
@@ -412,9 +419,6 @@ LCD](../../reference/parameter-options.md#osc-1-hypersaw--density--lcd).
 (e.g. LCD **3.0** → **`3F`**, not **`20`**).
 
 ```text
-F0 00 20 33 01 00 70 00 11 00 F7 # Density 1.0
-F0 00 20 33 01 00 70 00 11 3F F7 # Density 3.0 (LCD)
-F0 00 20 33 01 00 70 00 11 7F F7 # Density 9.0
 ```
 
 Single edit buffer (**`<part>=0x40`**) — same **`<value>`** map (spot-check ✓):
@@ -443,9 +447,7 @@ lcd = stored
 | 80  | `50`      |
 
 ```text
-F0 00 20 33 01 00 70 00 12 00 F7 # Local Detune 0
-F0 00 20 33 01 00 70 00 12 50 F7 # Local Detune 80
-F0 00 20 33 01 00 70 00 12 7F F7 # Local Detune 127 (max wire)
+F0 00 20 33 01 00 70 40 12 50 F7 # Local Detune 80
 ```
 
 **Sync** (`1C` in Hypersaw): panel **Off** / **On**.
@@ -457,8 +459,6 @@ F0 00 20 33 01 00 70 00 12 7F F7 # Local Detune 127 (max wire)
 | On  | `01`      |
 
 ```text
-F0 00 20 33 01 00 70 00 1C 00 F7 # Sync Off
-F0 00 20 33 01 00 70 00 1C 01 F7 # Sync On
 ```
 
 Single edit buffer (**`<part>=0x40`**) — same **`<value>`** map (spot-check ✓,
@@ -480,9 +480,9 @@ F0 00 20 33 01 00 70 40 1C 01 F7 # Sync On
 | 127 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 1B 00 F7 # Sync Frequency 0
-F0 00 20 33 01 00 70 00 1B 40 F7 # Sync Frequency 64
-F0 00 20 33 01 00 70 00 1B 7F F7 # Sync Frequency 127
+F0 00 20 33 01 00 70 40 1B 00 F7 # Sync Frequency 0
+F0 00 20 33 01 00 70 40 1B 40 F7 # Sync Frequency 64
+F0 00 20 33 01 00 70 40 1B 7F F7 # Sync Frequency 127
 ```
 
 **FilterEnv>Sync** (`1E` when **Sync On**): same wire and **−100..+100 %**
@@ -513,8 +513,6 @@ Hypersaw **Density** / **Sync**.
 anomalies vs **1:1** encoding.
 
 ```text
-F0 00 20 33 01 00 70 00 11 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 11 7F F7 # Index 127
 ```
 
 **Wavetable** (`13`): same Page A index as Classic **Wave Select**. Names:
@@ -522,8 +520,8 @@ F0 00 20 33 01 00 70 00 11 7F F7 # Index 127
 Names](../../reference/parameter-options.md#wavetable-names).
 
 ```text
-F0 00 20 33 01 00 70 00 13 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 13 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 70 40 13 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 13 63 F7 # Wavetable Domina7rix
 ```
 
 **Interpolation** (`6E`/`2C`): part-buffer byte — not **`0x70`** Page A (same
@@ -531,20 +529,20 @@ index as [Filter 1 Envelope Amount](filters.md#filter-1-envelope-amount)
 on **`0x70`**).
 
 ```text
-F0 00 20 33 01 00 6E 00 2C 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 2C 7F F7 # Interpolation 127
+F0 00 20 33 01 00 6E 40 2C 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 2C 7F F7 # Interpolation 127
 ```
 
 **Semitone**, **Key Follow**, **Balance** — same encodings as
 [Classic](#oscillator-1--classic); re-swept in mode **`02`**.
 
 ```text
-F0 00 20 33 01 00 70 00 14 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 14 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 15 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 15 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 14 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 14 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 15 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 15 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
 ```
 
 ### Oscillator 1 — Wavetable PWM
@@ -570,22 +568,18 @@ Width** (**0..127** on **`70`/`12`**).
 | Balance       | `70`  | `21`    | **−100.0 %..+100.0 %**            |
 
 ```text
-F0 00 20 33 01 00 70 00 11 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 11 7F F7 # Index 127
-F0 00 20 33 01 00 70 00 13 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 13 63 F7 # Wavetable Domina7rix
-F0 00 20 33 01 00 70 00 12 00 F7 # Pulse Width 0
-F0 00 20 33 01 00 70 00 12 7F F7 # Pulse Width 127
-F0 00 20 33 01 00 6E 00 2C 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 2C 7F F7 # Interpolation 127
-F0 00 20 33 01 00 6E 00 2B 00 F7 # Local Detune 0
-F0 00 20 33 01 00 6E 00 2B 7F F7 # Local Detune 127
-F0 00 20 33 01 00 70 00 14 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 14 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 15 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 15 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 13 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 13 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 6E 40 2C 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 2C 7F F7 # Interpolation 127
+F0 00 20 33 01 00 6E 40 2B 00 F7 # Local Detune 0
+F0 00 20 33 01 00 6E 40 2B 7F F7 # Local Detune 127
+F0 00 20 33 01 00 70 40 14 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 14 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 15 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 15 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
 ```
 
 **Local Detune** is on **`6E`/`2B`** only in Wave PWM — not **`70`/`12`**
@@ -612,21 +606,19 @@ Resonance](filters.md#filter-1-resonance) on **`0x70`** —
 use **`cmd`** to disambiguate.
 
 ```text
-F0 00 20 33 01 00 70 00 11 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 11 7F F7 # Index 127
-F0 00 20 33 01 00 70 00 13 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 13 63 F7 # Wavetable Domina7rix
-F0 00 20 33 01 00 6E 00 2A 00 F7 # F-Shift −64
-F0 00 20 33 01 00 6E 00 2A 40 F7 # F-Shift +0
-F0 00 20 33 01 00 6E 00 2A 7F F7 # F-Shift +63
-F0 00 20 33 01 00 6E 00 2C 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 2C 7F F7 # Interpolation 127
-F0 00 20 33 01 00 70 00 14 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 14 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 15 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 15 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 13 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 13 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 6E 40 2A 00 F7 # F-Shift −64
+F0 00 20 33 01 00 6E 40 2A 40 F7 # F-Shift +0
+F0 00 20 33 01 00 6E 40 2A 7F F7 # F-Shift +63
+F0 00 20 33 01 00 6E 40 2C 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 2C 7F F7 # Interpolation 127
+F0 00 20 33 01 00 70 40 14 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 14 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 15 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 15 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
 ```
 
 ### Oscillator 1 — Grain Complex
@@ -652,41 +644,39 @@ panel (those appear on Osc 2 grain modes only).
 (**`11`**, **`13`**).
 
 ```text
-F0 00 20 33 01 00 70 00 11 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 11 7F F7 # Index 127
-F0 00 20 33 01 00 70 00 13 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 13 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 70 40 13 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 13 63 F7 # Wavetable Domina7rix
 ```
 
 **F-Shift** (`6E`/`2A`) — same as Grain Simple.
 
 ```text
-F0 00 20 33 01 00 6E 00 2A 00 F7 # F-Shift −64
-F0 00 20 33 01 00 6E 00 2A 7F F7 # F-Shift +63
+F0 00 20 33 01 00 6E 40 2A 00 F7 # F-Shift −64
+F0 00 20 33 01 00 6E 40 2A 7F F7 # F-Shift +63
 ```
 
 **F-Spread** (`6E`/`25`), **Local Detune** (`6E`/`2B`): Grain Complex only.
 **`stored = lcd`**.
 
 ```text
-F0 00 20 33 01 00 6E 00 25 00 F7 # F-Spread 0
-F0 00 20 33 01 00 6E 00 25 7F F7 # F-Spread 127
-F0 00 20 33 01 00 6E 00 2B 00 F7 # Local Detune 0
-F0 00 20 33 01 00 6E 00 2B 7F F7 # Local Detune 127
+F0 00 20 33 01 00 6E 40 25 00 F7 # F-Spread 0
+F0 00 20 33 01 00 6E 40 25 7F F7 # F-Spread 127
+F0 00 20 33 01 00 6E 40 2B 00 F7 # Local Detune 0
+F0 00 20 33 01 00 6E 40 2B 7F F7 # Local Detune 127
 ```
 
 **Interpolation**, **Semitone**, **Key Follow**, **Balance** — re-swept in mode
 **`05`**; same encodings as Wavetable / Classic.
 
 ```text
-F0 00 20 33 01 00 6E 00 2C 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 2C 7F F7 # Interpolation 127
-F0 00 20 33 01 00 70 00 14 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 14 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 15 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 15 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 6E 40 2C 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 2C 7F F7 # Interpolation 127
+F0 00 20 33 01 00 70 40 14 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 14 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 15 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 15 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
 ```
 
 ### Oscillator 1 — Formant Simple
@@ -747,14 +737,14 @@ different mode selector and shifted Page A parameter IDs.
 | Formant Complex | `6E`  | `23`    | `07`      |
 
 ```text
-F0 00 20 33 01 00 6E 00 23 00 F7 # Osc 2 Mode Classic
-F0 00 20 33 01 00 6E 00 23 01 F7 # Osc 2 Mode Hypersaw
-F0 00 20 33 01 00 6E 00 23 02 F7 # Osc 2 Mode Wavetable
-F0 00 20 33 01 00 6E 00 23 03 F7 # Osc 2 Mode Wavetable PWM
-F0 00 20 33 01 00 6E 00 23 04 F7 # Osc 2 Mode Grain Simple
-F0 00 20 33 01 00 6E 00 23 05 F7 # Osc 2 Mode Grain Complex
-F0 00 20 33 01 00 6E 00 23 06 F7 # Osc 2 Mode Formant Simple
-F0 00 20 33 01 00 6E 00 23 07 F7 # Osc 2 Mode Formant Complex
+F0 00 20 33 01 00 6E 40 23 00 F7 # Osc 2 Mode Classic
+F0 00 20 33 01 00 6E 40 23 01 F7 # Osc 2 Mode Hypersaw
+F0 00 20 33 01 00 6E 40 23 02 F7 # Osc 2 Mode Wavetable
+F0 00 20 33 01 00 6E 40 23 03 F7 # Osc 2 Mode Wavetable PWM
+F0 00 20 33 01 00 6E 40 23 04 F7 # Osc 2 Mode Grain Simple
+F0 00 20 33 01 00 6E 40 23 05 F7 # Osc 2 Mode Grain Complex
+F0 00 20 33 01 00 6E 40 23 06 F7 # Osc 2 Mode Formant Simple
+F0 00 20 33 01 00 6E 40 23 07 F7 # Osc 2 Mode Formant Complex
 ```
 
 ### Oscillator 2 — Classic
@@ -805,12 +795,12 @@ F0 00 20 33 01 00 6E 00 23 07 F7 # Osc 2 Mode Formant Complex
 | Pulse         | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 16 00 F7 # Shape Spectral Wave
-F0 00 20 33 01 00 70 00 16 3E F7 # Shape Wave>Saw 97 %
-F0 00 20 33 01 00 70 00 16 3F F7 # Shape Wave>Saw 98 %
-F0 00 20 33 01 00 70 00 16 40 F7 # Shape Sawtooth
-F0 00 20 33 01 00 70 00 16 41 F7 # Shape Saw>Pulse 2 %
-F0 00 20 33 01 00 70 00 16 7F F7 # Shape Pulse
+F0 00 20 33 01 00 70 40 16 00 F7 # Shape Spectral Wave
+F0 00 20 33 01 00 70 40 16 3E F7 # Shape Wave>Saw 97 %
+F0 00 20 33 01 00 70 40 16 3F F7 # Shape Wave>Saw 98 %
+F0 00 20 33 01 00 70 40 16 40 F7 # Shape Sawtooth
+F0 00 20 33 01 00 70 40 16 41 F7 # Shape Saw>Pulse 2 %
+F0 00 20 33 01 00 70 40 16 7F F7 # Shape Pulse
 ```
 
 #### Pulse Width (`0x17`) — Shape ≥ Sawtooth
@@ -829,8 +819,8 @@ LCD](../../reference/parameter-options.md#osc-1-classic--pulse-width--lcd) (same
 behavior).
 
 ```text
-F0 00 20 33 01 00 70 00 17 00 F7 # Pulse Width 50.0 %
-F0 00 20 33 01 00 70 00 17 7F F7 # Pulse Width 100 %
+F0 00 20 33 01 00 70 40 17 00 F7 # Pulse Width 50.0 %
+F0 00 20 33 01 00 70 40 17 7F F7 # Pulse Width 100 %
 ```
 
 #### Wave Select (`0x18`) — Spectral / Wave>Saw region
@@ -849,44 +839,44 @@ wire order as [Osc 1 Wave Select](#controls-at-shape--spectral-wave-00)
 | Wave 64  | `3F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 18 00 F7 # Wave Select Sine
-F0 00 20 33 01 00 70 00 18 01 F7 # Wave Select Triangle
-F0 00 20 33 01 00 70 00 18 07 F7 # Wave Select Wave 8
-F0 00 20 33 01 00 70 00 18 15 F7 # Wave Select Wave 22
-F0 00 20 33 01 00 70 00 18 3F F7 # Wave Select Wave 64
+F0 00 20 33 01 00 70 40 18 00 F7 # Wave Select Sine
+F0 00 20 33 01 00 70 40 18 01 F7 # Wave Select Triangle
+F0 00 20 33 01 00 70 40 18 07 F7 # Wave Select Wave 8
+F0 00 20 33 01 00 70 40 18 15 F7 # Wave Select Wave 22
+F0 00 20 33 01 00 70 40 18 3F F7 # Wave Select Wave 64
 ```
 
 **Semitone** (`19`): **−48..+48** → `stored = semitone + 64`
 (**`10`..`70`**).
 
 ```text
-F0 00 20 33 01 00 70 00 19 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 19 40 F7 # Semitone +0
-F0 00 20 33 01 00 70 00 19 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 19 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 19 40 F7 # Semitone +0
+F0 00 20 33 01 00 70 40 19 70 F7 # Semitone +48
 ```
 
 **Key Follow** (`1F`): **−64..+63** → `stored = ui + 64`
 (**`00`..`7F`**). Panel **Norm** is expected at **+32** → **`60`**.
 
 ```text
-F0 00 20 33 01 00 70 00 1F 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 1F 40 F7 # Key Follow 0
-F0 00 20 33 01 00 70 00 1F 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 1F 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 1F 40 F7 # Key Follow 0
+F0 00 20 33 01 00 70 40 1F 7F F7 # Key Follow +63
 ```
 
 **Balance** (`21`): same oscillator balance encoding as Osc 1 Classic.
 
 ```text
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100 %
-F0 00 20 33 01 00 70 00 21 40 F7 # Balance 0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100 %
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100 %
+F0 00 20 33 01 00 70 40 21 40 F7 # Balance 0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100 %
 ```
 
 **Detune** (`1A`): **0..127** → `stored = lcd`.
 
 ```text
-F0 00 20 33 01 00 70 00 1A 00 F7 # Detune 0
-F0 00 20 33 01 00 70 00 1A 7F F7 # Detune 127
+F0 00 20 33 01 00 70 40 1A 00 F7 # Detune 0
+F0 00 20 33 01 00 70 40 1A 7F F7 # Detune 127
 ```
 
 **FM Mode** (`71`/`22`): Page B enum (not Page A).
@@ -902,13 +892,13 @@ F0 00 20 33 01 00 70 00 1A 7F F7 # Detune 127
 | In R         | `06`      |
 
 ```text
-F0 00 20 33 01 00 71 00 22 00 F7 # FM Mode Pos Triangle
-F0 00 20 33 01 00 71 00 22 01 F7 # FM Mode Triangle
-F0 00 20 33 01 00 71 00 22 02 F7 # FM Mode Wave
-F0 00 20 33 01 00 71 00 22 03 F7 # FM Mode Noise
-F0 00 20 33 01 00 71 00 22 04 F7 # FM Mode In L
-F0 00 20 33 01 00 71 00 22 05 F7 # FM Mode In L+R
-F0 00 20 33 01 00 71 00 22 06 F7 # FM Mode In R
+F0 00 20 33 01 00 71 40 22 00 F7 # FM Mode Pos Triangle
+F0 00 20 33 01 00 71 40 22 01 F7 # FM Mode Triangle
+F0 00 20 33 01 00 71 40 22 02 F7 # FM Mode Wave
+F0 00 20 33 01 00 71 40 22 03 F7 # FM Mode Noise
+F0 00 20 33 01 00 71 40 22 04 F7 # FM Mode In L
+F0 00 20 33 01 00 71 40 22 05 F7 # FM Mode In L+R
+F0 00 20 33 01 00 71 40 22 06 F7 # FM Mode In R
 ```
 
 **FM Amount / Sync Frequency** (`1B`): panel label depends on **Sync** (`1C`).
@@ -919,10 +909,10 @@ F0 00 20 33 01 00 71 00 22 06 F7 # FM Mode In R
 | On       | **Sync Frequency** | **0..127** → `stored = lcd`                          |
 
 ```text
-F0 00 20 33 01 00 70 00 1B 00 F7 # FM Amount 0 % (Sync Off)
-F0 00 20 33 01 00 70 00 1B 7F F7 # FM Amount 100.0 % (Sync Off)
-F0 00 20 33 01 00 70 00 1B 00 F7 # Sync Frequency 0 (Sync On)
-F0 00 20 33 01 00 70 00 1B 7F F7 # Sync Frequency 127 (Sync On)
+F0 00 20 33 01 00 70 40 1B 00 F7 # FM Amount 0 % (Sync Off)
+F0 00 20 33 01 00 70 40 1B 7F F7 # FM Amount 100.0 % (Sync Off)
+F0 00 20 33 01 00 70 40 1B 00 F7 # Sync Frequency 0 (Sync On)
+F0 00 20 33 01 00 70 40 1B 7F F7 # Sync Frequency 127 (Sync On)
 ```
 
 **FilterEnv>Pitch** (`1D`): panel **−100.0..+100.0 %**, wire **`00..7F`**.
@@ -933,9 +923,9 @@ for 7Fh: pct = +100.0 %
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 1D 00 F7 # FilterEnv>Pitch −100.0 %
-F0 00 20 33 01 00 70 00 1D 40 F7 # FilterEnv>Pitch 0 %
-F0 00 20 33 01 00 70 00 1D 7F F7 # FilterEnv>Pitch +100.0 %
+F0 00 20 33 01 00 70 40 1D 00 F7 # FilterEnv>Pitch −100.0 %
+F0 00 20 33 01 00 70 40 1D 40 F7 # FilterEnv>Pitch 0 %
+F0 00 20 33 01 00 70 40 1D 7F F7 # FilterEnv>Pitch +100.0 %
 ```
 
 Button-step anchors:
@@ -976,16 +966,14 @@ for 7Fh: pct = +100.0 %
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 1E 00 F7 # FilterEnv>FM or FilterEnv>Sync −100.0 %
-F0 00 20 33 01 00 70 00 1E 40 F7 # FilterEnv>FM or FilterEnv>Sync 0 %
-F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM or FilterEnv>Sync +100.0 %
+F0 00 20 33 01 00 70 40 1E 00 F7 # FilterEnv>FM or FilterEnv>Sync −100.0 %
+F0 00 20 33 01 00 70 40 1E 40 F7 # FilterEnv>FM or FilterEnv>Sync 0 %
+F0 00 20 33 01 00 70 40 1E 7F F7 # FilterEnv>FM or FilterEnv>Sync +100.0 %
 ```
 
 **Sync** (`1C`): boolean toggle.
 
 ```text
-F0 00 20 33 01 00 70 00 1C 00 F7 # Sync Off
-F0 00 20 33 01 00 70 00 1C 01 F7 # Sync On
 ```
 
 ### Oscillator 2 — Hypersaw
@@ -1020,8 +1008,8 @@ Density LCD](../../reference/parameter-options.md#osc-1-hypersaw--density--lcd) 
 curve).
 
 ```text
-F0 00 20 33 01 00 70 00 16 00 F7 # Density 1.0
-F0 00 20 33 01 00 70 00 16 7F F7 # Density 9.0
+F0 00 20 33 01 00 70 40 16 00 F7 # Density 1.0
+F0 00 20 33 01 00 70 40 16 7F F7 # Density 9.0
 ```
 
 **Local Detune** (`17` in Hypersaw only): same Page A index as Classic **Pulse
@@ -1029,8 +1017,8 @@ Width** — only interpret **`17`** with **Mode `01`**. **0..127** →
 **`stored = lcd`**.
 
 ```text
-F0 00 20 33 01 00 70 00 17 00 F7 # Local Detune 0
-F0 00 20 33 01 00 70 00 17 7F F7 # Local Detune 127
+F0 00 20 33 01 00 70 40 17 00 F7 # Local Detune 0
+F0 00 20 33 01 00 70 40 17 7F F7 # Local Detune 127
 ```
 
 **Sync** (`1C`):
@@ -1041,16 +1029,14 @@ F0 00 20 33 01 00 70 00 17 7F F7 # Local Detune 127
 | On  | `01`      |
 
 ```text
-F0 00 20 33 01 00 70 00 1C 00 F7 # Sync Off
-F0 00 20 33 01 00 70 00 1C 01 F7 # Sync On
 ```
 
 **Sync Frequency** (`1B`, when **Sync On**): **0..127** → `stored = lcd`
 (hardware sweep **`00`–`7F`**).
 
 ```text
-F0 00 20 33 01 00 70 00 1B 00 F7 # Sync Frequency 0
-F0 00 20 33 01 00 70 00 1B 7F F7 # Sync Frequency 127
+F0 00 20 33 01 00 70 40 1B 00 F7 # Sync Frequency 0
+F0 00 20 33 01 00 70 40 1B 7F F7 # Sync Frequency 127
 ```
 
 **Panel note:** **`1E` (FilterEnv>FM / FilterEnv>Sync)** is **Classic-only** on
@@ -1059,11 +1045,11 @@ may still expose **FilterEnv>Sync** on **`1E`** when **Sync On** — see
 [Oscillator 1 — Hypersaw](#oscillator-1--hypersaw).)
 
 ```text
-F0 00 20 33 01 00 70 00 1A 00 F7 # Detune 0
-F0 00 20 33 01 00 70 00 1A 7F F7 # Detune 127
-F0 00 20 33 01 00 70 00 1D 00 F7 # FilterEnv>Pitch −100.0 %
-F0 00 20 33 01 00 70 00 1D 40 F7 # FilterEnv>Pitch 0 %
-F0 00 20 33 01 00 70 00 1D 7F F7 # FilterEnv>Pitch +100.0 %
+F0 00 20 33 01 00 70 40 1A 00 F7 # Detune 0
+F0 00 20 33 01 00 70 40 1A 7F F7 # Detune 127
+F0 00 20 33 01 00 70 40 1D 00 F7 # FilterEnv>Pitch −100.0 %
+F0 00 20 33 01 00 70 40 1D 40 F7 # FilterEnv>Pitch 0 %
+F0 00 20 33 01 00 70 40 1D 7F F7 # FilterEnv>Pitch +100.0 %
 ```
 
 ### Oscillator 2 — Wavetable
@@ -1089,8 +1075,8 @@ index); **`0x18`** = **Wavetable** select.
 **Index** (`16`): **`stored = lcd`** (**`00`–`7F`**).
 
 ```text
-F0 00 20 33 01 00 70 00 16 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 16 7F F7 # Index 127
+F0 00 20 33 01 00 70 40 16 00 F7 # Index 0
+F0 00 20 33 01 00 70 40 16 7F F7 # Index 127
 ```
 
 **Wavetable** (`18`): **`stored`** = table index **`00`–`63`**. Names match
@@ -1098,38 +1084,38 @@ F0 00 20 33 01 00 70 00 16 7F F7 # Index 127
 Names](../../reference/parameter-options.md#wavetable-names) (**Sine** → **Domina7rix**).
 
 ```text
-F0 00 20 33 01 00 70 00 18 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 18 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 70 40 18 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 18 63 F7 # Wavetable Domina7rix
 ```
 
 **Interpolation** (`6E`/`40`): part-buffer byte (not Page A). **`stored =
 lcd`**.
 
 ```text
-F0 00 20 33 01 00 6E 00 40 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 40 7F F7 # Interpolation 127
+F0 00 20 33 01 00 6E 40 40 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 40 7F F7 # Interpolation 127
 ```
 
 **Semitone** (`19`), **Key Follow** (`1F`), **Balance** (`21`) — same encodings
 as [Osc 2 Classic](#oscillator-2--classic) (re-swept in mode **`02`**).
 
 ```text
-F0 00 20 33 01 00 70 00 19 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 19 40 F7 # Semitone +0
-F0 00 20 33 01 00 70 00 19 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 1F 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 1F 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 19 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 19 40 F7 # Semitone +0
+F0 00 20 33 01 00 70 40 19 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 1F 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 1F 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
 ```
 
 **Detune** (`1A`), **FM Amount** (`1B`): **`stored = lcd`** (**`00`–`7F`**).
 
 ```text
-F0 00 20 33 01 00 70 00 1A 00 F7 # Detune 0
-F0 00 20 33 01 00 70 00 1A 7F F7 # Detune 127
-F0 00 20 33 01 00 70 00 1B 00 F7 # FM Amount 0
-F0 00 20 33 01 00 70 00 1B 7F F7 # FM Amount 127
+F0 00 20 33 01 00 70 40 1A 00 F7 # Detune 0
+F0 00 20 33 01 00 70 40 1A 7F F7 # Detune 127
+F0 00 20 33 01 00 70 40 1B 00 F7 # FM Amount 0
+F0 00 20 33 01 00 70 40 1B 7F F7 # FM Amount 127
 ```
 
 **FM Mode** (`71`/`22`): Page B — **only two** options in Wavetable mode (not
@@ -1141,8 +1127,8 @@ the seven **Classic** FM sources on the same param):
 | PhaseMod | `01`      |
 
 ```text
-F0 00 20 33 01 00 71 00 22 00 F7 # FM Mode FreqMod
-F0 00 20 33 01 00 71 00 22 01 F7 # FM Mode PhaseMod
+F0 00 20 33 01 00 71 40 22 00 F7 # FM Mode FreqMod
+F0 00 20 33 01 00 71 40 22 01 F7 # FM Mode PhaseMod
 ```
 
 **FilterEnv>Pitch** (`1D`), **FilterEnv>FM** (`1E`): **−100.0 %..+100.0 %** —
@@ -1150,10 +1136,10 @@ same formula as Osc 2 Classic **FilterEnv>Pitch** / **FilterEnv>FM** (`1D` /
 `1E`).
 
 ```text
-F0 00 20 33 01 00 70 00 1D 00 F7 # FilterEnv>Pitch −100.0 %
-F0 00 20 33 01 00 70 00 1D 7F F7 # FilterEnv>Pitch +100.0 %
-F0 00 20 33 01 00 70 00 1E 00 F7 # FilterEnv>FM −100.0 %
-F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
+F0 00 20 33 01 00 70 40 1D 00 F7 # FilterEnv>Pitch −100.0 %
+F0 00 20 33 01 00 70 40 1D 7F F7 # FilterEnv>Pitch +100.0 %
+F0 00 20 33 01 00 70 40 1E 00 F7 # FilterEnv>FM −100.0 %
+F0 00 20 33 01 00 70 40 1E 7F F7 # FilterEnv>FM +100.0 %
 ```
 
 ### Oscillator 2 — Wavetable PWM
@@ -1186,28 +1172,28 @@ Shape ≥ `40`), Hypersaw **Local Detune** (**0..127**), Wave PWM **Pulse Width*
 **Index**, **Wavetable** — same as Osc 2 Wavetable (**`16`**, **`18`**).
 
 ```text
-F0 00 20 33 01 00 70 00 16 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 16 7F F7 # Index 127
-F0 00 20 33 01 00 70 00 18 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 18 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 70 40 16 00 F7 # Index 0
+F0 00 20 33 01 00 70 40 16 7F F7 # Index 127
+F0 00 20 33 01 00 70 40 18 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 18 63 F7 # Wavetable Domina7rix
 ```
 
 **Pulse Width** (`17` in Wave PWM only): **`stored = lcd`** — not the Classic
 **50.0 %..100 %** curve.
 
 ```text
-F0 00 20 33 01 00 70 00 17 00 F7 # Pulse Width 0
-F0 00 20 33 01 00 70 00 17 7F F7 # Pulse Width 127
+F0 00 20 33 01 00 70 40 17 00 F7 # Pulse Width 0
+F0 00 20 33 01 00 70 40 17 7F F7 # Pulse Width 127
 ```
 
 **Interpolation** (`6E`/`40`), **Local Detune** (`6E`/`3F`): part-buffer;
 **`stored = lcd`**.
 
 ```text
-F0 00 20 33 01 00 6E 00 40 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 40 7F F7 # Interpolation 127
-F0 00 20 33 01 00 6E 00 3F 00 F7 # Local Detune 0
-F0 00 20 33 01 00 6E 00 3F 7F F7 # Local Detune 127
+F0 00 20 33 01 00 6E 40 40 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 40 7F F7 # Interpolation 127
+F0 00 20 33 01 00 6E 40 3F 00 F7 # Local Detune 0
+F0 00 20 33 01 00 6E 40 3F 7F F7 # Local Detune 127
 ```
 
 **Semitone**, **Key Follow**, **Balance**, **Detune**, **FM Amount**,
@@ -1215,22 +1201,22 @@ F0 00 20 33 01 00 6E 00 3F 7F F7 # Local Detune 127
 Classic (re-swept in mode **`03`**).
 
 ```text
-F0 00 20 33 01 00 70 00 19 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 19 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 1F 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 1F 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
-F0 00 20 33 01 00 70 00 1A 00 F7 # Detune 0
-F0 00 20 33 01 00 70 00 1A 7F F7 # Detune 127
-F0 00 20 33 01 00 71 00 22 00 F7 # FM Mode FreqMod
-F0 00 20 33 01 00 71 00 22 01 F7 # FM Mode PhaseMod
-F0 00 20 33 01 00 70 00 1B 00 F7 # FM Amount 0
-F0 00 20 33 01 00 70 00 1B 7F F7 # FM Amount 127
-F0 00 20 33 01 00 70 00 1D 00 F7 # FilterEnv>Pitch −100.0 %
-F0 00 20 33 01 00 70 00 1D 7F F7 # FilterEnv>Pitch +100.0 %
-F0 00 20 33 01 00 70 00 1E 00 F7 # FilterEnv>FM −100.0 %
-F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
+F0 00 20 33 01 00 70 40 19 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 19 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 1F 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 1F 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 1A 00 F7 # Detune 0
+F0 00 20 33 01 00 70 40 1A 7F F7 # Detune 127
+F0 00 20 33 01 00 71 40 22 00 F7 # FM Mode FreqMod
+F0 00 20 33 01 00 71 40 22 01 F7 # FM Mode PhaseMod
+F0 00 20 33 01 00 70 40 1B 00 F7 # FM Amount 0
+F0 00 20 33 01 00 70 40 1B 7F F7 # FM Amount 127
+F0 00 20 33 01 00 70 40 1D 00 F7 # FilterEnv>Pitch −100.0 %
+F0 00 20 33 01 00 70 40 1D 7F F7 # FilterEnv>Pitch +100.0 %
+F0 00 20 33 01 00 70 40 1E 00 F7 # FilterEnv>FM −100.0 %
+F0 00 20 33 01 00 70 40 1E 7F F7 # FilterEnv>FM +100.0 %
 ```
 
 ### Oscillator 2 — Grain Simple
@@ -1257,25 +1243,25 @@ part-buffer **`0x3E`** (Osc 1 Grain Simple uses **`6E`/`2A`**).
 **Index**, **Wavetable** — same as Osc 2 Wavetable.
 
 ```text
-F0 00 20 33 01 00 70 00 16 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 16 7F F7 # Index 127
-F0 00 20 33 01 00 70 00 18 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 18 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 70 40 16 00 F7 # Index 0
+F0 00 20 33 01 00 70 40 16 7F F7 # Index 127
+F0 00 20 33 01 00 70 40 18 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 18 63 F7 # Wavetable Domina7rix
 ```
 
 **F-Shift** (`6E`/`3E`): **−64..+63** → `stored = ui + 64` (**`00`..`7F`**).
 
 ```text
-F0 00 20 33 01 00 6E 00 3E 00 F7 # F-Shift −64
-F0 00 20 33 01 00 6E 00 3E 40 F7 # F-Shift +0
-F0 00 20 33 01 00 6E 00 3E 7F F7 # F-Shift +63
+F0 00 20 33 01 00 6E 40 3E 00 F7 # F-Shift −64
+F0 00 20 33 01 00 6E 40 3E 40 F7 # F-Shift +0
+F0 00 20 33 01 00 6E 40 3E 7F F7 # F-Shift +63
 ```
 
 **Interpolation** (`6E`/`40`): **`stored = lcd`**.
 
 ```text
-F0 00 20 33 01 00 6E 00 40 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 40 7F F7 # Interpolation 127
+F0 00 20 33 01 00 6E 40 40 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 40 7F F7 # Interpolation 127
 ```
 
 **Semitone**, **Key Follow**, **Balance**, **Detune**, **FM Mode**, **FM
@@ -1283,22 +1269,22 @@ Amount**, **FilterEnv>Pitch**, **FilterEnv>FM** — same encodings as Osc 2
 Wavetable (re-swept in mode **`04`**).
 
 ```text
-F0 00 20 33 01 00 70 00 19 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 19 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 1F 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 1F 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
-F0 00 20 33 01 00 70 00 1A 00 F7 # Detune 0
-F0 00 20 33 01 00 70 00 1A 7F F7 # Detune 127
-F0 00 20 33 01 00 71 00 22 00 F7 # FM Mode FreqMod
-F0 00 20 33 01 00 71 00 22 01 F7 # FM Mode PhaseMod
-F0 00 20 33 01 00 70 00 1B 00 F7 # FM Amount 0
-F0 00 20 33 01 00 70 00 1B 7F F7 # FM Amount 127
-F0 00 20 33 01 00 70 00 1D 00 F7 # FilterEnv>Pitch −100.0 %
-F0 00 20 33 01 00 70 00 1D 7F F7 # FilterEnv>Pitch +100.0 %
-F0 00 20 33 01 00 70 00 1E 00 F7 # FilterEnv>FM −100.0 %
-F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
+F0 00 20 33 01 00 70 40 19 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 19 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 1F 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 1F 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 1A 00 F7 # Detune 0
+F0 00 20 33 01 00 70 40 1A 7F F7 # Detune 127
+F0 00 20 33 01 00 71 40 22 00 F7 # FM Mode FreqMod
+F0 00 20 33 01 00 71 40 22 01 F7 # FM Mode PhaseMod
+F0 00 20 33 01 00 70 40 1B 00 F7 # FM Amount 0
+F0 00 20 33 01 00 70 40 1B 7F F7 # FM Amount 127
+F0 00 20 33 01 00 70 40 1D 00 F7 # FilterEnv>Pitch −100.0 %
+F0 00 20 33 01 00 70 40 1D 7F F7 # FilterEnv>Pitch +100.0 %
+F0 00 20 33 01 00 70 40 1E 00 F7 # FilterEnv>FM −100.0 %
+F0 00 20 33 01 00 70 40 1E 7F F7 # FilterEnv>FM +100.0 %
 ```
 
 ### Oscillator 2 — Grain Complex
@@ -1328,46 +1314,46 @@ part-buffer **`0x39`** and **Local Detune** on **`0x3F`** (Osc 1 uses
 **Index**, **Wavetable**, **F-Shift** — same as Grain Simple.
 
 ```text
-F0 00 20 33 01 00 70 00 16 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 16 7F F7 # Index 127
-F0 00 20 33 01 00 70 00 18 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 18 63 F7 # Wavetable Domina7rix
-F0 00 20 33 01 00 6E 00 3E 00 F7 # F-Shift −64
-F0 00 20 33 01 00 6E 00 3E 7F F7 # F-Shift +63
+F0 00 20 33 01 00 70 40 16 00 F7 # Index 0
+F0 00 20 33 01 00 70 40 16 7F F7 # Index 127
+F0 00 20 33 01 00 70 40 18 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 18 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 6E 40 3E 00 F7 # F-Shift −64
+F0 00 20 33 01 00 6E 40 3E 7F F7 # F-Shift +63
 ```
 
 **F-Spread** (`6E`/`39`), **Local Detune** (`6E`/`3F`): Grain Complex only.
 **`stored = lcd`**.
 
 ```text
-F0 00 20 33 01 00 6E 00 39 00 F7 # F-Spread 0
-F0 00 20 33 01 00 6E 00 39 7F F7 # F-Spread 127
-F0 00 20 33 01 00 6E 00 3F 00 F7 # Local Detune 0
-F0 00 20 33 01 00 6E 00 3F 7F F7 # Local Detune 127
+F0 00 20 33 01 00 6E 40 39 00 F7 # F-Spread 0
+F0 00 20 33 01 00 6E 40 39 7F F7 # F-Spread 127
+F0 00 20 33 01 00 6E 40 3F 00 F7 # Local Detune 0
+F0 00 20 33 01 00 6E 40 3F 7F F7 # Local Detune 127
 ```
 
 **Interpolation** (`6E`/`40`) and shared Page A / Page B controls — same as
 Grain Simple / Wavetable (re-swept in mode **`05`**).
 
 ```text
-F0 00 20 33 01 00 6E 00 40 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 40 7F F7 # Interpolation 127
-F0 00 20 33 01 00 70 00 19 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 19 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 1F 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 1F 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
-F0 00 20 33 01 00 70 00 1A 00 F7 # Detune 0
-F0 00 20 33 01 00 70 00 1A 7F F7 # Detune 127
-F0 00 20 33 01 00 71 00 22 00 F7 # FM Mode FreqMod
-F0 00 20 33 01 00 71 00 22 01 F7 # FM Mode PhaseMod
-F0 00 20 33 01 00 70 00 1B 00 F7 # FM Amount 0
-F0 00 20 33 01 00 70 00 1B 7F F7 # FM Amount 127
-F0 00 20 33 01 00 70 00 1D 00 F7 # FilterEnv>Pitch −100.0 %
-F0 00 20 33 01 00 70 00 1D 7F F7 # FilterEnv>Pitch +100.0 %
-F0 00 20 33 01 00 70 00 1E 00 F7 # FilterEnv>FM −100.0 %
-F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
+F0 00 20 33 01 00 6E 40 40 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 40 7F F7 # Interpolation 127
+F0 00 20 33 01 00 70 40 19 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 19 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 1F 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 1F 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 1A 00 F7 # Detune 0
+F0 00 20 33 01 00 70 40 1A 7F F7 # Detune 127
+F0 00 20 33 01 00 71 40 22 00 F7 # FM Mode FreqMod
+F0 00 20 33 01 00 71 40 22 01 F7 # FM Mode PhaseMod
+F0 00 20 33 01 00 70 40 1B 00 F7 # FM Amount 0
+F0 00 20 33 01 00 70 40 1B 7F F7 # FM Amount 127
+F0 00 20 33 01 00 70 40 1D 00 F7 # FilterEnv>Pitch −100.0 %
+F0 00 20 33 01 00 70 40 1D 7F F7 # FilterEnv>Pitch +100.0 %
+F0 00 20 33 01 00 70 40 1E 00 F7 # FilterEnv>FM −100.0 %
+F0 00 20 33 01 00 70 40 1E 7F F7 # FilterEnv>FM +100.0 %
 ```
 
 ### Oscillator 2 — Formant Simple
@@ -1394,30 +1380,30 @@ map as [Osc 2 Grain Simple](#oscillator-2--grain-simple) — no **F-Spread** or
 Same SysEx examples as Grain Simple — re-swept in mode **`06`**:
 
 ```text
-F0 00 20 33 01 00 70 00 16 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 16 7F F7 # Index 127
-F0 00 20 33 01 00 70 00 18 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 18 63 F7 # Wavetable Domina7rix
-F0 00 20 33 01 00 6E 00 3E 00 F7 # F-Shift −64
-F0 00 20 33 01 00 6E 00 3E 7F F7 # F-Shift +63
-F0 00 20 33 01 00 6E 00 40 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 40 7F F7 # Interpolation 127
-F0 00 20 33 01 00 70 00 19 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 19 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 1F 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 1F 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
-F0 00 20 33 01 00 70 00 1A 00 F7 # Detune 0
-F0 00 20 33 01 00 70 00 1A 7F F7 # Detune 127
-F0 00 20 33 01 00 71 00 22 00 F7 # FM Mode FreqMod
-F0 00 20 33 01 00 71 00 22 01 F7 # FM Mode PhaseMod
-F0 00 20 33 01 00 70 00 1B 00 F7 # FM Amount 0
-F0 00 20 33 01 00 70 00 1B 7F F7 # FM Amount 127
-F0 00 20 33 01 00 70 00 1D 00 F7 # FilterEnv>Pitch −100.0 %
-F0 00 20 33 01 00 70 00 1D 7F F7 # FilterEnv>Pitch +100.0 %
-F0 00 20 33 01 00 70 00 1E 00 F7 # FilterEnv>FM −100.0 %
-F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
+F0 00 20 33 01 00 70 40 16 00 F7 # Index 0
+F0 00 20 33 01 00 70 40 16 7F F7 # Index 127
+F0 00 20 33 01 00 70 40 18 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 18 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 6E 40 3E 00 F7 # F-Shift −64
+F0 00 20 33 01 00 6E 40 3E 7F F7 # F-Shift +63
+F0 00 20 33 01 00 6E 40 40 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 40 7F F7 # Interpolation 127
+F0 00 20 33 01 00 70 40 19 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 19 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 1F 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 1F 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 1A 00 F7 # Detune 0
+F0 00 20 33 01 00 70 40 1A 7F F7 # Detune 127
+F0 00 20 33 01 00 71 40 22 00 F7 # FM Mode FreqMod
+F0 00 20 33 01 00 71 40 22 01 F7 # FM Mode PhaseMod
+F0 00 20 33 01 00 70 40 1B 00 F7 # FM Amount 0
+F0 00 20 33 01 00 70 40 1B 7F F7 # FM Amount 127
+F0 00 20 33 01 00 70 40 1D 00 F7 # FilterEnv>Pitch −100.0 %
+F0 00 20 33 01 00 70 40 1D 7F F7 # FilterEnv>Pitch +100.0 %
+F0 00 20 33 01 00 70 40 1E 00 F7 # FilterEnv>FM −100.0 %
+F0 00 20 33 01 00 70 40 1E 7F F7 # FilterEnv>FM +100.0 %
 ```
 
 ### Oscillator 2 — Formant Complex
@@ -1446,34 +1432,34 @@ map as [Osc 2 Grain Complex](#oscillator-2--grain-complex) — adds **F-Spread**
 Same SysEx examples as Grain Complex — re-swept in mode **`07`**:
 
 ```text
-F0 00 20 33 01 00 70 00 16 00 F7 # Index 0
-F0 00 20 33 01 00 70 00 16 7F F7 # Index 127
-F0 00 20 33 01 00 70 00 18 00 F7 # Wavetable Sine
-F0 00 20 33 01 00 70 00 18 63 F7 # Wavetable Domina7rix
-F0 00 20 33 01 00 6E 00 3E 00 F7 # F-Shift −64
-F0 00 20 33 01 00 6E 00 3E 7F F7 # F-Shift +63
-F0 00 20 33 01 00 6E 00 39 00 F7 # F-Spread 0
-F0 00 20 33 01 00 6E 00 39 7F F7 # F-Spread 127
-F0 00 20 33 01 00 6E 00 3F 00 F7 # Local Detune 0
-F0 00 20 33 01 00 6E 00 3F 7F F7 # Local Detune 127
-F0 00 20 33 01 00 6E 00 40 00 F7 # Interpolation 0
-F0 00 20 33 01 00 6E 00 40 7F F7 # Interpolation 127
-F0 00 20 33 01 00 70 00 19 10 F7 # Semitone −48
-F0 00 20 33 01 00 70 00 19 70 F7 # Semitone +48
-F0 00 20 33 01 00 70 00 1F 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 1F 7F F7 # Key Follow +63
-F0 00 20 33 01 00 70 00 21 00 F7 # Balance −100.0 %
-F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
-F0 00 20 33 01 00 70 00 1A 00 F7 # Detune 0
-F0 00 20 33 01 00 70 00 1A 7F F7 # Detune 127
-F0 00 20 33 01 00 71 00 22 00 F7 # FM Mode FreqMod
-F0 00 20 33 01 00 71 00 22 01 F7 # FM Mode PhaseMod
-F0 00 20 33 01 00 70 00 1B 00 F7 # FM Amount 0
-F0 00 20 33 01 00 70 00 1B 7F F7 # FM Amount 127
-F0 00 20 33 01 00 70 00 1D 00 F7 # FilterEnv>Pitch −100.0 %
-F0 00 20 33 01 00 70 00 1D 7F F7 # FilterEnv>Pitch +100.0 %
-F0 00 20 33 01 00 70 00 1E 00 F7 # FilterEnv>FM −100.0 %
-F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
+F0 00 20 33 01 00 70 40 16 00 F7 # Index 0
+F0 00 20 33 01 00 70 40 16 7F F7 # Index 127
+F0 00 20 33 01 00 70 40 18 00 F7 # Wavetable Sine
+F0 00 20 33 01 00 70 40 18 63 F7 # Wavetable Domina7rix
+F0 00 20 33 01 00 6E 40 3E 00 F7 # F-Shift −64
+F0 00 20 33 01 00 6E 40 3E 7F F7 # F-Shift +63
+F0 00 20 33 01 00 6E 40 39 00 F7 # F-Spread 0
+F0 00 20 33 01 00 6E 40 39 7F F7 # F-Spread 127
+F0 00 20 33 01 00 6E 40 3F 00 F7 # Local Detune 0
+F0 00 20 33 01 00 6E 40 3F 7F F7 # Local Detune 127
+F0 00 20 33 01 00 6E 40 40 00 F7 # Interpolation 0
+F0 00 20 33 01 00 6E 40 40 7F F7 # Interpolation 127
+F0 00 20 33 01 00 70 40 19 10 F7 # Semitone −48
+F0 00 20 33 01 00 70 40 19 70 F7 # Semitone +48
+F0 00 20 33 01 00 70 40 1F 00 F7 # Key Follow −64
+F0 00 20 33 01 00 70 40 1F 7F F7 # Key Follow +63
+F0 00 20 33 01 00 70 40 21 00 F7 # Balance −100.0 %
+F0 00 20 33 01 00 70 40 21 7F F7 # Balance +100.0 %
+F0 00 20 33 01 00 70 40 1A 00 F7 # Detune 0
+F0 00 20 33 01 00 70 40 1A 7F F7 # Detune 127
+F0 00 20 33 01 00 71 40 22 00 F7 # FM Mode FreqMod
+F0 00 20 33 01 00 71 40 22 01 F7 # FM Mode PhaseMod
+F0 00 20 33 01 00 70 40 1B 00 F7 # FM Amount 0
+F0 00 20 33 01 00 70 40 1B 7F F7 # FM Amount 127
+F0 00 20 33 01 00 70 40 1D 00 F7 # FilterEnv>Pitch −100.0 %
+F0 00 20 33 01 00 70 40 1D 7F F7 # FilterEnv>Pitch +100.0 %
+F0 00 20 33 01 00 70 40 1E 00 F7 # FilterEnv>FM −100.0 %
+F0 00 20 33 01 00 70 40 1E 7F F7 # FilterEnv>FM +100.0 %
 ```
 
 **Oscillator 2** — all eight modes documented above.
@@ -1501,14 +1487,14 @@ wave_number = stored - 3 # for stored 06h..43h
 | Wave 5..Wave 64 | `08`–`43` |
 
 ```text
-F0 00 20 33 01 00 71 00 29 00 F7 # Oscillator 3 Mode/Wave Off
-F0 00 20 33 01 00 71 00 29 01 F7 # Oscillator 3 Mode/Wave Slave
-F0 00 20 33 01 00 71 00 29 02 F7 # Oscillator 3 Mode/Wave Saw
-F0 00 20 33 01 00 71 00 29 03 F7 # Oscillator 3 Mode/Wave Pulse
-F0 00 20 33 01 00 71 00 29 04 F7 # Oscillator 3 Mode/Wave Sine
-F0 00 20 33 01 00 71 00 29 05 F7 # Oscillator 3 Mode/Wave Triangle
-F0 00 20 33 01 00 71 00 29 06 F7 # Oscillator 3 Mode/Wave Wave 3
-F0 00 20 33 01 00 71 00 29 43 F7 # Oscillator 3 Mode/Wave Wave 64
+F0 00 20 33 01 00 71 40 29 00 F7 # Oscillator 3 Mode/Wave Off
+F0 00 20 33 01 00 71 40 29 01 F7 # Oscillator 3 Mode/Wave Slave
+F0 00 20 33 01 00 71 40 29 02 F7 # Oscillator 3 Mode/Wave Saw
+F0 00 20 33 01 00 71 40 29 03 F7 # Oscillator 3 Mode/Wave Pulse
+F0 00 20 33 01 00 71 40 29 04 F7 # Oscillator 3 Mode/Wave Sine
+F0 00 20 33 01 00 71 40 29 05 F7 # Oscillator 3 Mode/Wave Triangle
+F0 00 20 33 01 00 71 40 29 06 F7 # Oscillator 3 Mode/Wave Wave 3
+F0 00 20 33 01 00 71 40 29 43 F7 # Oscillator 3 Mode/Wave Wave 64
 ```
 
 **Visible controls by Mode/Wave:**
@@ -1530,13 +1516,13 @@ Page B parameter IDs:
 | Detune   | `71`  | `2C`    | **0..−127** → `stored = −ui`      |
 
 ```text
-F0 00 20 33 01 00 71 00 2B 10 F7 # Oscillator 3 Semitone −48
-F0 00 20 33 01 00 71 00 2B 40 F7 # Oscillator 3 Semitone +0
-F0 00 20 33 01 00 71 00 2B 70 F7 # Oscillator 3 Semitone +48
-F0 00 20 33 01 00 71 00 2A 00 F7 # Oscillator 3 Volume 0
-F0 00 20 33 01 00 71 00 2A 7F F7 # Oscillator 3 Volume 127
-F0 00 20 33 01 00 71 00 2C 00 F7 # Oscillator 3 Detune 0
-F0 00 20 33 01 00 71 00 2C 7F F7 # Oscillator 3 Detune −127
+F0 00 20 33 01 00 71 40 2B 10 F7 # Oscillator 3 Semitone −48
+F0 00 20 33 01 00 71 40 2B 40 F7 # Oscillator 3 Semitone +0
+F0 00 20 33 01 00 71 40 2B 70 F7 # Oscillator 3 Semitone +48
+F0 00 20 33 01 00 71 40 2A 00 F7 # Oscillator 3 Volume 0
+F0 00 20 33 01 00 71 40 2A 7F F7 # Oscillator 3 Volume 127
+F0 00 20 33 01 00 71 40 2C 00 F7 # Oscillator 3 Detune 0
+F0 00 20 33 01 00 71 40 2C 7F F7 # Oscillator 3 Detune −127
 ```
 
 ## Noise
@@ -1560,9 +1546,9 @@ stored = lcd # 1..127; 00 = Off
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 25 00 F7 # Noise Volume Off
-F0 00 20 33 01 00 70 00 25 01 F7 # Noise Volume 1
-F0 00 20 33 01 00 70 00 25 7F F7 # Noise Volume 127
+F0 00 20 33 01 00 70 40 25 00 F7 # Noise Volume Off
+F0 00 20 33 01 00 70 40 25 01 F7 # Noise Volume 1
+F0 00 20 33 01 00 70 40 25 7F F7 # Noise Volume 127
 ```
 
 ### Noise Color
@@ -1570,8 +1556,7 @@ F0 00 20 33 01 00 70 00 25 7F F7 # Noise Volume 127
 **Live edit:** `cmd=0x70`, param `0x27`.
 
 Panel **−64..+63** → **`stored = ui + 64`** (same bipolar pattern as
-[Key Follow](#oscillator-2--classic) / [Osc
-Volume](single.md#osc-volume)).
+[Key Follow](#oscillator-2--classic) / [Osc Volume](#osc-volume)).
 
 | LCD | `<value>` |
 | --- | --------- |
@@ -1580,9 +1565,9 @@ Volume](single.md#osc-volume)).
 | +63 | `7F`      |
 
 ```text
-F0 00 20 33 01 00 70 00 27 00 F7 # Noise Color −64
-F0 00 20 33 01 00 70 00 27 40 F7 # Noise Color 0
-F0 00 20 33 01 00 70 00 27 7F F7 # Noise Color +63
+F0 00 20 33 01 00 70 40 27 00 F7 # Noise Color −64
+F0 00 20 33 01 00 70 40 27 40 F7 # Noise Color 0
+F0 00 20 33 01 00 70 40 27 7F F7 # Noise Color +63
 ```
 
 ## Ring Modulator
@@ -1613,12 +1598,10 @@ stored = lcd # 1..127; 00 = Off
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 32 00 F7 # Ring Modulator Volume Off (Multi Part 1)
-F0 00 20 33 01 00 70 00 32 01 F7 # Ring Modulator Volume 1 (Multi Part 1)
 F0 00 20 33 01 00 70 01 32 00 F7 # Ring Modulator Volume Off (Multi Part 2)
-F0 00 20 33 01 00 70 40 32 00 F7 # Ring Modulator Volume Off (Single edit buffer)
-F0 00 20 33 01 00 70 40 32 01 F7 # Ring Modulator Volume 1 (Single edit buffer)
-F0 00 20 33 01 00 70 40 32 7F F7 # Ring Modulator Volume 127 (Single edit buffer)
+F0 00 20 33 01 00 70 40 32 00 F7 # Ring Modulator Volume Off
+F0 00 20 33 01 00 70 40 32 01 F7 # Ring Modulator Volume 1
+F0 00 20 33 01 00 70 40 32 7F F7 # Ring Modulator Volume 127
 ```
 
 ## Sub Oscillator
@@ -1643,8 +1626,8 @@ stored = lcd # 0..127
 ```
 
 ```text
-F0 00 20 33 01 00 70 00 22 00 F7 # Sub Oscillator Volume 0
-F0 00 20 33 01 00 70 00 22 7F F7 # Sub Oscillator Volume 127
+F0 00 20 33 01 00 70 40 22 00 F7 # Sub Oscillator Volume 0
+F0 00 20 33 01 00 70 40 22 7F F7 # Sub Oscillator Volume 127
 ```
 
 Also available as **MIDI CC 34** when Page A = **Controller Data**.
@@ -1661,8 +1644,65 @@ Two shapes only; no further values on the panel.
 | Triangle | `01`      |
 
 ```text
-F0 00 20 33 01 00 70 00 23 00 F7 # Shape Square
-F0 00 20 33 01 00 70 00 23 01 F7 # Shape Triangle
+F0 00 20 33 01 00 70 40 23 00 F7 # Shape Square
+F0 00 20 33 01 00 70 40 23 01 F7 # Shape Triangle
+```
+
+### Punch Intensity
+
+**Live edit:** `cmd=0x71`, param `0x24`.
+
+**Oscillators → Punch → Punch Intensity**. Page B param **`0x24`**. Panel **0.0..100.0 %** — **not** the same byte as
+[Osc Volume](#osc-volume) (`cmd=0x70`). **`<part>`:** Single edit buffer
+**`0x40`** (Multi Part *n* → **`0x00`–`0x0F`**).
+
+```text
+for 00h..7Eh: pct = stored × 100 / 128
+for 7Fh: pct = 100.0 %
+stored = round(pct × 128 / 100) # cap at 7Fh for 100.0 %
+```
+
+Eighth-step anchors (hardware LCD, 2026-06):
+
+| Wire | LCD %  | Wire | LCD %   |
+| ---- | ------ | ---- | ------- |
+| `00` | 0.0 %  | `20` | 25.0 %  |
+| `03` | 2.3 %  | `30` | 37.5 %  |
+| `09` | 7.0 %  | `40` | 50.0 %  |
+| `10` | 12.5 % | `50` | 62.5 %  |
+| `11` | 13.4 % | `60` | 75.0 %  |
+| `1C` | 21.9 % | `70` | 87.5 %  |
+| `1A` | 20.3 % | `78` | 93.8 %  |
+| `7E` | 98.4 % | `7F` | 100.0 % |
+
+**LCD quirk:** at **`04`** the panel showed **3.9 %** (expected **3.1 %** from
+`× 100 / 128`); at **`05`** it showed **3.1 %** (expected **3.9 %**) — labels
+appear **swapped** for that pair only; wire bytes still follow the `/128` curve.
+
+```text
+F0 00 20 33 01 00 71 40 24 00 F7 # Punch 0.0 %
+F0 00 20 33 01 00 71 40 24 40 F7 # Punch 50.0 %
+F0 00 20 33 01 00 71 40 24 7F F7 # Punch 100.0 %
+```
+
+### Osc Volume
+
+**Live edit:** `cmd=0x70`, param `0x24`.
+
+**Oscillators → EDIT → Common → Osc Volume**. Same parameter as
+[Saturation — Osc Volume](filters.md#saturation--osc-volume):
+panel **−64..+63**, wire **`stored = ui + 64`**.
+
+| LCD | `<value>` |
+| --- | --------- |
+| −64 | `00`      |
+| 0   | `40`      |
+| +63 | `7F`      |
+
+```text
+F0 00 20 33 01 00 70 40 24 00 F7 # Osc Volume −64
+F0 00 20 33 01 00 70 40 24 40 F7 # Osc Volume 0
+F0 00 20 33 01 00 70 40 24 7F F7 # Osc Volume +63
 ```
 
 ### Mixer (Oscillators menu)
@@ -1692,3 +1732,100 @@ F0 00 20 33 01 00 71 40 7F 00 F7 # Oscillator Section Volume −64
 
 **Sub Oscillator Volume** — see [Sub Oscillator](#sub-oscillator) (`70` / `0x22`
 or CC 34).
+
+## Unison
+
+**Edit Single → Unison** — top-level **Edit Single** sub-menu. **Not** under
+**EDIT OSC** (Osc 1 / Osc 2 / Ring Mod / Noise / Common). No oscillator mode
+must be enabled first: set **Voices** to **Off** or **Twin**–**8** directly from
+this menu.
+
+Stacks **extra detuned copies** of the whole oscillator section for the patch
+(not per-osc **Sync** on Osc 2). Live edit uses **`cmd=0x6F`**, params
+**`0x78`–`0x7B`**. Older docs wrongly listed **`cmd=0x70` / `0x61`–`0x64`**
+(CC numbers mistaken for param bytes — same class of error as Ring Mod
+**`0x26`** vs **`0x32`**).
+
+**`<part>`:** Multi Part *n* → **`0x00`–`0x0F`**; Single edit buffer →
+**`0x40`**.
+
+**Single Dump offsets** (Single edit buffer **`30 00 40`**):
+**`0x201`** Voices · **`0x202`** Detune · **`0x203`** Pan Spread ·
+**`0x204`** LFO Phase.
+
+### Voices
+
+**Live edit:** `cmd=0x6F`, param `0x78`.
+
+Panel **Voices**.
+
+| LCD  | `<value>` |
+| ---- | --------- |
+| Off  | `00`      |
+| Twin | `01`      |
+| 3    | `02`      |
+| 4    | `03`      |
+| 5    | `04`      |
+| 6    | `05`      |
+| 7    | `06`      |
+| 8    | `07`      |
+
+```text
+F0 00 20 33 01 00 6F 40 78 00 F7 # Voices Off
+F0 00 20 33 01 00 6F 40 78 07 F7 # Voices 8
+```
+
+When **Voices** is **Twin** (`01`) or higher, **Detune** appears on the panel.
+When **Off**, **Detune** is hidden (wire value may still be stored).
+
+### Detune
+
+**Live edit:** `cmd=0x6F`, param `0x79`.
+
+**0..127** → `stored = lcd`. Panel visible only when **Voices** ≥ **Twin**.
+
+| LCD | `<value>` |
+| --- | --------- |
+| 0   | `00`      |
+| 127 | `7F`      |
+
+```text
+F0 00 20 33 01 00 6F 40 79 00 F7 # Detune 0
+F0 00 20 33 01 00 6F 40 79 7F F7 # Detune 127
+```
+
+### Pan Spread
+
+**Live edit:** `cmd=0x6F`, param `0x7A`.
+
+Panel **0.0..100.0 %** — always visible (even when **Voices** = **Off**).
+
+```text
+for 00h..7Eh: pct = stored × 100 / 128
+for 7Fh: pct = 100.0 %
+```
+
+```text
+F0 00 20 33 01 00 6F 40 7A 00 F7 # Pan Spread 0.0 %
+F0 00 20 33 01 00 6F 40 7A 7F F7 # Pan Spread 100.0 %
+```
+
+**Not** Filter Common [Pan Spread](filters.md#pan-spread) (`6E`/`7A` under Split routing).
+
+### LFO Phase Offset
+
+**Live edit:** `cmd=0x6F`, param `0x7B`.
+
+Panel **Unison LFO Phase**. **−64..+63** → `stored = ui + 64`.
+
+| LCD | `<value>` |
+| --- | --------- |
+| −64 | `00`      |
+| 0   | `40`      |
+| +63 | `7F`      |
+
+```text
+F0 00 20 33 01 00 6F 40 7B 00 F7 # LFO Phase −64
+F0 00 20 33 01 00 6F 40 7B 40 F7 # LFO Phase 0
+F0 00 20 33 01 00 6F 40 7B 7F F7 # LFO Phase +63
+```
