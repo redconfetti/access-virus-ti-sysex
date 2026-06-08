@@ -8,6 +8,15 @@ describe the current state of one part’s Single edit buffer. Useful for findin
 **`cmd`/`param` pairs** missing from [live-edit docs](../../../README.md#documentation) or
 [single.md](single.md#single-parameter-map).
 
+## Contents
+
+- [Request](#request)
+  - [`<part>`](#part)
+- [Reply (overview)](#reply-overview)
+- [Related](#related)
+
+---
+
 ## Request
 
 ```text

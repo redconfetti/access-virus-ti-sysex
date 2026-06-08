@@ -177,8 +177,9 @@ Two section kinds:
   split: live-edit shows range and representative examples; full enum table
   lives here.
 
-Do **not** add a file-level index or TOC to `parameter-options.md` — other docs
-link directly to section anchors.
+`parameter-options.md` and dump guides include a **## Contents** TOC (regenerate
+with `python3 scripts/generate-doc-toc.py` after adding sections). Live-edit
+docs use the same pattern.
 
 For panel enums:
 

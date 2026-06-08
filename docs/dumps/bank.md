@@ -5,6 +5,19 @@ not per-parameter dump offsets.
 
 Architecture: [virus.md](../misc/virus.md).
 
+## Contents
+
+* [Request messages](#request-messages)
+  * [Single Request](#single-request)
+  * [No “load program by slot” SysEx in Single mode](#no-load-program-by-slot-sysex-in-single-mode)
+  * [Single Bank Request](#single-bank-request)
+  * [Controller Dump Request](#controller-dump-request)
+* [RAM Single banks (A–D)](#ram-single-banks-ad)
+* [ROM Singles (A–Z)](#rom-singles-az)
+* [Multi bank](#multi-bank)
+
+---
+
 ## Request messages
 
 All requests use header `F0 00 20 33 01 <device> … F7`.

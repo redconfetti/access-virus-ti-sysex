@@ -4,6 +4,50 @@ Part of [Documentation](../../../README.md#documentation). Multi mode on the Vir
 Multi** parameters, and
 byte-level Multi Dump mapping.
 
+## Contents
+
+- [Multi Dump](#multi-dump)
+  - [Multi Dump byte reference](#multi-dump-byte-reference)
+- [Embedded vs Reference Multis](#embedded-vs-reference-multis)
+  - [Multi parameter map](#multi-parameter-map)
+    - [Summary](#summary)
+    - [Parameters](#parameters)
+      - [Multi Program Name](#multi-program-name)
+      - [Master Clock Tempo](#master-clock-tempo)
+      - [Keyboard to MIDI](#keyboard-to-midi)
+      - [Enable](#enable)
+      - [Direct Monitoring](#direct-monitoring)
+      - [Secondary Output (not in Multi Dump)](#secondary-output-not-in-multi-dump)
+      - [Bend Up / Down (Multi — not in Multi Dump)](#bend-limits-not-in-multi-dump)
+      - [Bank](#bank)
+      - [Program](#program)
+      - [Volume](#volume)
+      - [Panorama](#panorama)
+      - [MIDI Channel](#midi-channel)
+      - [Output](#output)
+      - [Transpose](#transpose)
+      - [Detune](#detune)
+      - [Priority](#priority)
+      - [Init Volume](#init-volume)
+      - [Low Key](#low-key)
+      - [High Key](#high-key)
+      - [Hold Pedal](#hold-pedal)
+      - [Volume RX](#volume-rx)
+      - [Program Change](#program-change)
+  - [Part bank index](#part-bank-index)
+  - [Message-level structure](#message-level-structure)
+  - [`REQUEST_MULTI` byte table](#request_multi-byte-table)
+  - [Multi bank slot examples (Multi Dump only)](#multi-bank-slot-examples-multi-dump-only)
+  - [Multi Dump byte table (267 bytes)](#multi-dump-byte-table-267-bytes)
+  - [Confirmed payload fields (offsets in full 267-byte Multi Dump)](#confirmed-payload-fields-offsets-in-full-267-byte-multi-dump)
+  - [Packed flags at `0xF8 + part`](#packed-flags-at-0xf8--part)
+  - [Runtime-only Edit Multi](#runtime-only-edit-multi)
+  - [Unmapped payload](#unmapped-payload)
+    - [INIT MULTI slot 32 reference](#init-multi-slot-32-reference)
+  - [Notes](#notes)
+
+---
+
 ## Multi Dump
 
 ### Multi Dump byte reference

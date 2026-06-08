@@ -6,6 +6,28 @@ Live edit: [Documentation](../../../README.md#documentation). Control inventory 
 mapping:
 [Single parameter map](#single-parameter-map).
 
+## Contents
+
+- [Dump Format](#dump-format)
+  - [Message header (offsets in full 524-byte message)](#message-header-offsets-in-full-524-byte-message)
+- [Single vs Multi addressing](#single-vs-multi-addressing)
+- [Single Dump upload (`0x10`)](#single-dump-upload-0x10)
+  - [Request vs dump](#request-vs-dump)
+  - [Load RAM A program 64 into Multi Part 1](#load-ram-a-program-64-into-multi-part-1)
+- [Arrangement export (Single Dump × 16)](#arrangement-export-single-dump--16)
+- [High‑level regions (from `-INIT-` baseline)](#highlevel-regions-from--init--baseline)
+- [Single parameter map](#single-parameter-map)
+  - [Oscillators](#oscillators)
+  - [Filters](#filters)
+  - [LFO](#lfo)
+  - [Modulation Matrix](#modulation-matrix)
+  - [Arpeggiator](#arpeggiator)
+  - [FX 1](#fx-1)
+  - [FX 2](#fx-2)
+  - [Common](#common)
+
+---
+
 ## Dump Format
 
 - **Transport**: One MIDI SysEx message per Single.
