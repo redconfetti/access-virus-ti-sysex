@@ -5,12 +5,10 @@ Oscillator**, mixer levels.
 
 Part of [Documentation](../../../README.md#documentation). Enumerated options:
 [parameter-options.md](../../reference/parameter-options.md).
-Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-map)
+Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](../multis.md).
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
-
-## Panel reference
 
 **LCD:** **OSCILLATORS** → **Oscillator 1** / **2** / **Common** / **Mixer**.
 
@@ -19,9 +17,6 @@ controls on sub-menus **1–2** (Classic), **1–3** (Wavetable, Grain Simple,
 Formant Simple), or **1–4** (Grain Complex, Formant Complex). Document only
 rows that appear on the panel for the active Mode/Shape.
 
-Capture path: **`Mode` / `Shape` / `Control` → LCD value**. Use **+/−** when
-possible. Knob sweeps: use the **last** SysEx line. Master inventory:
-[single dump — Oscillators](../../dumps/single.md#oscillators).
 
 ### SELECT (`71`/`7F`)
 
@@ -447,7 +442,7 @@ curve as Osc 2 **FilterEnv>FM** / **FilterEnv>Sync** (see
 [Oscillator 2 — Classic](#oscillator-2--classic)).
 
 **Semitone**, **Key Follow**, **Balance** — same **`14` / `15` / `21`**
-and encodings as Classic (verified in **Mode `01`** sweeps: Semitone
+and encodings as Classic (Semitone
 **`10`..`70`** → **−48..+48**, Key Follow **`00`..`7F`** → **−64..+63**,
 Balance **`00`/`40`/`7F`** → **−100 % / 0 % / +100 %**).
 
@@ -455,8 +450,6 @@ Balance **`00`/`40`/`7F`** → **−100 % / 0 % / +100 %**).
 
 **Mode `<value>` = `02`**. **Sub-menus:** **1–3**. No Classic **Shape** /
 Hypersaw **Density** / **Sync**.
-
-Hardware-verified panel controls:
 
 | Control | `cmd` | `param` | Encoding |
 | ------------- | ----- | ------- | --------------------------------- |
@@ -517,8 +510,6 @@ adds **Pulse Width** on Page A **`0x12`** and **Local Detune** on part-buffer
 Hypersaw **Local Detune** (**0..127** on **`70`/`12`**), Wave PWM **Pulse
 Width** (**0..127** on **`70`/`12`**).
 
-Hardware-verified panel controls:
-
 | Control | `cmd` | `param` | Encoding |
 | ------------- | ----- | ------- | --------------------------------- |
 | Index | `70` | `11` | **0..127** → `stored = lcd` |
@@ -558,8 +549,6 @@ F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
 [Formant Simple](#oscillator-1--formant-simple) (no **F-Spread** / **Local
 Detune** — those are Complex modes only).
 
-Hardware-verified panel controls:
-
 | Control | `cmd` | `param` | Encoding |
 | ------------- | ----- | ------- | --------------------------------- |
 | Index | `70` | `11` | **0..127** → `stored = lcd` |
@@ -598,8 +587,6 @@ F0 00 20 33 01 00 70 00 21 7F F7 # Balance +100.0 %
 [Grain Simple](#oscillator-1--grain-simple) plus **F-Spread** (`6E`/`25`) and
 **Local Detune** (`6E`/`2B`). No **Detune** / **FM** / **FilterEnv** on the
 panel (those appear on Osc 2 grain modes only).
-
-Hardware-verified panel controls:
 
 | Control | `cmd` | `param` | Encoding |
 | ------------- | ----- | ------- | --------------------------------- |
@@ -1037,8 +1024,6 @@ F0 00 20 33 01 00 70 00 1D 7F F7 # FilterEnv>Pitch +100.0 %
 **`0x16`** = **Index** (Classic **Shape** / Hypersaw **Density** share this
 index); **`0x18`** = **Wavetable** select.
 
-Hardware-verified panel controls (full sweeps unless noted):
-
 | Control | `cmd` | `param` | Encoding |
 | --------------- | ----- | ------- | ------------------------------------ |
 | Index | `70` | `16` | **0..127** → `stored = lcd` |
@@ -1134,8 +1119,6 @@ adds **Pulse Width** on Page A **`0x17`** and **Local Detune** on part-buffer
 Shape ≥ `40`), Hypersaw **Local Detune** (**0..127**), Wave PWM **Pulse Width**
 (**0..127**).
 
-Hardware-verified panel controls:
-
 | Control | `cmd` | `param` | Encoding |
 | --------------- | ----- | ------- | ---------------------------------- |
 | Index | `70` | `16` | **0..127** → `stored = lcd` |
@@ -1208,8 +1191,6 @@ F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
 as [Osc 2 Wavetable](#oscillator-2--wavetable); adds **F-Shift** on
 part-buffer **`0x3E`** (Osc 1 Grain Simple uses **`6E`/`2A`**).
 
-Hardware-verified panel controls:
-
 | Control | `cmd` | `param` | Encoding |
 | --------------- | ----- | ------- | ---------------------------------- |
 | Index | `70` | `16` | **0..127** → `stored = lcd` |
@@ -1279,8 +1260,6 @@ F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
 part-buffer **`0x39`** and **Local Detune** on **`0x3F`** (Osc 1 uses
 **`6E`/`25`** and **`6E`/`2B`**).
 
-Hardware-verified panel controls:
-
 | Control | `cmd` | `param` | Encoding |
 | --------------- | ----- | ------- | ---------------------------------- |
 | Index | `70` | `16` | **0..127** → `stored = lcd` |
@@ -1349,8 +1328,6 @@ F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
 map as [Osc 2 Grain Simple](#oscillator-2--grain-simple) — no **F-Spread** or
 **Local Detune** (those appear in Formant Complex only).
 
-Hardware-verified panel controls:
-
 | Control | `cmd` | `param` | Encoding |
 | --------------- | ----- | ------- | ---------------------------------- |
 | Index | `70` | `16` | **0..127** → `stored = lcd` |
@@ -1400,8 +1377,6 @@ F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
 **Mode `<value>` = `07`**. **Sub-menus:** **1–4**. Same panel layout and wire
 map as [Osc 2 Grain Complex](#oscillator-2--grain-complex) — adds **F-Spread**
 (`6E`/`39`) and **Local Detune** (`6E`/`3F`) to the Formant Simple set.
-
-Hardware-verified panel controls:
 
 | Control | `cmd` | `param` | Encoding |
 | --------------- | ----- | ------- | ---------------------------------- |
@@ -1453,7 +1428,7 @@ F0 00 20 33 01 00 70 00 1E 00 F7 # FilterEnv>FM −100.0 %
 F0 00 20 33 01 00 70 00 1E 7F F7 # FilterEnv>FM +100.0 %
 ```
 
-**Oscillator 2** — all eight modes hardware-verified.
+**Oscillator 2** — all eight modes documented above.
 
 ### Oscillator 3
 

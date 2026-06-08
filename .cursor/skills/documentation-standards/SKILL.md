@@ -49,9 +49,7 @@ blocks to `effects.md` or `single.md`.
 2. **Live edit** — `cmd`, `param`, value encoding (formula or enum link).
 3. **SysEx examples** — fenced `text` block with full lines (include `F0`/`F7`
  in docs for readability; note `sendmidi` omits them). See template below.
-4. **Confirmed** — Hardware TX / panel / capture when known; otherwise mark
-.
-5. **Enums** — link to [parameter-options.md](../../docs/reference/parameter-options.md);
+4. **Enums** — link to [parameter-options.md](../../docs/reference/parameter-options.md);
  table lives there, not duplicated.
 
 Example SysEx block (Distortion Mix):
@@ -88,16 +86,15 @@ titles within one file get `-1`, `-2`, … suffixes in auto-generated slugs.
 ## parameter-options.md rules
 
 - One section per enum or panel-visibility family.
-- Tables: index or wire `<value>`, option label, confirmation column when known.
+- Tables: index or wire `<value>`, option label, meaning.
 - Use descriptive heading text for stable auto-generated anchor slugs.
 - Panel visibility tables (which controls appear per mode) belong **here**, not
  in live-edit prose.
 
 ## Dump map rules
 
-- [single.md](../../docs/dumps/single.md): worksheet columns **Control**,
+- [single.md](../../docs/dumps/single.md): inventory columns **Control**,
  **SubCategory**, **Dump offset**, **Live edit** (link to live-edit anchor).
-- Fill **Dump offset** only when correlated from captures — do not guess.
 
 ## Hardware mapping
 

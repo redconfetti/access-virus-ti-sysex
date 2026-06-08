@@ -29,7 +29,7 @@ mapping:
 | `0x209` | Checksum | `66` (Part 1 in arrangement) | `44` (standalone baseline) |
 | `0x20A` | End | `F7` | `F7` |
 
-**Checksum** (confirmed on arrangement Part 1):
+**Checksum**:
 `(device + 0x10 + bank + slot + sum(bytes 0x09..0x208)) & 0x7F`.
 
 See [bank.md — Single Request](bank.md#single-request) for **`30 00 40`**
@@ -176,8 +176,7 @@ Using offsets in hexadecimal (0x00 is the `F0` byte):
 - Standalone edit buffer: `… 10 00 7F 0C 00 00` (see [message
  header](#message-header-offsets-in-full-524-byte-message)).
 - **0x0C–~0xEF – Parameter payload**
-- Dense sound data. **Oscillator block** (hardware-verified on `-INIT-` /
- Single edit buffer **`30 00 40`**, live edit **`<part>=0x40`**):
+- Dense sound data. **Oscillator block** (Single edit buffer **`30 00 40`**, live edit **`<part>=0x40`**):
 - **`0x00D`** — Portamento (`70`/`05`)
 - **`0x019`–`0x01D`** — Osc 1 Classic: Shape, Pulse Width, Wave, Semitone,
  Key Follow (`70`/`11`–`15`)
@@ -280,13 +279,6 @@ inventory groupings only — there is no **EDIT OSC → Common → FM** page. FM
 sync-related controls live on **Osc 2** sub-menus, **EDIT OSC → Common** (e.g.
 **FilterEnv>Sync** when Sync is on), or **Edit Single → Velocity Map**. Rows
 for **Edit Single → Unison** are under [Common](#common) — not **EDIT OSC**.
-
-**Dump offsets** in the **Dump offset** column below were confirmed by: request
-Single Dump (`30 00 40`) → one live-edit SysEx (`<part>=0x40`) → re-request →
-diff (ignore checksum **`0x209`** and metadata byte **`0x108`**). Workflow:
-[hardware-mapping-workflow](../../../.cursor/skills/hardware-mapping-workflow/SKILL.md#dump-correlation-batches-send--re-dump--diff).
-Per-mode sweeps (switch **`6E`/`1E`** or **`6E`/`23`**, then test controls from
-[oscillators.md](../live-edit/single/oscillators.md)).
 
 | Control | SubCategory | Dump offset | Live edit |
 | -------------------------------------- | ------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -455,7 +447,7 @@ separate dump bytes **`0x0A6`** / **`0x0A7`** — see
 ### LFO
 
 Live-edit bytes: [modulators.md](../live-edit/single/modulators.md). **Dump offsets**
-(hardware-verified; LFO 1 Page B bytes **overlap** Mod Matrix slots 2–3 — see
+(LFO 1 Page B bytes **overlap** Mod Matrix slots 2–3 — see
 [mod-matrix.md](../live-edit/single/mod-matrix.md#page-b-byte-reuse)).
 
 | Control | SubCategory | Dump offset | Live edit |
@@ -505,8 +497,7 @@ Live-edit bytes: [modulators.md](../live-edit/single/modulators.md). **Dump offs
 
 Live edit: [mod-matrix.md](../live-edit/single/mod-matrix.md). Each slot:
 **one** Source; **three** Destination / Amount pairs. **`cmd`** / **param** are
-**per slot** (and row) — see doc table. All **42** cells hardware-verified
-(`30 00 40` / `<part>=0x40`).
+**per slot** (and row) — see doc table.
 
 | Control | SubCategory | Dump offset | Live edit |
 | ------------------------------- | ----------- | ----------- | -------------------------------------------------------------------------- |
@@ -557,7 +548,7 @@ Live edit: [mod-matrix.md](../live-edit/single/mod-matrix.md). Each slot:
 
 Live-edit bytes: [arpeggiator.md](../live-edit/single/arpeggiator.md). Pattern-editor
 dump layout: [user pattern in Single Dump](../live-edit/single/arpeggiator.md#user-pattern-in-single-dump).
-Settings dump offsets hardware-verified (`30 00 40` / `<part>=0x40`).
+Settings dump offsets: **`30 00 40` / `<part>=0x40`**.
 
 | Control | SubCategory | Dump offset | Live edit |
 | ------------------------------ | -------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -574,7 +565,7 @@ Settings dump offsets hardware-verified (`30 00 40` / `<part>=0x40`).
 ### FX 1
 
 Live-edit bytes: [effects.md](../live-edit/single/effects.md). Dump offsets
-hardware-verified on clean **`-INIT-`** (`30 00 40` / `<part>=0x40`).
+for Single edit buffer **`30 00 40`** / **`<part>=0x40`**.
 Shared Page A chorus bytes (`0x070`–`0x076`) apply across chorus types; type at
 **`0x06F`** (`70`/`67`).
 
@@ -659,7 +650,7 @@ Shared Page A chorus bytes (`0x070`–`0x076`) apply across chorus types; type a
 ### FX 2
 
 Live-edit bytes: [effects.md](../live-edit/single/effects.md). Dump offsets
-hardware-verified on clean **`-INIT-`** (`30 00 40` / `<part>=0x40`).
+for Single edit buffer **`30 00 40`** / **`<part>=0x40`**.
 
 | Control | SubCategory | Dump offset | Live edit |
 | ---------------------------------- | ------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |

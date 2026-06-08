@@ -45,18 +45,6 @@ receivemidi dev "<MIDI port>" syx
 - Expected content: **Page A / B / part-buffer** live edits — see
   [Paging](../misc/virus.md#live-edit-command-bytes) (`0x70`, `0x71`, `0x6E`, …).
 
-## Mapping workflow (suggested)
-
-1. Baseline: request controller dump for Part 1 (`37 00 00`) with a known
-   **`-INIT-`** single loaded.
-2. Change **one** panel control on the Virus.
-3. Request controller dump again; diff the two streams for new/changed
-   **`cmd`/`param`/`value`** triplets.
-4. Cross-check winners against **Single Dump** byte diffs when a dump offset
-   is needed.
-
-See [hardware-mapping-workflow](../../../.cursor/skills/hardware-mapping-workflow/SKILL.md).
-
 ## Related
 
 | Message | What you get |

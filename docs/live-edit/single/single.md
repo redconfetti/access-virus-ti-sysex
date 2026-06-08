@@ -5,7 +5,7 @@ Knobs**, and related patch settings.
 
 Part of [Documentation](../../../README.md#documentation). Enumerated options:
 [parameter-options.md](../../reference/parameter-options.md).
-Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-map)
+Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](../multis.md).
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
@@ -13,8 +13,7 @@ Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
 ## Common (Edit Single)
 
 Per-part **Common** page settings (Edit Single). Pitch-bender and smooth-mode
-bytes **are** stored in **Single Dump** (hardware-verified on `-INIT-`,
-`<part>=0x40`); they are **not** in per-part **Multi Dump** slices — see
+bytes **are** stored in **Single Dump**; they are **not** in per-part **Multi Dump** slices — see
 [multis.md](../multis.md).
 
 ### Transpose / Patch Transpose
@@ -351,7 +350,7 @@ Stacks **extra detuned copies** of the whole oscillator section for the patch
 **`<part>`:** Multi Part *n* → **`0x00`–`0x0F`**; Single edit buffer →
 **`0x40`**.
 
-**Single Dump offsets** (Single edit buffer, hardware-verified):
+**Single Dump offsets** (Single edit buffer **`30 00 40`**):
 **`0x201`** Voices · **`0x202`** Detune · **`0x203`** Pan Spread ·
 **`0x204`** LFO Phase.
 
@@ -627,8 +626,7 @@ mode use **`<part>=0x40`** (Single edit buffer — same scope as other Single
 sound edits). Enum:
 [Secondary output
 routing](../../reference/parameter-options.md#secondary-output-routing).
-**Output** is **not in Single Dump** (hardware-tested: `73`/`2D` does not
-change the `30 00 40` payload). **Balance** **is** in the dump at **`0x0C2`**
+**Output** is **not in Single Dump**. **Balance** **is** in the dump at **`0x0C2`**
 (`71`/`3A`).
 
 ### Output
@@ -645,7 +643,7 @@ F0 00 20 33 01 00 73 40 2D 04 F7 # Out 2 L
 F0 00 20 33 01 00 73 40 2D 09 F7 # Out 3 R
 ```
 
-Edit Multi per-part captures use **`73 00 2D`** (Part 1 scope). Values are
+Edit Multi Part 1 uses **`73 00 2D`** (Part 1 scope). Values are
 the same enum.
 
 ### Balance
@@ -699,7 +697,7 @@ is
 **no separate “Amount” menu row** — turning a knob edits the **assigned
 destination** parameter in real time.
 
-Dump offsets (hardware-verified, `-INIT-`, `<part>=0x40`):
+Dump offsets (**`<part>=0x40`**):
 **Function As…** **`0x0C6`** / **`0x0C7`** / **`0x0C8`**; **Name**
 **`0x0BB`** / **`0x0BC`** / **`0x0BD`**. Knob 3 **Function As…** shares
 **`0x0C8`** with [Mod Matrix slot 1 Source](mod-matrix.md) (`71`/`40`).
@@ -732,8 +730,8 @@ above knob 1; sweeping the knob sends **`71`/`65`** (**0 %** → `00`,
 
 ```text
 F0 00 20 33 01 00 71 00 3E 57 F7 # Knob 1 Function As Distortion Intensity
-F0 00 20 33 01 00 71 00 65 00 F7 # Distortion Intensity 0 % (knob sweep)
-F0 00 20 33 01 00 71 00 65 7F F7 # Distortion Intensity 100.0 % (knob sweep)
+F0 00 20 33 01 00 71 00 65 00 F7 # Distortion Intensity 0 %
+F0 00 20 33 01 00 71 00 65 7F F7 # Distortion Intensity 100.0 %
 F0 00 20 33 01 00 71 00 3E 00 F7 # Knob 1 Function As Off
 F0 00 20 33 01 00 71 00 3E 40 F7 # Aftertouch
 F0 00 20 33 01 00 71 00 3E 7F F7 # Freq Shifter Mix (index 59)
@@ -778,7 +776,7 @@ F0 00 20 33 01 00 71 00 35 47 F7 # Name Width
 
 ### Soft-knob runtime: Distortion Intensity
 
-Captured via **Soft Knob 1** sweep — same value param as
+Same value param as
 [EDIT FX → Distortion →
 Intensity](effects.md#distortion-intensity)
 (**`71`/`65`**). **Type** is

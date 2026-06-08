@@ -114,9 +114,7 @@ encoding)**.
  F0 00 20 33 01 00 71 <part> <param> <value> F7
  ```
 
-- **Not in Multi Dump** — eliminated on desktop (identical dump vs
-  INIT baseline; values live in **Single Dump** when editing that part’s
-  Single). See
+- **Not in Multi Dump**. See
   [multi.md — Bend limits](../dumps/multi.md#bend-limits-not-in-multi-dump).
 - Encoding: **`stored = ui + 64`** (center `0x40` = 0); UI **−64..+63** →
  `0x00..0x7F`.
@@ -144,8 +142,7 @@ F0 00 20 33 01 00 71 00 1A 7F F7 # +63
 - Per-part **pitch bend down** limit (Edit Single → Common).
 - Same transport and encoding as [Bend Up](#bend-up) (`cmd=0x71`,
  **`stored = ui + 64`**, UI **−64..+63**).
-- **Not in Multi Dump** — eliminated (hardware-tested: `71 00 1B` at
-  `00` / `7F` — no dump change). Stored in **Single Dump** for the part
+- **Not in Multi Dump** — stored in **Single Dump** for the part
   Single, not the multi block.
 
 | UI | `<value>` (Part 1) |
@@ -193,7 +190,7 @@ encoding)**.
  `multi.md`.
 - Live value = dump bank index (`0x00` = RAM A, `0x01` = RAM B, `0x04` =
  ROM A, etc.).
-- Virus Part 1: live `72 00 20 01` → LCD **RAM-B** (confirmed).
+- Virus Part 1: live `72 00 20 01` → LCD **RAM-B**.
 
 ### Program
 
@@ -203,12 +200,10 @@ encoding)**.
 - Message: **`72 <part> 21 <program>`** — same **`<part>`** rule as Bank.
 - Dump correlation: **`0x39 + (part−1)`** — stored byte = UI program
  number on LCD (`0x00` = 0, `0x40` = 64, `0x41` = 65).
-- Virus Part 1: `21 41` → program **65**; `21 00` → program **0** (dump
- confirmed).
+- Virus Part 1: `21 41` → program **65**; `21 00` → program **0**.
 
 **Load from RAM/ROM (Multi mode, Part 1)** — set bank/program via **`0x72`**, then
-upload with **Single Dump** (`0x10`); hardware load-from-bank via **`0x72` alone**
-via **Single Dump** upload:
+**Single Dump** upload (`0x10`):
 
 ```text
 F0 00 20 33 01 00 72 00 20 00 F7  # Part 1 → RAM A
@@ -222,7 +217,7 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
 - Per-part MIDI channel assignment.
 - Dump correlation: `0x49 + (part−1)` — Part 1 at **`0x49`**.
 - Live value is **zero-based** channel index: `0x00` = channel 1 …
- `0x0F` = channel 16 (Part 1: all 16 steps confirmed on Virus LCD).
+ `0x0F` = channel 16.
 - Supported values: see [MIDI Channel (zero-based)](#midi-channel-zero-based).
 
 ### Output Routing
@@ -248,9 +243,9 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
  F0 00 20 33 01 00 73 40 2D <value> F7   # Single edit buffer
  ```
 
- Part 1 captures confirmed; Single mode uses **`<part>=0x40`**. - **Not in Multi Dump** — eliminated (hardware-tested: `73 00 2D` and
-  `72 00 2D` — no dump change vs INIT baseline). Same class as Edit Single
-  Surround **Output** (also absent from **Single Dump**). See
+- Single mode uses **`<part>=0x40`**.
+- **Not in Multi Dump** — same class as Edit Single Surround **Output**
+  (also absent from **Single Dump**). See
   [multi.md](../dumps/multi.md#secondary-output-not-in-multi-dump).
 - Supported values: see
  [Secondary Output Enum (`0x2D`)](#secondary-output-enum).
@@ -266,8 +261,7 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
 ### Keyboard-related (`0x40`) — global
 
 - Observed as global control (`part=00`).
-- On the desktop module, **`72 00 40` on/off does not change Multi Dump**
- (hardware-tested).
+- On the desktop module, **`72 00 40` on/off does not change Multi Dump**.
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
 ### Enable
@@ -422,8 +416,6 @@ routing](../reference/parameter-options.md#secondary-output-routing).
 **`00`** = Off; otherwise same routes as
 [primary output](#output-routing-enum), **`stored = primary_index + 1`**
 (through **`12`** = USB 3 R).
-
-Part 1 captures (`cmd=0x73`):
 
 ```text
 F0 00 20 33 01 00 73 00 2D 00 F7 # Off

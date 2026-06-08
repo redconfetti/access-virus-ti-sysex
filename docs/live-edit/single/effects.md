@@ -5,7 +5,7 @@ Edit FX — **Delay**, **Reverb**, **EQ**, **Distortion**, **Character**,
 
 Part of [Documentation](../../../README.md#documentation). Enumerated options:
 [parameter-options.md](../../reference/parameter-options.md).
-Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-map)
+Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](../multis.md).
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
@@ -15,8 +15,7 @@ Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
 
 ## Edit FX (Effects)
 
-Panel **EDIT FX** (after **Common**). SysEx **`cmd` / `param`** per control —
-capture as you step through sub-menus.
+Panel **EDIT FX** (after **Common**). SysEx **`cmd` / `param`** per control.
 
 ### SELECT (`6E`/`75`, `6E`/`76`)
 
@@ -143,7 +142,7 @@ Part buffer **`6E`**.
 
 ```text
 F0 00 20 33 01 00 6E 00 48 00 F7 # 0.0 %
-F0 00 20 33 01 00 6E 00 48 48 F7 # 56.3 % (Wide; panel-confirmed)
+F0 00 20 33 01 00 6E 00 48 48 F7 # 56.3 % (Wide)
 F0 00 20 33 01 00 6E 00 48 7F F7 # 100.0 %
 ```
 
@@ -170,7 +169,7 @@ runtime](single.md#soft-knob-runtime-distortion-intensity).
 
 ```text
 F0 00 20 33 01 00 71 00 65 00 F7 # 0.0 %
-F0 00 20 33 01 00 71 00 65 65 F7 # 78.9 % (Wide; panel-confirmed)
+F0 00 20 33 01 00 71 00 65 65 F7 # 78.9 % (Wide)
 F0 00 20 33 01 00 71 00 65 7F F7 # 100.0 %
 ```
 
@@ -191,7 +190,7 @@ types](../../reference/parameter-options.md#distortion-panel-visibility)).
 
 ```text
 F0 00 20 33 01 00 6E 00 46 00 F7 # 0.0 %
-F0 00 20 33 01 00 6E 00 46 40 F7 # 50.0 % (Wide; panel-confirmed)
+F0 00 20 33 01 00 6E 00 46 40 F7 # 50.0 % (Wide)
 F0 00 20 33 01 00 6E 00 46 7F F7 # 100.0 %
 ```
 
@@ -211,7 +210,7 @@ Tone](../../reference/parameter-options.md#overdrive-types-drive-mix-high-cut) �
 
 ```text
 F0 00 20 33 01 00 6E 00 4A 00 F7 # −100.0 %
-F0 00 20 33 01 00 6E 00 4A 40 F7 # +0 % (panel-confirmed)
+F0 00 20 33 01 00 6E 00 4A 40 F7 # +0 %
 F0 00 20 33 01 00 6E 00 4A 7F F7 # +100.0 %
 ```
 
@@ -231,7 +230,7 @@ types](../../reference/parameter-options.md#overdrive-types-drive-mix-high-cut))
 
 ```text
 F0 00 20 33 01 00 6E 00 47 00 F7 # 0.0 %
-F0 00 20 33 01 00 6E 00 47 40 F7 # 50.0 % (Wide; panel-confirmed)
+F0 00 20 33 01 00 6E 00 47 40 F7 # 50.0 % (Wide)
 F0 00 20 33 01 00 6E 00 47 7F F7 # 100.0 %
 ```
 
@@ -252,7 +251,7 @@ visibility](../../reference/parameter-options.md#distortion-panel-visibility).
 
 ```text
 F0 00 20 33 01 00 6E 00 49 00 F7 # 0.0 %
-F0 00 20 33 01 00 6E 00 49 40 F7 # 50.0 % (Rate / Bit Reducer; panel-confirmed)
+F0 00 20 33 01 00 6E 00 49 40 F7 # 50.0 % (Rate / Bit Reducer)
 F0 00 20 33 01 00 6E 00 49 7F F7 # 100.0 %
 ```
 
@@ -278,7 +277,7 @@ All nine **Type** values (`00`–`08`) panel-mapped. Three wire families:
 #### Preset types (`01`–`06`)
 
 [Vintage 1](../../reference/parameter-options.md#preset-types-0106-1) … **Bass Enhancer**
-— **Type** only (`6E`/`1A`); no further live-edit params (panel-confirmed).
+— **Type** only (`6E`/`1A`); no further live-edit params.
 
 #### Stereo Widener (`07`) / Speaker Cabinet (`08`)
 
@@ -573,7 +572,7 @@ LCD: [Chorus Rotary Distance (LCD)](../../reference/parameter-options.md#chorus-
 
 ```text
 F0 00 20 33 01 00 70 00 6B 00 F7 # 4.0 cm
-F0 00 20 33 01 00 70 00 6B 10 F7 # 6.0 cm (init patch default, panel-confirmed)
+F0 00 20 33 01 00 70 00 6B 10 F7 # 6.0 cm (init patch default)
 F0 00 20 33 01 00 70 00 6B 29 F7 # 9.1 cm
 F0 00 20 33 01 00 70 00 6B 40 F7 # 12.0 cm
 F0 00 20 33 01 00 70 00 6B 5A F7 # 17.5 cm
@@ -902,8 +901,7 @@ F0 00 20 33 01 00 71 00 5A 7F F7 # 127
 (Distortion **`00`** … Others **`04`** on param **`0x76`**).
 
 Panel layout: [Others panel
-visibility](../../reference/parameter-options.md#others-panel-visibility). Sub-page order
-(panel-confirmed):
+visibility](../../reference/parameter-options.md#others-panel-visibility). Sub-page order:
 
 1. **Filter Bank**
 2. **Vocoder**
@@ -1206,8 +1204,7 @@ F0 00 20 33 01 00 6E 00 18 7F F7 # +100.0 %
 **EDIT FX → Others → Vocoder**. [Panel
 visibility](../../reference/parameter-options.md#vocoder-panel-visibility). **Mode** and
 **Input Select** (Input Follower) use **`cmd=0x71`** (Page B). All other rows
-below use **`cmd=0x70`** (Page A). **Not** **`cmd=0x6E`** for these controls on
-SysEx capture.
+below use **`cmd=0x70`** (Page A). **Not** **`cmd=0x6E`** for these controls.
 
 When **Mode** ≠ **Off**, **FILTERS** is disabled on the panel — LCD
 **`Vocoder active. Filters are disabled`** (see
@@ -1446,7 +1443,7 @@ F0 00 20 33 01 00 70 40 3A 1F F7 # 32
 **EDIT FX → Others → Input Follower**. [Panel
 visibility](../../reference/parameter-options.md#input-follower-panel-visibility). **Input
 Select** uses **`cmd=0x71`**; **Attack**, **Release**, and **Sensitivity** use
-**`cmd=0x70`**. **Not** **`cmd=0x6E`** on SysEx capture.
+**`cmd=0x70`**. **Not** **`cmd=0x6E`** for these controls.
 
 | Control | `cmd`/`param` | Dump offset |
 | ---------------- | ------------------------------------------------------------ | ----------- |

@@ -4,7 +4,7 @@ Edit Single — **Arpeggiator** (**EDIT ARP** on the panel).
 
 Part of [Documentation](../../../README.md#documentation). Enumerated options:
 [parameter-options.md](../../reference/parameter-options.md).
-Dump worksheet: [Single parameter map](../../dumps/single.md#arpeggiator)
+Parameter map: [Single parameter map](../../dumps/single.md#arpeggiator)
 · Multi: [Edit Multi](../multis.md).
 
 Paging: [virus.md](../../misc/virus.md#paging). EDIT ARP uses **`0x71`** (Page B);
@@ -14,8 +14,6 @@ Param IDs are **not global** — **`0x0F`** on **`cmd=0x71`** is **Arpeggiator M
 [Multi Tempo / Master Clock](single.md#multi-tempo--master-clock) on
 **`cmd=0x72`**. User-pattern **Loop Length** uses **`6E`/`7F`** — not
 [Oscillators SELECT](oscillators.md#select-717f) (`71`/`7F`).
-
-## Panel reference
 
 **LCD:** **EDIT ARP**. Which rows appear depends on **Mode** — see
 [Arpeggiator panel visibility](../../reference/parameter-options.md#arpeggiator-panel-visibility).

@@ -7,7 +7,7 @@ Part of [Documentation](../../../README.md#documentation). Source and destinatio
 [Mod Matrix Sources](../../reference/parameter-options.md#mod-matrix-sources),
 [Mod Matrix Destinations](../../reference/parameter-options.md#mod-matrix-destinations).
 Amount encoding: [Mod Matrix Amount](../../reference/parameter-options.md#mod-matrix-amount).
-Dump worksheet: [single.md — Modulation Matrix](../../dumps/single.md#modulation-matrix).
+Parameter map: [single.md — Modulation Matrix](../../dumps/single.md#modulation-matrix).
 All **42** Source / Destination / Amount cells confirmed in **Single Dump**
 (`30 00 40` / `<part>=0x40`).
 
@@ -30,9 +30,6 @@ There is **no** per-row Source — only **Destination** and **Amount** repeat
 three times.
 
 ## Per-slot `cmd` / param map
-
-Full enum sweeps on all six slots; all **42** cells verified on Single edit
-buffer **`30 00 40`**.
 
 | Slot | Source | Dest 1 | Amt 1 | Dest 2 | Amt 2 | Dest 3 | Amt 3 |
 | ----- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |

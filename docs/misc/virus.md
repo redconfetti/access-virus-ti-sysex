@@ -131,7 +131,7 @@ The Virus can export or stream several kinds of MIDI SysEx data:
 | --- | ------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | 1 | **Single Buffer** | One Single in the temporary edit buffer | Secondary — relates to arrangement exports |
 | 2 | **Single Bank** | All 128 programs in a RAM bank (A–D) | **`0x32`** request, banks **`01`–`04`** — [bank.md](../dumps/bank.md#single-bank-request) |
-| 3 | **Controller Dump** | One Single as a stream of live-edit SysEx (not Single Dump) | **`0x37`** — [controller-dump.md](../dumps/controller-dump.md) |
+| 3 | **Controller Dump** | One Single as a stream of live-edit SysEx (not Single Dump) | **`0x37`** — [controller.md](../dumps/controller.md) |
 | 4 | **Arrangement** | Current Multi (or sequencer) buffer: **multi settings + 16 Singles** | Important — full performance snapshot |
 | 5 | **Multi Bank** | All programs in the Multi bank (128 slots) | Important |
 | 6 | **Remote Patches** | Remote control templates | Out of scope |

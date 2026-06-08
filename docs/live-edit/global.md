@@ -94,8 +94,7 @@ Device-wide settings — not Multi **`0x72`** or part sound **`0x6E`**.
 
 The byte **`<device_id>`** (immediately before **`0x73`**) is the SysEx
 **destination device ID**. The Virus only acts on the message when this
-matches its configured **MIDI Device ID** (CONFIG). Captures in this doc
-use **`00`** (device 1) unless noted.
+matches its configured **MIDI Device ID** (CONFIG).
 
 At least **All Delays** (`0x1B`) is **transmitted by the Virus** when
 changed on the front panel. Many other **`0x73`** globals are **RX only**
@@ -414,7 +413,7 @@ F0 00 20 33 01 00 73 00 55 01 F7
 **Live edit:** param `0x57`.
 
 **EDIT CONFIG → MIDI → MIDI Volume** (global CC#7 receive). **`cmd=0x73`**, part
-**`00`**. **Hardware TX:** **No** (RX only — host **`sendmidi`** confirmed).
+**`00`**. **Host → synth only.**
 **Not** in **Single Dump**. Distinct from per-part **Volume RX** in Edit Multi
 (packed flag at `0xF8 + part` in Multi Dump).
 
@@ -434,10 +433,7 @@ F0 00 20 33 01 00 73 00 57 01 F7 # Enabled
 
 **EDIT CONFIG → MIDI → MIDI Device ID** (**1–16**, or **Omni**).
 
-**Hardware TX:** the Virus **does not** emit SysEx when this setting is
-changed on the **front panel**. Wire map below is
-from manual **`sendmidi`** / host capture only — the synth
-**accepts** `73 00 5D …` when the envelope **`<device_id>`** matches CONFIG.
+The synth **accepts** `73 00 5D …` when the envelope **`<device_id>`** matches CONFIG.
 
 | UI ID | `<device_id>` | `<value>` | Full message |
 | ----- | ------------- | --------- | ----------------------------------------------- |
@@ -500,11 +496,7 @@ F0 00 20 33 01 00 73 00 6A 01 F7
 **Live edit:** param `0x75`.
 
 **EDIT CONFIG → Knob Behavior → Response** — how front-panel encoders respond
-when a parameter is changed (**Off**, **Jump**, **Snap**, **Rel**).
-
-**Hardware TX:** **No** — the Virus does not emit SysEx when changed on the
-panel. **RX:** confirmed via manual
-**`sendmidi`**.
+when a parameter is changed (**Off**, **Jump**, **Snap**, **Rel**). **Host → synth only.**
 
 ```text
 F0 00 20 33 01 <device_id> 73 00 75 <value> F7
@@ -529,9 +521,7 @@ F0 00 20 33 01 00 73 00 75 03 F7 # Rel
 ### CONFIG → Inputs / USB (RX only)
 
 **EDIT CONFIG → Inputs / USB** (and related input level menus). All use
-**`cmd=0x73`**, part **`00`**. **Hardware TX:** **No**
-(confirmed / user capture). **RX:** host **`sendmidi`** confirmed for the
-examples below. **Not** in **Single Dump**.
+**`cmd=0x73`**, part **`00`**. **Host → synth only.** **Not** in **Single Dump**.
 
 Param bytes are **not global** across `cmd` — e.g. **`0x5B`** here is **Input
 Boost**, not Edit Single **Patch Volume** (`70`/`5B`).
@@ -662,12 +652,7 @@ F0 00 20 33 01 00 73 00 76 01 F7
 
 **Live edit:** param `0x7C`.
 
-**EDIT CONFIG → MIDI → Global Channel** (Global MIDI Channel).
-
-**Hardware TX:** the Virus **does not** emit SysEx when this setting is
-changed on the **front panel**. Examples below
-are from manual **`sendmidi`** / host capture only; **RX** on the synth is assumed
-but not fully swept.
+**EDIT CONFIG → MIDI → Global Channel** (Global MIDI Channel). **Host → synth only.**
 
 Zero-based channel index (same convention as per-part MIDI channel in
 Multi Dump at `0x49 + (part−1)`).

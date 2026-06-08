@@ -16,7 +16,7 @@ All requests use header `F0 00 20 33 01 <device> … F7`.
 | **`0x31`** | **Multi Request** | `31 <bank> <slot> [checksum]` | Multi Dump (`0x11`) — [multi.md](multi.md#request_multi-byte-table) |
 | **`0x32`** | **Single Bank Request** | `32 <bank>` | **128 × Single Dump** — banks **`01`–`1E`** (RAM + ROM) |
 | **`0x34`** | **Arrangement Request** | `34 00` (TI) | Multi Dump + 16 × Single Dump — [single.md](single.md#arrangement-export-single-dump--16) |
-| **`0x37`** | **Controller Dump Request** | `37 00 <part>` | SysEx parameter stream — [controller-dump.md](controller-dump.md) |
+| **`0x37`** | **Controller Dump Request** | `37 00 <part>` | SysEx parameter stream — [controller.md](controller.md) |
 
 ### Single Request
 
@@ -115,7 +115,7 @@ short SysEx replies (live-edit style), not one bulk message. **`<part>`**:
 Multi **`0x00`–`0x0F`**, Single mode **`0x40`** (same as edit-buffer
 [Single Request](#single-request)).
 
-Full notes and mapping workflow: [controller-dump.md](controller-dump.md).
+Full notes: [controller.md](controller.md).
 
 ```bash
 sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x37 0x00 0x00

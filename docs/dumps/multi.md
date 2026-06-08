@@ -77,9 +77,9 @@ Fields match the **Edit Multi** screen.
 
 ASCII name for the multi — **10 bytes** at **`0x0D`–`0x16`** (case as entered on
 the panel), null at **`0x17`**. **No live-edit SysEx** on desktop (panel
-rename → **Multi Dump** only; **`receivemidi`** capture empty on rename).
+rename → **Multi Dump** only).
 
-Hardware-verified (edit buffer, INIT MULTI baseline → **`Init Mult4`**):
+Example (**Init Mult4**):
 
 | Offset | `INIT MULTI` | `Init Mult4` |
 | -------- | ------------ | ------------ |
@@ -135,16 +135,14 @@ regions.
 ##### Secondary Output (not in Multi Dump) {#secondary-output-not-in-multi-dump}
 
 Per-part **secondary** output routing — live edit only (`73` / `0x2D`; same
-param as Edit Single → Surround → Output). Hardware-tested:
-**no** change to **Multi Dump** vs baseline. See
+param as Edit Single → Surround → Output). See
 [multis.md](../live-edit/multis.md#secondary-output).
 
 ##### Bend Up / Down (Multi — not in Multi Dump) {#bend-limits-not-in-multi-dump}
 
 Edit Multi exposes the same pitch-bend limit controls as Edit Single
 (`71` / `0x1A`, `0x1B`). Values live in **Single Dump** when editing a
-part’s Single; they do **not** appear in **Multi Dump**. Hardware-tested:
-identical multi dump vs INIT after `71 00 1A` / `1B` sweeps. See
+part’s Single; they do **not** appear in **Multi Dump**. See
 [multis.md](../live-edit/multis.md).
 
 ##### Bank
@@ -157,7 +155,7 @@ confirmed.
 
 Program number for that bank (**0–127**). Direct **`0x00..0x7F`** at
 **`0x39 + (part−1)`**. Part 1: LCD **65** → stored **`0x41`** at
-**`0x39`** confirmed.
+**`0x39`**.
 
 ##### Volume
 
@@ -167,7 +165,7 @@ Part balance (**−64..+63**). Parts **1–16** at
 
 ##### Panorama
 
-**−64..+63**; overrides the Single pan. Part 1 at `0xD8` confirmed.
+**−64..+63**; overrides the Single pan. Part 1 at `0xD8`.
 
 ##### MIDI Channel
 
@@ -189,12 +187,12 @@ protocol (`09`–`11`). **`0xC8..0xD7`**, one byte per part:
 | `0C`–`0E` | USB 2: L, L+R, R |
 | `0F`–`11` | USB 3: L, L+R, R |
 
-Part 1: `00` = Out 1 L, `03` = Out 2 L confirmed.
+Part 1: `00` = Out 1 L, `03` = Out 2 L.
 
 ##### Transpose
 
 **−48..+48** semitones; adds to the Single transpose. `stored = ui + 64`
-(center `0x40` = 0); UI −48..+48 → `0x10..0x70`; Parts 1 and 3 confirmed.
+(center `0x40` = 0); UI −48..+48 → `0x10..0x70`; Parts 1 and 3.
 
 ##### Detune
 
@@ -218,12 +216,12 @@ Off, **1–127** — MIDI volume (CC#7) when the Multi is selected. Parts
 ##### Low Key
 
 **C−2..G8** — part low note limit (inverted range = outside range
-enabled). Part 1 at `0x59` confirmed.
+enabled). Part 1 at `0x59`.
 
 ##### High Key
 
 **C−2..G8** — part high note limit (inverted range = outside range
-enabled). Part 1 at `0x69` confirmed.
+enabled). Part 1 at `0x69`.
 
 ##### Hold Pedal
 
@@ -313,8 +311,8 @@ All slots use the same **`0x29..0x38`** (bank) and **`0x39..0x48`**
 
 ### Multi bank slot examples (Multi Dump only)
 
-Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
-**1–16** may also stream sixteen Single Dump on full export):
+Examples from Multi bank **`01`** (267-byte reply; slots **1–16** may also
+stream sixteen Single Dump on full export):
 
 | Slot | Name (example) | Bank bytes (16 parts) | Program bytes (notes) |
 | ---- | -------------- | --------------------- | --------------------- |
@@ -365,7 +363,7 @@ Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
 
 Several Edit Multi booleans share one byte per part (**1-based** part
 index: Part 1 = `0xF9`, Part 16 = `0x108`). **Diff from INIT** (`0x45`)
-when possible; other flags must be at defaults or confirmed on the panel.
+with other flags at INIT defaults.
 
 **INIT MULTI defaults** (`0x45` = `0b01000101`):
 
@@ -387,19 +385,13 @@ when possible; other flags must be at defaults or confirmed on the panel.
 | Priority High | `+0x20` | `0x65` at `0x108` (Hold on) |
 | Priority High (Hold off) | `+0x20` | `0x41` → `0x61` |
 
-Part 16 sweep (reset multi, INIT defaults, one toggle each): clean
-single-byte diffs at **`0x108`** only (+ `0x0A` and checksum). Re-baseline
-from INIT before flag diffs if Priority High was left on (`0x65` at
-`0x108`).
-
 Several booleans share one byte; **`0x61` is not unique** (Priority High
 with Hold off). Diff from INIT (`0x45`) when toggling one flag.
 
 ### Runtime-only Edit Multi
 
 These panel / host controls have live SysEx (where documented) but **no**
-byte in **Multi Dump** — confirmed by edit → re-dump
-diffs (INIT MULTI baseline):
+byte in **Multi Dump**:
 
 | Control | Live edit | In Multi Dump |
 | -------------------- | ---------------------- | --------------- |
@@ -423,21 +415,8 @@ Direct Monitoring.
 | `0xB9..0xC7` | **15 × `0x00`** | Between Init Volume and Output — candidate for Keyboard to MIDI |
 | `0xE8..0xF7` | **16 × `0x00`** | Between Pan and flags — candidate for Keyboard to MIDI |
 
-Elimination captures confirmed **`0xB9..0xC7`** and **`0xE8..0xF7`** do
-not hold Pan, Output, Enable, or Master Clock.
-
-**Hardware correlation (edit buffer, INIT MULTI):** live edits for **Bend
-Up/Down**, **Secondary Output**, **Direct Monitoring** (where available), and
-**Keyboard** (`0x72`, `0x40`) produced **identical** Multi Dump vs
-baseline — none of the unmapped regions changed. These settings are
-**runtime-only** on the desktop module (or stored outside this 267-byte
-block). Global **`0x73`** settings (e.g. All Delays `0x1B`) also did not
-alter the multi dump.
-
-**Keyboard to MIDI** cannot be probed on the desktop module (enable/disable
-dumps are identical). On **TI Keyboard / Polar**, toggle Edit Multi
-**Keyboard to MIDI** and dump. CONFIG **Local** / **Mode** are separate
-globals — see [global.md](../live-edit/global.md).
+**Keyboard to MIDI** has no dump byte on the desktop module (enable/disable
+dumps are identical). See [Keyboard-related (`0x40`)](../live-edit/multis.md#keyboard-related-0x40--global).
 
 #### INIT MULTI slot 32 reference
 
@@ -452,8 +431,7 @@ Unmapped block **`0x19..0x28`** (16 bytes):
 ```
 
 Notable: **`0x26`** = `0x0F` (edited-part index, Part 16). Remaining
-non-zero bytes (`0x3C`, `0x10`, six × `0x40`) are **uninterpreted** — not
-yet tied to Edit Multi or **`0x73`** globals.
+non-zero bytes (`0x3C`, `0x10`, six × `0x40`) are **uninterpreted**.
 
 ### Notes
 

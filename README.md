@@ -20,7 +20,7 @@ assistance from Cursor AI.
   - [Single](docs/dumps/single.md)
   - [Multis & arrangements](docs/dumps/multi.md)
   - [Banks & requests](docs/dumps/bank.md)
-  - [Controller dump](docs/dumps/controller-dump.md)
+  - [Controller](docs/dumps/controller.md)
 - [Parameter options (enums, panel tables)](docs/reference/parameter-options.md)
 - [OsTIrus (DSP56300 TI/TI2 emulation)](docs/misc/ostirus.md)
 

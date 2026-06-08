@@ -102,9 +102,9 @@ See [Option name](#anchor) from live-edit or dump rows.
 | [Phaser Mix (LCD)](#phaser-mix-lcd) | **Mix** — `71`/`55`; **Off** @ **`00`**, **`01`–`7F`** = **1..127** |
 | [Phaser Stages](#phaser-stages-1) | **Stages** — `71`/`54`; **`00`–`05`** = **1..6 Stages** |
 | [Others Type](#others-type) | **EDIT FX → Others** sub-pages — **LCD only** (no SysEx); see **Filter Bank** … |
-| [Others panel visibility](#others-panel-visibility) | **Filter Bank** / **Vocoder** / **Input Follower** sub-menus (panel-confirmed) |
+| [Others panel visibility](#others-panel-visibility) | **Filter Bank** / **Vocoder** / **Input Follower** sub-menus |
 | [Filter Bank Type](#filter-bank-type-1) | **Filter Bank → Type** — `6E`/`13`; **`00`** Off … **`0B`** |
-| [Filter Bank panel visibility](#filter-bank-panel-visibility) | **Type**-dependent rows — all **`01`–`0B`** types panel-confirmed |
+| [Filter Bank panel visibility](#filter-bank-panel-visibility) | **Type**-dependent rows — all **`01`–`0B`** types |
 | [Filter Bank Mix (LCD)](#filter-bank-mix-lcd) | **Mix** — `6E`/`14`; same **%** curve as [Character Intensity](#character-intensity-lcd) |
 | [Filter Bank Comb Frequency](#filter-bank-comb-frequency-1) | **Comb Filter → Frequency** — `6E`/`15`; **C0..C8** chromatic (`00`–`60`) |
 | [Filter Bank Frequency (direct)](#filter-bank-frequency-direct-1) | **XFade / VariSlope → Frequency** — `6E`/`15`; **`0`–`127`** |
@@ -278,7 +278,7 @@ rows).
 ## Arpeggiator Pattern
 
 **EDIT ARP → Pattern** (`71` / `0x02`). **`stored = <value>`** (wire byte).
-Hardware TX confirmed (**`00`–`3F`**). Hidden when **Mode** = **Off** or **Down**.
+Hidden when **Mode** = **Off** or **Down**.
 Visible on full settings modes and **Arp>Matrix**.
 
 | `<value>` | LCD label |
@@ -518,7 +518,7 @@ See [Arpeggiator step triplet](#arpeggiator-step-triplet).
 
 User-pattern **step velocity** — steps **1**–**32**. Live edit:
 **`cmd=0x6F`**, param **`0x01 + (step − 1) × 3`**, **`stored = lcd`** (**`00`–`7F`**
-→ **0**–**127**). Hardware TX confirmed for all **32** steps (SysEx in + single
+→ **0**–**127**).
 buffer read in host software).
 
 | Step | `<param>` |
@@ -545,8 +545,6 @@ See [Arpeggiator step triplet](#arpeggiator-step-triplet).
 
 User-pattern **step on/off** — steps **1**–**32**. Live edit:
 **`cmd=0x6F`**, param **`0x02 + (step − 1) × 3`**, **`00`** = off, **`01`** = on.
-Hardware TX confirmed for all **32** steps.
-
 | Step | `<param>` | Off | On |
 | ---- | --------- | -------- | -------- |
 | 1 | `02` | `…02 00` | `…02 01` |
@@ -586,7 +584,7 @@ See [Arpeggiator step triplet](#arpeggiator-step-triplet).
 
 For every **Type**, when **Send** = **Off** (`00` in [Delay
 Send](#delay-send-lcd)),
-the panel shows only **Type**, **Send**, and **Feedback** (panel-confirmed). No
+the panel shows only **Type**, **Send**, and **Feedback**. No
 **Delay Time** / **Time**, **Mode**, **Clock**, **Coloration**, LFO rows, or
 other
 tape/classic rows.
@@ -608,10 +606,10 @@ below (**Type**, **Send**, and **Feedback** stay available).
 | Send | Yes | [Delay Send (LCD)](#delay-send-lcd) |
 | Feedback | Yes | [Delay Feedback](#delay-feedback-1) — **Classic** **0..100 %** / **Tape** **0..200 %** on **`73`** |
 | Mode | Yes | [Delay Mode](#delay-mode-1) — **`01`–`16`** |
-| Coloration | Yes | [Delay Coloration](#delay-coloration) — **−64..+63** (panel-confirmed) |
+| Coloration | Yes | [Delay Coloration](#delay-coloration) — **−64..+63** |
 | LFO (Rate / Depth / Wave) | Yes | [Delay LFO](#delay-lfo-1) — same panel page |
 | Clock | Simple Delay / Ping Pong … only | [Delay Clock](#delay-clock) — **`00`–`10`**; **`00`** = **Off** |
-| Delay Time | Simple/Ping Pong + **Clock** = **Off** only | [Delay Time (ms)](#delay-time-ms) — **not** on **Pattern** (`06`–`16`; panel-confirmed **Pattern 5+5**) |
+| Delay Time | Simple/Ping Pong + **Clock** = **Off** only | [Delay Time (ms)](#delay-time-ms) — **not** on **Pattern** (`06`–`16`; **Pattern 5+5**) |
 
 When **Clock** is a tempo division (**not** **Off**), **Delay Time** is
 **hidden**
@@ -621,7 +619,7 @@ panel.
 
 **Pattern …** modes (`06`–`16`): no **Clock**, no **Delay Time** / **Time** on
 the
-panel (confirmed on **Pattern 5+5**). **Coloration** and LFO rows stay visible —
+on **Pattern 5+5**. **Coloration** and LFO rows stay visible —
 see
 [Delay Mode](#delay-mode-1).
 
@@ -654,8 +652,7 @@ or **Ratio**.
 | Modulation | Yes | [Tape Modulation](#delay-tape-modulation-1) — **0.0..100.0 %** |
 
 Same panel set and ranges for **Tape Free** (`02`) and **Tape Doppler** (`03`).
-All seven type-specific rows above panel-confirmed on **Tape Doppler**
-(`6E`/`0A`/`03`).
+All seven type-specific rows above (`6E`/`0A`/`03`).
 No **Left Clock** / **Right Clock** (Tape Clocked only). No Classic rows.
 
 ---
@@ -830,7 +827,7 @@ Feedback](../live-edit/single/effects.md#delay-feedback-1).
 **Edit FX → Delay → Mode** (**Type** = Classic, **Send** ≠ Off). Live edit:
 **`cmd=0x70`**, param **`0x70`** (Page **A#112**). **`stored = <value>`** (wire
 byte;
-first option is **`01`**, not **`00`**). Hardware TX confirmed (**`05`–`16`**
+first option is **`01`**, not **`00`**).
 stepped; full enum **`01`–`16`**). Not **Type** (`6E`/`0A`).
 
 **Do not confuse** with [Delay LFO Rate](#delay-lfo-1-rate-1) (**`70`/`74`**, not
@@ -898,9 +895,7 @@ ui = stored − 64
 | +0 | `40` |
 | +63 | `7F` |
 
-Live edit: **`cmd=0x70`**, param **`0x77`** (Page **A#119**). Hardware TX
-confirmed
-(**`00`–`7F`–`00`**). Mod-matrix **Delay Coloration** id **`0x54`** ≠
+Live edit: **`cmd=0x70`**, param **`0x77`** (Page **A#119**). (**`00`–`7F`–`00`**). Mod-matrix **Delay Coloration** id **`0x54`** ≠
 live-edit param byte (same pattern as **Delay Rate** `0x1E` vs **`0x74`**).
 
 On **Tape** types, **`77`** is [Tape Frequency](#delay-tape-frequency)
@@ -955,7 +950,7 @@ See also [LFO Clock](#lfo-clock) — same **`00`–`10`** grid, plus **`11`–`1
 
 ## LFO Clock
 
-**EDIT LFO → LFO *n* → Clock** (panel **Clock**; worksheet **Clock Divider**).
+**EDIT LFO → LFO *n* → Clock** (panel **Clock**; **Clock**).
 Live edit: **`cmd=0x71`**, **`stored = <value>`** (wire byte).
 
 **Panel knob:** minimum (**all the way down**) = **Off** (`00`); each step up =
@@ -1116,7 +1111,7 @@ F0 00 20 33 01 00 71 40 07 <value> F7 # LFO 3 Rate (Clock Off)
 
 ## LFO Shape
 
-**EDIT LFO → LFO *n* → Shape** (worksheet **Waveform Shape**).
+**EDIT LFO → LFO *n* → Shape** (**Shape**).
 **`stored = <value>`** (wire byte). **68** panel choices **`00`–`43`**. Routing:
 [LFO live edit routing](#lfo-live-edit-routing).
 
@@ -1500,8 +1495,7 @@ F0 00 20 33 01 00 70 40 5A 7F F7 # Panorama +100.0 %
 **Live edit:** `cmd=0x71`, param `0x51`.
 
 **Assign Target** menu — same **`<value>`** namespace as [LFO 1 Assign
-Target](#assign-target) (full enum table there). Hardware TX on LFO 2
-confirms matching bytes (**`51`/`xx`** = **`4F`/`xx`**).
+Target](#assign-target) (full enum table there). confirms matching bytes (**`51`/`xx`** = **`4F`/`xx`**).
 
 ```text
 F0 00 20 33 01 00 71 40 51 00 F7 # Off
@@ -1584,7 +1578,7 @@ pct    = stored × 100 / 127
 **Live edit:** param `0x0D`.
 
 **`0`–`127`** → `stored = lcd` (**`00`–`7F`**). Panel label **Fade In**
-(worksheet **Fade In Time**).
+(**Fade In Time**).
 
 | LCD | `<value>` |
 | --- | --------- |
@@ -1614,9 +1608,7 @@ instead).
 
 **Edit FX → Delay → Rate** (part of [Delay LFO](#delay-lfo-1)). Live edit:
 **`cmd=0x70`**, param
-**`0x74`** (Page **A#116**). **`stored = lcd`** (**`0`–`127`**). Hardware TX
-confirmed
-(sweep **`00`–`7F`**; **Rate** `0` → **`00`**). Not **`0x70`** ([Delay
+**`0x74`** (Page **A#116**). **`stored = lcd`** (**`0`–`127`**). (sweep **`00`–`7F`**; **Rate** `0` → **`00`**). Not **`0x70`** ([Delay
 Mode](#delay-mode-1)).
 Mod-matrix **Delay Rate** id **`0x1E`** ≠ live-edit param byte.
 
@@ -1632,9 +1624,7 @@ Mod-matrix **Delay Rate** id **`0x1E`** ≠ live-edit param byte.
 **Edit FX → Delay → Depth** (part of [Delay LFO](#delay-lfo-1); **Classic** only
 on this
 LFO page). Live edit: **`cmd=0x70`**, param **`0x75`** (Page **A#117**). Panel
-**0.0..100.0 %**. Hardware TX confirmed (full sweep **`00`–`7F`**).
-
-```text
+**0.0..100.0 %**. ```text
 stored = round(pct × 127 / 100)
 ```
 
@@ -1821,8 +1811,6 @@ Panel-confirmed (see table). Rows **`19`–`1D`**,
 (**`68`** **`−2.5`**, then **`−0.4`** through **`6A`**, **`6B`** **`−3.7`**).
 **`6C`–`7E`:** headroom ladder. **`7F`** = **Effect**.
 
-Legend: **✓** = panel-confirmed; **≈** = **`01`–`40`** gaps only (amp interp).
-
 ---
 
 ## Reverb Mode
@@ -1850,9 +1838,7 @@ confirmed (**`01`–`03`** stepped; **`00`** Off). First active algorithm is
 **Hall**). Visible when **Mode** is **Reverb** or **Feedback 1/2** (not **Mode**
 **Off**). Changing **Type** does not hide other rows. Live edit: **`cmd=0x6E`**,
 param **`0x03`**. **`stored = <value>`**
-(wire byte). Hardware TX confirmed (**`00`–`03`**).
-
-```text
+(wire byte). ```text
 F0 00 20 33 01 00 6E 00 03 00 F7 # Ambience (Part 1)
 ```
 
@@ -1877,12 +1863,12 @@ F0 00 20 33 01 00 6E 00 03 00 F7 # Ambience (Part 1)
 
 When **Mode** is **Reverb** or **Feedback 1/2**, **Send** = **Off** does **not**
 hide **Type**, **Clock**, **Time**, **Damping**, **Coloration**, or **Predelay**
-(mk2 panel-confirmed). Unlike **Delay**, where **Send** = **Off** leaves only
+(on panel). Unlike **Delay**, where **Send** = **Off** leaves only
 **Type**, **Send**, and **Feedback**.
 
 ### Mode = Reverb (`01`), Feedback 1 (`02`), or Feedback 2 (`03`)
 
-Shared rows for all three **Modes** (mk2 panel-confirmed). **Feedback 2** shows
+Shared rows for all three **Modes** (on panel). **Feedback 2** shows
 the
 **same** controls as **Feedback 1** (only the algorithm differs — first tail
 **immediate** on **Feedback 2**).
@@ -1913,9 +1899,7 @@ reference.
 **Edit FX → Reverb → Clock**. Synchronizes **[Predelay](#reverb-predelay-1)** to
 the
 tempo grid. Live edit: **`cmd=0x6E`**, param **`0x08`**. **`stored = <value>`**
-(wire byte). Hardware TX confirmed (sweep **Off** → **3/4** (`10`) → **Off**).
-
-**Same wire map** as [Delay Clock](#delay-clock) (`71`/`14` on Page **B**);
+(wire byte). **Same wire map** as [Delay Clock](#delay-clock) (`71`/`14` on Page **B**);
 Reverb
 uses the **part buffer** (`6E`) instead.
 
@@ -1953,7 +1937,7 @@ F0 00 20 33 01 00 6E 00 08 10 F7 # 3/4
 
 **Edit FX → Reverb → Time**. Tail
 length **0..127** on the panel. Live edit: **`cmd=0x6E`**, param **`0x04`**.
-**`stored = lcd`** (direct wire byte). Hardware TX confirmed (sweep
+**`stored = lcd`** (direct wire byte).
 **`00`–`7F`**).
 Mod-matrix **Reverb Time** id **`0x1C`** ≠ live-edit param byte.
 
@@ -1979,7 +1963,7 @@ Live edit: **`cmd=0x6E`**, param **`0x05`**.
 stored = round(pct × 127 / 100)
 ```
 
-Hardware TX confirmed (sweep **`00`–`7F`**). Mod-matrix **Reverb Dampening** id
+Mod-matrix **Reverb Dampening** id
 **`0x65`** ≠ live-edit param byte.
 
 | LCD | `<value>` |
@@ -2005,7 +1989,7 @@ stored = ui + 64
 ui = stored − 64
 ```
 
-Hardware TX confirmed (sweep **+63** → **−64**, **`7F`–`00`**). Mod-matrix
+Mod-matrix
 **Reverb
 Coloration** id **`0x66`** ≠ live-edit param byte (Delay
 [Coloration](#delay-coloration) uses **`70`/`77`** on Classic).
@@ -2038,7 +2022,7 @@ byte
 lcd_ms ≈ stored × 500.0 / 92 # 92 = 0x5C (panel max wire)
 ```
 
-Hardware TX confirmed (sweep **0.0** → **500.0** ms; max wire **`5C`**).
+0** → **500.0** ms; max wire **`5C`**).
 
 | LCD (ms) | `<value>` |
 | -------- | --------- |
@@ -2062,8 +2046,7 @@ F0 00 20 33 01 00 6E 00 07 5C F7 # 500.0 ms
 **Mode** = **Feedback 1** (`02`) or **Feedback 2** (`03`) — same panel on both.
 Live edit: **`cmd=0x6E`**, param **`0x09`**. **`stored = lcd`** (direct wire
 byte
-**`00`–`7F`**). Hardware TX confirmed (**Feedback 2** mode, sweep to **`7F`**).
-Mod-matrix **Reverb Feedback** id **`0x67`** ≠ live-edit param byte.
+**`00`–`7F`**). Mod-matrix **Reverb Feedback** id **`0x67`** ≠ live-edit param byte.
 
 | LCD | `<value>` |
 | --- | --------- |
@@ -2422,7 +2405,7 @@ Protect
 **EDIT FX → Character → Type**. Live edit **`cmd=0x6E`**, param **`0x1A`** (part
 single buffer) — see
 [effects.md — Character Type](../live-edit/single/effects.md#character-type-1).
-**`stored = <value>`** (dense **`00`–`08`**). Hardware TX confirmed (menu
+**`stored = <value>`** (dense **`00`–`08`**).
 step-through after **`6E`/`76`/`01`** focus).
 
 | `<value>` | Option |
@@ -2459,7 +2442,7 @@ Type](#character-type-1). Live-edit **`cmd`/`param`** per row — see
 ### Preset types (`01`–`06`)
 
 **Vintage 1**, **Vintage 2**, **Vintage 3**, **Pad Opener**, **Lead Enhancer**,
-**Bass Enhancer** — panel-confirmed. Selecting one of these types
+**Bass Enhancer** . Selecting one of these types
 applies a fixed character preset; there are **no** further **EDIT FX** menu
 rows — only [`6E`/`1A`](#character-type-1) SysEx when changing **Type**. Dump: only
 **`0x123`** changes (`stored = type index **`00`–`06`**).
@@ -2605,7 +2588,7 @@ other types.
 | `00` | Slow | ✓ |
 | `7F` | Fast | ✓ |
 
-Interior positions: wire index **`01`–`7E`** (panel-confirmed sweep; no discrete
+Interior positions: wire index **`01`–`7E`** (no discrete
 enum).
 
 ---
@@ -2627,7 +2610,7 @@ other types.
 | `5A` | 17.5 cm | ✓ |
 | `7F` | 30.0 cm | ✓ |
 
-Init patch default **6.0 cm** @ wire **`10`** (panel-confirmed).
+Init patch default **6.0 cm** @ wire **`10`**.
 
 ---
 
@@ -2638,7 +2621,7 @@ Init patch default **6.0 cm** @ wire **`10`** (panel-confirmed).
 (Classic) and **Amount** (Hyper); decode with **`70`/`67`**.
 
 Bipolar **degrees**. Center **`40`** = **+0°**; endpoints **`00`** = **−180°**,
-**`7F`** = **+180°** (panel-confirmed).
+**`7F`** = **+180°**.
 
 ```text
 ui_deg = (stored − 64) × 180 / 64
@@ -2725,7 +2708,7 @@ param (**`76`** on **`70`**).
 [effects.md — Phaser](../live-edit/single/effects.md#phaser).
 
 **Mix** = **`00`** (**Off**): **Mix** only. **Mix** ≥ **`01`**: full row set below
-(panel-confirmed).
+.
 
 | Control | Visible (Mix = Off) | Visible (Mix ≥ `01`) | `cmd`/`param` | Notes |
 | ------------- | ------------------- | -------------------- | ------------- | --------------------------------------------------------------------------------------------------------- |
@@ -2786,9 +2769,8 @@ Panel-confirmed (step **`00`–`05`** after **Mix** ≠ **Off**).
 | 2 | **Vocoder** | **No** | [Vocoder Mode](#vocoder-mode-1) — **`71`/`27`** |
 | 3 | **Input Follower** | **No** | [Input Select](#input-follower-input-select-1) — **`71`/`26`** |
 
-Hardware-tested: switching among these three **EDIT FX** pages sends
-**no** live-edit SysEx. Only parameter edits (e.g. **Filter Bank → Type**) TX
-bytes.
+Paging among **Filter Bank**, **Vocoder**, and **Input Follower** sends **no**
+live-edit SysEx. Parameter edits (e.g. **Filter Bank → Type**) do.
 
 ---
 
@@ -2799,9 +2781,9 @@ SysEx when paging). Parameter rows per sub-page:
 
 | Sub-page | Panel-confirmed | Live edit |
 | ------------------ | --------------- | ------------------------------------------------------------------- |
-| **Filter Bank** | Yes | [Filter Bank panel visibility](#filter-bank-panel-visibility) |
-| **Vocoder** | Yes | [Vocoder panel visibility](#vocoder-panel-visibility) |
-| **Input Follower** | Yes | [Input Follower panel visibility](#input-follower-panel-visibility) |
+| **Filter Bank** | | [Filter Bank panel visibility](#filter-bank-panel-visibility) |
+| **Vocoder** | | [Vocoder panel visibility](#vocoder-panel-visibility) |
+| **Input Follower** | | [Input Follower panel visibility](#input-follower-panel-visibility) |
 
 ---
 
@@ -2857,7 +2839,7 @@ Same **`param`** bytes as [Vocoder](#vocoder-panel-visibility) on **`70`**
 **EDIT FX → Others → Input Follower → Sensitivity** when [Input
 Select](#input-follower-input-select-1) ≠ **Off**. Live edit **`cmd=0x70`**, param
 **`0x38`**. **`stored = round(pct × 127 / 100)`** — **`00`** = **0 %**,
-**`7F`** = **100.0 %** (panel-confirmed endpoints).
+**`7F`** = **100.0 %** (endpoints).
 
 | LCD | `<value>` |
 | ------- | --------- |
@@ -2874,7 +2856,7 @@ Sensitivity](../live-edit/single/effects.md#input-follower).
 **EDIT FX → Others → Filter Bank → Type**. Live edit **`cmd=0x6E`**, param
 **`0x13`** (part single buffer — same **`cmd`** as [Character
 Type](#character-type-1), different **`param`**). **`stored = <value>`** (dense
-**`00`–`0B`**). Hardware TX confirmed (step-through after **`6E`/`76`/`04`**
+**`00`–`0B`**).
 focus).
 
 | `<value>` | Option |
@@ -2893,7 +2875,7 @@ focus).
 | `0B` | BP VariSlope |
 
 Panel rows per **Type**: [Filter Bank panel
-visibility](#filter-bank-panel-visibility). Dump worksheet groups some pole-XFade
+visibility](#filter-bank-panel-visibility). Parameter map groups some pole-XFade
 and VariSlope variants — see [single.md](../dumps/single.md).
 
 **Not** Oscillator 1 wave select (`70`/`13`).
@@ -3027,8 +3009,6 @@ bipolar **Frequency** (Ring Mod / Freq Shifter).
 | `16`–`1A` | `<ā` | `36`–`3A` | `<e` | `56`–`5A` | `<ü` | `76`–`7A` | `<o` |
 | `1B`–`1F` | `>a` | `3B`–`3F` | `>i` | `5B`–`5F` | `>ö` | `7B`–`7E` | `>u` |
 |  |  |  |  |  |  | `7F` | `<u>` |
-
-Panel-confirmed (full **`15`** sweep on **Vowel Filter**).
 
 ---
 
@@ -3213,9 +3193,7 @@ bands.
 **Edit FX → Distortion → Type**. Live edit **`cmd=0x71`**, param **`0x64`**
 (Page **B#100**) — see
 [effects.md](../live-edit/single/effects.md#distortion-type-1).
-**`stored = <value>`** (wire byte; **not** a dense `00`–`19` index). Hardware TX
-confirmed (full type step-through; EFFECTS focus **`6E`/`76`/`00`**).
-
+**`stored = <value>`** (wire byte; **not** a dense `00`–`19` index). 
 | `<value>` | Option |
 | --------- | ----------------- |
 | `00` | Off |
@@ -3285,13 +3263,7 @@ Cut**
 | `10` | Triangle Fold |
 | `11` | Sawtooth Fold |
 
-Live edit bytes confirmed on capture (standard sweeps through **Sawtooth
-Fold**):
-
-| Control | Visible | Live edit | Range |
-| ---------------- | ------- | --------- | ----------------------------------- |
-| **Type** | Yes | `71`/`64` | [Distortion Type](#distortion-type-1) |
-| **Mix** | Yes | `6E`/`48` | **0.0..100.0 %** |
+0..100.0 %** |
 | **Intensity** | Yes | `71`/`65` | **0.0..100.0 %** |
 | **Treble Boost** | Yes | `6E`/`46` | **0.0..100.0 %** |
 | **High Cut** | Yes | `6E`/`47` | **0.0..100.0 %** |
@@ -3301,18 +3273,16 @@ Percent params: `stored = round(pct × 127 / 100)` — endpoints **`00`** = 0 %,
 
 | UI | `<value>` | Param | Notes |
 | ------- | --------- | ------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| 0.0 % | `00` | Mix / Intensity / Treble / High Cut | ✓ (sweeps) |
+| 0.0 % | `00` | Mix / Intensity / Treble / High Cut | ✓ |
 | 56.3 % | `48` | **Mix** (`6E`/`48`) | ✓ (**Wide**; matches `round(pct × 127 / 100)`) |
 | 78.9 % | `65` | **Intensity** (`71`/`65`) | ✓ (**Wide**; naive round → **`64`**, panel uses **`65`**) |
 | 50.0 % | `40` | **Treble Boost** (`6E`/`46`), **High Cut** (`6E`/`47`), **Quality** (`6E`/`49`) | ✓ (`round(50 × 127 / 100)` = **`0x40`**) |
-| 100.0 % | `7F` | standard % rows + **Quality** | ✓ (sweeps) |
+| 100.0 % | `7F` | standard % rows + **Quality** | ✓ |
 
 ### Reducer types — Mix, Intensity, Quality
 
 **Type** = **Rate Reducer** (`12`) or **Bit Reducer** (`13`). Same three rows;
-panel-confirmed on both. Live edit **`6E`/`49`** for **Quality** (capture on
-**`12`**
-and **`13`**; **50.0 %** → **`40`**).
+Live edit **`6E`/`49`** for **Quality**.
 
 | Control | Visible | Live edit | Range |
 | ------------- | ------- | --------- | ----------------------------------- |
@@ -3338,14 +3308,7 @@ Panel-confirmed:
 | `08` | Bit Reducer Old |
 | `09` | Rate Reducer Old |
 
-Live edit bytes confirmed on capture (**`48`/`65`** sweeps after **`64 0A`**,
-**`64 0B`**,
-**`64 08`**, **`64 09`**; no **`46`/`47`/`49`/`4A`**):
-
-| Control | Visible | Live edit | Range |
-| ------------- | ------- | --------- | ----------------------------------- |
-| **Type** | Yes | `71`/`64` | [Distortion Type](#distortion-type-1) |
-| **Mix** | Yes | `6E`/`48` | **0.0..100.0 %** |
+0..100.0 %** |
 | **Intensity** | Yes | `71`/`65` | **0.0..100.0 %** |
 
 Percent encoding: same as [standard
@@ -3381,7 +3344,7 @@ standard
 
 **Tone** (when shown): capture on **`14`**/**`16`**/**`17`**/**`18`** —
 **`6E`/`4A`**
-sweep; **`00`** = −100.0 %, **`40`** = +0 % (panel-confirmed), **`7F`** = +100.0
+sweep; **`00`** = −100.0 %, **`40`** = +0 %, **`7F`** = +100.0
 %.
 No **`4A`** after **`64 15`** / **`64 19`** (Curry / Chili). No
 **`46`**/**`49`** on
@@ -3885,7 +3848,7 @@ Target table):
 Oscillator **Wavetable** wave select names (`cmd=0x70`, `param=0x13`,
 **Mode `02`**).
 **Wire** = index **`00`–`63`** for panel indices **0–99**. Order confirmed
-on hardware (full **+** sweep).
+.
 
 100 options (`0`–`99`).
 
@@ -4121,8 +4084,6 @@ Right of center (`41`–`7F`):
 
 ## Osc 1 Classic — Pulse Width (LCD)
 
-Hardware sweep for **Osc 1 Pulse Width** (`cmd=0x70`, `param=0x12`, **Shape ≥
-`40`**).
 **Wire:** `pct = 50 + stored × 50 / 127` — see
 [oscillators.md — Pulse Width](../live-edit/single/oscillators.md#pulse-width-shape--sawtooth).
 **LCD:** `round(pct + 0.4, 0.1)` in most of the range (partial map below; not

@@ -5,20 +5,15 @@ Edit Single — **Filters** (Common, Filter 1/2, Filter/Amp envelopes,
 
 Part of [Documentation](../../../README.md#documentation). Enumerated options:
 [parameter-options.md](../../reference/parameter-options.md).
-Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-map)
+Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](../multis.md).
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
-## Panel reference
+## SELECT (`71`/`7A`)
 
 **LCD:** **FILTERS** → **Filter 1** / **Filter 2** / **Common** / **Filter 1
-envelope**. Filter 1, Filter 2, **Common**, and **Filter 1 ADSR** confirmed on
-Remaining **FILTERS** rows (e.g. modulation, velocity targets) —
-see
-[hardware-mapping-workflow — SELECT](../../../.cursor/skills/hardware-mapping-workflow/SKILL.md#select-buttons-section-focus).
-
-### SELECT (`71`/`7A`)
+envelope**.
 
 **FILTERS** section — **SELECT** toggles **Filter 1** / **Filter 2** (press
 both together for **Filter 1 + Filter 2**). Also sets which filter the front-
@@ -94,7 +89,7 @@ F0 00 20 33 01 00 70 00 2A 7F F7 # Resonance 127 (landing)
 **Live edit:** `cmd=0x70`, param `0x33`.
 
 **FILTERS → EDIT → Filter 1 → Mode** (or **Filter 1 Mode**).
-index **51** = **`0x33`**. Additional modes — capture **every** LCD label until the list repeats.
+index **51** = **`0x33`**. Additional modes use the same wire encoding through **`0x33`**.
 
 | UI (reported) | `<value>` |
 | ------------- | --------- |
@@ -109,7 +104,7 @@ index **51** = **`0x33`**. Additional modes — capture **every** LCD label unti
 
 **(INIT, Filter 1):** **8** modes, **`00`–`07`** sequential. No
 further
-options after Analog 4 Pole on hardware tested. **Filter 2 Mode** (`0x34`) has
+options after Analog 4 Pole. **Filter 2 Mode** (`0x34`) has
 only
 **four** modes (LP/HP/BP/BS) — see below. There is **no** separate **Analog
 Mode**
@@ -382,7 +377,7 @@ behaviour). On the wire and in **Single Dump**, Filter 1 and Filter 2 remain
 
 SysEx to **`71`/`1E`** updates **`0x0A6`** only; **`71`/`1F`** updates
 **`0x0A7`** only (dump correlate on `-INIT-`, Single edit buffer). Panel TX
-when editing from either menu may still emit both — capture if needed.
+when editing from either menu may still emit both.
 
 ## Filter Common
 

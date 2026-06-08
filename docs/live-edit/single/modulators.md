@@ -7,7 +7,7 @@ destination amounts) and **Modulation Matrix** (six slots).
 
 Part of [Documentation](../../../README.md#documentation). Enumerated options:
 [parameter-options.md](../../reference/parameter-options.md).
-Dump worksheet: [Single parameter map](../../dumps/single.md#lfo)
+Parameter map: [Single parameter map](../../dumps/single.md#lfo)
 · Multi: [Edit Multi](../multis.md).
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
@@ -23,24 +23,18 @@ Documented LFO settings: [LFO live edit routing](../../reference/parameter-optio
 **Clock**) use **`0x70`** (Page A). LFO 3 settings use **`0x71`** (Page B) at
 params **`0x07`–`0x0A`** plus **Clock** **`0x15`**. See routing table.
 
-## Panel reference
-
 **LCD:** **EDIT LFO** — per-LFO settings (**Rate**, **Clock**, **Shape**, …) and
-separate **LFO Modulation** amount pages. Inventory rows:
-[single.md — LFO](../../dumps/single.md#lfo).
-
-Capture path: **`LFO n` / control → LCD value**. Use **+/−** when possible. Knob
-sweeps: use the **last** SysEx line of a burst.
+separate **LFO Modulation** amount pages.
 
 ## LFO 1
 
-**EDIT LFO → LFO 1**. Settings rows from the worksheet (capture order):
+**EDIT LFO → LFO 1**.
 
 ### Clock
 
 **Live edit:** `cmd=0x71`, param `0x12`.
 
-**EDIT LFO → LFO 1 → Clock** (worksheet **Clock Divider**). Enum:
+**EDIT LFO → LFO 1 → Clock**. Enum:
 [LFO Clock](../../reference/parameter-options.md#lfo-clock) — knob minimum = **Off** (`00`);
 then **1/64** … **16/1** (`01`–`15`).
 
@@ -61,7 +55,7 @@ F0 00 20 33 01 00 71 40 12 15 F7 # 16/1
 
 **Live edit:** `cmd=0x71`, param `0x43`.
 
-**EDIT LFO → LFO 1 → Rate** (worksheet **LFO 1 Rate**). Visible when
+**EDIT LFO → LFO 1 → Rate**. Visible when
 [Clock](#clock) = **Off**. **`0`–`127`** →
 `stored = lcd` — [LFO Rate](../../reference/parameter-options.md#lfo-rate).
 
@@ -78,7 +72,7 @@ F0 00 20 33 01 00 71 40 43 7F F7 # 127
 
 **Live edit:** `cmd=0x71`, param `0x44`.
 
-**EDIT LFO → LFO 1 → Shape** (worksheet **Waveform Shape**). Enum:
+**EDIT LFO → LFO 1 → Shape**. Enum:
 [LFO Shape](../../reference/parameter-options.md#lfo-shape) — **`00`–`43`**
 ([Delay LFO Wave](../../reference/parameter-options.md#delay-lfo-1-wave-1) **`00`–`05`**, then
 **Wave 3** … **Wave 64** at **`06`–`43`**).
@@ -100,7 +94,7 @@ F0 00 20 33 01 00 71 40 44 43 F7 # Wave 64
 
 **Live edit:** `cmd=0x71`, param `0x47`.
 
-**EDIT LFO → LFO 1 → Contour** (worksheet **Waveform Contour**). Bipolar
+**EDIT LFO → LFO 1 → Contour**. Bipolar
 **`−64..+63`** → `stored = ui + 64` — [LFO settings → Contour](../../reference/parameter-options.md#contour-1).
 
 | Item | Value |
@@ -132,7 +126,7 @@ F0 00 20 33 01 00 71 40 46 01 F7 # Mono
 
 **Live edit:** `cmd=0x71`, param `0x45`.
 
-**EDIT LFO → LFO 1 → Envelope Mode** (worksheet toggle). Enum:
+**EDIT LFO → LFO 1 → Envelope Mode**. Enum:
 [LFO settings → Envelope Mode](../../reference/parameter-options.md#envelope-mode-1).
 
 | Item | Value |
