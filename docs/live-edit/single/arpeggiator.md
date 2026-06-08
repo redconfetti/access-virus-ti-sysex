@@ -22,6 +22,25 @@ Full settings (**Up**, **Up&Down**, **As Played**, **Random**, **Chord**) → si
 rows. **Arp>Matrix** → **Pattern** + **Resolution** only — see
 [Arpeggiator panel visibility](../../reference/parameter-options.md#arpeggiator-panel-visibility).
 
+## Contents
+
+* [Settings](#settings)
+  * [Mode](#mode)
+  * [Pattern](#pattern)
+  * [Octaves](#octaves)
+  * [Resolution](#resolution)
+  * [Note Length](#note-length)
+  * [Swing Factor](#swing-factor)
+  * [Hold](#hold)
+* [Pattern editor](#pattern-editor)
+  * [User pattern in Single Dump](#user-pattern-in-single-dump)
+  * [Loop Length](#loop-length)
+  * [Step Length](#step-length)
+  * [Step Velocity](#step-velocity)
+  * [Step Enable](#step-enable)
+
+---
+
 ## Settings
 
 **Single Dump** offsets (Single edit buffer **`30 00 40`**, `<part>=0x40`):

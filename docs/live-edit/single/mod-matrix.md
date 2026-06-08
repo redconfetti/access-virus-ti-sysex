@@ -14,6 +14,18 @@ All **42** Source / Destination / Amount cells confirmed in **Single Dump**
 Paging: [virus.md](../../misc/virus.md#part--byte). **`cmd`** and **param** depend on **slot** and **row** — there is
 no single global **`41`** / **`42`** pair for all slots.
 
+## Contents
+
+* [Slot layout](#slot-layout)
+* [Per-slot `cmd` / param map](#per-slot-cmd--param-map)
+  * [Page B byte reuse](#page-b-byte-reuse)
+* [Examples](#examples)
+  * [Source](#source)
+  * [Destination](#destination)
+  * [Amount](#amount)
+
+---
+
 ## Slot layout
 
 Each of the **six** matrix slots on the panel:
@@ -42,11 +54,11 @@ three times.
 
 **Layout notes:**
 
-- **Slots 1–3** pack into Page B **`40`–`4E`** (Slot 3 uses **`71`** for all
+* **Slots 1–3** pack into Page B **`40`–`4E`** (Slot 3 uses **`71`** for all
   three rows). **Slots 4–6** use Page B **`67`–`6F`** for Source + row 1 only.
-- **Rows 2–3** use **`6E`** for slots **1**, **2** (row 3 only), **4**–**6** —
+* **Rows 2–3** use **`6E`** for slots **1**, **2** (row 3 only), **4**–**6** —
   not for Slot **3** (all rows stay on **`71`**).
-- **`<value>`** namespaces are unchanged: source enum; destination = [LFO Assign
+* **`<value>`** namespaces are unchanged: source enum; destination = [LFO Assign
   Target](../../reference/parameter-options.md#assign-target) wire map; amount bipolar
   offset.
 
@@ -55,8 +67,8 @@ three times.
 Several matrix params share Page B bytes with other EDIT pages when those pages
 are active — decode by **panel context** (selected slot / row), not param alone:
 
-- **Slot 2** **`43`–`47`** — same bytes as **LFO 1** settings (Rate, Shape, …).
-- **Slot 3** **`48`–`49`** — same bytes as **LFO 1** Key Follow / Trigger Phase.
+* **Slot 2** **`43`–`47`** — same bytes as **LFO 1** settings (Rate, Shape, …).
+* **Slot 3** **`48`–`49`** — same bytes as **LFO 1** Key Follow / Trigger Phase.
 
 ## Examples
 

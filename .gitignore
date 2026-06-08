@@ -2,3 +2,4 @@
 # Not committed; conclusions belong in docs/.
 artifacts/*
 !artifacts/.gitkeep
+node_modules

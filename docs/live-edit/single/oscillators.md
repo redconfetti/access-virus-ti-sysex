@@ -18,6 +18,52 @@ controls on sub-menus **1–2** (Classic), **1–3** (Wavetable, Grain Simple,
 Formant Simple), or **1–4** (Grain Complex, Formant Complex). Document only
 rows that appear on the panel for the active Mode/Shape.
 
+## Contents
+
+* [SELECT (`71`/`7F`)](#select-717f)
+  * [LCD “landing zones” (same label, different wire)](#lcd-landing-zones-same-label-different-wire)
+  * [Oscillator 1 — Mode](#oscillator-1--mode)
+  * [Oscillator 1 — Classic](#oscillator-1--classic)
+    * [Shape (`0x11`) — wave / saw blend + pure saw](#shape-0x11--wave--saw-blend--pure-saw)
+    * [LCD % vs wire](#lcd--vs-wire)
+    * [Controls at Shape = Spectral Wave (`00`)](#controls-at-shape--spectral-wave-00)
+    * [Balance (Osc 1 Classic)](#balance-osc-1-classic)
+    * [Controls at Shape ≥ Sawtooth (`40`)](#controls-at-shape--sawtooth-40)
+    * [Pulse Width (Shape ≥ Sawtooth)](#pulse-width-shape--sawtooth)
+  * [Oscillator 1 — Hypersaw](#oscillator-1--hypersaw)
+  * [Oscillator 1 — Wavetable](#oscillator-1--wavetable)
+  * [Oscillator 1 — Wavetable PWM](#oscillator-1--wavetable-pwm)
+  * [Oscillator 1 — Grain Simple](#oscillator-1--grain-simple)
+  * [Oscillator 1 — Grain Complex](#oscillator-1--grain-complex)
+  * [Oscillator 1 — Formant Simple](#oscillator-1--formant-simple)
+  * [Oscillator 1 — Formant Complex](#oscillator-1--formant-complex)
+  * [Oscillator 2](#oscillator-2)
+  * [Oscillator 2 — Mode](#oscillator-2--mode)
+  * [Oscillator 2 — Classic](#oscillator-2--classic)
+    * [Shape (`0x16`) — wave / saw blend + pure saw](#shape-0x16--wave--saw-blend--pure-saw)
+    * [Pulse Width (`0x17`) — Shape ≥ Sawtooth](#pulse-width-0x17--shape--sawtooth)
+    * [Wave Select (`0x18`) — Spectral / Wave>Saw region](#wave-select-0x18--spectral--wavesaw-region)
+  * [Oscillator 2 — Hypersaw](#oscillator-2--hypersaw)
+  * [Oscillator 2 — Wavetable](#oscillator-2--wavetable)
+  * [Oscillator 2 — Wavetable PWM](#oscillator-2--wavetable-pwm)
+  * [Oscillator 2 — Grain Simple](#oscillator-2--grain-simple)
+  * [Oscillator 2 — Grain Complex](#oscillator-2--grain-complex)
+  * [Oscillator 2 — Formant Simple](#oscillator-2--formant-simple)
+  * [Oscillator 2 — Formant Complex](#oscillator-2--formant-complex)
+  * [Oscillator 3](#oscillator-3)
+* [Noise](#noise)
+  * [Noise Volume](#noise-volume)
+  * [Noise Color](#noise-color)
+* [Ring Modulator](#ring-modulator)
+  * [Ring Modulator Volume](#ring-modulator-volume)
+* [Sub Oscillator](#sub-oscillator)
+  * [Sub Oscillator Volume](#sub-oscillator-volume)
+  * [Sub Oscillator Shape](#sub-oscillator-shape)
+  * [Mixer (Oscillators menu)](#mixer-oscillators-menu)
+  * [Oscillator Section Volume](#oscillator-section-volume)
+
+---
+
 ## SELECT (`71`/`7F`)
 
 **OSCILLATORS** section — front-panel **SELECT** cycles which oscillator the

@@ -26,6 +26,34 @@ Single-related live edits (`cmd=0x6E`, `cmd=0x10`) are in
 
 Enumerated options: [parameter-options.md](../reference/parameter-options.md).
 
+## Contents
+
+- [Summary](#summary)
+- [Parameters](#parameters)
+  - [Master Clock Tempo](#master-clock-tempo)
+  - [Low Key](#low-key)
+  - [High Key](#high-key)
+  - [Transpose](#transpose)
+  - [Detune](#detune)
+  - [Bend Up](#bend-up)
+  - [Bend Down](#bend-down)
+  - [Volume](#volume)
+  - [Init Volume](#init-volume)
+  - [Bank](#bank)
+  - [Program](#program)
+  - [MIDI Channel](#midi-channel)
+  - [Output Routing](#output-routing)
+  - [Secondary Output](#secondary-output)
+  - [Panorama](#panorama)
+  - [Keyboard-related](#keyboard-related)
+  - [Enable](#enable)
+  - [Volume RX](#volume-rx)
+  - [Hold Pedal](#hold-pedal)
+  - [Priority](#priority)
+  - [Program Change](#program-change)
+
+---
+
 ## Summary
 
 | Param ID | Memory / Target              | Parameter        | Description                                  |

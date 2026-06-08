@@ -11,6 +11,48 @@ Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
 `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
+## Contents
+
+* [Common (Edit Single)](#common-edit-single)
+  * [Transpose / Patch Transpose](#transpose--patch-transpose)
+  * [Key Mode](#key-mode)
+  * [Phase Init](#phase-init)
+  * [Portamento](#portamento)
+  * [Punch Intensity](#punch-intensity)
+  * [Osc Volume](#osc-volume)
+  * [Smooth Mode](#smooth-mode)
+  * [Bend Down](#bend-down)
+  * [Bend Up](#bend-up)
+  * [Bender Scale](#bender-scale)
+  * [Multi Tempo / Master Clock](#multi-tempo--master-clock)
+  * [Patch Volume](#patch-volume)
+  * [Panorama](#panorama)
+* [Unison](#unison)
+  * [Voices](#voices)
+  * [Detune](#detune)
+  * [Pan Spread](#pan-spread)
+  * [LFO Phase Offset](#lfo-phase-offset)
+* [Envelope 3 (ADSR)](#envelope-3-adsr)
+  * [Attack (`0x50`) / Decay (`0x51`) / Release](#attack-0x50--decay-0x51--release)
+  * [Sustain](#sustain)
+  * [Sustain Slope](#sustain-slope)
+* [Envelope 4 (ADSR)](#envelope-4-adsr)
+  * [Attack (`0x55`) / Decay (`0x56`) / Release](#attack-0x55--decay-0x56--release)
+  * [Sustain](#sustain-1)
+  * [Sustain Slope](#sustain-slope-1)
+* [Velocity Map (Edit Single)](#velocity-map-edit-single)
+* [Surround (Edit Single)](#surround-edit-single)
+  * [Output](#output)
+  * [Balance](#balance)
+* [Categories (Edit Single)](#categories-edit-single)
+* [Soft Knobs (Edit Single)](#soft-knobs-edit-single)
+  * [Soft Knob 1](#soft-knob-1)
+  * [Soft Knob 2](#soft-knob-2)
+  * [Soft Knob 3](#soft-knob-3)
+  * [Soft-knob runtime: Distortion Intensity](#soft-knob-runtime-distortion-intensity)
+
+---
+
 ## Common (Edit Single)
 
 Per-part **Common** page settings (Edit Single). Pitch-bender and smooth-mode

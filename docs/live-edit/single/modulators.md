@@ -27,6 +27,25 @@ params **`0x07`–`0x0A`** plus **Clock** **`0x15`**. See routing table.
 **LCD:** **EDIT LFO** — per-LFO settings (**Rate**, **Clock**, **Shape**, …) and
 separate **LFO Modulation** amount pages.
 
+## Contents
+
+* [LFO 1](#lfo-1)
+  * [Clock](#clock)
+  * [Rate](#rate)
+  * [Shape](#shape)
+  * [Contour](#contour)
+  * [Mode](#mode)
+  * [Envelope Mode](#envelope-mode)
+  * [Trigger Phase](#trigger-phase)
+  * [Key Follow](#key-follow)
+  * [LFO 1 Destination](#lfo-1-destination)
+* [LFO 2](#lfo-2)
+  * [LFO 2 Destination](#lfo-2-destination)
+* [LFO 3](#lfo-3)
+  * [LFO 3 Destination](#lfo-3-destination)
+
+---
+
 ## LFO 1
 
 **EDIT LFO → LFO 1**.

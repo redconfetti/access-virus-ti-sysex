@@ -11,6 +11,40 @@ Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
 `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
+## Contents
+
+* [SELECT (`71`/`7A`)](#select-717a)
+  * [Filter 1 Cutoff](#filter-1-cutoff)
+  * [Filter 1 Resonance](#filter-1-resonance)
+  * [Filter 1 Mode](#filter-1-mode)
+  * [Filter 1 Envelope Amount](#filter-1-envelope-amount)
+  * [Filter 1 Keyfollow](#filter-1-keyfollow)
+  * [Filter 1 Envelope Polarity](#filter-1-envelope-polarity)
+  * [Filter 2 Offset](#filter-2-offset)
+  * [Filter 2 Mode](#filter-2-mode)
+  * [Filter 2 Resonance](#filter-2-resonance)
+  * [Filter 2 Envelope Amount](#filter-2-envelope-amount)
+  * [Filter 2 Keyfollow](#filter-2-keyfollow)
+  * [Filter 2 Envelope Polarity](#filter-2-envelope-polarity)
+  * [Filter envelope polarity — shared panel menus](#filter-envelope-polarity--shared-panel-menus)
+* [Filter Common](#filter-common)
+  * [Filter Routing](#filter-routing)
+  * [Filter Balance](#filter-balance)
+  * [Filter Cutoff Link](#filter-cutoff-link)
+  * [Filter Key Follow Base](#filter-key-follow-base)
+  * [Pan Spread](#pan-spread)
+  * [Saturation — Osc Volume](#saturation--osc-volume)
+* [Filter 1 envelope (ADSR)](#filter-1-envelope-adsr)
+  * [Attack (`0x36`) / Decay (`0x37`) / Release](#attack-0x36--decay-0x37--release)
+  * [Sustain](#sustain)
+  * [Sustain Slope](#sustain-slope)
+* [Amplifier envelope (ADSR)](#amplifier-envelope-adsr)
+  * [Attack (`0x3B`) / Decay (`0x3C`) / Release](#attack-0x3b--decay-0x3c--release)
+  * [Sustain](#sustain-1)
+  * [Sustain Slope](#sustain-slope-1)
+
+---
+
 ## SELECT (`71`/`7A`)
 
 **LCD:** **FILTERS** → **Filter 1** / **Filter 2** / **Common** / **Filter 1

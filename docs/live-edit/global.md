@@ -17,6 +17,47 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
 
 ---
 
+## Contents
+
+* [Inputs (Edit Single)](#inputs-edit-single)
+  * [Atomizer](#atomizer)
+  * [Input Mode](#input-mode)
+  * [Input Select](#input-select)
+* [Global parameters](#global-parameters)
+* [Summary](#summary)
+* [Parameters](#parameters)
+  * [Edit mode 0x10](#edit-mode-0x10)
+  * [Play mode](#play-mode)
+  * [All EQs](#all-eqs)
+  * [All Arpeggiators](#all-arpeggiators)
+  * [All Delays](#all-delays)
+  * [All Reverbs](#all-reverbs)
+  * [Navigation](#navigation)
+  * [Value Wrapping](#value-wrapping)
+  * [BPM Brightness](#bpm-brightness)
+  * [LED Lux](#led-lux)
+  * [Randomize Scope](#randomize-scope)
+  * [Randomize Strength](#randomize-strength)
+  * [Global Program Change](#global-program-change)
+  * [Global MIDI Volume RX](#global-midi-volume-rx)
+  * [MIDI Device ID](#midi-device-id)
+  * [Global ARP Note Send](#global-arp-note-send)
+  * [MIDI Clock](#midi-clock)
+  * [Knob Response](#knob-response)
+  * [CONFIG → Inputs / USB (RX only)](#config--inputs--usb-rx-only)
+    * [USB Audio Mode](#usb-audio-mode)
+    * [Input Direct Thru](#input-direct-thru)
+    * [Input Sensitivity](#input-sensitivity)
+    * [Input Boost](#input-boost)
+    * [Input Source](#input-source)
+    * [Input Characteristic](#input-characteristic)
+  * [Memory Protect](#memory-protect)
+  * [Global MIDI Channel](#global-midi-channel)
+  * [LED Mode](#led-mode)
+  * [LCD Contrast](#lcd-contrast)
+
+---
+
 ## Inputs (Edit Single)
 
 **Edit Single → Inputs.** Live edit uses **`cmd=0x6F`** ([extended page](../misc/virus.md#live-edit-command-bytes)),
