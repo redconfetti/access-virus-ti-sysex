@@ -140,6 +140,8 @@ changed on the front panel. Many other **`0x73`** globals are **RX only**
 
 ### Edit mode 0x10
 
+**Live edit:** `cmd=0x73`, param `0x10` — **synth → host only** (not host → synth).
+
 **Not** a sound parameter. The Virus sends **`cmd=0x73`**, param **`0x10`**
 when the **front-panel mode** or **multi program selection** changes. The
 byte after **`0x73`** mirrors live-edit **scope** (`0x00` vs **`0x40`**
@@ -161,9 +163,9 @@ instead.
 
 ### Play mode
 
-**Live edit:** param `0x7A`.
+**Live edit:** `cmd=0x73`, param `0x7A`.
 
-**Front-panel play/edit mode** — **Single**, **Sequencer** (**MULTI+SINGLE**),
+**EDIT CONFIG → System → Play mode** — **Single**, **Sequencer** (**MULTI+SINGLE**),
 or **Multi**. Host sends **`cmd=0x73`**, param **`0x7A`**, value below.
 
 **Not** the same param byte under other commands — e.g. **FILTERS SELECT**
@@ -186,9 +188,9 @@ Panel mode changes may also emit **`73 … 10 …`** — see
 
 ### All EQs
 
-**Live edit:** param `0x19`.
+**Live edit:** `cmd=0x73`, param `0x19`.
 
-Global **All EQs** on/off.
+**EDIT CONFIG → System → All EQs** — global EQ bypass on/off.
 
 | Value | Setting  |
 | ----- | -------- |
@@ -205,9 +207,9 @@ F0 00 20 33 01 00 73 00 19 01 F7
 
 ### All Arpeggiators
 
-**Live edit:** param `0x1A`.
+**Live edit:** `cmd=0x73`, param `0x1A`.
 
-Global **All Arpeggiators** on/off.
+**EDIT CONFIG → System → All Arpeggiators** — global arpeggiator bypass on/off.
 
 | Value | Setting  |
 | ----- | -------- |
@@ -224,11 +226,11 @@ F0 00 20 33 01 00 73 00 1A 01 F7
 
 ### All Delays
 
-**Live edit:** param `0x1B`.
+**Live edit:** `cmd=0x73`, param `0x1B`.
 
-Global **All Delays** on/off. **Confirmed:** the Virus sends this message
-on the USB interface when the setting is changed on the **front panel**
-(same `cmd=0x73` format).
+**EDIT CONFIG → System → All Delays** — global delay bypass on/off. The Virus
+may transmit this message (**synth → host**) when the setting is changed on the
+front panel.
 
 | Value | Setting  |
 | ----- | -------- |
@@ -245,9 +247,9 @@ F0 00 20 33 01 00 73 00 1B 01 F7
 
 ### All Reverbs
 
-**Live edit:** param `0x1C`.
+**Live edit:** `cmd=0x73`, param `0x1C`.
 
-Global **All Reverbs** on/off.
+**EDIT CONFIG → System → All Reverbs** — global reverb bypass on/off.
 
 | Value | Setting  |
 | ----- | -------- |
@@ -264,7 +266,7 @@ F0 00 20 33 01 00 73 00 1C 01 F7
 
 ### Navigation
 
-**Live edit:** param `0x28`.
+**Live edit:** `cmd=0x73`, param `0x28`.
 
 **EDIT CONFIG → System → Navigation** — how the front panel steps through
 parameter pages (**By Page** vs **By Parameter**).
@@ -288,7 +290,7 @@ F0 00 20 33 01 00 73 40 28 01 F7 # By Parameter
 
 ### Value Wrapping
 
-**Live edit:** param `0x29`.
+**Live edit:** `cmd=0x73`, param `0x29`.
 
 **EDIT CONFIG → System → Value Wrapping** — whether encoder/knob values
 **wrap** at min/max or **stop** at the limit.
@@ -307,10 +309,10 @@ F0 00 20 33 01 00 73 00 29 01 F7 # On
 
 ### BPM Brightness
 
-**Live edit:** param `0x32`.
+**Live edit:** `cmd=0x73`, param `0x32`.
 
-**BPM** display brightness (**0%**–**100%**). Same encoding as
-[LED Lux](#led-lux): direct 7-bit `0x00`–`0x7F`,
+**EDIT CONFIG → System → BPM Brightness** — BPM display brightness (**0%**–**100%**).
+Same encoding as [LED Lux](#led-lux): direct 7-bit `0x00`–`0x7F`,
 
 ```text
 stored = min(0x7F, round(percent × 128 / 100))
@@ -336,7 +338,7 @@ F0 00 20 33 01 00 73 00 32 7F F7 # 100%
 
 ### LED Lux
 
-**Live edit:** param `0x33`.
+**Live edit:** `cmd=0x73`, param `0x33`.
 
 Front-panel **LED** brightness (**0%**–**100%**). Direct 7-bit value
 `0x00`–`0x7F`:
@@ -365,35 +367,49 @@ F0 00 20 33 01 00 73 00 33 7F F7 # 100%
 
 ### Randomize Scope
 
-**Live edit:** param `0x35`.
+**Live edit:** `cmd=0x73`, param `0x35`.
 
 **EDIT CONFIG → Random PG → Scope**. How much of the program is affected when
 randomizing. **0.0..100.0 %** — same 7-bit encoding as
 [BPM Brightness](#bpm-brightness) (`00` = 0%, `7F` = 100.0%).
 
+| LCD    | `<value>` |
+| ------ | --------- |
+| 0.0%   | `00`      |
+| 50.0%  | `40`      |
+| 100.0% | `7F`      |
+
 ```text
 F0 00 20 33 01 00 73 00 35 00 F7 # 0 %
+F0 00 20 33 01 00 73 00 35 40 F7 # 50.0 %
 F0 00 20 33 01 00 73 00 35 7F F7 # 100.0 %
 ```
 
 ### Randomize Strength
 
-**Live edit:** param `0x36`.
+**Live edit:** `cmd=0x73`, param `0x36`.
 
 **EDIT CONFIG → Random PG → Strength**. Randomization intensity.
 **0.0..100.0 %** — same encoding as [Scope](#randomize-scope).
 
+| LCD    | `<value>` |
+| ------ | --------- |
+| 0.0%   | `00`      |
+| 50.0%  | `40`      |
+| 100.0% | `7F`      |
+
 ```text
 F0 00 20 33 01 00 73 00 36 00 F7 # 0 %
+F0 00 20 33 01 00 73 00 36 40 F7 # 50.0 %
 F0 00 20 33 01 00 73 00 36 7F F7 # 100.0 %
 ```
 
 ### Global Program Change
 
-**Live edit:** param `0x55`.
+**Live edit:** `cmd=0x73`, param `0x55`.
 
-Global **Program Change** receive. Distinct from per-part **Program Change**
-in Edit Multi (packed flag at `0xF8 + part` in Multi Dump).
+**EDIT CONFIG → MIDI → Program Change** — global Program Change receive.
+Distinct from per-part **Program Change** in Edit Multi (packed flag at `0xF8 + part` in Multi Dump).
 
 | Value | Setting  |
 | ----- | -------- |
@@ -410,7 +426,7 @@ F0 00 20 33 01 00 73 00 55 01 F7
 
 ### Global MIDI Volume RX
 
-**Live edit:** param `0x57`.
+**Live edit:** `cmd=0x73`, param `0x57`.
 
 **EDIT CONFIG → MIDI → MIDI Volume** (global CC#7 receive). **`cmd=0x73`**, part
 **`00`**. **Host → synth only.**
@@ -429,7 +445,7 @@ F0 00 20 33 01 00 73 00 57 01 F7 # Enabled
 
 ### MIDI Device ID
 
-**Live edit:** param `0x5D`.
+**Live edit:** `cmd=0x73`, param `0x5D`.
 
 **EDIT CONFIG → MIDI → MIDI Device ID** (**1–16**, or **Omni**).
 
@@ -457,9 +473,9 @@ When sending manually, set **both** the envelope **`<device_id>`** and
 
 ### Global ARP Note Send
 
-**Live edit:** param `0x60`.
+**Live edit:** `cmd=0x73`, param `0x60`.
 
-Whether the arpeggiator sends **MIDI note** data.
+**EDIT CONFIG → MIDI → ARP Note Send** — whether the arpeggiator sends **MIDI note** data.
 
 | Value | Setting  |
 | ----- | -------- |
@@ -476,7 +492,9 @@ F0 00 20 33 01 00 73 00 60 01 F7
 
 ### MIDI Clock
 
-**Live edit:** param `0x6A`.
+**Live edit:** `cmd=0x73`, param `0x6A`.
+
+**EDIT CONFIG → Audio Clock → MIDI Clock** — internal vs external sync.
 
 | Value | Mode (LCD)                               |
 | ----- | ---------------------------------------- |
@@ -493,7 +511,7 @@ F0 00 20 33 01 00 73 00 6A 01 F7
 
 ### Knob Response
 
-**Live edit:** param `0x75`.
+**Live edit:** `cmd=0x73`, param `0x75`.
 
 **EDIT CONFIG → Knob Behavior → Response** — how front-panel encoders respond
 when a parameter is changed (**Off**, **Jump**, **Snap**, **Rel**). **Host → synth only.**
@@ -528,7 +546,7 @@ Boost**, not Edit Single **Patch Volume** (`70`/`5B`).
 
 #### USB Audio Mode
 
-**Live edit:** param `0x09`.
+**Live edit:** `cmd=0x73`, param `0x09`.
 
 **EDIT CONFIG → USB Audio Mode** (output/input routing preset).
 
@@ -546,9 +564,14 @@ F0 00 20 33 01 00 73 00 09 02 F7 # 3 outs / 1 in
 
 #### Input Direct Thru
 
-**Live edit:** param `0x5A`.
+**Live edit:** `cmd=0x73`, param `0x5A`.
 
-**EDIT CONFIG → Input Direct Thru**. **`0`–`127`** → `stored = lcd`.
+**EDIT CONFIG → Input Direct Thru**. Direct **0–127** (`stored = lcd`).
+
+| LCD | `<value>` |
+| --- | --------- |
+| 0   | `00`      |
+| 127 | `7F`      |
 
 ```text
 F0 00 20 33 01 00 73 00 5A 00 F7 # 0
@@ -557,7 +580,7 @@ F0 00 20 33 01 00 73 00 5A 7F F7 # 127
 
 #### Input Sensitivity
 
-**Live edit:** param `0x1F`.
+**Live edit:** `cmd=0x73`, param `0x1F`.
 
 **EDIT CONFIG → Input Sensitivity** (analog input level preset). **`stored =
 index`**.
@@ -580,7 +603,7 @@ F0 00 20 33 01 00 73 00 1F 03 F7 # −16 dBv
 
 #### Input Boost
 
-**Live edit:** param `0x5B`.
+**Live edit:** `cmd=0x73`, param `0x5B`.
 
 **EDIT CONFIG → Input Boost**. **`Off`**, then **`1`–`127`** → `stored = lcd`
 (`00` = Off).
@@ -595,7 +618,7 @@ F0 00 20 33 01 00 73 00 5B 7F F7 # 127
 
 #### Input Source
 
-**Live edit:** param `0x2B`.
+**Live edit:** `cmd=0x73`, param `0x2B`.
 
 **EDIT CONFIG → Input Source**.
 
@@ -611,7 +634,7 @@ F0 00 20 33 01 00 73 00 2B 01 F7 # S/PDIF
 
 #### Input Characteristic
 
-**Live edit:** param `0x1D`.
+**Live edit:** `cmd=0x73`, param `0x1D`.
 
 **EDIT CONFIG → Input Characteristic** (analog input EQ curve).
 
@@ -630,9 +653,9 @@ param **hex** on a different **`cmd`**.
 
 ### Memory Protect
 
-**Live edit:** param `0x76`.
+**Live edit:** `cmd=0x73`, param `0x76`.
 
-**Memory Protect** on/off — prevents overwriting stored programs when
+**EDIT CONFIG → System → Memory Protect** — prevents overwriting stored programs when
 enabled.
 
 | Value | Setting  |
@@ -650,7 +673,7 @@ F0 00 20 33 01 00 73 00 76 01 F7
 
 ### Global MIDI Channel
 
-**Live edit:** param `0x7C`.
+**Live edit:** `cmd=0x73`, param `0x7C`.
 
 **EDIT CONFIG → MIDI → Global Channel** (Global MIDI Channel). **Host → synth only.**
 
@@ -672,9 +695,9 @@ F0 00 20 33 01 00 73 00 7C 08 F7
 
 ### LED Mode
 
-**Live edit:** param `0x7D`.
+**Live edit:** `cmd=0x73`, param `0x7D`.
 
-Front-panel **LED** meter/display mode.
+**EDIT CONFIG → System → LED Mode** — front-panel **LED** meter/display mode.
 
 | Value | Mode (LCD) |
 | ----- | ---------- |
@@ -698,9 +721,9 @@ F0 00 20 33 01 00 73 00 7D 06 F7 # ---
 
 ### LCD Contrast
 
-**Live edit:** param `0x7E`.
+**Live edit:** `cmd=0x73`, param `0x7E`.
 
-**LCD** contrast (**0%**–**100%**). Same encoding as
+**EDIT CONFIG → System → LCD Contrast** — **LCD** contrast (**0%**–**100%**). Same encoding as
 [BPM Brightness](#bpm-brightness) / [LED Lux](#led-lux): direct
 7-bit `0x00`–`0x7F`,
 

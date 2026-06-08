@@ -32,8 +32,7 @@ F0 00 20 33 01 00 71 00 7A 01 F7 # 7A/01 — Filter 2
 F0 00 20 33 01 00 71 00 7A 02 F7 # 7A/02 — Filter 1 + Filter 2
 ```
 
-**Not** **Not**
-[Pan Spread](#pan-spread-1) (`6E`/`7A` — same param byte,
+**Not** [Pan Spread](#pan-spread-1) (`6E`/`7A` — same param byte,
 different **`cmd`**).
 
 When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode-1) ≠ **Off**, the
@@ -381,8 +380,7 @@ when editing from either menu may still emit both.
 
 ## Filter Common
 
-**LCD:** **FILTERS** → **Common** (after Filter 1 / 2). Confirmed
-desktop unless noted.
+**FILTERS → Common** (after Filter 1 / 2).
 
 ### Filter Routing
 
@@ -493,9 +491,9 @@ from **Filter 1 → Envelope Amount** `0x2C` on the Filter 1 edit page). Params
 
 ### Attack (`0x36`) / Decay (`0x37`) / Release
 
-**Live edit:** param `0x3A`.
+**Live edit:** `cmd=0x70`, params `0x36` / `0x37` / `0x3A`.
 
-Direct **0–127** (UI matches wire).
+**FILTERS → Filter 1 envelope** — Attack, Decay, Release. Direct **0–127** (UI matches wire).
 
 | Stage   | Param | UI 0 | UI 127 |
 | ------- | ----- | ---- | ------ |
@@ -505,9 +503,9 @@ Direct **0–127** (UI matches wire).
 
 ### Sustain
 
-**Live edit:** param `0x38`.
+**Live edit:** `cmd=0x70`, param `0x38`.
 
-**Linear percent:** `stored = round(percent × 127 / 100)`.
+**FILTERS → Filter 1 envelope → Sustain**. **Linear percent:** `stored = round(percent × 127 / 100)`.
 
 | LCD     | `<value>` |
 | ------- | --------- |
@@ -517,9 +515,9 @@ Direct **0–127** (UI matches wire).
 
 ### Sustain Slope
 
-**Live edit:** param `0x39`.
+**Live edit:** `cmd=0x70`, param `0x39`.
 
-Bipolar **−64..+63**: `stored = ui + 64`.
+**FILTERS → Filter 1 envelope → Sustain Slope**. Bipolar **−64..+63**: `stored = ui + 64`.
 
 | LCD | `<value>` |
 | --- | --------- |
@@ -544,9 +542,9 @@ envelope](#filter-1-envelope-adsr).
 
 ### Attack (`0x3B`) / Decay (`0x3C`) / Release
 
-**Live edit:** param `0x3F`.
+**Live edit:** `cmd=0x70`, params `0x3B` / `0x3C` / `0x3F`.
 
-Direct **0–127**.
+**Amp Envelope** — Attack, Decay, Release. Direct **0–127**.
 
 | Stage   | Param | UI 0 | UI 127 |
 | ------- | ----- | ---- | ------ |
@@ -556,9 +554,9 @@ Direct **0–127**.
 
 ### Sustain
 
-**Live edit:** param `0x3D`.
+**Live edit:** `cmd=0x70`, param `0x3D`.
 
-**Linear percent:** `stored = round(percent × 127 / 100)`.
+**Amp Envelope → Sustain**. **Linear percent:** `stored = round(percent × 127 / 100)`.
 
 | LCD     | `<value>` |
 | ------- | --------- |
@@ -568,9 +566,9 @@ Direct **0–127**.
 
 ### Sustain Slope
 
-**Live edit:** param `0x3E`.
+**Live edit:** `cmd=0x70`, param `0x3E`.
 
-Bipolar **−64..+63**: `stored = ui + 64`.
+**Amp Envelope → Sustain Slope**. Bipolar **−64..+63**: `stored = ui + 64`.
 
 | LCD | `<value>` |
 | --- | --------- |

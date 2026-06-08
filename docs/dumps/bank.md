@@ -20,7 +20,7 @@ All requests use header `F0 00 20 33 01 <device> … F7`.
 
 ### Single Request
 
-**Live edit:** param `0x30`.
+**Request:** `cmd=0x30`.
 
 **Single Request** — **`cmd=0x30`**.
 
@@ -71,7 +71,7 @@ Request** (`0x30`) the slot, then **Single Dump** (`0x10`) upload with header
 
 ### Single Bank Request
 
-**Live edit:** param `0x32`.
+**Request:** `cmd=0x32`.
 
 **Single Bank Request** — ask the synth to send **all 128** Singles in one stored bank. Reply: **128 × 524-byte** Single Dump (confirmed for **`32 01`** RAM A and **`32 1E`** ROM Z).
 
@@ -108,7 +108,7 @@ when the host accepts a long SysEx stream.
 
 ### Controller Dump Request
 
-**Live edit:** param `0x37`.
+**Request:** `cmd=0x37`.
 
 **Controller Dump Request**. **`37 00 <part>`** → **many**
 short SysEx replies (live-edit style), not one bulk message. **`<part>`**:

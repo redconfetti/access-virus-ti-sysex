@@ -452,9 +452,9 @@ but on the **part edit buffer** — **`cmd=0x6E`**, not **`cmd=0x70`**.
 
 ### Attack (`0x50`) / Decay (`0x51`) / Release
 
-**Live edit:** param `0x54`.
+**Live edit:** `cmd=0x6E`, params `0x50` / `0x51` / `0x54`.
 
-Direct **0–127** (UI matches wire).
+**Edit Single → Envelope 3** — Attack, Decay, Release. Direct **0–127** (UI matches wire).
 
 ```text
 F0 00 20 33 01 00 6E 00 50 00 F7 # Attack 0
@@ -467,9 +467,9 @@ F0 00 20 33 01 00 6E 00 54 7F F7 # Release 127
 
 ### Sustain
 
-**Live edit:** param `0x52`.
+**Live edit:** `cmd=0x6E`, param `0x52`.
 
-**Linear percent:** `stored = round(percent × 127 / 100)`.
+**Edit Single → Envelope 3 → Sustain**. **Linear percent:** `stored = round(percent × 127 / 100)`.
 
 | LCD     | `<value>` |
 | ------- | --------- |
@@ -479,9 +479,9 @@ F0 00 20 33 01 00 6E 00 54 7F F7 # Release 127
 
 ### Sustain Slope
 
-**Live edit:** param `0x53`.
+**Live edit:** `cmd=0x6E`, param `0x53`.
 
-Bipolar **−64..+63**: `stored = ui + 64`.
+**Edit Single → Envelope 3 → Sustain Slope**. Bipolar **−64..+63**: `stored = ui + 64`.
 
 | LCD | `<value>` |
 | --- | --------- |
@@ -513,9 +513,9 @@ layout as [Envelope 3](#envelope-3-adsr), next param block **`0x55`–`0x59`**.
 
 ### Attack (`0x55`) / Decay (`0x56`) / Release
 
-**Live edit:** param `0x59`.
+**Live edit:** `cmd=0x6E`, params `0x55` / `0x56` / `0x59`.
 
-Direct **0–127** (UI matches wire).
+**Edit Single → Envelope 4** — Attack, Decay, Release. Direct **0–127** (UI matches wire).
 
 ```text
 F0 00 20 33 01 00 6E 00 55 00 F7 # Attack 0
@@ -528,9 +528,9 @@ F0 00 20 33 01 00 6E 00 59 7F F7 # Release 127
 
 ### Sustain
 
-**Live edit:** param `0x57`.
+**Live edit:** `cmd=0x6E`, param `0x57`.
 
-**Linear percent:** `stored = round(percent × 127 / 100)`.
+**Edit Single → Envelope 4 → Sustain**. **Linear percent:** `stored = round(percent × 127 / 100)`.
 
 | LCD     | `<value>` |
 | ------- | --------- |
@@ -540,9 +540,9 @@ F0 00 20 33 01 00 6E 00 59 7F F7 # Release 127
 
 ### Sustain Slope
 
-**Live edit:** param `0x58`.
+**Live edit:** `cmd=0x6E`, param `0x58`.
 
-Bipolar **−64..+63**: `stored = ui + 64`.
+**Edit Single → Envelope 4 → Sustain Slope**. Bipolar **−64..+63**: `stored = ui + 64`.
 
 | LCD | `<value>` |
 | --- | --------- |

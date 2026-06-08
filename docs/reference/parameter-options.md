@@ -1196,7 +1196,7 @@ F0 00 20 33 01 00 71 40 0A <value> F7 # LFO 3 Key Follow
 
 ### Contour
 
-**Live edit:** param `0x47`.
+**Live edit:** `cmd=0x71`/`0x70`, param `0x47` (LFO 1 / LFO 2).
 
 **Waveform Contour** — bipolar **`−64..+63`**:
 
@@ -1220,7 +1220,7 @@ ui     = stored − 64
 
 ### Envelope Mode
 
-**Live edit:** param `0x45`.
+**Live edit:** `cmd=0x71`/`0x70`, param `0x45` (LFO 1 / LFO 2).
 
 | `<value>` | Option |
 | --------- | ------ |
@@ -1231,7 +1231,7 @@ Same **`00`/`01`** pattern as [Arpeggiator Hold](#arpeggiator-hold).
 
 ### Trigger Phase
 
-**Live edit:** param `0x49`.
+**Live edit:** `cmd=0x71`/`0x70`, param `0x49` (LFO 1 / LFO 2).
 
 | `<value>` | Option          |
 | --------- | --------------- |
@@ -1545,7 +1545,7 @@ F0 00 20 33 01 00 71 40 0D <value> F7 # Fade In
 
 ### Assign Target
 
-**Live edit:** param `0x0B`.
+**Live edit:** `cmd=0x71`, param `0x0B`.
 
 | `<value>` | Option              |
 | --------- | ------------------- |
@@ -1559,7 +1559,7 @@ F0 00 20 33 01 00 71 40 0D <value> F7 # Fade In
 
 ### Amount
 
-**Live edit:** param `0x0C`.
+**Live edit:** `cmd=0x71`, param `0x0C`.
 
 **0.0..100.0 %** — same unipolar encoding as [Delay LFO Depth](#delay-lfo-1-depth-1):
 
@@ -1575,7 +1575,7 @@ pct    = stored × 100 / 127
 
 ### Fade In
 
-**Live edit:** param `0x0D`.
+**Live edit:** `cmd=0x71`, param `0x0D`.
 
 **`0`–`127`** → `stored = lcd` (**`00`–`7F`**). Panel label **Fade In**
 (**Fade In Time**).
