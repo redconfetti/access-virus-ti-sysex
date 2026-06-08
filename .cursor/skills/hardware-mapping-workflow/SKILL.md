@@ -124,10 +124,12 @@ work (not committed; see `.gitignore`).
  part at `0xF9` / `0x108` in 267-byte dump.
 2. Send **one** `hex syx` live edit; user confirms panel.
 3. Capture Multi Dump:
- - Panel: `receivemidi dev "$MIDI_DEV" dump`
- - Request buffer: `sendmidi … 31 00 7f 7c`
- - Bank slot: bank `01`, slot byte, no checksum — see
- [multi.md](../../docs/dumps/multi.md)
+
+   - Panel: `receivemidi dev "$MIDI_DEV" dump`
+   - Request buffer: `sendmidi … 31 00 7f 7c`
+   - Bank slot: bank `01`, slot byte, no checksum — see
+     [multi.md](../../docs/dumps/multi.md)
+
 4. Diff payload — **one** offset should change (+ checksum). Prefer Virus
  panel dumps over host export when diffing.
 

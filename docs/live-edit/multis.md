@@ -61,7 +61,8 @@ only), **Direct Monitoring** (VC **Live**). See
 ## Parameters
 
 Each section below follows the live-edit doc pattern: **Live edit** wire bytes,
-panel path, Multi Dump offset (when stored), value table, and example SysEx.
+panel path, minimal range summary, min/center/max SysEx examples, then a link
+to the full value table in [parameter-options.md](../reference/parameter-options.md).
 
 ### Master Clock Tempo
 
@@ -91,44 +92,49 @@ Use **`<part>=0x00`** in captures; tempo is global for the Multi.
 **Live edit:** `cmd=0x72`, param `0x23`.
 
 **Edit Multi → Part *n* → Low Key** — lowest note the part responds to. Multi
-Dump byte **`0x59 + part`** (direct note index, C1..G9 domain).
+Dump byte **`0x59 + part`**. Direct note index **C1..G9** (`stored = index`).
 
-| Notes | `<value>`  |
-| ----- | ---------- |
-| C1    | `00`       |
-| …     | `00`..`7F` |
-| G9    | `7F`       |
+| Note | `<value>` |
+| ---- | --------- |
+| C1   | `00`      |
+| G9   | `7F`      |
 
 ```text
 F0 00 20 33 01 00 72 00 23 00 F7 # Part 1 Low Key C1
-F0 00 20 33 01 00 72 0F 23 00 F7 # Part 16 Low Key C1
+F0 00 20 33 01 00 72 0F 23 7F F7 # Part 16 Low Key G9
 ```
+
+Full note table: [Note index (C1..G9)](../reference/parameter-options.md#note-index-c1--g9).
 
 ### High Key
 
 **Live edit:** `cmd=0x72`, param `0x24`.
 
 **Edit Multi → Part *n* → High Key** — highest note the part responds to. Multi
-Dump byte **`0x69 + part`**.
+Dump byte **`0x69 + part`**. Same encoding as [Low Key](#low-key).
 
-| Notes | `<value>`  |
-| ----- | ---------- |
-| C1    | `00`       |
-| …     | `00`..`7F` |
-| G9    | `7F`       |
+| Note | `<value>` |
+| ---- | --------- |
+| C1   | `00`      |
+| G9   | `7F`      |
 
 ```text
 F0 00 20 33 01 00 72 00 24 00 F7 # Part 1 High Key C1
 F0 00 20 33 01 00 72 0F 24 7F F7 # Part 16 High Key G9
 ```
 
+Full note table: [Note index (C1..G9)](../reference/parameter-options.md#note-index-c1--g9).
+
 ### Transpose
 
 **Live edit:** `cmd=0x72`, param `0x25`.
 
 **Edit Multi → Part *n* → Transpose** — semitone offset added to the part’s
-Single. Multi Dump byte **`0x79 + part`**. **Live** and **dump** encodings
-differ — table below is the **live-edit** wire map.
+Single. Multi Dump byte **`0x79 + part`**. **Live wire:** UI **−63..+64**,
+**+1** @ **`0x40`** (`stored = ui + 63`). **Dump** at the same offset uses
+**−48..+48** and
+[Bipolar centered narrow (−48..+48)](../reference/parameter-options.md#bipolar-centered-narrow--48--48--0x40) — see
+[multi.md](../dumps/multi.md#transpose).
 
 | UI (live) | `<value>` |
 | --------- | --------- |
@@ -137,32 +143,35 @@ differ — table below is the **live-edit** wire map.
 | +64       | `7F`      |
 
 ```text
-F0 00 20 33 01 00 72 00 25 00 F7 # Part 1 transpose minimum
-F0 00 20 33 01 00 72 01 25 7F F7 # Part 2 transpose maximum
+F0 00 20 33 01 00 72 00 25 00 F7 # Part 1 transpose minimum (−63)
+F0 00 20 33 01 00 72 00 25 40 F7 # Part 1 transpose center (+1)
+F0 00 20 33 01 00 72 01 25 7F F7 # Part 2 transpose maximum (+64)
 ```
 
-Dump storage uses **`stored = ui + 64`** (−48..+48 semitones) at the same
-offset — see [multi.md](../dumps/multi.md#transpose).
+Full live wire map:
+[Edit Multi live balance (−63..+64)](../reference/parameter-options.md#edit-multi-live-balance--63--64--0x40).
 
 ### Detune
 
 **Live edit:** `cmd=0x72`, param `0x26`.
 
 **Edit Multi → Part *n* → Detune** — fine pitch offset. Multi Dump byte
-**`0x89 + part`**. Live and dump both use **`stored = ui + 64`**
-(UI **−64..+63**).
+**`0x89 + part`**. UI **−64..+63** → `stored = ui + 64` (live wire and dump).
 
-| UI    | `<value>` |
-| ----- | --------- |
-| −64   | `00`      |
-| 0     | `40`      |
-| +63   | `7F`      |
+| UI  | `<value>` |
+| --- | --------- |
+| −64 | `00`      |
+| +0  | `40`      |
+| +63 | `7F`      |
 
 ```text
 F0 00 20 33 01 00 72 00 26 00 F7 # Part 1 detune minimum
-F0 00 20 33 01 00 72 00 26 40 F7 # Part 1 detune 0
+F0 00 20 33 01 00 72 00 26 40 F7 # Part 1 detune center
 F0 00 20 33 01 00 72 00 26 7F F7 # Part 1 detune maximum
 ```
+
+Full wire map:
+[Bipolar centered (±64 @ 0x40)](../reference/parameter-options.md#bipolar-centered-64--0x40).
 
 ### Bend Up
 
@@ -172,20 +181,22 @@ F0 00 20 33 01 00 72 00 26 7F F7 # Part 1 detune maximum
 Bend Up**. Sent via **`cmd=0x71`**, not **`0x72`**. **Not in Multi Dump** —
 stored in **Single Dump** for the part Single. See
 [multi.md — Bend limits](../dumps/multi.md#bend-limits-not-in-multi-dump).
-
-Encoding: **`stored = ui + 64`** (UI **−64..+63**).
+UI **−64..+63** → `stored = ui + 64`.
 
 | UI  | `<value>` |
 | --- | --------- |
 | −64 | `00`      |
-| 0   | `40`      |
+| +0  | `40`      |
 | +63 | `7F`      |
 
 ```text
 F0 00 20 33 01 00 71 00 1A 00 F7 # −64
-F0 00 20 33 01 00 71 00 1A 40 F7 # 0
+F0 00 20 33 01 00 71 00 1A 40 F7 # +0
 F0 00 20 33 01 00 71 00 1A 7F F7 # +63
 ```
+
+Full wire map:
+[Bipolar centered (±64 @ 0x40)](../reference/parameter-options.md#bipolar-centered-64--0x40).
 
 ### Bend Down
 
@@ -194,26 +205,22 @@ F0 00 20 33 01 00 71 00 1A 7F F7 # +63
 **Edit Multi → Part *n* → Bend Down** — same encoding and transport as
 [Bend Up](#bend-up). **Not in Multi Dump**.
 
-| UI  | `<value>` |
-| --- | --------- |
-| −64 | `00`      |
-| 0   | `40`      |
-| +63 | `7F`      |
-
 ```text
 F0 00 20 33 01 00 71 00 1B 00 F7 # −64
-F0 00 20 33 01 00 71 00 1B 40 F7 # 0
+F0 00 20 33 01 00 71 00 1B 40 F7 # +0
 F0 00 20 33 01 00 71 00 1B 7F F7 # +63
 ```
+
+Full wire map:
+[Bipolar centered (±64 @ 0x40)](../reference/parameter-options.md#bipolar-centered-64--0x40).
 
 ### Volume
 
 **Live edit:** `cmd=0x72`, param `0x27`.
 
 **Edit Multi → Part *n* → Volume** — part balance / level. Multi Dump bytes
-**`0x99..0xA8`** (`0x99 + (part−1)`; Part 16 at **`0xA8`**). Live encoding
-matches [Transpose](#transpose) live wire map (**−63..+64**, not dump **`ui + 64`**
-).
+**`0x99..0xA8`** (`0x99 + (part−1)`; Part 16 at **`0xA8`**). **Live wire:** UI
+**−63..+64**, **+1** @ **`0x40`** (`stored = ui + 63`).
 
 | UI (live) | `<value>` |
 | --------- | --------- |
@@ -222,9 +229,15 @@ matches [Transpose](#transpose) live wire map (**−63..+64**, not dump **`ui + 
 | +64       | `7F`      |
 
 ```text
-F0 00 20 33 01 00 72 00 27 40 F7 # Part 1 volume (example)
-F0 00 20 33 01 00 72 0F 27 6E F7 # Part 16 volume +46 → dump 0x6E at 0xA8
+F0 00 20 33 01 00 72 00 27 00 F7 # Part 1 volume minimum
+F0 00 20 33 01 00 72 00 27 40 F7 # Part 1 volume center (+1)
+F0 00 20 33 01 00 72 0F 27 7F F7 # Part 16 volume maximum
 ```
+
+Full live wire map:
+[Edit Multi live balance (−63..+64)](../reference/parameter-options.md#edit-multi-live-balance--63--64--0x40).
+Dump uses [Bipolar centered (±64 @ 0x40)](../reference/parameter-options.md#bipolar-centered-64--0x40)
+(e.g. Part 16 **+46** → **`0x6E`** at **`0xA8`**).
 
 ### Init Volume
 

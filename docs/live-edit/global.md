@@ -64,7 +64,7 @@ F0 00 20 33 01 00 6F 00 7E 10 F7 # Atomizer 16
 
 **Live edit:** `cmd=0x6F`, param `0x7C`.
 
-Enum: [Input Mode](../reference/parameter-options.md#input-mode-1).
+Enum: [Input Mode](../reference/parameter-options.md#input-mode).
 
 ```text
 F0 00 20 33 01 00 6F 00 7C 00 F7 # Input Mode Off
@@ -76,7 +76,7 @@ F0 00 20 33 01 00 6F 00 7C 02 F7 # Input Mode Static
 
 **Live edit:** `cmd=0x6F`, param `0x7D`.
 
-Enum: [Input Select](../reference/parameter-options.md#input-select-1).
+Enum: [Input Select](../reference/parameter-options.md#input-select).
 
 ```text
 F0 00 20 33 01 00 6F 00 7D 00 F7 # Input Select Left
@@ -99,7 +99,7 @@ matches its configured **MIDI Device ID** (CONFIG).
 At least **All Delays** (`0x1B`) is **transmitted by the Virus** when
 changed on the front panel. Many other **`0x73`** globals are **RX only**
 (host → synth); the panel does not emit SysEx when they are edited — see
-[Knob Response](#knob-response) and [CONFIG → Inputs / USB (RX only)](#config-inputs--usb-rx-only).
+[Knob Response](#knob-response) and [CONFIG → Inputs / USB (RX only)](#config--inputs--usb-rx-only).
 
 ## Summary
 

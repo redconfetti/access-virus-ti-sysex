@@ -13,7 +13,6 @@ brew install sendmidi receivemidi
 [sendmidi]: https://github.com/gbevin/SendMIDI
 [receivemidi]: https://github.com/gbevin/ReceiveMIDI
 
-
 To communicate with your synth, you'll need to list the ports to identify which
 one to send commands to.
 
@@ -153,4 +152,4 @@ F0 00 20 33 01 00 71 00 19 00 F7
 **Single mode “load program”:** there is no short SysEx “load bank/slot by
 reference” — use **MIDI Program Change**, or **`0x30` + full `0x10` upload**
 for editor/backup workflows. See
-[bank.md — Single mode program recall](dumps/bank.md#no-load-program-by-slot-sysex-in-single-mode).
+[bank.md — Single mode program recall](dumps/bank.md#no--load-program-by-slot--sysex-in-single-mode).

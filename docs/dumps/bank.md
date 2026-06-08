@@ -41,7 +41,7 @@ where **`dump_index`** is the sequential index in
 `0x1D`). Edit-buffer requests use **`bank = 00`** instead — not this formula.
 
 Live edit **`<part>`** for **`0x70`/`0x71`/`0x6E`**: see
-[Paging](../misc/virus.md#part-byte) and
+[Paging](../misc/virus.md#part--byte) and
 [single.md — Single vs Multi addressing](single.md#single-vs-multi-addressing).
 
 ```bash
@@ -73,7 +73,9 @@ Request** (`0x30`) the slot, then **Single Dump** (`0x10`) upload with header
 
 **Request:** `cmd=0x32`.
 
-**Single Bank Request** — ask the synth to send **all 128** Singles in one stored bank. Reply: **128 × 524-byte** Single Dump (confirmed for **`32 01`** RAM A and **`32 1E`** ROM Z).
+**Single Bank Request** — ask the synth to send **all 128** Singles in one stored
+bank. Reply: **128 × 524-byte** Single Dump (confirmed for **`32 01`** RAM A and
+**`32 1E`** ROM Z).
 
 ```text
 F0 00 20 33 01 <device> 32 <bank> F7

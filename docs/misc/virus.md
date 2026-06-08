@@ -178,4 +178,6 @@ See [Play mode (`0x7A`)](../live-edit/global.md#play-mode).
 | Press **SINGLE**             | `73 40 10 00`                     |
 | **MULTI+SINGLE** / Sequencer | Empty `F0 F7` frames (no payload) |
 
-This is separate from **parameter edits** — see [Paging — live-edit command bytes](#live-edit-command-bytes) (e.g. Filter Cutoff uses **`cmd=0x70`**).
+This is separate from **parameter edits** — see
+[Paging — live-edit command bytes](#live-edit-command-bytes) (e.g. Filter Cutoff
+uses **`cmd=0x70`**).

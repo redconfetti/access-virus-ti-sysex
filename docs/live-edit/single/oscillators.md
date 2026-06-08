@@ -8,7 +8,8 @@ Part of [Documentation](../../../README.md#documentation). Enumerated options:
 Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](../multis.md).
 
-Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
+Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
+`0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
 **LCD:** **OSCILLATORS** → **Oscillator 1** / **2** / **Common** / **Mixer**.
 
@@ -17,12 +18,11 @@ controls on sub-menus **1–2** (Classic), **1–3** (Wavetable, Grain Simple,
 Formant Simple), or **1–4** (Grain Complex, Formant Complex). Document only
 rows that appear on the panel for the active Mode/Shape.
 
-
-### SELECT (`71`/`7F`)
+## SELECT (`71`/`7F`)
 
 **OSCILLATORS** section — front-panel **SELECT** cycles which oscillator the
 edit page targets. Live edit **`cmd=0x71`**, param **`0x7F`** (Page B). Enum:
-[Oscillators SELECT](../../reference/parameter-options.md#select-717f).
+[Oscillators SELECT](../../reference/parameter-options.md#oscillators-select).
 
 | Item           | Value                                            |
 | -------------- | ------------------------------------------------ |
@@ -129,7 +129,7 @@ when
 **Shape ≥ `40`** (Sawtooth and Saw>Pulse — not at Spectral Wave `00`).
 **Pulse Width** **`70`/`12`** — formulas in
 [Pulse Width](#pulse-width-shape--sawtooth); LCD lookup table in
-[parameter-options.md](../../reference/parameter-options.md#osc-1-classic--pulse-width-lcd).
+[parameter-options.md](../../reference/parameter-options.md#osc-1-classic--pulse-width--lcd).
 
 | LCD                | `<value>` |
 | ------------------ | --------- |
@@ -261,16 +261,18 @@ F0 00 20 33 01 00 70 00 14 40 F7 # Semitone +0
 F0 00 20 33 01 00 70 00 14 70 F7 # Semitone +48
 ```
 
-**Key Follow** (`15`): **−64..+63** → `stored = ui + 64`
-(**`00`..`7F`**). Panel **Norm** = **+32** → **`60`** (fixed scale
-tick, not per-patch default).
+**Key Follow** (`15`): **−64..+63** → `stored = ui + 64`. Panel **Norm** labels
+**+32** (wire **`0x60`**) — not the wire center (**+0** @ **`0x40`**).
 
 ```text
 F0 00 20 33 01 00 70 00 15 00 F7 # Key Follow −64
-F0 00 20 33 01 00 70 00 15 40 F7 # Key Follow 0
+F0 00 20 33 01 00 70 00 15 40 F7 # Key Follow +0
 F0 00 20 33 01 00 70 00 15 60 F7 # Key Follow Norm (+32)
 F0 00 20 33 01 00 70 00 15 7F F7 # Key Follow +63
 ```
+
+Full wire map:
+[Key Follow with Norm label](../reference/parameter-options.md#key-follow-with-norm-label).
 
 #### Balance (Osc 1 Classic)
 
@@ -311,7 +313,7 @@ Endpoints **`00`** / **`7F`** show **50.0 %** / **100 %** on the wire
 values directly. Same label can appear on two detents. Partial **wire → LCD**
 map:
 [parameter-options.md — Osc 1 Pulse Width
-LCD](../../reference/parameter-options.md#osc-1-classic--pulse-width-lcd).
+LCD](../../reference/parameter-options.md#osc-1-classic--pulse-width--lcd).
 
 ```text
 F0 00 20 33 01 00 70 00 12 00 F7 # 50.0 %
@@ -358,7 +360,7 @@ often **~0.1–0.5 below** predicted; **`44`–`57`**, **`74`+** are within
 **~0.1**. Duplicate labels appear on some detents (**`5C`/`5D`**,
 **`67`/`68`**, **`77`/`78`**, etc.). Full **128**-entry map:
 [parameter-options.md — Density
-LCD](../../reference/parameter-options.md#osc-1-hypersaw--density-lcd).
+LCD](../../reference/parameter-options.md#osc-1-hypersaw--density--lcd).
 
 **Do not** use `stored = round((lcd − 1) × 127 / 8)` from LCD alone
 (e.g. LCD **3.0** → **`3F`**, not **`20`**).
@@ -777,7 +779,7 @@ stored = round((pct − 50) × 127 / 50) # clamp 00..7F
 
 Endpoints **`00`** / **`7F`** = **50.0 %** / **100 %**. LCD curve and duplicate
 detents: [parameter-options.md — Osc 1 Pulse Width
-LCD](../../reference/parameter-options.md#osc-1-classic--pulse-width-lcd) (same panel
+LCD](../../reference/parameter-options.md#osc-1-classic--pulse-width--lcd) (same panel
 behavior).
 
 ```text
@@ -968,7 +970,7 @@ lcd ≈ round(1 + (internal − 1) × (stored / 127), 0.1)
 ```
 
 Full **wire → LCD** map: [parameter-options.md — Osc 1 Hypersaw
-Density LCD](../../reference/parameter-options.md#osc-1-hypersaw--density-lcd) (same panel
+Density LCD](../../reference/parameter-options.md#osc-1-hypersaw--density--lcd) (same panel
 curve).
 
 ```text
@@ -1627,7 +1629,7 @@ F0 00 20 33 01 00 70 00 23 01 F7 # Shape Triangle
 Same **`71`/`7F`** wire as [SELECT (`71`/`7F`)](#select-717f) — volume
 uses bipolar **`stored = ui + 64`**, not index **`00`–`02`**. Same bipolar
 range as [Saturation — Osc
-Volume](filters.md#saturation-osc-volume)
+Volume](filters.md#saturation--osc-volume)
 but edited via **Page B** SysEx here, not **`70` / `24`**.
 
 | Item                    | Value                                                 |

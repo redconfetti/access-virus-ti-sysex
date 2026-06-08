@@ -10,7 +10,8 @@ Part of [Documentation](../../../README.md#documentation). Enumerated options:
 Parameter map: [Single parameter map](../../dumps/single.md#lfo)
 · Multi: [Edit Multi](../multis.md).
 
-Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
+Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
+`0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
 Page **B#7–13** (*Lfo3* settings …) dump offsets: see
 [Single parameter map — LFO](../../dumps/single.md#lfo).
@@ -74,7 +75,7 @@ F0 00 20 33 01 00 71 40 43 7F F7 # 127
 
 **EDIT LFO → LFO 1 → Shape**. Enum:
 [LFO Shape](../../reference/parameter-options.md#lfo-shape) — **`00`–`43`**
-([Delay LFO Wave](../../reference/parameter-options.md#delay-lfo-1-wave-1) **`00`–`05`**, then
+([Delay LFO Wave](../../reference/parameter-options.md#delay-lfo-wave) **`00`–`05`**, then
 **Wave 3** … **Wave 64** at **`06`–`43`**).
 
 | Item           | Value                                           |
@@ -95,7 +96,7 @@ F0 00 20 33 01 00 71 40 44 43 F7 # Wave 64
 **Live edit:** `cmd=0x71`, param `0x47`.
 
 **EDIT LFO → LFO 1 → Contour**. Bipolar
-**`−64..+63`** → `stored = ui + 64` — [LFO settings → Contour](../../reference/parameter-options.md#contour-1).
+**`−64..+63`** → `stored = ui + 64` — [LFO settings → Contour](../../reference/parameter-options.md#contour).
 
 | Item           | Value                                              |
 | -------------- | -------------------------------------------------- |
@@ -127,7 +128,7 @@ F0 00 20 33 01 00 71 40 46 01 F7 # Mono
 **Live edit:** `cmd=0x71`, param `0x45`.
 
 **EDIT LFO → LFO 1 → Envelope Mode**. Enum:
-[LFO settings → Envelope Mode](../../reference/parameter-options.md#envelope-mode-1).
+[LFO settings → Envelope Mode](../../reference/parameter-options.md#envelope-mode).
 
 | Item           | Value                                       |
 | -------------- | ------------------------------------------- |
@@ -143,7 +144,7 @@ F0 00 20 33 01 00 71 40 45 01 F7 # On
 **Live edit:** `cmd=0x71`, param `0x49`.
 
 **EDIT LFO → LFO 1 → Trigger Phase**. **`00`** = **Off**; **`01`–`7F`** = phase
-**1** … **127** — [LFO settings → Trigger Phase](../../reference/parameter-options.md#trigger-phase-1).
+**1** … **127** — [LFO settings → Trigger Phase](../../reference/parameter-options.md#trigger-phase).
 
 | Item           | Value                                         |
 | -------------- | --------------------------------------------- |
@@ -185,7 +186,7 @@ F0 00 20 33 01 00 71 40 48 7F F7 # 100.0 %
 
 ### LFO 1 Destination
 
-**EDIT LFO → LFO 1 → LFO 1 Destination** — [LFO 1 Destination](../../reference/parameter-options.md#lfo-1-destination-1).
+**EDIT LFO → LFO 1 → LFO 1 Destination** — [LFO 1 Destination](../../reference/parameter-options.md#lfo-1-destination).
 
 | Panel control | Live edit          | Status                                                                  |
 | ------------- | ------------------ | ----------------------------------------------------------------------- |
@@ -237,7 +238,7 @@ F0 00 20 33 01 00 70 40 55 00 F7 # Trigger Phase Off
 
 ### LFO 2 Destination
 
-**EDIT LFO → LFO 2 → LFO 2 Destination** — [LFO 2 Destination](../../reference/parameter-options.md#lfo-2-destination-1).
+**EDIT LFO → LFO 2 → LFO 2 Destination** — [LFO 2 Destination](../../reference/parameter-options.md#lfo-2-destination).
 
 | Panel control | Live edit          | Status                                                                    |
 | ------------- | ------------------ | ------------------------------------------------------------------------- |
@@ -284,7 +285,7 @@ F0 00 20 33 01 00 71 40 0A 00 F7 # Key Follow Off
 ### LFO 3 Destination
 
 **EDIT LFO → LFO 3 → LFO 3 Destination** sub-menu. All **`cmd=0x71`** — see
-[LFO 3 Destination](../../reference/parameter-options.md#lfo-3-destination-1).
+[LFO 3 Destination](../../reference/parameter-options.md#lfo-3-destination).
 
 | Panel control | Live edit     | Status |
 | ------------- | ------------- | ------ |

@@ -8,7 +8,8 @@ Part of [Documentation](../../../README.md#documentation). Enumerated options:
 Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](../multis.md).
 
-Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
+Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
+`0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
 ## SELECT (`71`/`7A`)
 
@@ -19,7 +20,7 @@ envelope**.
 both together for **Filter 1 + Filter 2**). Also sets which filter the front-
 panel **Resonance** and **Envelope Amount** knobs edit. Live edit **`cmd=0x71`**,
 param **`0x7A`**. Enum:
-[Filters SELECT](../../reference/parameter-options.md#select-717a).
+[Filters SELECT](../../reference/parameter-options.md#filters-select).
 
 | Item           | Value                                                         |
 | -------------- | ------------------------------------------------------------- |
@@ -32,10 +33,10 @@ F0 00 20 33 01 00 71 00 7A 01 F7 # 7A/01 — Filter 2
 F0 00 20 33 01 00 71 00 7A 02 F7 # 7A/02 — Filter 1 + Filter 2
 ```
 
-**Not** [Pan Spread](#pan-spread-1) (`6E`/`7A` — same param byte,
+**Not** [Pan Spread](#pan-spread) (`6E`/`7A` — same param byte,
 different **`cmd`**).
 
-When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode-1) ≠ **Off**, the
+When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode) ≠ **Off**, the
 **FILTERS** section is unavailable — LCD **`Vocoder active. Filters are
 disabled`**.
 
@@ -67,7 +68,7 @@ LCD may show **128** at the top of the range; highest byte on the wire is
 **FILTERS → EDIT → Filter 1 → Resonance**.
 **`0x2A`**.
 
-When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode-1) ≠ **Off**, this storage
+When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode) ≠ **Off**, this storage
 byte drives **Vocoder → Q-Factor** instead — see
 [Vocoder Q-Factor](effects.md#vocoder-q-factor). Panel **TX**
 for **Q-Factor** also emits **`70`/`2B`** ([Filter 2 Resonance](#filter-2-resonance));
@@ -155,7 +156,7 @@ F0 00 20 33 01 00 70 00 2C 7F F7 # 100.0 %
 **`0x2E`**;
 range **−64..+63** (bipolar).
 
-When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode-1) ≠ **Off**, this storage
+When [Vocoder Mode](../../reference/parameter-options.md#vocoder-mode) ≠ **Off**, this storage
 byte drives **Vocoder → Spread** instead — see
 [Vocoder Spread](effects.md#vocoder-spread). Panel **TX** for
 **Spread** also emits **`70`/`2F`** ([Filter 2 Keyfollow](#filter-2-keyfollow));
@@ -185,7 +186,7 @@ F0 00 20 33 01 00 70 00 2E 7F F7 # +63
 
 **FILTERS → EDIT → Filter 1 → Env Polarity** (same control also appears under
 **Filter 2 → Env Polarity** on the panel — see
-[shared menu note](#filter-1-envelope-polarity-shared-panel-menus)). Page **B** param
+[shared menu note](#filter-envelope-polarity--shared-panel-menus)). Page **B** param
 **`0x1E`** (not **`0x70`**).
 
 | Item           | Value                                               |
@@ -342,7 +343,7 @@ F0 00 20 33 01 00 70 00 2F 7F F7 # +63
 
 **FILTERS → EDIT → Filter 2 → Env Polarity**. Page **B** param **`0x1F`**
 (separate wire from Filter 1 **`0x1E`** — see
-[shared menu note](#filter-1-envelope-polarity-shared-panel-menus)).
+[shared menu note](#filter-envelope-polarity--shared-panel-menus)).
 
 | Item           | Value                                               |
 | -------------- | --------------------------------------------------- |
@@ -432,15 +433,23 @@ F0 00 20 33 01 00 71 40 20 01 F7 # On
 
 **Live edit:** `cmd=0x71`, param `0x21`.
 
-Page **B** **`0x21`**. **Semitone index** from **C-1** (`00`) through **G9**
-(`7F`) — chromatic steps, not bipolar offset.
+Page **B** **`0x21`**. Direct chromatic note index **C-1..G9** (`stored =
+index`).
 
-| LCD | `<value>` |
-| --- | --------- |
-| C-1 | `00`      |
-| C0  | `0C`      |
-| C4  | `3C`      |
-| G9  | `7F`      |
+| Note | `<value>` |
+| ---- | --------- |
+| C-1  | `00`      |
+| C4   | `3C`      |
+| G9   | `7F`      |
+
+```text
+F0 00 20 33 01 00 71 40 21 00 F7 # C-1
+F0 00 20 33 01 00 71 40 21 3C F7 # C4
+F0 00 20 33 01 00 71 40 21 7F F7 # G9
+```
+
+Full note table:
+[Note index (C-1..G9)](../reference/parameter-options.md#note-index-c-1g9).
 
 ### Pan Spread
 

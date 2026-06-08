@@ -21,5 +21,5 @@ assistance from Cursor AI.
   - [Multis & arrangements](docs/dumps/multi.md)
   - [Banks & requests](docs/dumps/bank.md)
   - [Controller](docs/dumps/controller.md)
-- [Parameter options (enums, panel tables)](docs/reference/parameter-options.md)
+- [Parameter Options Reference](docs/reference/parameter-options.md)
 - [OsTIrus (DSP56300 TI/TI2 emulation)](docs/misc/ostirus.md)

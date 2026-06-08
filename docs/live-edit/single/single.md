@@ -8,7 +8,8 @@ Part of [Documentation](../../../README.md#documentation). Enumerated options:
 Parameter map: [Single parameter map](../../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](../multis.md).
 
-Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
+Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B,
+`0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
 ## Common (Edit Single)
 
@@ -21,7 +22,7 @@ bytes **are** stored in **Single Dump**; they are **not** in per-part **Multi Du
 **Live edit:** `cmd=0x70`, param `0x5D` (CC 93).
 
 Edit Single → Common → **Transpose** (same as **Patch Transpose**). Page A param
-**`0x5D`** (decimal **93** = CC number). **−64..+63** → `stored = ui + 64`.
+**`0x5D`** (decimal **93** = CC number). UI **−64..+63** → `stored = ui + 64`.
 Dump offset **`0x065`** (`30 00 40` / `<part>=0x40`).
 
 | UI  | `<value>` |
@@ -38,6 +39,9 @@ F0 00 20 33 01 00 70 00 5D 00 F7 # Transpose −64
 F0 00 20 33 01 00 70 00 5D 40 F7 # Transpose +0
 F0 00 20 33 01 00 70 00 5D 7F F7 # Transpose +63
 ```
+
+Full wire map:
+[Bipolar centered (±64 @ 0x40)](../reference/parameter-options.md#bipolar-centered-64--0x40).
 
 ### Key Mode
 
@@ -157,7 +161,7 @@ F0 00 20 33 01 00 71 00 24 7F F7 # Punch 100.0 %
 **Live edit:** `cmd=0x70`, param `0x24`.
 
 **Oscillators → EDIT → Common → Osc Volume**. Same parameter as
-[Saturation — Osc Volume](filters.md#saturation-osc-volume):
+[Saturation — Osc Volume](filters.md#saturation--osc-volume):
 panel **−64..+63**, wire **`stored = ui + 64`**.
 
 | LCD | `<value>` |
@@ -237,7 +241,7 @@ Down](../multis.md#bend-up).
 **Live edit:** `cmd=0x71`, param `0x1C`.
 
 Edit Single → Common → **Bender Scale** (Page B **#28**). **`stored = index`** —
-see [Bender Scale](../../reference/parameter-options.md#bender-scale-1). Dump offset **`0x0A4`**.
+see [Bender Scale](../../reference/parameter-options.md#bender-scale). Dump offset **`0x0A4`**.
 
 | Mode        | `<value>` |
 | ----------- | --------- |
@@ -780,7 +784,7 @@ Same value param as
 [EDIT FX → Distortion →
 Intensity](effects.md#distortion-intensity)
 (**`71`/`65`**). **Type** is
-[`71`/`64`](effects.md#distortion-type-1).
+[`71`/`64`](effects.md#distortion-type).
 
 When **Function As…** =
 [Distortion Intensity](../../reference/parameter-options.md#soft-knob-destinations)

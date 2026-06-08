@@ -11,7 +11,7 @@ Parameter map: [single.md — Modulation Matrix](../../dumps/single.md#modulatio
 All **42** Source / Destination / Amount cells confirmed in **Single Dump**
 (`30 00 40` / `<part>=0x40`).
 
-Paging: [virus.md](../../misc/virus.md#part-byte). **`cmd`** and **param** depend on **slot** and **row** — there is
+Paging: [virus.md](../../misc/virus.md#part--byte). **`cmd`** and **param** depend on **slot** and **row** — there is
 no single global **`41`** / **`42`** pair for all slots.
 
 ## Slot layout
@@ -98,7 +98,7 @@ matching slot/row param). Panel label **Filterbank Frequency** uses wire **`60`*
 ### Amount
 
 Bipolar **−64..+63** → `stored = ui + 64` (**`00`** = −64, **`40`** = +0,
-**`7F`** = +63). Same family as [LFO Contour](../../reference/parameter-options.md#contour-1).
+**`7F`** = +63). Same family as [LFO Contour](../../reference/parameter-options.md#contour).
 
 | `<value>` | LCD |
 | --------- | --- |
