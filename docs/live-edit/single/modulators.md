@@ -38,7 +38,7 @@ separate **LFO Modulation** amount pages.
 [LFO Clock](../../reference/parameter-options.md#lfo-clock) — knob minimum = **Off** (`00`);
 then **1/64** … **16/1** (`01`–`15`).
 
-| Item | Value |
+| Item           | Value                                       |
 | -------------- | ------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 12 <value> F7` |
 
@@ -59,9 +59,9 @@ F0 00 20 33 01 00 71 40 12 15 F7 # 16/1
 [Clock](#clock) = **Off**. **`0`–`127`** →
 `stored = lcd` — [LFO Rate](../../reference/parameter-options.md#lfo-rate).
 
-| Item | Value |
+| Item           | Value                                              |
 | -------------- | -------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 43 <value> F7` |
+| Message format | `F0 00 20 33 01 00 71 <part> 43 <value> F7`        |
 
 ```text
 F0 00 20 33 01 00 71 40 43 00 F7 # 0
@@ -77,9 +77,9 @@ F0 00 20 33 01 00 71 40 43 7F F7 # 127
 ([Delay LFO Wave](../../reference/parameter-options.md#delay-lfo-1-wave-1) **`00`–`05`**, then
 **Wave 3** … **Wave 64** at **`06`–`43`**).
 
-| Item | Value |
+| Item           | Value                                           |
 | -------------- | ----------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 44 <value> F7` |
+| Message format | `F0 00 20 33 01 00 71 <part> 44 <value> F7`     |
 
 ```text
 F0 00 20 33 01 00 71 40 44 00 F7 # Sine
@@ -97,9 +97,9 @@ F0 00 20 33 01 00 71 40 44 43 F7 # Wave 64
 **EDIT LFO → LFO 1 → Contour**. Bipolar
 **`−64..+63`** → `stored = ui + 64` — [LFO settings → Contour](../../reference/parameter-options.md#contour-1).
 
-| Item | Value |
+| Item           | Value                                              |
 | -------------- | -------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 47 <value> F7` |
+| Message format | `F0 00 20 33 01 00 71 <part> 47 <value> F7`        |
 
 ```text
 F0 00 20 33 01 00 71 40 47 00 F7 # −64
@@ -113,7 +113,7 @@ F0 00 20 33 01 00 71 40 47 7F F7 # +63
 
 **EDIT LFO → LFO 1 → Mode**. Enum: [LFO settings → Mode](../../reference/parameter-options.md#mode-0x46).
 
-| Item | Value |
+| Item           | Value                                       |
 | -------------- | ------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 46 <value> F7` |
 
@@ -129,7 +129,7 @@ F0 00 20 33 01 00 71 40 46 01 F7 # Mono
 **EDIT LFO → LFO 1 → Envelope Mode**. Enum:
 [LFO settings → Envelope Mode](../../reference/parameter-options.md#envelope-mode-1).
 
-| Item | Value |
+| Item           | Value                                       |
 | -------------- | ------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 45 <value> F7` |
 
@@ -145,9 +145,9 @@ F0 00 20 33 01 00 71 40 45 01 F7 # On
 **EDIT LFO → LFO 1 → Trigger Phase**. **`00`** = **Off**; **`01`–`7F`** = phase
 **1** … **127** — [LFO settings → Trigger Phase](../../reference/parameter-options.md#trigger-phase-1).
 
-| Item | Value |
+| Item           | Value                                         |
 | -------------- | --------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 49 <value> F7` |
+| Message format | `F0 00 20 33 01 00 71 <part> 49 <value> F7`   |
 
 ```text
 F0 00 20 33 01 00 71 40 49 00 F7 # Off
@@ -162,9 +162,9 @@ F0 00 20 33 01 00 71 40 49 7F F7 # 127
 **EDIT LFO → LFO 1 → Key Follow**. **`00`** = **Off**; **`01`–`7F`** =
 **0.8..100.0 %** — [LFO settings → Key Follow](../../reference/parameter-options.md#key-follow-0x48).
 
-| Item | Value |
+| Item           | Value                                                 |
 | -------------- | ----------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 48 <value> F7` |
+| Message format | `F0 00 20 33 01 00 71 <part> 48 <value> F7`           |
 
 ```text
 F0 00 20 33 01 00 71 40 48 00 F7 # Off
@@ -172,31 +172,31 @@ F0 00 20 33 01 00 71 40 48 01 F7 # 0.8 %
 F0 00 20 33 01 00 71 40 48 7F F7 # 100.0 %
 ```
 
-| Panel control | Live edit | Status |
+| Panel control    | Live edit     | Status                                                                 |
 | ---------------- | ------------- | ---------------------------------------------------------------------- |
-| Rate | `71` / `0x43` | ✓ — [Rate](#rate) ( **Clock** = **Off** only) |
-| Clock Divider | `71` / `0x12` | ✓ — [Clock](#clock) (minimum = **Off**) |
-| Keyfollow | `71` / `0x48` | ✓ — [Key Follow](#key-follow) |
-| Trigger Phase | `71` / `0x49` | ✓ — [Trigger Phase](#trigger-phase) |
-| Waveform Shape | `71` / `0x44` | ✓ — [Shape](#shape) |
-| Waveform Contour | `71` / `0x47` | ✓ — [Contour](#contour) |
-| Mode | `71` / `0x46` | ✓ — [Mode](#mode) |
-| Envelope Mode | `71` / `0x45` | ✓ — [Envelope Mode](#envelope-mode) |
+| Rate             | `71` / `0x43` | ✓ — [Rate](#rate) ( **Clock** = **Off** only)                          |
+| Clock Divider    | `71` / `0x12` | ✓ — [Clock](#clock) (minimum = **Off**)                                |
+| Keyfollow        | `71` / `0x48` | ✓ — [Key Follow](#key-follow)                                          |
+| Trigger Phase    | `71` / `0x49` | ✓ — [Trigger Phase](#trigger-phase)                                    |
+| Waveform Shape   | `71` / `0x44` | ✓ — [Shape](#shape)                                                    |
+| Waveform Contour | `71` / `0x47` | ✓ — [Contour](#contour)                                                |
+| Mode             | `71` / `0x46` | ✓ — [Mode](#mode)                                                      |
+| Envelope Mode    | `71` / `0x45` | ✓ — [Envelope Mode](#envelope-mode)                                    |
 
 ### LFO 1 Destination
 
 **EDIT LFO → LFO 1 → LFO 1 Destination** — [LFO 1 Destination](../../reference/parameter-options.md#lfo-1-destination-1).
 
-| Panel control | Live edit | Status |
-| ------------- | ------------------ | --------------------------------------------------------------- |
-| Osc 1 Pitch | `70` / `0x4A` | ✓ |
-| Osc 2 Pitch | `70` / `0x4B` | ✓ |
-| Osc 1+2 Pitch | `70` / `4A` + `4B` | ✓ linked (same value to both) |
-| Pulse Width | `70` / `0x4C` | ✓ |
-| Resonance | `70` / `0x4D` | ✓ |
-| Filter Gain | `70` / `0x4E` | ✓ |
-| Assign Target | `71` / `0x4F` | ✓ — [Assign Target](../../reference/parameter-options.md#assign-target) |
-| Amount | `71` / `0x50` | ✓ |
+| Panel control | Live edit          | Status                                                                  |
+| ------------- | ------------------ | ----------------------------------------------------------------------- |
+| Osc 1 Pitch   | `70` / `0x4A`      | ✓                                                                       |
+| Osc 2 Pitch   | `70` / `0x4B`      | ✓                                                                       |
+| Osc 1+2 Pitch | `70` / `4A` + `4B` | ✓ linked (same value to both)                                           |
+| Pulse Width   | `70` / `0x4C`      | ✓                                                                       |
+| Resonance     | `70` / `0x4D`      | ✓                                                                       |
+| Filter Gain   | `70` / `0x4E`      | ✓                                                                       |
+| Assign Target | `71` / `0x4F`      | ✓ — [Assign Target](../../reference/parameter-options.md#assign-target) |
+| Amount        | `71` / `0x50`      | ✓                                                                       |
 
 ```text
 F0 00 20 33 01 00 70 40 4A 43 F7 # Osc 1 Pitch +4.7 %
@@ -211,16 +211,16 @@ F0 00 20 33 01 00 71 40 50 40 F7 # Amount +0.0 %
 **Clock** uses **`cmd=0x71`**; all other settings use **`cmd=0x70`**. Param
 bytes: [LFO live edit routing](../../reference/parameter-options.md#lfo-live-edit-routing).
 
-| Panel control | Live edit | Status |
-| ---------------- | ------------- | -------------------------------------------------- |
-| Rate | `70` / `0x4F` | ✓ (**Clock** = **Off** only) |
-| Clock Divider | `71` / `0x13` | ✓ — [LFO Clock](../../reference/parameter-options.md#lfo-clock) |
-| Keyfollow | `70` / `0x54` | ✓ |
-| Trigger Phase | `70` / `0x55` | ✓ |
-| Waveform Shape | `70` / `0x50` | ✓ |
-| Waveform Contour | `70` / `0x53` | ✓ |
-| Mode | `70` / `0x52` | ✓ |
-| Envelope Mode | `70` / `0x51` | ✓ |
+| Panel control    | Live edit     | Status                                                          |
+| ---------------- | ------------- | --------------------------------------------------------------- |
+| Rate             | `70` / `0x4F` | ✓ (**Clock** = **Off** only)                                    |
+| Clock Divider    | `71` / `0x13` | ✓ — [LFO Clock](../../reference/parameter-options.md#lfo-clock) |
+| Keyfollow        | `70` / `0x54` | ✓                                                               |
+| Trigger Phase    | `70` / `0x55` | ✓                                                               |
+| Waveform Shape   | `70` / `0x50` | ✓                                                               |
+| Waveform Contour | `70` / `0x53` | ✓                                                               |
+| Mode             | `70` / `0x52` | ✓                                                               |
+| Envelope Mode    | `70` / `0x51` | ✓                                                               |
 
 ```text
 F0 00 20 33 01 00 71 40 13 00 F7 # Clock Off
@@ -239,16 +239,16 @@ F0 00 20 33 01 00 70 40 55 00 F7 # Trigger Phase Off
 
 **EDIT LFO → LFO 2 → LFO 2 Destination** — [LFO 2 Destination](../../reference/parameter-options.md#lfo-2-destination-1).
 
-| Panel control | Live edit | Status |
-| ------------- | ------------------ | --------------------------------------------------------------- |
-| Cutoff 1 | `70` / `0x58` | ✓ |
-| Cutoff 2 | `70` / `0x59` | ✓ |
-| Cutoff 1+2 | `70` / `58` + `59` | ✓ linked (same value to both) |
-| Shape 1+2 | `70` / `0x56` | ✓ |
-| FM Amount | `70` / `0x57` | ✓ |
-| Panorama | `70` / `0x5A` | ✓ |
-| Assign Target | `71` / `0x51` | ✓ — [Assign Target](../../reference/parameter-options.md#assign-target-1) |
-| Amount | `71` / `0x52` | ✓ |
+| Panel control | Live edit          | Status                                                                    |
+| ------------- | ------------------ | ------------------------------------------------------------------------- |
+| Cutoff 1      | `70` / `0x58`      | ✓                                                                         |
+| Cutoff 2      | `70` / `0x59`      | ✓                                                                         |
+| Cutoff 1+2    | `70` / `58` + `59` | ✓ linked (same value to both)                                             |
+| Shape 1+2     | `70` / `0x56`      | ✓                                                                         |
+| FM Amount     | `70` / `0x57`      | ✓                                                                         |
+| Panorama      | `70` / `0x5A`      | ✓                                                                         |
+| Assign Target | `71` / `0x51`      | ✓ — [Assign Target](../../reference/parameter-options.md#assign-target-1) |
+| Amount        | `71` / `0x52`      | ✓                                                                         |
 
 ```text
 F0 00 20 33 01 00 70 40 58 53 F7 # Cutoff 1 +29.7 %
@@ -263,13 +263,13 @@ F0 00 20 33 01 00 71 40 52 40 F7 # Amount +0.0 %
 encodings as LFO 1/2 where controls exist. **No** Envelope Mode, Contour, or
 Trigger Phase. [Routing table](../../reference/parameter-options.md#lfo-live-edit-routing).
 
-| Panel control | Live edit | Status |
-| -------------- | ------------- | -------------------------------------------------- |
-| Rate | `71` / `0x07` | ✓ (**Clock** = **Off** only) |
-| Clock Divider | `71` / `0x15` | ✓ — [LFO Clock](../../reference/parameter-options.md#lfo-clock) |
-| Keyfollow | `71` / `0x0A` | ✓ |
-| Waveform Shape | `71` / `0x08` | ✓ |
-| Mode | `71` / `0x09` | ✓ |
+| Panel control  | Live edit     | Status                                                          |
+| -------------- | ------------- | --------------------------------------------------------------- |
+| Rate           | `71` / `0x07` | ✓ (**Clock** = **Off** only)                                    |
+| Clock Divider  | `71` / `0x15` | ✓ — [LFO Clock](../../reference/parameter-options.md#lfo-clock) |
+| Keyfollow      | `71` / `0x0A` | ✓                                                               |
+| Waveform Shape | `71` / `0x08` | ✓                                                               |
+| Mode           | `71` / `0x09` | ✓                                                               |
 
 ```text
 F0 00 20 33 01 00 71 40 15 00 F7 # Clock Off
@@ -286,11 +286,11 @@ F0 00 20 33 01 00 71 40 0A 00 F7 # Key Follow Off
 **EDIT LFO → LFO 3 → LFO 3 Destination** sub-menu. All **`cmd=0x71`** — see
 [LFO 3 Destination](../../reference/parameter-options.md#lfo-3-destination-1).
 
-| Panel control | Live edit | Status |
+| Panel control | Live edit     | Status |
 | ------------- | ------------- | ------ |
-| Assign Target | `71` / `0x0B` | ✓ |
-| Amount | `71` / `0x0C` | ✓ |
-| Fade In | `71` / `0x0D` | ✓ |
+| Assign Target | `71` / `0x0B` | ✓      |
+| Amount        | `71` / `0x0C` | ✓      |
+| Fade In       | `71` / `0x0D` | ✓      |
 
 ```text
 F0 00 20 33 01 00 71 40 0B 00 F7 # Assign Target Osc 1 Pitch

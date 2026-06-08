@@ -1,9 +1,10 @@
 ---
 name: documentation-standards
 description: >-
- Documents Access Virus SysEx in this repo: reference/parameter-options.md for enums,
- live-edit by panel section, SysEx examples per parameter. Use when adding or
- editing docs/live-edit, docs/dumps, or parameter option tables.
+ Documents Access Virus SysEx in this repo: what to retain, doc hierarchy,
+ reference/parameter-options.md for enums, live-edit by panel section, SysEx
+ examples per parameter. Use when adding or editing docs/live-edit, docs/dumps,
+ or parameter option tables.
 disable-model-invocation: true
 ---
 
@@ -11,15 +12,81 @@ disable-model-invocation: true
 
 Apply when writing or restructuring documentation in this repository.
 
+## Specification retention
+
+Documentation should contain only:
+
+1. **Confirmed SysEx commands or responses**
+
+2. **Data dump SysEx and structure** — Single, Multi, Bank, Controller,
+   Arrangement
+
+3. **Enum tables** — parameter labels, options, hex values, offsets, and anything
+   else needed to build supported SysEx messages
+
+4. **Summary tables with SysEx examples** — fenced `text` blocks as templates or
+   concrete examples:
+
+   ```text
+   F0 00 20 33 01 00 72 <part> <param> <value> F7 # multi / common (some params)
+   F0 00 20 33 01 00 71 <part> <param> <value> F7 # Page B single (some params)
+   F0 00 20 33 01 00 70 <part> <param> <value> F7 # Page A single (when global Page A = SysEx)
+   F0 00 20 33 01 00 6E <part> <param> <value> F7 # part single edit buffer
+   ```
+
+   ```text
+   F0 00 20 33 01 00 70 00 28 00 F7 # Cutoff 0 (landing)
+   F0 00 20 33 01 00 70 00 28 7F F7 # Cutoff max (127 on wire)
+   ```
+
+5. **Conditional visibility** — which parameters apply when other options in the
+   same group are chosen (Type, Mode, etc.)
+
+## Organization
+
+Docs follow this hierarchy. Link from [README.md](../../README.md) only — not
+nested READMEs under `docs/`.
+
+* [docs/live-edit/](../../docs/live-edit/)
+  * [docs/live-edit/single/](../../docs/live-edit/single/)
+    * [single.md](../../docs/live-edit/single/single.md) — Common, Unison,
+      Envelope 3/4, Velocity Map, Soft Knobs, etc.
+    * [oscillators.md](../../docs/live-edit/single/oscillators.md) — Osc 1–3,
+      Sub-Osc, Mixer, Noise, Ring Modulator, FM, etc.
+    * [filters.md](../../docs/live-edit/single/filters.md) — Filters, Filter
+      Envelopes, Amp Envelope, etc.
+    * [modulators.md](../../docs/live-edit/single/modulators.md) — LFO 1/2/3
+    * [mod-matrix.md](../../docs/live-edit/single/mod-matrix.md) — Mod Matrix
+      slots 1–6
+    * [arpeggiator.md](../../docs/live-edit/single/arpeggiator.md)
+    * [effects.md](../../docs/live-edit/single/effects.md)
+  * [multis.md](../../docs/live-edit/multis.md) — Edit Multi SysEx
+  * [global.md](../../docs/live-edit/global.md) — Global / CONFIG SysEx
+* [docs/dumps/](../../docs/dumps/)
+  * [single.md](../../docs/dumps/single.md) — Single Dump layout
+  * [multi.md](../../docs/dumps/multi.md) — Multi Dump layout
+  * [controller.md](../../docs/dumps/controller.md) — Controller Dump Request
+  * [bank.md](../../docs/dumps/bank.md) — Bank / request commands
+* [docs/reference/](../../docs/reference/)
+  * [parameter-options.md](../../docs/reference/parameter-options.md) — Enums
+    and panel option tables
+* [docs/misc/](../../docs/misc/)
+  * [virus.md](../../docs/misc/virus.md) — Architecture (banks, dump types,
+    modes, Paging)
+  * [ostirus.md](../../docs/misc/ostirus.md)
+
+Also: [getting-started.md](../../docs/getting-started.md) (testing and SysEx
+primer) and [README.md](../../README.md) (documentation TOC).
+
 ## File roles
 
-| File / area | Role |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| [docs/reference/parameter-options.md](../../docs/reference/parameter-options.md) | **All** option/value lookup tables (enums, panel visibility, LCD curves) |
-| [Documentation](../../README.md#documentation) | Live SysEx per **panel section** — `cmd` / `param` / encoding + **examples** |
-| [Documentation](../../README.md#documentation) | Single Dump / Multi Dump layout and parameter **inventory** |
-| [README.md](../../README.md) | Tools, ports, first `sendmidi` message |
-| [docs/getting-started.md](../../docs/getting-started.md) | SysEx primer (`cmd`, requests vs live edit) |
+| File / area                                                                      | Role                                                                          |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [docs/reference/parameter-options.md](../../docs/reference/parameter-options.md) | **All** option/value lookup tables (enums, panel visibility, LCD curves)      |
+| [Documentation](../../README.md#documentation)                                   | Live SysEx per **panel section** — `cmd` / `param` / encoding + **examples**  |
+| [Documentation](../../README.md#documentation)                                   | Single Dump / Multi Dump layout and parameter **inventory**                   |
+| [README.md](../../README.md)                                                     | Documentation TOC                                                             |
+| [docs/getting-started.md](../../docs/getting-started.md)                         | SysEx testing (`sendmidi`), primer (`cmd`, requests vs live edit)             |
 
 **Do not** put enum option tables in live-edit files — link to
 `reference/parameter-options.md#anchor` instead.
@@ -28,17 +95,17 @@ Apply when writing or restructuring documentation in this repository.
 
 Organize live-edit and dump inventory rows to match the synth’s menus:
 
-| Section | Live-edit doc | Dump inventory (`single.md`) |
-| ------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------ |
-| **Config** | [global.md](../../docs/live-edit/global.md) | Global / Patch Utility — Config |
-| **Single** (Common, Soft Knobs, Unison, Env 3/4, Velocity, …) | [single.md](../../docs/live-edit/single/single.md) | Common, Soft Knobs, … |
-| **Multi** | [multis.md](../../docs/live-edit/multis.md) | (multi map in [multi.md](../../docs/dumps/multi.md)) |
-| **Oscillators** | [oscillators.md](../../docs/live-edit/single/oscillators.md) | Oscillators |
-| **Filters** | [filters.md](../../docs/live-edit/single/filters.md) | Filters, Amplifier |
-| **Effects** | [effects.md](../../docs/live-edit/single/effects.md) | FX 1 / FX 2 |
-| **Modulators** | [modulators.md](../../docs/live-edit/single/modulators.md) | LFO |
-| **Matrix** | [mod-matrix.md](../../docs/live-edit/single/mod-matrix.md) | Modulation Matrix |
-| **Arpeggiator** | [arpeggiator.md](../../docs/live-edit/single/arpeggiator.md) | Arpeggiator |
+| Section                                                       | Live-edit doc                                                | Dump inventory (`single.md`)                                       |
+| ------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
+| **Config**                                                    | [global.md](../../docs/live-edit/global.md)                  | Global / Patch Utility — Config                                    |
+| **Single** (Common, Soft Knobs, Unison, Env 3/4, Velocity, …) | [single.md](../../docs/live-edit/single/single.md)           | Common, Soft Knobs, …                                              |
+| **Multi**                                                     | [multis.md](../../docs/live-edit/multis.md)                  | (multi map in [multi.md](../../docs/dumps/multi.md))               |
+| **Oscillators**                                               | [oscillators.md](../../docs/live-edit/single/oscillators.md) | Oscillators                                                        |
+| **Filters**                                                   | [filters.md](../../docs/live-edit/single/filters.md)         | Filters, Amplifier                                                 |
+| **Effects**                                                   | [effects.md](../../docs/live-edit/single/effects.md)         | FX 1 / FX 2                                                        |
+| **Modulators**                                                | [modulators.md](../../docs/live-edit/single/modulators.md)   | LFO                                                                |
+| **Matrix**                                                    | [mod-matrix.md](../../docs/live-edit/single/mod-matrix.md)   | Modulation Matrix                                                  |
+| **Arpeggiator**                                               | [arpeggiator.md](../../docs/live-edit/single/arpeggiator.md) | Arpeggiator                                                        |
 
 Add new parameters under the correct section file — do not append unrelated
 blocks to `effects.md` or `single.md`.
@@ -69,10 +136,10 @@ F0 00 20 33 01 00 6E 00 48 7F F7 # 100.0 %
 
 **Panel → Submenu → Control**. One-line encoding summary.
 
-| Item | Value |
+| Item           | Value                                               |
 | -------------- | --------------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 <cmd> <part> <param> <value> F7` |
-| Panel range | … |
+| Panel range    | …                                                   |
 
 \`\`\`text
 F0 00 20 33 01 00 … F7 # comment

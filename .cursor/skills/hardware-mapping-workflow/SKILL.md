@@ -13,12 +13,12 @@ Maps **Virus** SysEx against real hardware. Use the MIDI port
 from `sendmidi list` / `receivemidi list`. See also
 [OsTIrus](../../docs/misc/ostirus.md).
 
-Install and first message: [README — Setup](../../README.md#setup).
+Install and first message: [Getting started — Testing](../../docs/getting-started.md#testing).
 
 ## Prerequisites
 
 1. Virus TI powered on, USB connected, target port visible in `sendmidi list`.
-2. `brew install sendmidi receivemidi` (see [README — Setup](../../README.md#setup)).
+2. `brew install sendmidi receivemidi` (see [Getting started — Testing](../../docs/getting-started.md#testing)).
 3. Agent commands need `required_permissions: ["all"]` (MIDI + `/tmp` capture).
 
 ```bash
@@ -51,12 +51,12 @@ Front-panel **SELECT** switches which sub-page the shared knobs edit. **`stored 
 index`**. Pause **≥ 1 s** between probe messages. For **EFFECTS**, documents
 **`6E`/`75`** / **`6E`/`76`** focus only — not physical knob routing.
 
-| Section | Live edit | Values (confirmed) |
-| ----------- | --------- | --------------------------------------------------------------------------------------------------------------------- |
-| Oscillators | `71`/`7F` | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/single/oscillators.md#oscillators-select) |
-| Filters | `71`/`7A` | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/single/filters.md#filters-select); **disabled** when Vocoder active |
-| Effects g1 | `6E`/`75` | `00` Delay … `04` High EQ |
-| Effects g2 | `6E`/`76` | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/single/effects.md#effects-select) |
+| Section     | Live edit | Values (confirmed)                                                                                                           |
+| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Oscillators | `71`/`7F` | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/single/oscillators.md#oscillators-select)                    |
+| Filters     | `71`/`7A` | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/single/filters.md#filters-select); **disabled** when Vocoder active |
+| Effects g1  | `6E`/`75` | `00` Delay … `04` High EQ                                                                                                    |
+| Effects g2  | `6E`/`76` | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/single/effects.md#effects-select)                          |
 
 ```bash
 sendmidi dev "$MIDI_DEV" hex syx 00 20 33 01 00 71 00 7F 01 # Osc 2
@@ -142,12 +142,12 @@ for i, (x, y) in enumerate(zip(a, b)):
 
 ## Smoke tests
 
-| # | Message (summary) | Panel check |
+| #   | Message (summary)    | Panel check   |
 | --- | -------------------- | ------------- |
-| 1 | P1 Hold `4A` `00` | Hold Disabled |
-| 2 | P1 Hold `4A` `01` | Hold Enabled |
-| 3 | P16 Enable `48` `00` | Part 16 Off |
-| 4 | P1 Vol `27` `48` | Part 1 Vol +8 |
+| 1   | P1 Hold `4A` `00`    | Hold Disabled |
+| 2   | P1 Hold `4A` `01`    | Hold Enabled  |
+| 3   | P16 Enable `48` `00` | Part 16 Off   |
+| 4   | P1 Vol `27` `48`     | Part 1 Vol +8 |
 
 ## Stop and ask the user when
 
@@ -161,11 +161,11 @@ for i, (x, y) in enumerate(zip(a, b)):
 
 ## Doc targets after confirm
 
-| Work | Update |
-| --------------- | ------------------------------------------------------------ |
-| Live edit bytes | [Documentation](../../README.md#documentation) |
-| Dump offsets | [Documentation](../../README.md#documentation) |
-| Enum tables | [docs/reference/parameter-options.md](../../docs/reference/parameter-options.md) |
+| Work            | Update                                                                           |
+| --------------- | -------------------------------------------------------------------------------- |
+| Live edit bytes | [Documentation](../../README.md#documentation)                                   |
+| Dump offsets    | [Documentation](../../README.md#documentation)                                   |
+| Enum tables     | [docs/reference/parameter-options.md](../../docs/reference/parameter-options.md) |
 
 Follow [documentation-standards](../documentation-standards/SKILL.md) when
 writing markdown.

@@ -9,14 +9,14 @@ Architecture: [virus.md](../misc/virus.md).
 
 All requests use header `F0 00 20 33 01 <device> … F7`.
 
-| Cmd | Name | Body (after device) | Reply |
+| Cmd        | Name                        | Body (after device)           | Reply                                                                                         |
 | ---------- | --------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------- |
-| **`0x30`** | **Single Request** | `30 <bank> <slot>` | Single Dump (`0x10`) — stored banks **`01`–`1E`** |
-| **`0x10`** | **Single Dump** (upload) | Full 524-byte message | Writes edit buffer / RAM — [single.md — upload](single.md#single-dump-upload-0x10) |
-| **`0x31`** | **Multi Request** | `31 <bank> <slot> [checksum]` | Multi Dump (`0x11`) — [multi.md](multi.md#request_multi-byte-table) |
-| **`0x32`** | **Single Bank Request** | `32 <bank>` | **128 × Single Dump** — banks **`01`–`1E`** (RAM + ROM) |
-| **`0x34`** | **Arrangement Request** | `34 00` (TI) | Multi Dump + 16 × Single Dump — [single.md](single.md#arrangement-export-single-dump--16) |
-| **`0x37`** | **Controller Dump Request** | `37 00 <part>` | SysEx parameter stream — [controller.md](controller.md) |
+| **`0x30`** | **Single Request**          | `30 <bank> <slot>`            | Single Dump (`0x10`) — stored banks **`01`–`1E`**                                             |
+| **`0x10`** | **Single Dump** (upload)    | Full 524-byte message         | Writes edit buffer / RAM — [single.md — upload](single.md#single-dump-upload-0x10)            |
+| **`0x31`** | **Multi Request**           | `31 <bank> <slot> [checksum]` | Multi Dump (`0x11`) — [multi.md](multi.md#request_multi-byte-table)                           |
+| **`0x32`** | **Single Bank Request**     | `32 <bank>`                   | **128 × Single Dump** — banks **`01`–`1E`** (RAM + ROM)                                       |
+| **`0x34`** | **Arrangement Request**     | `34 00` (TI)                  | Multi Dump + 16 × Single Dump — [single.md](single.md#arrangement-export-single-dump--16)     |
+| **`0x37`** | **Controller Dump Request** | `37 00 <part>`                | SysEx parameter stream — [controller.md](controller.md)                                       |
 
 ### Single Request
 
@@ -28,11 +28,11 @@ All requests use header `F0 00 20 33 01 <device> … F7`.
 F0 00 20 33 01 <device> 30 <bank> <slot> F7
 ```
 
-| `bank` | `slot` | Meaning |
+| `bank`    | `slot`    | Meaning                                      |
 | --------- | --------- | -------------------------------------------- |
-| `00` | `00`–`0F` | Multi **Part 1–16** edit-buffer single |
-| `00` | `40` | **Single mode** edit buffer |
-| `01`–`04` | `00`–`7F` | RAM Single banks **A–D** (128 programs) |
+| `00`      | `00`–`0F` | Multi **Part 1–16** edit-buffer single       |
+| `00`      | `40`      | **Single mode** edit buffer                  |
+| `01`–`04` | `00`–`7F` | RAM Single banks **A–D** (128 programs)      |
 | `05`–`1E` | `00`–`7F` | ROM Single banks **A–Z** (128 programs each) |
 
 **Stored-bank byte** on **`0x30`** / **`0x32`**: **`request_bank = dump_index + 1`**
@@ -82,12 +82,12 @@ F0 00 20 33 01 <device> 32 <bank> F7
 **`<bank>`** uses the same encoding as [Single Request](#single-request)
 stored banks. Valid range: **`01`–`1E`** (30 banks = 4 RAM + 26 ROM).
 
-| Request `bank` | Bank | Dump index | Result |
+| Request `bank` | Bank    | Dump index    | Result                                                        |
 | -------------- | ------- | ------------- | ------------------------------------------------------------- |
-| `00` | — | — | **No reply** (edit-buffer scope on `0x30`, not a stored bank) |
-| `01`–`04` | RAM A–D | `0x00`–`0x03` | **`32 01`** RAM A → 128 dumps ✓ |
-| `05`–`1E` | ROM A–Z | `0x04`–`0x1D` | **`32 1E`** ROM Z → 128 dumps ✓ |
-| **`1F`+** | — | — | **No reply** ✓ (no bank after ROM Z) |
+| `00`           | —       | —             | **No reply** (edit-buffer scope on `0x30`, not a stored bank) |
+| `01`–`04`      | RAM A–D | `0x00`–`0x03` | **`32 01`** RAM A → 128 dumps ✓                               |
+| `05`–`1E`      | ROM A–Z | `0x04`–`0x1D` | **`32 1E`** ROM Z → 128 dumps ✓                               |
+| **`1F`+**      | —       | —             | **No reply** ✓ (no bank after ROM Z)                          |
 
 ROM letter → request byte: **`0x05 + (letter − 'A')`** (A→`05` … Z→**`1E`**).
 Example: **`32 0F`** = ROM **K**.

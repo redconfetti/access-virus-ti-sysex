@@ -26,15 +26,15 @@ rows. **Arp>Matrix** → **Pattern** + **Resolution** only — see
 
 **Single Dump** offsets (Single edit buffer **`30 00 40`**, `<part>=0x40`):
 
-| Control | Live edit | Dump offset |
+| Control     | Live edit | Dump offset |
 | ----------- | --------- | ----------- |
-| Mode | `71`/`0F` | **`0x097`** |
-| Pattern | `71`/`02` | **`0x08A`** |
-| Octaves | `71`/`03` | **`0x08B`** |
-| Hold | `71`/`04` | **`0x08C`** |
+| Mode        | `71`/`0F` | **`0x097`** |
+| Pattern     | `71`/`02` | **`0x08A`** |
+| Octaves     | `71`/`03` | **`0x08B`** |
+| Hold        | `71`/`04` | **`0x08C`** |
 | Note Length | `71`/`05` | **`0x08D`** |
-| Swing | `71`/`06` | **`0x08E`** |
-| Resolution | `71`/`11` | **`0x099`** |
+| Swing       | `71`/`06` | **`0x08E`** |
+| Resolution  | `71`/`11` | **`0x099`** |
 
 ### Mode
 
@@ -46,10 +46,10 @@ rows. **Arp>Matrix** → **Pattern** + **Resolution** only — see
 pattern direction. The front-panel **ARP** on/off control selects **Up** (`01`)
 when enabled in hardware tests.
 
-| Item | Value |
+| Item           | Value                                       |
 | -------------- | ------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 0F <value> F7` |
-| Panel range | Off … Arp>Matrix (`00`–`07`) |
+| Panel range    | Off … Arp>Matrix (`00`–`07`)                |
 
 ```text
 F0 00 20 33 01 00 71 00 0F 00 F7 # Off (arp disabled)
@@ -71,10 +71,10 @@ F0 00 20 33 01 00 71 00 0F 07 F7 # Arp>Matrix
 [Arpeggiator Pattern](../../reference/parameter-options.md#arpeggiator-pattern). Hidden when
 **Mode** = **Off** or **Down** (visible on full settings modes and **Arp>Matrix**).
 
-| Item | Value |
+| Item           | Value                                                |
 | -------------- | ---------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 02 <value> F7` |
-| Panel range | User, **2** … **64** (`00`–`3F`) |
+| Message format | `F0 00 20 33 01 00 71 <part> 02 <value> F7`          |
+| Panel range    | User, **2** … **64** (`00`–`3F`)                     |
 
 ```text
 F0 00 20 33 01 00 71 00 02 00 F7 # User
@@ -91,10 +91,10 @@ F0 00 20 33 01 00 71 00 02 3F F7 # 64
 [Arpeggiator Octaves](../../reference/parameter-options.md#arpeggiator-octaves). Full settings
 modes only — hidden when **Mode** = **Off**, **Down**, or **Arp>Matrix**.
 
-| Item | Value |
+| Item           | Value                                       |
 | -------------- | ------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 71 <part> 03 <value> F7` |
-| Panel range | **1**–**4** octaves (`00`–`03`) |
+| Panel range    | **1**–**4** octaves (`00`–`03`)             |
 
 ```text
 F0 00 20 33 01 00 71 00 03 00 F7 # 1 octave
@@ -111,10 +111,10 @@ F0 00 20 33 01 00 71 00 03 03 F7 # 4 octaves
 when **Mode** = **Off** or **Down** (visible on full settings modes and
 **Arp>Matrix**).
 
-| Item | Value |
+| Item           | Value                                                |
 | -------------- | ---------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 11 <value> F7` |
-| Panel range | **1/128** … **1/2** (`01`–`11`; no **Off**) |
+| Message format | `F0 00 20 33 01 00 71 <part> 11 <value> F7`          |
+| Panel range    | **1/128** … **1/2** (`01`–`11`; no **Off**)          |
 
 ```text
 F0 00 20 33 01 00 71 00 11 01 F7 # 1/128
@@ -130,10 +130,10 @@ F0 00 20 33 01 00 71 00 11 11 F7 # 1/2
 Full settings modes only — hidden when **Mode** = **Off**, **Down**, or
 **Arp>Matrix**.
 
-| Item | Value |
+| Item           | Value                                             |
 | -------------- | ------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 05 <value> F7` |
-| Panel range | **−100.0..+100.0 %** (`00`–`7F`; **+0 %** @ `40`) |
+| Message format | `F0 00 20 33 01 00 71 <part> 05 <value> F7`       |
+| Panel range    | **−100.0..+100.0 %** (`00`–`7F`; **+0 %** @ `40`) |
 
 ```text
 F0 00 20 33 01 00 71 00 05 00 F7 # −100.0 %
@@ -151,10 +151,10 @@ wire values. LCD map: [Arpeggiator Swing Factor](../../reference/parameter-optio
 Full settings modes only — hidden when **Mode** = **Off**, **Down**, or
 **Arp>Matrix**.
 
-| Item | Value |
+| Item           | Value                                         |
 | -------------- | --------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 06 <value> F7` |
-| Panel range | **Off**; **50.2..75.0 %** + **16B** … **16F** |
+| Message format | `F0 00 20 33 01 00 71 <part> 06 <value> F7`   |
+| Panel range    | **Off**; **50.2..75.0 %** + **16B** … **16F** |
 
 ```text
 F0 00 20 33 01 00 71 00 06 00 F7 # Off
@@ -173,10 +173,10 @@ F0 00 20 33 01 00 71 00 06 7F F7 # 75.0 %
 Hidden when **Mode** = **Off** or **Arp>Matrix**. On **Down**, the only setting
 besides **Mode**; on full settings modes, last row of the block.
 
-| Item | Value |
+| Item           | Value                                               |
 | -------------- | --------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 71 <part> 04 <value> F7` |
-| Panel range | **Off** / **On** (`00` / `01`) |
+| Message format | `F0 00 20 33 01 00 71 <part> 04 <value> F7`         |
+| Panel range    | **Off** / **On** (`00` / `01`)                      |
 
 ```text
 F0 00 20 33 01 00 71 40 04 00 F7 # Off (Single edit buffer)
@@ -199,12 +199,12 @@ Correlated from **`-INIT-`** baseline (Part 1 Single from arrangement export,
 524-byte single). Dump byte order matches the live-edit triplet
 (**length**, **velocity**, **enable**).
 
-| Field | Dump offset (step *n*) | Encoding |
+| Field         | Dump offset (step *n*)    | Encoding                                                    |
 | ------------- | ------------------------- | ----------------------------------------------------------- |
-| Loop length | **`0x189`** | **`stored = steps − 1`** |
-| Step length | **`0x18A + (n − 1) × 3`** | same as [Step Length](#step-length) |
-| Step velocity | **+1** from step base | same as [Step Velocity](#step-velocity) |
-| Step enable | **+2** from step base | same as [Step Enable](#step-enable) |
+| Loop length   | **`0x189`**               | **`stored = steps − 1`**                                    |
+| Step length   | **`0x18A + (n − 1) × 3`** | same as [Step Length](#step-length)                         |
+| Step velocity | **+1** from step base     | same as [Step Velocity](#step-velocity)                     |
+| Step enable   | **+2** from step base     | same as [Step Enable](#step-enable)                         |
 
 Step **1** → **`0x18A`…`0x18C`**; step **32** → **`0x1E7`…`0x1E9`**. On
 **`-INIT-`**, loop length = **`0x1F`** (32 steps); each step length =
@@ -221,10 +221,10 @@ User arpeggiator pattern **loop length** — **1**–**32** steps.
 **`stored = steps − 1`** (**`00`–`1F`**). Enum anchors:
 [Arpeggiator Loop Length](../../reference/parameter-options.md#arpeggiator-loop-length).
 
-| Item | Value |
+| Item           | Value                                       |
 | -------------- | ------------------------------------------- |
 | Message format | `F0 00 20 33 01 00 6E <part> 7F <value> F7` |
-| Panel range | **1**–**32** steps (`00`–`1F`) |
+| Panel range    | **1**–**32** steps (`00`–`1F`)              |
 
 ```text
 F0 00 20 33 01 00 6E 00 7F 00 F7 # 1 step
@@ -243,11 +243,11 @@ encoding **`stored = ui + 64`** — same family as [Arpeggiator Note
 Length](../../reference/parameter-options.md#arpeggiator-note-length-lcd). Map:
 [Arpeggiator Step Length](../../reference/parameter-options.md#arpeggiator-step-length).
 
-| Item | Value |
+| Item           | Value                                                    |
 | -------------- | -------------------------------------------------------- |
-| Message format | `F0 00 20 33 01 00 6F <part> <param> <value> F7` |
-| Step *n* param | **`(n − 1) × 3`** (`00` … `5D`) |
-| Panel range | **−100.0..+100.0 %** (`00`–`7F`; **+0.0 %** @ `40`) |
+| Message format | `F0 00 20 33 01 00 6F <part> <param> <value> F7`         |
+| Step *n* param | **`(n − 1) × 3`** (`00` … `5D`)                          |
+| Panel range    | **−100.0..+100.0 %** (`00`–`7F`; **+0.0 %** @ `40`)      |
 
 ```text
 F0 00 20 33 01 00 6F 00 5D 00 F7 # Step 32 length −100.0 %
@@ -263,11 +263,11 @@ User-pattern **step velocity** — steps **1**–**32**. Param
 **`0x01 + (step − 1) × 3`**; **`stored = lcd`** (**`00`–`7F`**). Map:
 [Arpeggiator Step Velocity](../../reference/parameter-options.md#arpeggiator-step-velocity).
 
-| Item | Value |
+| Item           | Value                                            |
 | -------------- | ------------------------------------------------ |
 | Message format | `F0 00 20 33 01 00 6F <part> <param> <value> F7` |
-| Step *n* param | **`0x01 + (n − 1) × 3`** (`01` … `5E`) |
-| Value encoding | **`0`–`127`** direct |
+| Step *n* param | **`0x01 + (n − 1) × 3`** (`01` … `5E`)           |
+| Value encoding | **`0`–`127`** direct                             |
 
 ```text
 F0 00 20 33 01 00 6F 00 01 00 F7 # Step 1 velocity 0
@@ -283,11 +283,11 @@ User-pattern **step on/off** — steps **1**–**32**. Param
 **`0x02 + (step − 1) × 3`**; **`00`** off, **`01`** on. Map:
 [Arpeggiator Step Enable](../../reference/parameter-options.md#arpeggiator-step-enable).
 
-| Item | Value |
+| Item           | Value                                            |
 | -------------- | ------------------------------------------------ |
 | Message format | `F0 00 20 33 01 00 6F <part> <param> <value> F7` |
-| Step *n* param | **`0x02 + (n − 1) × 3`** (`02` … `5F`) |
-| Value encoding | **`00`** off · **`01`** on |
+| Step *n* param | **`0x02 + (n − 1) × 3`** (`02` … `5F`)           |
+| Value encoding | **`00`** off · **`01`** on                       |
 
 ```text
 F0 00 20 33 01 00 6F 00 02 00 F7 # Step 1 off

@@ -1,15 +1,13 @@
-# Access Virus
+# Access Virus TI mk2
 
-General notes about Access Virus architecture
-
-Desktop module only (not keyboard/Polar).
+General notes about Access Virus TI mk2 desktop architecture
 
 ## Banks and programs
 
 The Virus provides **four RAM banks** (A–D). Each bank holds **128 Single
 programs**.
 
-| Bank | Role |
+| Bank  | Role     |
 | ----- | -------- |
 | RAM A | User RAM |
 | RAM B | User RAM |
@@ -32,14 +30,14 @@ byte — the same **`param`** value under a different **`cmd`** is usually a
 
 ### Live-edit command bytes
 
-| `cmd` | Page / scope | Typical use |
-| ----- | ---------------- | ----------- |
-| **`0x70`** | **Page A** | Single sound — filters, oscillators, many Edit FX rows, LFO 2 settings |
-| **`0x71`** | **Page B** | Single sound — Common, EDIT ARP, EDIT LFO 1/3, many Edit FX rows |
-| **`0x6E`** | **Part buffer** | Single sound in a Multi part — ring mod, some FX, mod-matrix amounts |
-| **`0x6F`** | **Extended page** | Unison, arpeggiator user-pattern steps, Edit Single → Inputs |
-| **`0x72`** | **Multi / common** | Edit Multi part settings, some Edit Single fields (e.g. Multi Tempo) |
-| **`0x73`** | **Global / CONFIG** | Device-wide settings — [global.md](../live-edit/global.md) |
+| `cmd`      | Page / scope        | Typical use                                                            |
+| ---------- | ------------------- | ---------------------------------------------------------------------- |
+| **`0x70`** | **Page A**          | Single sound — filters, oscillators, many Edit FX rows, LFO 2 settings |
+| **`0x71`** | **Page B**          | Single sound — Common, EDIT ARP, EDIT LFO 1/3, many Edit FX rows       |
+| **`0x6E`** | **Part buffer**     | Single sound in a Multi part — ring mod, some FX, mod-matrix amounts   |
+| **`0x6F`** | **Extended page**   | Unison, arpeggiator user-pattern steps, Edit Single → Inputs           |
+| **`0x72`** | **Multi / common**  | Edit Multi part settings, some Edit Single fields (e.g. Multi Tempo)   |
+| **`0x73`** | **Global / CONFIG** | Device-wide settings — [global.md](../live-edit/global.md)             |
 
 ```text
 F0 00 20 33 01 00 72 <part> <param> <value> F7 # Multi / common (some Single params)
@@ -73,10 +71,10 @@ Example: **`0x0F`** on **`0x71`** is arpeggiator **Mode**; on **`0x72`** it is
 
 The **`<part>`** byte names **which edit buffer** receives the change:
 
-| Target | Live edit `<part>` | Single Request `30 00 …` | Single Dump `@0x08` |
+| Target             | Live edit `<part>`   | Single Request `30 00 …`   | Single Dump `@0x08`   |
 | ------------------ | -------------------- | -------------------------- | --------------------- |
-| Multi Part 1–16 | **`0x00`–`0x0F`** | **`00`–`0F`** | **`00`–`0F`** |
-| Single edit buffer | **`0x40`** | **`40`** | **`0x40`** |
+| Multi Part 1–16    | **`0x00`–`0x0F`**    | **`00`–`0F`**              | **`00`–`0F`**         |
+| Single edit buffer | **`0x40`**           | **`40`**                   | **`0x40`**            |
 
 Multi Part 1 (**`<part>=00`**) and the Single edit buffer (**`<part>=40`**) are
 **separate RAM**. The wire **`<part>`** must match the buffer you intend.
@@ -96,10 +94,10 @@ testing live-edit bytes.
 
 **MIDI Controller Page A** — **`cmd=0x73`**, param **`0x5E`**:
 
-| Value | Mode |
+| Value | Mode            |
 | ----- | --------------- |
-| `00` | SysEx |
-| `01` | Controller Data |
+| `00`  | SysEx           |
+| `01`  | Controller Data |
 
 ```text
 F0 00 20 33 01 00 73 00 5E 00 F7 # Page A → SysEx
@@ -111,10 +109,10 @@ instead of **`cmd=0x70`** SysEx (e.g. Filter Cutoff → CC, Transpose → CC 93)
 
 **MIDI Controller Page B** — **`cmd=0x73`**, param **`0x5F`**:
 
-| Value | Mode |
+| Value | Mode          |
 | ----- | ------------- |
-| `00` | SysEx |
-| `01` | Poly Pressure |
+| `00`  | SysEx         |
+| `01`  | Poly Pressure |
 
 ```text
 F0 00 20 33 01 00 73 00 5F 00 F7 # Page B → SysEx
@@ -127,14 +125,14 @@ Full global parameter list: [global.md](../live-edit/global.md).
 
 The Virus can export or stream several kinds of MIDI SysEx data:
 
-| # | Name | Description | Project interest |
+| #   | Name                | Description                                                          | Project interest                                                                            |
 | --- | ------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| 1 | **Single Buffer** | One Single in the temporary edit buffer | Secondary — relates to arrangement exports |
-| 2 | **Single Bank** | All 128 programs in a RAM bank (A–D) | **`0x32`** request, banks **`01`–`04`** — [bank.md](../dumps/bank.md#single-bank-request) |
-| 3 | **Controller Dump** | One Single as a stream of live-edit SysEx (not Single Dump) | **`0x37`** — [controller.md](../dumps/controller.md) |
-| 4 | **Arrangement** | Current Multi (or sequencer) buffer: **multi settings + 16 Singles** | Important — full performance snapshot |
-| 5 | **Multi Bank** | All programs in the Multi bank (128 slots) | Important |
-| 6 | **Remote Patches** | Remote control templates | Out of scope |
+| 1   | **Single Buffer**   | One Single in the temporary edit buffer                              | Secondary — relates to arrangement exports                                                  |
+| 2   | **Single Bank**     | All 128 programs in a RAM bank (A–D)                                 | **`0x32`** request, banks **`01`–`04`** — [bank.md](../dumps/bank.md#single-bank-request)   |
+| 3   | **Controller Dump** | One Single as a stream of live-edit SysEx (not Single Dump)          | **`0x37`** — [controller.md](../dumps/controller.md)                                        |
+| 4   | **Arrangement**     | Current Multi (or sequencer) buffer: **multi settings + 16 Singles** | Important — full performance snapshot                                                       |
+| 5   | **Multi Bank**      | All programs in the Multi bank (128 slots)                           | Important                                                                                   |
+| 6   | **Remote Patches**  | Remote control templates                                             | Out of scope                                                                                |
 
 **Multi bank export:** one **Multi Dump** (267 bytes) for every slot.
 **Slots 1–16** also include **sixteen Single Dump** messages (524 bytes
@@ -163,21 +161,21 @@ The front panel exposes **Multi**, **Single**, and **Sequencer**
 
 **Host → synth** — select mode with **`cmd=0x73`**, param **`0x7A`**:
 
-| Mode | SysEx body |
+| Mode      | SysEx body      |
 | --------- | --------------- |
-| Single | `73 00 7A 00` |
-| Sequencer | `73 00 7A 01` |
-| Multi | `73 00 7A 02` |
+| Single    | `73 00 7A 00`   |
+| Sequencer | `73 00 7A 01`   |
+| Multi     | `73 00 7A 02`   |
 
 See [Play mode (`0x7A`)](../live-edit/global.md#play-mode).
 
 **Synth → host** (panel) may emit **`cmd=0x73`**, param **`0x10`**, or empty
 `F0 F7` frames — see [Edit mode `0x10`](../live-edit/global.md#edit-mode-0x10).
 
-| Panel action | Typical SysEx from Virus |
+| Panel action                 | Typical SysEx from Virus          |
 | ---------------------------- | --------------------------------- |
-| Select multi from bank | `73 00 10 00` (often twice) |
-| Press **SINGLE** | `73 40 10 00` |
+| Select multi from bank       | `73 00 10 00` (often twice)       |
+| Press **SINGLE**             | `73 40 10 00`                     |
 | **MULTI+SINGLE** / Sequencer | Empty `F0 F7` frames (no payload) |
 
 This is separate from **parameter edits** — see [Paging — live-edit command bytes](#live-edit-command-bytes) (e.g. Filter Cutoff uses **`cmd=0x70`**).

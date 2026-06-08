@@ -1,10 +1,45 @@
 # Getting started
 
+## Testing SysEx
+
+The best way to understand SysEx commands is to test them using [sendmidi][]
+and [receivemidi][]. You can install them on a Mac using [Homebrew][].
+
+```bash
+brew install sendmidi receivemidi
+```
+
+[Homebrew]: https://brew.sh/
+[sendmidi]: https://github.com/gbevin/SendMIDI
+[receivemidi]: https://github.com/gbevin/ReceiveMIDI
+
+
+To communicate with your synth, you'll need to list the ports to identify which
+one to send commands to.
+
+```bash
+sendmidi list
+receivemidi list
+```
+
+Use the same port name for `sendmidi` and `receivemidi` (from the lists above).
+
+Send SysEx with **`hex`** before **`syx`**, and **omit `F0`/`F7`** (sendmidi
+adds them). Prefix data bytes with **`0x`** so values are not parsed as decimal
+(e.g. `0x72` for cmd **`0x72`**, not `72` → `0x48`).
+
+Request the edit-buffer Multi (Multi Dump):
+
+```bash
+sendmidi dev "<MIDI port>" hex syx \
+  00 20 33 01 00 0x31 0x00 0x7f
+
+receivemidi dev "<MIDI port>" dump
+```
+
 Access Virus SysEx is standard MIDI: one message per `F0 … F7` frame. The
 docs use the same byte layout you see in a MIDI monitor or in `sendmidi hex
 syx` (without the `F0`/`F7` wrappers — sendmidi adds those).
-
-Prerequisites: [Setup](../README.md#setup) (`sendmidi`, port choice, first messages).
 
 ## One message, byte by byte
 
@@ -21,14 +56,14 @@ flowchart LR
   f0 --> access --> family --> dev --> cmd --> payload --> f7
 ```
 
-| Bytes | Role |
+| Bytes       | Role                                                                |
 | ----------- | ------------------------------------------------------------------- |
-| `F0` / `F7` | SysEx start / end (omit when using `sendmidi hex syx`) |
-| `00 20 33` | Access Music manufacturer ID |
-| `01` | Family (TI series) |
-| `00` | Device ID (`00`–`0F` = unit 1–16; match your synth) |
-| **`<cmd>`** | **What kind of message this is** (see below) |
-| *rest* | Depends on command: bank/slot, parameter bytes, or a full dump body |
+| `F0` / `F7` | SysEx start / end (omit when using `sendmidi hex syx`)              |
+| `00 20 33`  | Access Music manufacturer ID                                        |
+| `01`        | Family (TI series)                                                  |
+| `00`        | Device ID (`00`–`0F` = unit 1–16; match your synth)                 |
+| **`<cmd>`** | **What kind of message this is** (see below)                        |
+| *rest*      | Depends on command: bank/slot, parameter bytes, or a full dump body |
 
 Placeholders like `<part>`, `<param>`, and `<value>` are **one byte each** in
 the real message (shown as hex). Example — change one live parameter:
@@ -56,11 +91,11 @@ itself.
 
 Rough groups:
 
-| Command byte | Typical role | Example |
+| Command byte                  | Typical role                                                | Example                                                                                      |
 | ----------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **`0x30`–`0x37`** | **Requests** — ask the synth to **send** data back | `0x30` = request one Single; `0x34` = request arrangement (Multi + 16 Singles) |
-| **`0x10`**, **`0x11`** | **Dumps** — synth **replies** with a stored snapshot | `0x10` = Single Dump (524 bytes on TI); `0x11` = Multi Dump (267 bytes) |
-| **`0x70`–`0x73`**, **`0x6E`** | **Live edit** — change **one** parameter now (no full dump) | See [Paging](misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x72` Multi, …) |
+| **`0x30`–`0x37`**             | **Requests** — ask the synth to **send** data back          | `0x30` = request one Single; `0x34` = request arrangement (Multi + 16 Singles)               |
+| **`0x10`**, **`0x11`**        | **Dumps** — synth **replies** with a stored snapshot        | `0x10` = Single Dump (524 bytes on TI); `0x11` = Multi Dump (267 bytes)                      |
+| **`0x70`–`0x73`**, **`0x6E`** | **Live edit** — change **one** parameter now (no full dump) | See [Paging](misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x72` Multi, …)           |
 
 So **`cmd=0x71`** in [live-edit docs](../README.md#documentation) is a **live
 parameter edit** on Page B (e.g. Smooth Mode `param 0x19`), not
@@ -77,13 +112,13 @@ MIDI SysEx data bytes are almost always **7-bit** (`00`–`7F` = 0–127).
 
 The same notation is used for **different roles** — context tells you which:
 
-| In docs | Meaning | Example |
+| In docs                                | Meaning                                                         | Example                          |
 | -------------------------------------- | --------------------------------------------------------------- | -------------------------------- |
-| **`cmd=0x72`** | Command byte in the **message header** | Live Multi edit |
-| **`param 0x4A`** / **`0x72` / `0x4A`** | **Parameter index** in a live-edit message | Hold Pedal enable |
-| **`<value> 00`** | **Parameter value** in a live-edit message | Off / 0% / minimum |
-| **`0x29`**, **`0x0D..0x16`** | **Offset** inside a **dump** (byte index from start of `F0`) | “Part bank lives at byte `0x29`” |
-| **`bank 01`**, **`slot 40`** | **Address** bytes in requests/dump headers (which program slot) | RAM A program 0 → `01` `00` |
+| **`cmd=0x72`**                         | Command byte in the **message header**                          | Live Multi edit                  |
+| **`param 0x4A`** / **`0x72` / `0x4A`** | **Parameter index** in a live-edit message                      | Hold Pedal enable                |
+| **`<value> 00`**                       | **Parameter value** in a live-edit message                      | Off / 0% / minimum               |
+| **`0x29`**, **`0x0D..0x16`**           | **Offset** inside a **dump** (byte index from start of `F0`)    | “Part bank lives at byte `0x29`” |
+| **`bank 01`**, **`slot 40`**           | **Address** bytes in requests/dump headers (which program slot) | RAM A program 0 → `01` `00`      |
 
 **Offsets** (`0x29`, `0x209`, …) are **positions in the 524- or 267-byte
 dump file**, not separate MIDI messages. **Live-edit** lines like
