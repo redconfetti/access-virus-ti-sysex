@@ -24,10 +24,10 @@ The TI **Multi bank** has **128 slots**. Every slot — and the **Multi edit
 buffer** — uses the same **267-byte** Multi Dump layout, including
 per-part **Bank** and **Program** bytes at `0x29..` / `0x39..`.
 
-| Slots      | Storage model | Typical MIDI export                                                                                                                                                                                    |
+| Slots | Storage model | Typical MIDI export |
 | ---------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **1–16**   | **Embedded**  | **Type: Arrangement** — one Multi Dump plus **sixteen Single Dump** messages (524 bytes each). Slots 1–16 hold **full Single program data** for all sixteen parts, matching those sixteen singles. |
-| **17–128** | **Reference** | **Multi Dump only** — multi settings and bank/program pointers per part; Singles remain in RAM/ROM banks.                                                                                            |
+| **1–16** | **Embedded** | **Type: Arrangement** — one Multi Dump plus **sixteen Single Dump** messages (524 bytes each). Slots 1–16 hold **full Single program data** for all sixteen parts, matching those sixteen singles. |
+| **17–128** | **Reference** | **Multi Dump only** — multi settings and bank/program pointers per part; Singles remain in RAM/ROM banks. |
 
 **Requesting a dump**
 
@@ -48,28 +48,28 @@ Fields match the **Virus TI Edit Multi** screen (TI manual).
 
 #### Summary
 
-| Parameter (TI Edit Multi) | Scope         | Dump offset                  |
-| ------------------------- | ------------- | -------------------------    |
-| Multi Program Name        | Global        | `0x0D..0x16` (+ null `0x17`) |
-| Master Clock Tempo        | Global        | `0x18`                       |
-| Keyboard to MIDI          | Global        | **Not in dump** (desktop)    |
-| Enable                    | Part-specific | `0xF8 + part`                |
-| Direct Monitoring         | Part-specific | **Not in dump**              |
-| Bank                      | Part-specific | `0x29 + (part−1)`            |
-| Program                   | Part-specific | `0x39 + (part−1)`            |
-| Volume                    | Part-specific | `0x99 + (part−1)`            |
-| Panorama                  | Part-specific | `0xD8 + part`                |
-| MIDI Channel              | Part-specific | `0x49 + (part−1)`            |
-| Output                    | Part-specific | `0xC8 + part`                |
-| Transpose                 | Part-specific | `0x79 + part`                |
-| Detune                    | Part-specific | `0x89 + part`                |
-| Priority                  | Part-specific | `0xF8 + part` (flag)         |
-| Init Volume               | Part-specific | `0xA9 + (part−1)`            |
-| Low Key                   | Part-specific | `0x59 + part`                |
-| High Key                  | Part-specific | `0x69 + part`                |
-| Hold Pedal                | Part-specific | `0xF8 + part` (flag)         |
-| Volume RX                 | Part-specific | `0xF8 + part` (flag)         |
-| Program Change            | Part-specific | `0xF8 + part` (flag)         |
+| Parameter (TI Edit Multi) | Scope | Dump offset |
+| ------------------------- | ------------- | ------------------------- |
+| Multi Program Name | Global | `0x0D..0x16` (+ null `0x17`) |
+| Master Clock Tempo | Global | `0x18` |
+| Keyboard to MIDI | Global | **Not in dump** (desktop) |
+| Enable | Part-specific | `0xF8 + part` |
+| Direct Monitoring | Part-specific | **Not in dump** |
+| Bank | Part-specific | `0x29 + (part−1)` |
+| Program | Part-specific | `0x39 + (part−1)` |
+| Volume | Part-specific | `0x99 + (part−1)` |
+| Panorama | Part-specific | `0xD8 + part` |
+| MIDI Channel | Part-specific | `0x49 + (part−1)` |
+| Output | Part-specific | `0xC8 + part` |
+| Transpose | Part-specific | `0x79 + part` |
+| Detune | Part-specific | `0x89 + part` |
+| Priority | Part-specific | `0xF8 + part` (flag) |
+| Init Volume | Part-specific | `0xA9 + (part−1)` |
+| Low Key | Part-specific | `0x59 + part` |
+| High Key | Part-specific | `0x69 + part` |
+| Hold Pedal | Part-specific | `0xF8 + part` (flag) |
+| Volume RX | Part-specific | `0xF8 + part` (flag) |
+| Program Change | Part-specific | `0xF8 + part` (flag) |
 
 #### Parameters
 
@@ -81,19 +81,19 @@ rename → **Multi Dump** only; **`receivemidi`** capture empty on rename).
 
 Hardware-verified (edit buffer, INIT MULTI baseline → **`Init Mult4`**):
 
-| Offset   | `INIT MULTI` | `Init Mult4` |
+| Offset | `INIT MULTI` | `Init Mult4` |
 | -------- | ------------ | ------------ |
-| `0x0D`   | `49` (`I`)   | `49` (`I`)   |
-| `0x0E`   | `4E` (`N`)   | `6E` (`n`)   |
-| `0x0F`   | `49` (`I`)   | `69` (`i`)   |
-| `0x10`   | `54` (`T`)   | `74` (`t`)   |
-| `0x11`   | `20` (sp)    | `20` (sp)    |
-| `0x12`   | `4D` (`M`)   | `4D` (`M`)   |
-| `0x13`   | `55` (`U`)   | `75` (`u`)   |
-| `0x14`   | `4C` (`L`)   | `6C` (`l`)   |
-| `0x15`   | `54` (`T`)   | `74` (`t`)   |
-| `0x16`   | `49` (`I`)   | `34` (`4`)   |
-| `0x17`   | `00`         | `00`         |
+| `0x0D` | `49` (`I`) | `49` (`I`) |
+| `0x0E` | `4E` (`N`) | `6E` (`n`) |
+| `0x0F` | `49` (`I`) | `69` (`i`) |
+| `0x10` | `54` (`T`) | `74` (`t`) |
+| `0x11` | `20` (sp) | `20` (sp) |
+| `0x12` | `4D` (`M`) | `4D` (`M`) |
+| `0x13` | `55` (`U`) | `75` (`u`) |
+| `0x14` | `4C` (`L`) | `6C` (`l`) |
+| `0x15` | `54` (`T`) | `74` (`t`) |
+| `0x16` | `49` (`I`) | `34` (`4`) |
+| `0x17` | `00` | `00` |
 
 Edit flag **`0x0A`** also toggles (`00` → `01`) on rename.
 
@@ -181,7 +181,7 @@ Part balance (**−64..+63**). Parts **1–16** at
 Out 1 L … Out 3 R on **Edit Multi** (analog only); USB 1–3 also in
 protocol (`09`–`11`). **`0xC8..0xD7`**, one byte per part:
 
-| Value     | Routing          |
+| Value | Routing |
 | --------- | ---------------- |
 | `00`–`02` | Out 1: L, L+R, R |
 | `03`–`05` | Out 2: L, L+R, R |
@@ -247,20 +247,20 @@ On (INIT): `0x45` (Part 1; Part 16 at `0x108` same delta).
 One byte per part (`0x29..0x38`) in **every** Multi Dump. **Formula:** RAM
 A–D = `0x00`–`0x03`; ROM *letter* = `0x04 + (letter - 'A')` for ROM A–Z.
 
-| Index       | Bank  | Confirmed |
-| ----------- | ----- | --------- |
-| `0x00`      | RAM A | ✓         |
-| `0x01`      | RAM B | ✓         |
-| `0x02`      | RAM C | inferred  |
-| `0x03`      | RAM D | ✓         |
-| `0x04`      | ROM A | ✓         |
-| `0x05`      | ROM B | inferred  |
-| …           | …     |           |
-| `0x0B` (11) | ROM H | ✓         |
-| …           | …     |           |
-| `0x10` (16) | ROM M | ✓         |
-| …           | …     |           |
-| `0x1D` (29) | ROM Z | ✓         |
+| Index | Bank |
+| ----------- | ----- |
+| `0x00` | RAM A |
+| `0x01` | RAM B |
+| `0x02` | RAM C |
+| `0x03` | RAM D |
+| `0x04` | ROM A |
+| `0x05` | ROM B |
+| … | … |
+| `0x0B` (11) | ROM H |
+| … | … |
+| `0x10` (16) | ROM M |
+| … | … |
+| `0x1D` (29) | ROM Z |
 
 Program number at **`0x39 + (part−1)`**: direct `0x00`–`0x7F` (LCD program =
 stored byte); same for all multi bank slots.
@@ -276,17 +276,17 @@ stored byte); same for all multi bank slots.
 
 ### `REQUEST_MULTI` byte table
 
-| Offset       | Bytes       | Meaning                  | Value range / notes                                                              |
+| Offset | Bytes | Meaning | Value range / notes |
 | ------------ | ----------- | ------------------------ | -------------------------------------------------------------------------------- |
-| `0x00`       | `F0`        | SysEx start              | Fixed                                                                            |
-| `0x01..0x03` | `00 20 33`  | Access manufacturer ID   | Fixed                                                                            |
-| `0x04`       | `01`        | Virus family marker      | Fixed in observed TI/TI2 messages                                                |
-| `0x05`       | `device_id` | Device ID                | `00` observed                                                                    |
-| `0x06`       | `31`        | Request Multi command    | Fixed for `REQUEST_MULTI`                                                        |
-| `0x07`       | `bank`      | Multi bank selector      | **`00`** + slot **`7F`** = edit buffer; **`01`** + slot = Multi bank             |
-| `0x08`       | `slot`      | Multi slot/program index | **`0x01`–`0x7F`** = Multi bank slots **1–127** (slot *N* → byte *N*)             |
-| `0x09`       | `checksum`  | Checksum byte            | **`0x7C`** for edit buffer only (see below); **omitted** on stored-slot requests |
-| `0x0A`       | `F7`        | SysEx end                | Fixed (stored slot: message may be **10 bytes**, no checksum)                    |
+| `0x00` | `F0` | SysEx start | Fixed |
+| `0x01..0x03` | `00 20 33` | Access manufacturer ID | Fixed |
+| `0x04` | `01` | Virus family marker | Fixed in observed TI/TI2 messages |
+| `0x05` | `device_id` | Device ID | `00` observed |
+| `0x06` | `31` | Request Multi command | Fixed for `REQUEST_MULTI` |
+| `0x07` | `bank` | Multi bank selector | **`00`** + slot **`7F`** = edit buffer; **`01`** + slot = Multi bank |
+| `0x08` | `slot` | Multi slot/program index | **`0x01`–`0x7F`** = Multi bank slots **1–127** (slot *N* → byte *N*) |
+| `0x09` | `checksum` | Checksum byte | **`0x7C`** for edit buffer only (see below); **omitted** on stored-slot requests |
+| `0x0A` | `F7` | SysEx end | Fixed (stored slot: message may be **10 bytes**, no checksum) |
 
 **Edit buffer request** (Virus TI, confirmed): body
 `00 20 33 01 00 31 00 7F 7C` → 267-byte Multi Dump with `00 7F` echoed at
@@ -319,48 +319,48 @@ Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
 
 | Slot | Name (example) | Bank bytes (16 parts) | Program bytes (notes) |
 | ---- | -------------- | --------------------- | --------------------- |
-| 1    | `RC1`          | all `0x00` (RAM A)    | varied per part       |
-| 9    | `Init Multi`   | all `0x00`            | `0x00..0x0F` per part |
-| 16   | `Ref-Multi1`   | all `0x00`            | `0x00..0x0F` per part |
-| 17   | `Ref2`         | mixed (RAM/ROM)       | mixed per part        |
-| 48   | `Multi`        | all `0x00`            | `0x00..0x0F` per part |
+| 1 | `RC1` | all `0x00` (RAM A) | varied per part |
+| 9 | `Init Multi` | all `0x00` | `0x00..0x0F` per part |
+| 16 | `Ref-Multi1` | all `0x00` | `0x00..0x0F` per part |
+| 17 | `Ref2` | mixed (RAM/ROM) | mixed per part |
+| 48 | `Multi` | all `0x00` | `0x00..0x0F` per part |
 
 ### Multi Dump byte table (267 bytes)
 
-| Offset        | Bytes       | Meaning                  | Value range / notes               |
+| Offset | Bytes | Meaning | Value range / notes |
 | ------------- | ----------- | ------------------------ | --------------------------------- |
-| `0x00`        | `F0`        | SysEx start              | Fixed                             |
-| `0x01..0x03`  | `00 20 33`  | Access manufacturer ID   | Fixed                             |
-| `0x04`        | `01`        | Virus family marker      | Fixed in observed TI/TI2 messages |
-| `0x05`        | `device_id` | Device ID                | `00` observed                     |
-| `0x06`        | `11`        | Dump Multi command       | Fixed for Multi Dump            |
-| `0x07`        | `bank`      | Multi bank selector      | Echoes request bank               |
-| `0x08`        | `slot`      | Multi slot/program index | Echoes request slot               |
-| `0x09..0x108` | payload     | Multi payload bytes      | 256-byte payload block            |
-| `0x109`       | checksum    | Checksum byte            | Changes with payload              |
-| `0x10A`       | `F7`        | SysEx end                | Fixed                             |
+| `0x00` | `F0` | SysEx start | Fixed |
+| `0x01..0x03` | `00 20 33` | Access manufacturer ID | Fixed |
+| `0x04` | `01` | Virus family marker | Fixed in observed TI/TI2 messages |
+| `0x05` | `device_id` | Device ID | `00` observed |
+| `0x06` | `11` | Dump Multi command | Fixed for Multi Dump |
+| `0x07` | `bank` | Multi bank selector | Echoes request bank |
+| `0x08` | `slot` | Multi slot/program index | Echoes request slot |
+| `0x09..0x108` | payload | Multi payload bytes | 256-byte payload block |
+| `0x109` | checksum | Checksum byte | Changes with payload |
+| `0x10A` | `F7` | SysEx end | Fixed |
 
 ### Confirmed payload fields (offsets in full 267-byte Multi Dump)
 
-| Offset(s)     | Field                          | Encoding                              | Supported values                                                                                                       |
+| Offset(s) | Field | Encoding | Supported values |
 | ------------- | ------------------------------ | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `0x0D..0x16`  | Multi name                     | 10 × ASCII                            | `"INIT MULTI"` or `"Init Mult4"`; panel truncates/pads to 10 chars                                                     |
-| `0x17`        | Name terminator                | `0x00`                                | Null after name field                                                                                                  |
-| `0x18`        | Master Clock Tempo             | `stored = bpm - 63`                   | UI `63..190` → `0x00..0x7F`; default **`0x39`** (120 bpm)                                                              |
-| `0x29..0x38`  | Part bank (16 bytes)           | Sequential bank index                 | See [Part bank index](#part-bank-index); Parts 2–16 `0x00` in captures                                                 |
-| `0x39..0x48`  | Part program (16 bytes)        | Direct `0..127`                       | Part 1 at `0x39`: UI `64` → `0x40`, UI `65` → `0x41`; Parts 2–16 often `0x7F` in baseline                              |
-| `0x49..0x58`  | Part MIDI channels (16 bytes)  | Zero-based channel index              | `0x00..0x0F` -> MIDI channels `1..16`                                                                                  |
-| `0x59..0x68`  | Part low key (16 bytes)        | Direct 7-bit note value               | `0x00` = C1, `0x7F` = G9 (Part 1 at `0x59` confirmed)                                                                  |
-| `0x69..0x78`  | Part high key (16 bytes)       | Direct 7-bit note value               | `0x00` = C1, `0x7F` = G9 (Part 1 at `0x69` confirmed)                                                                  |
-| `0x79..0x88`  | Part transpose (16 bytes)      | Bipolar centered at `0x40`            | UI −48..+48 → `stored = ui + 64` (`0x10`..`0x70`); `0x40` = 0; Part 1 at `0x79`                                        |
-| `0x89..0x98`  | Part detune (16 bytes)         | Bipolar centered at `0x40`            | `0x00..0x7F` -> UI `-64..+63` (`stored = ui + 64`); Part 1 at `0x89`, Part 8 at `0x90`, Part 16 at `0x98` (`00/40/7F`) |
-| `0x99..0xA8`  | Part volume (16 bytes)         | Bipolar centered at `0x40`            | Parts **1–16**; `stored = ui + 64`; P1 at `0x99`, P16 at `0xA8` (`+46`→`0x6E`)                                         |
-| `0xA9..0xB8`  | Part Init Volume (16 bytes)    | Direct 7-bit                          | Parts **1–16**; P1 at **`0xA9`** (UI `64`→`0x40`); P16 at **`0xB8`**                                                   |
-| `0xB9..0xC7`  | *(unmapped)*                   | —                                     | All `0x00` in current captures                                                                                         |
-| `0xC8..0xD7`  | Part output routing (16 bytes) | Per-part enum (see [Output](#output)) | P1: `00`–`03` confirmed; `06`–`08` = Out 3 L/L+R/R                                                                     |
-| `0xD8..0xE7`  | Part panorama (16 bytes)       | Direct `0..127`                       | Part 1 at `0xD8`: `0x00` = Off, `0x40` = Center                                                                        |
-| `0xE8..0xF7`  | *(unmapped)*                   | —                                     | All `0x00` in captures                                                                                                 |
-| `0xF8..0x107` | Part packed flags (16 bytes)   | Packed flags                          | `0x44` Off; `0x45` On + defaults; Part 1 at **`0xF9`**, Part 16 at **`0x108`**                                         |
+| `0x0D..0x16` | Multi name | 10 × ASCII | `"INIT MULTI"` or `"Init Mult4"`; panel truncates/pads to 10 chars |
+| `0x17` | Name terminator | `0x00` | Null after name field |
+| `0x18` | Master Clock Tempo | `stored = bpm - 63` | UI `63..190` → `0x00..0x7F`; default **`0x39`** (120 bpm) |
+| `0x29..0x38` | Part bank (16 bytes) | Sequential bank index | See [Part bank index](#part-bank-index); Parts 2–16 `0x00` in captures |
+| `0x39..0x48` | Part program (16 bytes) | Direct `0..127` | Part 1 at `0x39`: UI `64` → `0x40`, UI `65` → `0x41`; Parts 2–16 often `0x7F` in baseline |
+| `0x49..0x58` | Part MIDI channels (16 bytes) | Zero-based channel index | `0x00..0x0F` -> MIDI channels `1..16` |
+| `0x59..0x68` | Part low key (16 bytes) | Direct 7-bit note value | `0x00` = C1, `0x7F` = G9 (Part 1 at `0x59` confirmed) |
+| `0x69..0x78` | Part high key (16 bytes) | Direct 7-bit note value | `0x00` = C1, `0x7F` = G9 (Part 1 at `0x69` confirmed) |
+| `0x79..0x88` | Part transpose (16 bytes) | Bipolar centered at `0x40` | UI −48..+48 → `stored = ui + 64` (`0x10`..`0x70`); `0x40` = 0; Part 1 at `0x79` |
+| `0x89..0x98` | Part detune (16 bytes) | Bipolar centered at `0x40` | `0x00..0x7F` -> UI `-64..+63` (`stored = ui + 64`); Part 1 at `0x89`, Part 8 at `0x90`, Part 16 at `0x98` (`00/40/7F`) |
+| `0x99..0xA8` | Part volume (16 bytes) | Bipolar centered at `0x40` | Parts **1–16**; `stored = ui + 64`; P1 at `0x99`, P16 at `0xA8` (`+46`→`0x6E`) |
+| `0xA9..0xB8` | Part Init Volume (16 bytes) | Direct 7-bit | Parts **1–16**; P1 at **`0xA9`** (UI `64`→`0x40`); P16 at **`0xB8`** |
+| `0xB9..0xC7` | *(unmapped)* | — | All `0x00` in current captures |
+| `0xC8..0xD7` | Part output routing (16 bytes) | Per-part enum (see [Output](#output)) | P1: `00`–`03` confirmed; `06`–`08` = Out 3 L/L+R/R |
+| `0xD8..0xE7` | Part panorama (16 bytes) | Direct `0..127` | Part 1 at `0xD8`: `0x00` = Off, `0x40` = Center |
+| `0xE8..0xF7` | *(unmapped)* | — | All `0x00` in captures |
+| `0xF8..0x107` | Part packed flags (16 bytes) | Packed flags | `0x44` Off; `0x45` On + defaults; Part 1 at **`0xF9`**, Part 16 at **`0x108`** |
 
 ### Packed flags at `0xF8 + part`
 
@@ -370,23 +370,23 @@ when possible; other flags must be at defaults or confirmed on the panel.
 
 **INIT MULTI defaults** (`0x45` = `0b01000101`):
 
-| Mask   | Meaning when set | INIT state |
+| Mask | Meaning when set | INIT state |
 | ------ | ---------------- | ---------- |
-| `0x01` | Part enabled     | On         |
-| `0x02` | Volume RX        | Off        |
-| `0x04` | Hold Pedal       | On         |
-| `0x20` | Priority High    | Off (Low)  |
-| `0x40` | Program Change   | On         |
+| `0x01` | Part enabled | On |
+| `0x02` | Volume RX | Off |
+| `0x04` | Hold Pedal | On |
+| `0x20` | Priority High | Off (Low) |
+| `0x40` | Program Change | On |
 
-| Toggle                   | Delta from `0x45` | Example (Part 1 / Part 16)       |
+| Toggle | Delta from `0x45` | Example (Part 1 / Part 16) |
 | ------------------------ | ----------------- | -------------------------------- |
-| Enable off               | `-0x01`           | `0x44` (P8 `0x100`, P16 `0x108`) |
-| Default On               | —                 | `0x45` / `0x45` at `0x108`       |
-| Program Change off       | `-0x40`           | `0x05` / `0x05` at `0x108`       |
-| Hold Pedal off           | `-0x04`           | `0x41` / `0x41` at `0x108`       |
-| Volume RX on             | `+0x02`           | `0x47` / `0x47` at `0x108`       |
-| Priority High            | `+0x20`           | `0x65` at `0x108` (Hold on)      |
-| Priority High (Hold off) | `+0x20`           | `0x41` → `0x61`                  |
+| Enable off | `-0x01` | `0x44` (P8 `0x100`, P16 `0x108`) |
+| Default On | — | `0x45` / `0x45` at `0x108` |
+| Program Change off | `-0x40` | `0x05` / `0x05` at `0x108` |
+| Hold Pedal off | `-0x04` | `0x41` / `0x41` at `0x108` |
+| Volume RX on | `+0x02` | `0x47` / `0x47` at `0x108` |
+| Priority High | `+0x20` | `0x65` at `0x108` (Hold on) |
+| Priority High (Hold off) | `+0x20` | `0x41` → `0x61` |
 
 Part 16 sweep (reset multi, INIT defaults, one toggle each): clean
 single-byte diffs at **`0x108`** only (+ `0x0A` and checksum). Re-baseline
@@ -402,11 +402,11 @@ These panel / host controls have live SysEx (where documented) but **no**
 byte in **Multi Dump** on TI mk2 desktop — confirmed by edit → re-dump
 diffs (INIT MULTI baseline):
 
-| Control              | Live edit              | In Multi Dump                               |
-| -------------------- | ---------------------- | ---------------                               |
-| Secondary Output     | `73` / `0x2D`          | **No**                                        |
-| Bend Up / Down       | `71` / `0x1A`, `0x1B`  | **No** (in Single Dump for the part Single) |
-| Direct Monitoring    | VC **Live** (VC-only)  | **No**                                        |
+| Control | Live edit | In Multi Dump |
+| -------------------- | ---------------------- | --------------- |
+| Secondary Output | `73` / `0x2D` | **No** |
+| Bend Up / Down | `71` / `0x1A`, `0x1B` | **No** (in Single Dump for the part Single) |
+| Direct Monitoring | VC **Live** (VC-only) | **No** |
 
 Do not assign these to unmapped payload offsets below.
 
@@ -417,12 +417,12 @@ MIDI** (desktop: identical enable/disable dumps). Remaining bytes are
 metadata or unknown storage — **not** Secondary Output, Multi bend limits, or
 Direct Monitoring.
 
-| Offset(s)    | INIT MULTI (typical)                              | Notes                                                                                                                                                           |
+| Offset(s) | INIT MULTI (typical) | Notes |
 | ------------ | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `0x09..0x0C` | `02 00 00 20`                                     | Payload header; `0x0A` toggles on edit                                                                                                                          |
-| `0x19..0x28` | `01 3C 00 10 00 01 01 00 40 40 40 40 40 0F 40 40` | 16 bytes between tempo and bank; `0x26` = edited part (`00`–`0F`); remainder **uninterpreted** — see [slot 32 INIT](#init-multi-slot-32-reference)              |
-| `0xB9..0xC7` | **15 × `0x00`**                                   | Between Init Volume and Output — candidate for Keyboard to MIDI                                                                                                 |
-| `0xE8..0xF7` | **16 × `0x00`**                                   | Between Pan and flags — candidate for Keyboard to MIDI                                                                                                          |
+| `0x09..0x0C` | `02 00 00 20` | Payload header; `0x0A` toggles on edit |
+| `0x19..0x28` | `01 3C 00 10 00 01 01 00 40 40 40 40 40 0F 40 40` | 16 bytes between tempo and bank; `0x26` = edited part (`00`–`0F`); remainder **uninterpreted** — see [slot 32 INIT](#init-multi-slot-32-reference) |
+| `0xB9..0xC7` | **15 × `0x00`** | Between Init Volume and Output — candidate for Keyboard to MIDI |
+| `0xE8..0xF7` | **16 × `0x00`** | Between Pan and flags — candidate for Keyboard to MIDI |
 
 Elimination captures confirmed **`0xB9..0xC7`** and **`0xE8..0xF7`** do
 not hold Pan, Output, Enable, or Master Clock.

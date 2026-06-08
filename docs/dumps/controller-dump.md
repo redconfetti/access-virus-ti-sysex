@@ -14,18 +14,18 @@ describe the current state of one part’s Single edit buffer. Useful for findin
 F0 00 20 33 01 <device> 37 00 <part> F7
 ```
 
-| Byte     | Value                   | Meaning                                                                 |
+| Byte | Value | Meaning |
 | -------- | ----------------------- | ----------------------------------------------------------------------- |
-| `37`     | Controller Dump Request | Fixed                                                                   |
-| `00`     | Subcommand              | Fixed in TI mk2 captures (**TBD** if other values exist)                |
-| `<part>` | Part / buffer selector  | Same as [Single Request](bank.md#single-request) edit-buffer slots |
+| `37` | Controller Dump Request | Fixed |
+| `00` | Subcommand | Fixed in TI mk2 captures (**TBD** if other values exist) |
+| `<part>` | Part / buffer selector | Same as [Single Request](bank.md#single-request) edit-buffer slots |
 
 ### `<part>` (TI mk2, confirmed)
 
-| `<part>`          | Target                                 |
+| `<part>` | Target |
 | ----------------- | -------------------------------------- |
 | **`0x00`–`0x0F`** | Multi **Part 1–16** Single edit buffer |
-| **`0x40`**        | **Single mode** Single edit buffer     |
+| **`0x40`** | **Single mode** Single edit buffer |
 
 ```bash
 # Multi Part 1 — all parameters as SysEx stream
@@ -42,8 +42,8 @@ receivemidi dev "<MIDI port>" syx
 ## Reply (overview)
 
 - **Many messages**, not one bulk dump.
-- Expected content: **Page A / B / part-buffer** live edits (`0x70`, `0x71`,
-  `0x6E`, …) and possibly MIDI **CC** — same family as panel/automation traffic.
+- Expected content: **Page A / B / part-buffer** live edits — see
+  [Paging](../misc/virus.md#live-edit-command-bytes) (`0x70`, `0x71`, `0x6E`, …).
 - Exact message list, order, and completeness vs **Single Dump** payload:
   **TBD** (capture + diff workflow).
 
@@ -61,10 +61,10 @@ See [hardware-mapping-workflow](../../../.cursor/skills/hardware-mapping-workflo
 
 ## Related
 
-| Message                            | What you get                               |
+| Message | What you get |
 | ---------------------------------- | ------------------------------------------ |
-| **`0x30`** Single Request          | One **524-byte** Single Dump snapshot    |
-| **`0x37`** Controller Dump Request | **Parameter-by-parameter** SysEx stream    |
+| **`0x30`** Single Request | One **524-byte** Single Dump snapshot |
+| **`0x37`** Controller Dump Request | **Parameter-by-parameter** SysEx stream |
 | **`0x72`/`0x20`/`0x21`** live edit | Bank/program metadata only (no full state) |
 
 Request command table: [bank.md](bank.md#controller-dump-request).

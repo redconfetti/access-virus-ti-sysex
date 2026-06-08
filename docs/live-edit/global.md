@@ -19,19 +19,17 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
 
 ## Inputs (Edit Single)
 
-**Edit Single → Inputs.** TI mk2 live edit uses **`cmd=0x6F`** (extended page,
-same family as part buffer **`0x6E`**), part **`00`**. Classic
-**Input Mode** / **Input Select** on Page A (**CC 101** / **102** →
-**`70`/`65`**
-/ **`66`**); those CCs may still apply when **MIDI Controller Page A** =
-**Controller Data** — not re-verified here.
+**Edit Single → Inputs.** Live edit uses **`cmd=0x6F`** ([extended page](../misc/virus.md#live-edit-command-bytes)),
+part **`00`**. Legacy **Input Mode** / **Input Select** on Page A (**CC 101** /
+**102**) may apply when [MIDI Controller Page A](../misc/virus.md#midi-controller-page-a) =
+**Controller Data**.
 
 **Panel visibility**
 
-| Control          | Visible when                                                     |
+| Control | Visible when |
 | ---------------- | ---------------------------------------------------------------- |
-| **Atomizer**     | Always                                                           |
-| **Input Mode**   | **Atomizer** = **Off** (`7E` = `00`)                             |
+| **Atomizer** | Always |
+| **Input Mode** | **Atomizer** = **Off** (`7E` = `00`) |
 | **Input Select** | **Input Mode** = **Dynamic** or **Static** (`7C` = `01` or `02`) |
 
 ### Atomizer
@@ -108,38 +106,38 @@ changed on the front panel. Many other **`0x73`** globals are **RX only**
 
 ## Summary
 
-| Param ID | Parameter              | Value encoding                                              | Multi Dump | Hardware TX      |
+| Param ID | Parameter | Value encoding | Multi Dump | Hardware TX |
 | -------- | ---------------------- | ----------------------------------------------------------- | ------------ | ---------------- |
-| `0x09`   | USB Audio Mode         | See [USB Audio Mode](#usb-audio-mode)                  | Unverified   | No; RX ✓         |
-| `0x10`   | Edit mode / focus      | See [Edit mode 0x10](#edit-mode-0x10-tentative)             | Unverified   | Yes (panel)      |
-| `0x19`   | All EQs                | See [All EQs](#all-eqs)                                | Unverified   | —                |
-| `0x1A`   | All Arpeggiators       | See [All Arpeggiators](#all-arpeggiators)              | Unverified   | —                |
-| `0x1B`   | All Delays             | See [All Delays](#all-delays)                          | Unverified   | Yes              |
-| `0x1C`   | All Reverbs            | See [All Reverbs](#all-reverbs)                        | Unverified   | —                |
-| `0x1D`   | Input Characteristic   | See [Input Characteristic](#input-characteristic)      | Unverified   | No; RX ✓         |
-| `0x1F`   | Input Sensitivity      | See [Input Sensitivity](#input-sensitivity)            | Unverified   | No; RX ✓         |
-| `0x28`   | Navigation             | See [Navigation](#navigation) — **`73 40`** scope byte | Unverified   | ✓                |
-| `0x29`   | Value Wrapping         | See [Value Wrapping](#value-wrapping)                  | Unverified   | ✓                |
-| `0x2B`   | Input Source           | See [Input Source](#input-source)                      | Unverified   | No; RX ✓         |
-| `0x32`   | BPM Brightness         | See [BPM Brightness](#bpm-brightness)                  | Unverified   | —                |
-| `0x33`   | LED Lux                | See [LED Lux](#led-lux)                                | Unverified   | —                |
-| `0x35`   | Random PG — Scope      | See [Randomize Scope](#randomize-scope)                | Unverified   | ✓                |
-| `0x36`   | Random PG — Strength   | See [Randomize Strength](#randomize-strength)          | Unverified   | ✓                |
-| `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change)    | Unverified   | —                |
-| `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx)    | Unverified   | No; RX ✓         |
-| `0x5A`   | Input Direct Thru      | See [Input Direct Thru](#input-direct-thru)            | Unverified   | No; RX ✓         |
-| `0x5B`   | Input Boost            | See [Input Boost](#input-boost)                        | Unverified   | No; RX ✓         |
-| `0x5D`   | MIDI Device ID         | See [MIDI Device ID](#midi-device-id)                  | Unverified   | No (panel)       |
-| `0x5E`   | MIDI Controller Page A | See [MIDI Controller Page A](#midi-controller-page-a)  | Unverified   | —                |
-| `0x5F`   | MIDI Controller Page B | See [MIDI Controller Page B](#midi-controller-page-b)  | Unverified   | —                |
-| `0x60`   | Global ARP Note Send   | See [Global ARP Note Send](#global-arp-note-send)      | Unverified   | —                |
-| `0x6A`   | MIDI Clock             | See [MIDI Clock](#midi-clock)                          | Unverified   | —                |
-| `0x75`   | Knob Response          | See [Knob Response](#knob-response)                    | Unverified   | No (panel); RX ✓ |
-| `0x76`   | Memory Protect         | See [Memory Protect](#memory-protect)                  | Unverified   | —                |
-| `0x7A`   | Play mode              | See [Play mode](#play-mode)                            | Unverified   | —                |
-| `0x7C`   | Global MIDI Channel    | See [Global MIDI Channel](#global-midi-channel)        | Unverified   | No (panel)       |
-| `0x7D`   | LED Mode               | See [LED Mode](#led-mode)                              | Unverified   | —                |
-| `0x7E`   | LCD Contrast           | See [LCD Contrast](#lcd-contrast)                      | Unverified   | —                |
+| `0x09` | USB Audio Mode | See [USB Audio Mode](#usb-audio-mode) | Unverified | No; RX ✓ |
+| `0x10` | Edit mode / focus | See [Edit mode 0x10](#edit-mode-0x10-tentative) | Unverified | Yes (panel) |
+| `0x19` | All EQs | See [All EQs](#all-eqs) | Unverified | — |
+| `0x1A` | All Arpeggiators | See [All Arpeggiators](#all-arpeggiators) | Unverified | — |
+| `0x1B` | All Delays | See [All Delays](#all-delays) | Unverified | Yes |
+| `0x1C` | All Reverbs | See [All Reverbs](#all-reverbs) | Unverified | — |
+| `0x1D` | Input Characteristic | See [Input Characteristic](#input-characteristic) | Unverified | No; RX ✓ |
+| `0x1F` | Input Sensitivity | See [Input Sensitivity](#input-sensitivity) | Unverified | No; RX ✓ |
+| `0x28` | Navigation | See [Navigation](#navigation) — **`73 40`** scope byte | Unverified | ✓ |
+| `0x29` | Value Wrapping | See [Value Wrapping](#value-wrapping) | Unverified | ✓ |
+| `0x2B` | Input Source | See [Input Source](#input-source) | Unverified | No; RX ✓ |
+| `0x32` | BPM Brightness | See [BPM Brightness](#bpm-brightness) | Unverified | — |
+| `0x33` | LED Lux | See [LED Lux](#led-lux) | Unverified | — |
+| `0x35` | Random PG — Scope | See [Randomize Scope](#randomize-scope) | Unverified | ✓ |
+| `0x36` | Random PG — Strength | See [Randomize Strength](#randomize-strength) | Unverified | ✓ |
+| `0x55` | Global Program Change | See [Global Program Change](#global-program-change) | Unverified | — |
+| `0x57` | Global MIDI Volume RX | See [Global MIDI Volume RX](#global-midi-volume-rx) | Unverified | No; RX ✓ |
+| `0x5A` | Input Direct Thru | See [Input Direct Thru](#input-direct-thru) | Unverified | No; RX ✓ |
+| `0x5B` | Input Boost | See [Input Boost](#input-boost) | Unverified | No; RX ✓ |
+| `0x5D` | MIDI Device ID | See [MIDI Device ID](#midi-device-id) | Unverified | No (panel) |
+| `0x5E` | MIDI Controller Page A | See [MIDI Controller Page A](../misc/virus.md#midi-controller-page-a) | Unverified | — |
+| `0x5F` | MIDI Controller Page B | See [MIDI Controller Page B](../misc/virus.md#midi-controller-page-b) | Unverified | — |
+| `0x60` | Global ARP Note Send | See [Global ARP Note Send](#global-arp-note-send) | Unverified | — |
+| `0x6A` | MIDI Clock | See [MIDI Clock](#midi-clock) | Unverified | — |
+| `0x75` | Knob Response | See [Knob Response](#knob-response) | Unverified | No (panel); RX ✓ |
+| `0x76` | Memory Protect | See [Memory Protect](#memory-protect) | Unverified | — |
+| `0x7A` | Play mode | See [Play mode](#play-mode) | Unverified | — |
+| `0x7C` | Global MIDI Channel | See [Global MIDI Channel](#global-midi-channel) | Unverified | No (panel) |
+| `0x7D` | LED Mode | See [LED Mode](#led-mode) | Unverified | — |
+| `0x7E` | LCD Contrast | See [LCD Contrast](#lcd-contrast) | Unverified | — |
 
 ## Parameters
 
@@ -150,11 +148,11 @@ when the **front-panel mode** or **multi program selection** changes. The
 byte after **`0x73`** mirrors live-edit **scope** (`0x00` vs **`0x40`**
 Single buffer) used on **`0x70`** / **`0x72`** / **`0x6E`**.
 
-| Message (hex body)   | Observed when                                                                                         |
+| Message (hex body) | Observed when |
 | -------------------- | ----------------------------------------------------------------------------------------------------- |
-| `… 73 00 10 00`      | Selecting multis from **Multi bank** (e.g. #31, then **#32 INIT MULTI**) — sent **twice** on one load |
-| `… 73 40 10 00`      | Pressing **SINGLE** (leave Multi-focused UI for Single edit)                                          |
-| `F0 F7` only (empty) | **MULTI+SINGLE** (Sequencer) and some **MULTI** presses — no data bytes                               |
+| `… 73 00 10 00` | Selecting multis from **Multi bank** (e.g. #31, then **#32 INIT MULTI**) — sent **twice** on one load |
+| `… 73 40 10 00` | Pressing **SINGLE** (leave Multi-focused UI for Single edit) |
+| `F0 F7` only (empty) | **MULTI+SINGLE** (Sequencer) and some **MULTI** presses — no data bytes |
 
 ```text
 F0 00 20 33 01 00 73 00 10 00 F7 # Multi / multi-bank context (tentative)
@@ -178,11 +176,11 @@ or **Multi**. Host sends **`cmd=0x73`**, param **`0x7A`**, value below.
 **Not** the same param byte under other commands — e.g. **FILTERS SELECT**
 uses **`71`/`7A`**, Filter Common **Pan Spread** uses **`6E`/`7A`**.
 
-| `<value>` | Mode       | Panel label        |
+| `<value>` | Mode | Panel label |
 | --------- | ---------- | ------------------ |
-| `00`      | Single     | **SINGLE**         |
-| `01`      | Sequencer  | **MULTI+SINGLE**   |
-| `02`      | Multi      | **MULTI**          |
+| `00` | Single | **SINGLE** |
+| `01` | Sequencer | **MULTI+SINGLE** |
+| `02` | Multi | **MULTI** |
 
 ```text
 F0 00 20 33 01 00 73 00 7A 00 F7 # Single
@@ -199,10 +197,10 @@ Panel mode changes may also emit **`73 … 10 …`** — see
 
 Global **All EQs** on/off.
 
-| Value | Setting  |
+| Value | Setting |
 | ----- | -------- |
-| `00`  | Disabled |
-| `01`  | Enabled  |
+| `00` | Disabled |
+| `01` | Enabled |
 
 ```text
 # Disabled
@@ -218,10 +216,10 @@ F0 00 20 33 01 00 73 00 19 01 F7
 
 Global **All Arpeggiators** on/off.
 
-| Value | Setting  |
+| Value | Setting |
 | ----- | -------- |
-| `00`  | Disabled |
-| `01`  | Enabled  |
+| `00` | Disabled |
+| `01` | Enabled |
 
 ```text
 # Disabled
@@ -239,10 +237,10 @@ Global **All Delays** on/off. **Confirmed:** the Virus sends this message
 on the USB interface when the setting is changed on the **front panel**
 (same `cmd=0x73` format).
 
-| Value | Setting  |
+| Value | Setting |
 | ----- | -------- |
-| `00`  | Disabled |
-| `01`  | Enabled  |
+| `00` | Disabled |
+| `01` | Enabled |
 
 ```text
 # Disabled
@@ -258,10 +256,10 @@ F0 00 20 33 01 00 73 00 1B 01 F7
 
 Global **All Reverbs** on/off.
 
-| Value | Setting  |
+| Value | Setting |
 | ----- | -------- |
-| `00`  | Disabled |
-| `01`  | Enabled  |
+| `00` | Disabled |
+| `01` | Enabled |
 
 ```text
 # Disabled
@@ -285,10 +283,10 @@ Unlike most globals in this doc, the byte after **`0x73`** is **`0x40`**
 F0 00 20 33 01 <device_id> 73 40 28 <value> F7
 ```
 
-| Value | Panel            |
+| Value | Panel |
 | ----- | ---------------- |
-| `00`  | **By Page**      |
-| `01`  | **By Parameter** |
+| `00` | **By Page** |
+| `01` | **By Parameter** |
 
 ```text
 F0 00 20 33 01 00 73 40 28 00 F7 # By Page
@@ -306,10 +304,10 @@ Confirmed on Virus TI mk2 (hardware TX + manual `sendmidi`).
 
 Standard global layout: **`73 00 29 <value>`**.
 
-| Value | Panel   |
+| Value | Panel |
 | ----- | ------- |
-| `00`  | **Off** |
-| `01`  | **On**  |
+| `00` | **Off** |
+| `01` | **On** |
 
 ```text
 F0 00 20 33 01 00 73 00 29 00 F7 # Off
@@ -329,14 +327,14 @@ Confirmed on Virus TI mk2 (hardware TX + manual `sendmidi`).
 stored = min(0x7F, round(percent × 128 / 100))
 ```
 
-| LCD    | `<value>` |
+| LCD | `<value>` |
 | ------ | --------- |
-| 0%     | `00`      |
-| 0.8%   | `01`      |
-| 1.6%   | `02`      |
-| 64.1%  | `52`      |
-| 98.4%  | `7E`      |
-| 100.0% | `7F`      |
+| 0% | `00` |
+| 0.8% | `01` |
+| 1.6% | `02` |
+| 64.1% | `52` |
+| 98.4% | `7E` |
+| 100.0% | `7F` |
 
 ```text
 F0 00 20 33 01 00 73 00 32 00 F7 # 0%
@@ -360,13 +358,13 @@ stored = min(0x7F, round(percent × 128 / 100))
 
 LCD **`100.0%`** = **`0x7F`**. Examples:
 
-| LCD    | `<value>` |
+| LCD | `<value>` |
 | ------ | --------- |
-| 0%     | `00`      |
-| 21.1%  | `1B`      |
-| 24.2%  | `1F`      |
-| 71.9%  | `5C`      |
-| 100.0% | `7F`      |
+| 0% | `00` |
+| 21.1% | `1B` |
+| 24.2% | `1F` |
+| 71.9% | `5C` |
+| 100.0% | `7F` |
 
 ```text
 F0 00 20 33 01 00 73 00 33 00 F7 # 0%
@@ -413,10 +411,10 @@ Global **Program Change** receive. Distinct from per-part **Program Change**
 in Edit Multi (packed flag at `0xF8 + part` in Multi Dump; CONFIG global
 ignored for parts per TI manual).
 
-| Value | Setting  |
+| Value | Setting |
 | ----- | -------- |
-| `00`  | Disabled |
-| `01`  | Enabled  |
+| `00` | Disabled |
+| `01` | Enabled |
 
 ```text
 # Disabled
@@ -435,10 +433,10 @@ F0 00 20 33 01 00 73 00 55 01 F7
 **Not** in **Single Dump**. Distinct from per-part **Volume RX** in Edit Multi
 (packed flag at `0xF8 + part` in Multi Dump).
 
-| Value | Setting  |
+| Value | Setting |
 | ----- | -------- |
-| `00`  | Disabled |
-| `01`  | Enabled  |
+| `00` | Disabled |
+| `01` | Enabled |
 
 ```text
 F0 00 20 33 01 00 73 00 57 00 F7 # Disabled
@@ -456,11 +454,11 @@ changed on the **front panel** (TI mk2 desktop, confirmed). Wire map below is
 from manual **`sendmidi`** / host capture only — the synth
 **accepts** `73 00 5D …` when the envelope **`<device_id>`** matches CONFIG.
 
-| UI ID | `<device_id>` | `<value>` | Full message                                    |
+| UI ID | `<device_id>` | `<value>` | Full message |
 | ----- | ------------- | --------- | ----------------------------------------------- |
-| 1     | `00`          | `00`      | `F0 … 01 00 73 00 5D 00 F7`                     |
-| 2     | *(TBD)*       | *(TBD)*   | Capture matched ID 1 in one session — re-verify |
-| 3     | `01`          | `01`      | `F0 … 01 01 73 00 5D 01 F7`                     |
+| 1 | `00` | `00` | `F0 … 01 00 73 00 5D 00 F7` |
+| 2 | *(TBD)* | *(TBD)* | Capture matched ID 1 in one session — re-verify |
+| 3 | `01` | `01` | `F0 … 01 01 73 00 5D 01 F7` |
 
 **`<value>`** appears zero-based (`UI − 1` for IDs 1 and 3). **Omni**
 encoding not yet captured.
@@ -476,47 +474,7 @@ F0 00 20 33 01 01 73 00 5D 01 F7
 When sending manually, set **both** the envelope **`<device_id>`** and
 **`<value>`** to match the target Virus CONFIG setting.
 
-### MIDI Controller Page A
-
-**Live edit:** param `0x5E`.
-
-Soft-knob **MIDI Controller** assignment, **Page A**.
-
-| Value | Mode            |
-| ----- | --------------- |
-| `00`  | SysEx           |
-| `01`  | Controller Data |
-
-Additional values not yet captured.
-
-```text
-# SysEx
-F0 00 20 33 01 00 73 00 5E 00 F7
-
-# Controller Data
-F0 00 20 33 01 00 73 00 5E 01 F7
-```
-
-### MIDI Controller Page B
-
-**Live edit:** param `0x5F`.
-
-Soft-knob **MIDI Controller** assignment, **Page B**.
-
-| Value | Mode          |
-| ----- | ------------- |
-| `00`  | SysEx         |
-| `01`  | Poly Pressure |
-
-Additional values not yet captured.
-
-```text
-# SysEx
-F0 00 20 33 01 00 73 00 5F 00 F7
-
-# Poly Pressure
-F0 00 20 33 01 00 73 00 5F 01 F7
-```
+**MIDI Controller Page A / B:** [Paging](../misc/virus.md#paging).
 
 ### Global ARP Note Send
 
@@ -524,10 +482,10 @@ F0 00 20 33 01 00 73 00 5F 01 F7
 
 Whether the arpeggiator sends **MIDI note** data.
 
-| Value | Setting  |
+| Value | Setting |
 | ----- | -------- |
-| `00`  | Disabled |
-| `01`  | Enabled  |
+| `00` | Disabled |
+| `01` | Enabled |
 
 ```text
 # Disabled
@@ -541,11 +499,11 @@ F0 00 20 33 01 00 73 00 60 01 F7
 
 **Live edit:** param `0x6A`.
 
-| Value | Mode (LCD)                               |
+| Value | Mode (LCD) |
 | ----- | ---------------------------------------- |
-| `00`  | Internal sync                            |
-| `01`  | Sync to External                         |
-| `02`  | *(third option — label TBD on hardware)* |
+| `00` | Internal sync |
+| `01` | Sync to External |
+| `02` | *(third option — label TBD on hardware)* |
 
 ```text
 # Internal
@@ -573,12 +531,12 @@ panel (TI mk2 desktop, confirmed). **RX:** confirmed via manual
 F0 00 20 33 01 <device_id> 73 00 75 <value> F7
 ```
 
-| Value | Panel    |
+| Value | Panel |
 | ----- | -------- |
-| `00`  | **Off**  |
-| `01`  | **Jump** |
-| `02`  | **Snap** |
-| `03`  | **Rel**  |
+| `00` | **Off** |
+| `01` | **Jump** |
+| `02` | **Snap** |
+| `03` | **Rel** |
 
 ```text
 F0 00 20 33 01 00 73 00 75 00 F7 # Off
@@ -605,11 +563,11 @@ Boost**, not Edit Single **Patch Volume** (`70`/`5B`).
 
 **EDIT CONFIG → USB Audio Mode** (output/input routing preset).
 
-| LCD           | `<value>` |
+| LCD | `<value>` |
 | ------------- | --------- |
-| 2 outs / 0 in | `00`      |
-| 3 outs / 0 in | `01`      |
-| 3 outs / 1 in | `02`      |
+| 2 outs / 0 in | `00` |
+| 3 outs / 0 in | `01` |
+| 3 outs / 1 in | `02` |
 
 ```text
 F0 00 20 33 01 00 73 00 09 00 F7 # 2 outs / 0 in
@@ -635,12 +593,12 @@ F0 00 20 33 01 00 73 00 5A 7F F7 # 127
 **EDIT CONFIG → Input Sensitivity** (analog input level preset). **`stored =
 index`**.
 
-| LCD       | `<value>` |
+| LCD | `<value>` |
 | --------- | --------- |
-| +16 dBv   | `00`      |
-| +5 dBv    | `01`      |
-| −8 dBv    | `02`      |
-| −16 dBv   | `03`      |
+| +16 dBv | `00` |
+| +5 dBv | `01` |
+| −8 dBv | `02` |
+| −16 dBv | `03` |
 
 ```text
 F0 00 20 33 01 00 73 00 1F 00 F7 # +16 dBv
@@ -672,10 +630,10 @@ F0 00 20 33 01 00 73 00 5B 7F F7 # 127
 
 **EDIT CONFIG → Input Source**.
 
-| LCD     | `<value>` |
+| LCD | `<value>` |
 | ------- | --------- |
-| Analog  | `00`      |
-| S/PDIF  | `01`      |
+| Analog | `00` |
+| S/PDIF | `01` |
 
 ```text
 F0 00 20 33 01 00 73 00 2B 00 F7 # Analog
@@ -688,10 +646,10 @@ F0 00 20 33 01 00 73 00 2B 01 F7 # S/PDIF
 
 **EDIT CONFIG → Input Characteristic** (analog input EQ curve).
 
-| LCD    | `<value>` |
+| LCD | `<value>` |
 | ------ | --------- |
-| Linear | `00`      |
-| Phono  | `01`      |
+| Linear | `00` |
+| Phono | `01` |
 
 ```text
 F0 00 20 33 01 00 73 00 1D 00 F7 # Linear
@@ -708,10 +666,10 @@ param **hex** on a different **`cmd`**.
 **Memory Protect** on/off — prevents overwriting stored programs when
 enabled.
 
-| Value | Setting  |
+| Value | Setting |
 | ----- | -------- |
-| `00`  | Disabled |
-| `01`  | Enabled  |
+| `00` | Disabled |
+| `01` | Enabled |
 
 ```text
 # Disabled
@@ -737,8 +695,8 @@ Multi Dump at `0x49 + (part−1)`).
 
 | LCD channel | `<value>` |
 | ----------- | --------- |
-| 1           | `00`      |
-| 9           | `08`      |
+| 1 | `00` |
+| 9 | `08` |
 
 ```text
 # Global MIDI Channel 1
@@ -756,13 +714,13 @@ Front-panel **LED** meter/display mode.
 
 | Value | Mode (LCD) |
 | ----- | ---------- |
-| `00`  | Lfo        |
-| `01`  | Ext Inputs |
-| `02`  | Auto       |
-| `03`  | Output1    |
-| `04`  | Output2    |
-| `05`  | Output3    |
-| `06`  | ---        |
+| `00` | Lfo |
+| `01` | Ext Inputs |
+| `02` | Auto |
+| `03` | Output1 |
+| `04` | Output2 |
+| `05` | Output3 |
+| `06` | --- |
 
 ```text
 F0 00 20 33 01 00 73 00 7D 00 F7 # Lfo
@@ -786,13 +744,13 @@ F0 00 20 33 01 00 73 00 7D 06 F7 # ---
 stored = min(0x7F, round(percent × 128 / 100))
 ```
 
-| LCD    | `<value>` |
+| LCD | `<value>` |
 | ------ | --------- |
-| 0.0%   | `00`      |
-| 31.3%  | `28`      |
-| 50.0%  | `40`      |
-| 98.4%  | `7E`      |
-| 100.0% | `7F`      |
+| 0.0% | `00` |
+| 31.3% | `28` |
+| 50.0% | `40` |
+| 98.4% | `7E` |
+| 100.0% | `7F` |
 
 ```text
 F0 00 20 33 01 00 73 00 7E 00 F7 # 0%

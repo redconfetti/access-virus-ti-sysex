@@ -9,17 +9,17 @@ Architecture: [virus.md](../misc/virus.md).
 
 All requests use header `F0 00 20 33 01 <device> … F7`.
 
-| Cmd        | Name                        | Body (after device)           | Reply                                                                                         |
+| Cmd | Name | Body (after device) | Reply |
 | ---------- | --------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------- |
-| **`0x30`** | **Single Request**          | `30 <bank> <slot>`            | Single Dump (`0x10`) — stored banks **`01`–`1E`**                                           |
-| **`0x10`** | **Single Dump** (upload)    | Full 524-byte message         | Writes edit buffer / RAM — [single.md — upload](single.md#single-dump-upload-0x10)                     |
-| **`0x31`** | **Multi Request**           | `31 <bank> <slot> [checksum]` | Multi Dump (`0x11`) — [multi.md](multi.md#request_multi-byte-table)           |
-| **`0x32`** | **Single Bank Request**     | `32 <bank>`                   | **128 × Single Dump** — banks **`01`–`1E`** (RAM + ROM)                                     |
-| **`0x33`** | Multi Bank Request          | `33 <bank>`                   | Bulk Multi bank — **TBD**                                                                     |
-| **`0x34`** | **Arrangement Request**     | `34 00` (TI)                  | Multi Dump + 16 × Single Dump — [single.md](single.md#arrangement-export-single-dump--16) |
-| **`0x35`** | Global Request              | `35`                          | **No reply on TI mk2** ✗ (classic Access docs only)                                           |
-| **`0x36`** | Total Request               | `36`                          | **No reply on TI mk2** ✗ (classic Access docs only)                                           |
-| **`0x37`** | **Controller Dump Request** | `37 00 <part>`                | SysEx parameter stream — [controller-dump.md](controller-dump.md)                             |
+| **`0x30`** | **Single Request** | `30 <bank> <slot>` | Single Dump (`0x10`) — stored banks **`01`–`1E`** |
+| **`0x10`** | **Single Dump** (upload) | Full 524-byte message | Writes edit buffer / RAM — [single.md — upload](single.md#single-dump-upload-0x10) |
+| **`0x31`** | **Multi Request** | `31 <bank> <slot> [checksum]` | Multi Dump (`0x11`) — [multi.md](multi.md#request_multi-byte-table) |
+| **`0x32`** | **Single Bank Request** | `32 <bank>` | **128 × Single Dump** — banks **`01`–`1E`** (RAM + ROM) |
+| **`0x33`** | Multi Bank Request | `33 <bank>` | Bulk Multi bank — **TBD** |
+| **`0x34`** | **Arrangement Request** | `34 00` (TI) | Multi Dump + 16 × Single Dump — [single.md](single.md#arrangement-export-single-dump--16) |
+| **`0x35`** | Global Request | `35` | **No reply on TI mk2** ✗ (classic Access docs only) |
+| **`0x36`** | Total Request | `36` | **No reply on TI mk2** ✗ (classic Access docs only) |
+| **`0x37`** | **Controller Dump Request** | `37 00 <part>` | SysEx parameter stream — [controller-dump.md](controller-dump.md) |
 
 ### Single Request
 
@@ -32,11 +32,11 @@ Access documentation (and older Virus SysEx references) call this message
 F0 00 20 33 01 <device> 30 <bank> <slot> F7
 ```
 
-| `bank`    | `slot`    | Meaning                                      |
+| `bank` | `slot` | Meaning |
 | --------- | --------- | -------------------------------------------- |
-| `00`      | `00`–`0F` | Multi **Part 1–16** edit-buffer single       |
-| `00`      | `40`      | **Single mode** edit buffer                  |
-| `01`–`04` | `00`–`7F` | RAM Single banks **A–D** (128 programs)      |
+| `00` | `00`–`0F` | Multi **Part 1–16** edit-buffer single |
+| `00` | `40` | **Single mode** edit buffer |
+| `01`–`04` | `00`–`7F` | RAM Single banks **A–D** (128 programs) |
 | `05`–`1E` | `00`–`7F` | ROM Single banks **A–Z** (128 programs each) |
 
 **Stored-bank byte** on **`0x30`** / **`0x32`**: **`request_bank = dump_index + 1`**
@@ -44,10 +44,9 @@ where **`dump_index`** is the sequential index in
 [Part bank index](multi.md#part-bank-index) (RAM A = `0x00` … ROM Z =
 `0x1D`). Edit-buffer requests use **`bank = 00`** instead — not this formula.
 
-Live edit **`<part>`** for **`0x70`/`0x71`/`0x6E`**: Multi parts
-**`0x00`–`0x0F`**; Single-mode buffer **`0x40`**. Edit Multi **Bank** /
-**Program** (**`0x72`/`0x20`**, **`0x21`**) use Multi part index only. See
-[Single dump — addressing](single.md#single-vs-multi-addressing).
+Live edit **`<part>`** for **`0x70`/`0x71`/`0x6E`**: see
+[Paging](../misc/virus.md#part-byte) and
+[single.md — Single vs Multi addressing](single.md#single-vs-multi-addressing).
 
 ```bash
 # Single mode edit buffer
@@ -90,12 +89,12 @@ F0 00 20 33 01 <device> 32 <bank> F7
 **`<bank>`** uses the same encoding as [Single Request](#single-request)
 stored banks. Valid range on TI mk2: **`01`–`1E`** (30 banks = 4 RAM + 26 ROM).
 
-| Request `bank` | Bank    | Dump index    | TI mk2                                                        |
+| Request `bank` | Bank | Dump index | TI mk2 |
 | -------------- | ------- | ------------- | ------------------------------------------------------------- |
-| `00`           | —       | —             | **No reply** (edit-buffer scope on `0x30`, not a stored bank) |
-| `01`–`04`      | RAM A–D | `0x00`–`0x03` | **`32 01`** RAM A → 128 dumps ✓                               |
-| `05`–`1E`      | ROM A–Z | `0x04`–`0x1D` | **`32 1E`** ROM Z → 128 dumps ✓                               |
-| **`1F`+**      | —       | —             | **No reply** ✓ (no bank after ROM Z)                          |
+| `00` | — | — | **No reply** (edit-buffer scope on `0x30`, not a stored bank) |
+| `01`–`04` | RAM A–D | `0x00`–`0x03` | **`32 01`** RAM A → 128 dumps ✓ |
+| `05`–`1E` | ROM A–Z | `0x04`–`0x1D` | **`32 1E`** ROM Z → 128 dumps ✓ |
+| **`1F`+** | — | — | **No reply** ✓ (no bank after ROM Z) |
 
 ROM letter → request byte: **`0x05 + (letter − 'A')`** (A→`05` … Z→**`1E`**).
 Example: **`32 0F`** = ROM **K**.
@@ -139,12 +138,12 @@ Do **not** confuse these **request command bytes** with live-edit params under
 
 **Alternatives for CONFIG / globals on TI mk2:**
 
-| Approach                                     | Notes                                                                                                                                                                                        |
+| Approach | Notes |
 | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Live edit `0x73`**                         | Set one global: `73 00 <param> <value>` — [global.md](../live-edit/global.md). No bulk read-back request documented.                                                               |
-| **Controller Dump `0x37`**                   | Streams live-edit SysEx for a **Single edit buffer**, not CONFIG globals — [controller-dump.md](controller-dump.md).                                                                         |
-| **EDIT CONFIG → Receive/Transmit MIDI Dump** | Panel menu exists; wire format **not captured** here — may differ from classic `0x35`/`0x36`.                                                                                                |
-| **Multi Dump diff**                        | Some globals may appear in multi payload regions — correlation **planned**, not a dedicated global dump — [global.md](../live-edit/global.md#correlation-with-multi-dump-planned). |
+| **Live edit `0x73`** | Set one global: `73 00 <param> <value>` — [global.md](../live-edit/global.md). No bulk read-back request documented. |
+| **Controller Dump `0x37`** | Streams live-edit SysEx for a **Single edit buffer**, not CONFIG globals — [controller-dump.md](controller-dump.md). |
+| **EDIT CONFIG → Receive/Transmit MIDI Dump** | Panel menu exists; wire format **not captured** here — may differ from classic `0x35`/`0x36`. |
+| **Multi Dump diff** | Some globals may appear in multi payload regions — correlation **planned**, not a dedicated global dump — [global.md](../live-edit/global.md#correlation-with-multi-dump-planned). |
 
 ### Controller Dump Request
 

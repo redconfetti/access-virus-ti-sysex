@@ -8,16 +8,8 @@ Part of [Documentation](../../../README.md#documentation). Enumerated options:
 Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-map)
 · Multi: [Edit Multi](../multis.md).
 
-```text
-F0 00 20 33 01 00 72 <part> <param> <value> F7 # multi / common (some params)
-F0 00 20 33 01 00 71 <part> <param> <value> F7 # Page B single (some params)
-F0 00 20 33 01 00 70 <part> <param> <value> F7 # Page A single (when global Page A = SysEx)
-F0 00 20 33 01 00 6E <part> <param> <value> F7 # part single edit buffer
-F0 00 20 33 01 00 6F <part> <param> <value> F7 # extended page (Unison, arp steps, Inputs)
-```
+Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
-Param IDs are **not global** — the same hex ID can mean different settings under
-different `cmd` bytes.
 
 ## Common (Edit Single)
 
@@ -34,11 +26,11 @@ Edit Single → Common → **Transpose** (same as **Patch Transpose**). Page A p
 **`0x5D`** (decimal **93** = CC number). **−64..+63** → `stored = ui + 64`.
 Dump offset **`0x065`** (`30 00 40` / `<part>=0x40`).
 
-| UI  | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| −64 | `00`      | ✓         |
-| +0  | `40`      | ✓         |
-| +63 | `7F`      | ✓         |
+| UI | `<value>` |
+| --- | --------- |
+| −64 | `00` |
+| +0 | `40` |
+| +63 | `7F` |
 
 With **Page A = Controller Data**, the panel sends **CC 93** instead of SysEx.
 Distinct from Edit Multi **Transpose** (`72` / `0x25`, dump `0x79 + part`).
@@ -57,14 +49,14 @@ F0 00 20 33 01 00 70 00 5D 7F F7 # Transpose +63
 **EDIT** → Common → **Key Mode**; also a **MONO** shortcut on the
 oscillator section (see below). Dump offset **`0x066`**.
 
-| Value | Mode   | CC 94 | SysEx (`Page A` = SysEx)  |
+| Value | Mode | CC 94 | SysEx (`Page A` = SysEx) |
 | ----- | ------ | ----- | ------------------------- |
-| `00`  | Poly   | `0`   | `F0 … 70 <part> 5E 00 F7` |
-| `01`  | Mono 1 | `1`   | `F0 … 70 <part> 5E 01 F7` |
-| `02`  | Mono 2 | `2`   | `F0 … 70 <part> 5E 02 F7` |
-| `03`  | Mono 3 | `3`   | `F0 … 70 <part> 5E 03 F7` |
-| `04`  | Mono 4 | `4`   | `F0 … 70 <part> 5E 04 F7` |
-| `05`  | Hold   | `5`   | `F0 … 70 <part> 5E 05 F7` |
+| `00` | Poly | `0` | `F0 … 70 <part> 5E 00 F7` |
+| `01` | Mono 1 | `1` | `F0 … 70 <part> 5E 01 F7` |
+| `02` | Mono 2 | `2` | `F0 … 70 <part> 5E 02 F7` |
+| `03` | Mono 3 | `3` | `F0 … 70 <part> 5E 03 F7` |
+| `04` | Mono 4 | `4` | `F0 … 70 <part> 5E 04 F7` |
+| `05` | Hold | `5` | `F0 … 70 <part> 5E 05 F7` |
 
 Scope byte is the edited **part** (`00` for Part 1 in captures). Global
 **MIDI Controller Page A** = **Controller Data** → **CC 94** on the part
@@ -72,9 +64,9 @@ channel instead; **SysEx** → **`cmd=0x70`** as above.
 
 **MONO button (hardware shortcut)**
 
-| Action       | Messages                                                                  |
+| Action | Messages |
 | ------------ | ------------------------------------------------------------------------- |
-| MONO **on**  | `F0 … 70 <part> 5E <last-mono> F7` → last selected **Mono 1..4**          |
+| MONO **on** | `F0 … 70 <part> 5E <last-mono> F7` → last selected **Mono 1..4** |
 | MONO **off** | `F0 … 6E <part> 7A <last-mono> F7`, then `F0 … 70 <part> 5E 00 F7` → Poly |
 
 The MONO shortcut remembers the last selected mono mode. Example capture:
@@ -90,11 +82,11 @@ mode; the actual Key Mode value is still **`70` / `0x5E`**.
 **Oscillators → EDIT → Common → Phase Init**. Page B parameter **`0x23`**.
 Panel **Off**, then **1..127**.
 
-| LCD | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| Off | `00`      | ✓         |
-| 1   | `01`      | ✓         |
-| 127 | `7F`      | ✓         |
+| LCD | `<value>` |
+| --- | --------- |
+| Off | `00` |
+| 1 | `01` |
+| 127 | `7F` |
 
 ```text
 F0 00 20 33 01 00 71 00 23 00 F7 # Phase Init Off
@@ -109,12 +101,12 @@ F0 00 20 33 01 00 71 00 23 7F F7 # Phase Init 127
 **Oscillators → EDIT → Common → Portamento**. Page A param **`0x05`**. Panel **Off**, then **1..127**; wire matches the
 numeric value (**not** a percent curve).
 
-| LCD | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| Off | `00`      | ✓         |
-| 1   | `01`      | ✓         |
-| 2   | `02`      | ✓         |
-| 127 | `7F`      | ✓         |
+| LCD | `<value>` |
+| --- | --------- |
+| Off | `00` |
+| 1 | `01` |
+| 2 | `02` |
+| 127 | `7F` |
 
 ```text
 stored = lcd # 1..127; 00 = Off
@@ -141,15 +133,15 @@ stored = round(pct × 128 / 100) # cap at 7Fh for 100.0 %
 
 Eighth-step anchors (hardware LCD, 2026-06):
 
-| Wire | LCD %  | Wire | LCD %   |
+| Wire | LCD % | Wire | LCD % |
 | ---- | ------ | ---- | ------- |
-| `00` | 0.0 %  | `20` | 25.0 %  |
-| `03` | 2.3 %  | `30` | 37.5 %  |
-| `09` | 7.0 %  | `40` | 50.0 %  |
-| `10` | 12.5 % | `50` | 62.5 %  |
-| `11` | 13.4 % | `60` | 75.0 %  |
-| `1C` | 21.9 % | `70` | 87.5 %  |
-| `1A` | 20.3 % | `78` | 93.8 %  |
+| `00` | 0.0 % | `20` | 25.0 % |
+| `03` | 2.3 % | `30` | 37.5 % |
+| `09` | 7.0 % | `40` | 50.0 % |
+| `10` | 12.5 % | `50` | 62.5 % |
+| `11` | 13.4 % | `60` | 75.0 % |
+| `1C` | 21.9 % | `70` | 87.5 % |
+| `1A` | 20.3 % | `78` | 93.8 % |
 | `7E` | 98.4 % | `7F` | 100.0 % |
 
 **LCD quirk:** at **`04`** the panel showed **3.9 %** (expected **3.1 %** from
@@ -170,11 +162,11 @@ F0 00 20 33 01 00 71 00 24 7F F7 # Punch 100.0 %
 [Saturation — Osc Volume](filters.md#saturation-osc-volume):
 panel **−64..+63**, wire **`stored = ui + 64`**.
 
-| LCD | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| −64 | `00`      | ✓         |
-| 0   | `40`      | ✓         |
-| +63 | `7F`      | ✓         |
+| LCD | `<value>` |
+| --- | --------- |
+| −64 | `00` |
+| 0 | `40` |
+| +63 | `7F` |
 
 ```text
 F0 00 20 33 01 00 70 00 24 00 F7 # Osc Volume −64
@@ -208,11 +200,11 @@ Some hosts cannot send **Off** (`00`). Do not confuse with global **All EQs**
 Edit Single → Common → **Bend Down** (Page B **#27**). **−64..+63** →
 `stored = ui + 64`. Dump offset **`0x0A3`** (not in **Multi Dump**).
 
-| UI  | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| −64 | `00`      | ✓         |
-| +0  | `40`      | ✓         |
-| +63 | `7F`      | ✓         |
+| UI | `<value>` |
+| --- | --------- |
+| −64 | `00` |
+| +0 | `40` |
+| +63 | `7F` |
 
 ```text
 F0 00 20 33 01 00 71 00 1B 00 F7 # Bend Down −64
@@ -227,11 +219,11 @@ F0 00 20 33 01 00 71 00 1B 7F F7 # Bend Down +63
 Edit Single → Common → **Bend Up** (Page B **#26**). Same encoding as Bend Down.
 Dump offset **`0x0A2`**.
 
-| UI  | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| −64 | `00`      | ✓         |
-| +0  | `40`      | ✓         |
-| +63 | `7F`      | ✓         |
+| UI | `<value>` |
+| --- | --------- |
+| −64 | `00` |
+| +0 | `40` |
+| +63 | `7F` |
 
 ```text
 F0 00 20 33 01 00 71 00 1A 00 F7 # Bend Up −64
@@ -249,10 +241,10 @@ Down](../multis.md#bend-up).
 Edit Single → Common → **Bender Scale** (Page B **#28**). **`stored = index`** —
 see [Bender Scale](../../reference/parameter-options.md#bender-scale-1). Dump offset **`0x0A4`**.
 
-| Mode        | `<value>` | Confirmed |
-| ----------- | --------- | --------- |
-| Linear      | `00`      | ✓         |
-| Exponential | `01`      | ✓         |
+| Mode | `<value>` |
+| ----------- | --------- |
+| Linear | `00` |
+| Exponential | `01` |
 
 ```text
 F0 00 20 33 01 00 71 00 1C 00 F7 # Linear
@@ -268,11 +260,11 @@ Multi). Same live edit as [Master Clock
 Tempo](../multis.md#master-clock-tempo)
 in Edit Multi — global, not per-part.
 
-| BPM | `<value>` | Confirmed                      |
-| --- | --------- | ------------------------------ |
-| 63  | `00`      | ✓                              |
-| 120 | `39`      | (INIT default in Multi Dump) |
-| 190 | `7F`      | ✓                              |
+| BPM | `<value>` |
+| --- | --------- |
+| 63 | `00` |
+| 120 | `39` |
+| 190 | `7F` |
 
 ```text
 stored = bpm - 63 # 63..190 → 00..7F
@@ -295,10 +287,10 @@ Dump offset in **Multi Dump**: **`0x18`** (`stored` same; follows name at
 = CC number). Panel **0..127**; wire matches LCD (**not** a percent curve).
 Dump offset **`0x063`** (`-INIT-` default **`0x64`** = 100).
 
-| LCD | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| 0   | `00`      | ✓         |
-| 127 | `7F`      | ✓         |
+| LCD | `<value>` |
+| --- | --------- |
+| 0 | `00` |
+| 127 | `7F` |
 
 ```text
 stored = lcd # 0..127
@@ -320,11 +312,11 @@ F0 00 20 33 01 00 70 00 5B 7F F7 # Patch Volume 127
 CC number). Bipolar pan **−64..+63** (panel **L< 100.0 %** … **100.0 % >R**):
 `stored = ui + 64`. Dump offset **`0x012`**.
 
-| LCD (reported) | `<value>` | Confirmed |
-| -------------- | --------- | --------- |
-| L< 100.0 %     | `00`      | ✓         |
-| `<0>`          | `40`      | ✓         |
-| 100.0 % >R     | `7F`      | ✓         |
+| LCD (reported) | `<value>` |
+| -------------- | --------- |
+| L< 100.0 % | `00` |
+| `<0>` | `40` |
+| 100.0 % >R | `7F` |
 
 Full **wire → LCD** table (**`00`–`7F`**, hardware-confirmed): [Panorama
 LCD](../../reference/parameter-options.md#edit-single--panorama-lcd).
@@ -370,16 +362,16 @@ Stacks **extra detuned copies** of the whole oscillator section for the patch
 
 Panel **Voices**.
 
-| LCD  | `<value>` | Confirmed |
-| ---- | --------- | --------- |
-| Off  | `00`      | ✓         |
-| Twin | `01`      | ✓         |
-| 3    | `02`      | ✓         |
-| 4    | `03`      | ✓         |
-| 5    | `04`      | inferred  |
-| 6    | `05`      | inferred  |
-| 7    | `06`      | inferred  |
-| 8    | `07`      | ✓         |
+| LCD | `<value>` |
+| ---- | --------- |
+| Off | `00` |
+| Twin | `01` |
+| 3 | `02` |
+| 4 | `03` |
+| 5 | `04` |
+| 6 | `05` |
+| 7 | `06` |
+| 8 | `07` |
 
 ```text
 F0 00 20 33 01 00 6F 00 78 00 F7 # Voices Off (Multi Part 1)
@@ -397,10 +389,10 @@ When **Off**, **Detune** is hidden (wire value may still be stored).
 
 **0..127** → `stored = lcd`. Panel visible only when **Voices** ≥ **Twin**.
 
-| LCD | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| 0   | `00`      | ✓         |
-| 127 | `7F`      | partial   |
+| LCD | `<value>` |
+| --- | --------- |
+| 0 | `00` |
+| 127 | `7F` |
 
 ```text
 F0 00 20 33 01 00 6F 00 79 00 F7 # Detune 0 (Multi Part 1)
@@ -433,11 +425,11 @@ F0 00 20 33 01 00 6F 40 7A 7F F7 # Pan Spread 100.0 % (Single edit buffer)
 
 Panel **Unison LFO Phase**. **−64..+63** → `stored = ui + 64`.
 
-| LCD | `<value>` | Confirmed |
-| --- | --------- | --------- |
-| −64 | `00`      | dump ✓    |
-| 0   | `40`      | expected  |
-| +63 | `7F`      | expected  |
+| LCD | `<value>` |
+| --- | --------- |
+| −64 | `00` |
+| 0 | `40` |
+| +63 | `7F` |
 
 ```text
 F0 00 20 33 01 00 6F 40 7B 00 F7 # LFO Phase −64
@@ -452,13 +444,13 @@ F0 00 20 33 01 00 6F 40 7B 7F F7 # LFO Phase +63
 envelope](filters.md#amplifier-envelope-adsr),
 but on the **part edit buffer** — **`cmd=0x6E`**, not **`cmd=0x70`**.
 
-| Control       | `cmd` | `param` | Encoding                                    | Confirmed |
-| ------------- | ----- | ------- | ------------------------------------------- | --------- |
-| Attack        | `6E`  | `50`    | **0..127** → `stored = lcd`                 | ✓         |
-| Decay         | `6E`  | `51`    | **0..127** → `stored = lcd`                 | ✓         |
-| Sustain       | `6E`  | `52`    | **0.0..100.0 %** → `round(pct × 127 / 100)` | ✓         |
-| Sustain Slope | `6E`  | `53`    | **−64..+63** → `stored = ui + 64`           | ✓         |
-| Release       | `6E`  | `54`    | **0..127** → `stored = lcd`                 | ✓         |
+| Control | `cmd` | `param` | Encoding |
+| ------------- | ----- | ------- | ------------------------------------------- |
+| Attack | `6E` | `50` | **0..127** → `stored = lcd` |
+| Decay | `6E` | `51` | **0..127** → `stored = lcd` |
+| Sustain | `6E` | `52` | **0.0..100.0 %** → `round(pct × 127 / 100)` |
+| Sustain Slope | `6E` | `53` | **−64..+63** → `stored = ui + 64` |
+| Release | `6E` | `54` | **0..127** → `stored = lcd` |
 
 ### Attack (`0x50`) / Decay (`0x51`) / Release
 
@@ -481,11 +473,11 @@ F0 00 20 33 01 00 6E 00 54 7F F7 # Release 127
 
 **Linear percent:** `stored = round(percent × 127 / 100)`.
 
-| LCD     | `<value>` |
+| LCD | `<value>` |
 | ------- | --------- |
-| 0 %     | `00`      |
-| 50.0 %  | `40`      |
-| 100.0 % | `7F`      |
+| 0 % | `00` |
+| 50.0 % | `40` |
+| 100.0 % | `7F` |
 
 ### Sustain Slope
 
@@ -495,9 +487,9 @@ Bipolar **−64..+63**: `stored = ui + 64`.
 
 | LCD | `<value>` |
 | --- | --------- |
-| −64 | `00`      |
-| +0  | `40`      |
-| +63 | `7F`      |
+| −64 | `00` |
+| +0 | `40` |
+| +63 | `7F` |
 
 ```text
 F0 00 20 33 01 00 6E 00 52 00 F7 # Sustain 0 %
@@ -513,13 +505,13 @@ F0 00 20 33 01 00 6E 00 53 7F F7 # Sustain Slope +63
 **Edit Single → Envelope 4**. Same encodings and **`cmd=0x6E`** part-buffer
 layout as [Envelope 3](#envelope-3-adsr), next param block **`0x55`–`0x59`**.
 
-| Control       | `cmd` | `param` | Encoding                                    | Confirmed |
-| ------------- | ----- | ------- | ------------------------------------------- | --------- |
-| Attack        | `6E`  | `55`    | **0..127** → `stored = lcd`                 | ✓         |
-| Decay         | `6E`  | `56`    | **0..127** → `stored = lcd`                 | ✓         |
-| Sustain       | `6E`  | `57`    | **0.0..100.0 %** → `round(pct × 127 / 100)` | ✓         |
-| Sustain Slope | `6E`  | `58`    | **−64..+63** → `stored = ui + 64`           | ✓         |
-| Release       | `6E`  | `59`    | **0..127** → `stored = lcd`                 | ✓         |
+| Control | `cmd` | `param` | Encoding |
+| ------------- | ----- | ------- | ------------------------------------------- |
+| Attack | `6E` | `55` | **0..127** → `stored = lcd` |
+| Decay | `6E` | `56` | **0..127** → `stored = lcd` |
+| Sustain | `6E` | `57` | **0.0..100.0 %** → `round(pct × 127 / 100)` |
+| Sustain Slope | `6E` | `58` | **−64..+63** → `stored = ui + 64` |
+| Release | `6E` | `59` | **0..127** → `stored = lcd` |
 
 ### Attack (`0x55`) / Decay (`0x56`) / Release
 
@@ -542,11 +534,11 @@ F0 00 20 33 01 00 6E 00 59 7F F7 # Release 127
 
 **Linear percent:** `stored = round(percent × 127 / 100)`.
 
-| LCD     | `<value>` |
+| LCD | `<value>` |
 | ------- | --------- |
-| 0 %     | `00`      |
-| 50.0 %  | `40`      |
-| 100.0 % | `7F`      |
+| 0 % | `00` |
+| 50.0 % | `40` |
+| 100.0 % | `7F` |
 
 ### Sustain Slope
 
@@ -556,9 +548,9 @@ Bipolar **−64..+63**: `stored = ui + 64`.
 
 | LCD | `<value>` |
 | --- | --------- |
-| −64 | `00`      |
-| +0  | `40`      |
-| +63 | `7F`      |
+| −64 | `00` |
+| +0 | `40` |
+| +63 | `7F` |
 
 ```text
 F0 00 20 33 01 00 6E 00 57 00 F7 # Sustain 0 %
@@ -587,18 +579,18 @@ for 00h..7Eh: pct = (stored - 64) × 100 / 64
 for 7Fh: pct = +100.0 %
 ```
 
-| LCD label          | `cmd` | `param` | Confirmed |
-| ------------------ | ----- | ------- | --------- |
-| Volume             | `71`  | `3C`    | ✓         |
-| Panorama           | `71`  | `3D`    | ✓         |
-| FM Amount          | `71`  | `32`    | ✓         |
-| Osc 1 Shape        | `71`  | `2F`    | ✓         |
-| Osc 2 Shape        | `71`  | `30`    | ✓         |
-| Pulse Width        | `71`  | `31`    | ✓         |
-| Filter1 Env Amount | `71`  | `36`    | ✓         |
-| Resonance 1        | `71`  | `38`    | ✓         |
-| Filter2 Env Amount | `71`  | `37`    | ✓         |
-| Resonance 2        | `71`  | `39`    | ✓         |
+| LCD label | `cmd` | `param` |
+| ------------------ | ----- | ------- |
+| Volume | `71` | `3C` |
+| Panorama | `71` | `3D` |
+| FM Amount | `71` | `32` |
+| Osc 1 Shape | `71` | `2F` |
+| Osc 2 Shape | `71` | `30` |
+| Pulse Width | `71` | `31` |
+| Filter1 Env Amount | `71` | `36` |
+| Resonance 1 | `71` | `38` |
+| Filter2 Env Amount | `71` | `37` |
+| Resonance 2 | `71` | `39` |
 
 On TI mk2 the
 **Velocity Map** menu exposes the **10** rows above; **`71`/`33`–`35`**
@@ -667,9 +659,9 @@ Dump offset **`0x0C2`**.
 
 | LCD | `<value>` |
 | --- | --------- |
-| −64 | `00`      |
-| +0  | `40`      |
-| +63 | `7F`      |
+| −64 | `00` |
+| +0 | `40` |
+| +63 | `7F` |
 
 ```text
 F0 00 20 33 01 00 71 40 3A 00 F7 # Balance −64
@@ -686,10 +678,10 @@ modulation) — same parameter family, different UI path.
 Category**). **`cmd=0x71`**, part **`00`** (Single edit buffer **`0x40`**
 also works). Dump **`0x103`** (Cat 1) / **`0x104`** (Cat 2).
 
-| Panel      | `param` | Confirmed |
-| ---------- | ------- | --------- |
-| Name Cat 1 | `7B`    | ✓         |
-| Name Cat 2 | `7C`    | ✓         |
+| Panel | `param` |
+| ---------- | ------- |
+| Name Cat 1 | `7B` |
+| Name Cat 2 | `7C` |
 
 Both use [Patch name
 categories](../../reference/parameter-options.md#patch-name-categories)
@@ -727,17 +719,17 @@ above knob 1; sweeping the knob sends **`71`/`65`** (**0 %** → `00`,
 
 | Knob | **Function As…** `param` | **Name** `param` |
 | ---- | ------------------------ | ---------------- |
-| 1    | `3E`                     | `33`             |
-| 2    | `3F`                     | `34`             |
-| 3    | `40`                     | `35`             |
+| 1 | `3E` | `33` |
+| 2 | `3F` | `34` |
+| 3 | `40` | `35` |
 
 ### Soft Knob 1
 
-| Control          | `cmd` | `param` | Notes                                                                                                                                     |
+| Control | `cmd` | `param` | Notes |
 | ---------------- | ----- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Function As…** | `71`  | `3E`    | Wire byte per [Soft Knob Destinations](../../reference/parameter-options.md#soft-knob-destinations) (not list index); e.g. Distortion Intensity → `57` |
-| **Name**         | `71`  | `33`    | Wire byte per [Soft Knob Names](../../reference/parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off          |
-| *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (≠ Function As wire); example → [`65`](#soft-knob-runtime-distortion-intensity)                |
+| **Function As…** | `71` | `3E` | Wire byte per [Soft Knob Destinations](../../reference/parameter-options.md#soft-knob-destinations) (not list index); e.g. Distortion Intensity → `57` |
+| **Name** | `71` | `33` | Wire byte per [Soft Knob Names](../../reference/parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| *(runtime)* | `71` | *value* | Physical knob → destination **value** slot (≠ Function As wire); example → [`65`](#soft-knob-runtime-distortion-intensity) |
 
 ```text
 F0 00 20 33 01 00 71 00 3E 57 F7 # Knob 1 Function As Distortion Intensity
@@ -756,11 +748,11 @@ F0 00 20 33 01 00 71 00 33 57 F7 # Name Speaker (wire 57)
 
 ### Soft Knob 2
 
-| Control          | `cmd` | `param` | Notes                                                                                                                            |
+| Control | `cmd` | `param` | Notes |
 | ---------------- | ----- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **Function As…** | `71`  | `3F`    | Same destination list as Knob 1                                                                                                  |
-| **Name**         | `71`  | `34`    | Wire byte per [Soft Knob Names](../../reference/parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
-| *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination)                                                                     |
+| **Function As…** | `71` | `3F` | Same destination list as Knob 1 |
+| **Name** | `71` | `34` | Wire byte per [Soft Knob Names](../../reference/parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| *(runtime)* | `71` | *value* | Physical knob → destination **value** slot (per destination) |
 
 ```text
 F0 00 20 33 01 00 71 00 3F 00 F7 # Knob 2 Function As Off
@@ -772,11 +764,11 @@ F0 00 20 33 01 00 71 00 34 47 F7 # Name Width
 
 ### Soft Knob 3
 
-| Control          | `cmd` | `param` | Notes                                                                                                                            |
+| Control | `cmd` | `param` | Notes |
 | ---------------- | ----- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **Function As…** | `71`  | `40`    | Same destination list as Knob 1                                                                                                  |
-| **Name**         | `71`  | `35`    | Wire byte per [Soft Knob Names](../../reference/parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
-| *(runtime)*      | `71`  | *value* | Physical knob → destination **value** slot (per destination)                                                                     |
+| **Function As…** | `71` | `40` | Same destination list as Knob 1 |
+| **Name** | `71` | `35` | Wire byte per [Soft Knob Names](../../reference/parameter-options.md#soft-knob-names) (not list index); LCD label when **Function As…** ≠ Off |
+| *(runtime)* | `71` | *value* | Physical knob → destination **value** slot (per destination) |
 
 ```text
 F0 00 20 33 01 00 71 00 40 00 F7 # Knob 3 Function As Off
@@ -798,10 +790,10 @@ When **Function As…** =
 (wire
 **`57`** on `71`/`3E`/`3F`/`40`), the knob sends **`71`/`65`**:
 
-| UI      | `<value>` | Confirmed |
-| ------- | --------- | --------- |
-| 0 %     | `00`      | ✓         |
-| 100.0 % | `7F`      | ✓         |
+| UI | `<value>` |
+| ------- | --------- |
+| 0 % | `00` |
+| 100.0 % | `7F` |
 
 **0.0..100.0 %** → `stored = round(pct × 127 / 100)` (endpoints **`00`** /
 **`7F`**). Destination wire **`57`** ≠ value param **`65`**.

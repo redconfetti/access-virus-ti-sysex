@@ -51,12 +51,12 @@ Front-panel **SELECT** switches which sub-page the shared knobs edit. **`stored 
 index`**. Pause **≥ 1 s** between probe messages. For **EFFECTS**, documents
 **`6E`/`75`** / **`6E`/`76`** focus only — not physical knob routing.
 
-| Section     | Live edit | Values (confirmed)                                                                                                    |
+| Section | Live edit | Values (confirmed) |
 | ----------- | --------- | --------------------------------------------------------------------------------------------------------------------- |
-| Oscillators | `71`/`7F` | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/single/oscillators.md#oscillators-select)                    |
-| Filters     | `71`/`7A` | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/single/filters.md#filters-select); **disabled** when Vocoder active |
-| Effects g1  | `6E`/`75` | `00` Delay … `04` High EQ                                                                                             |
-| Effects g2  | `6E`/`76` | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/single/effects.md#effects-select)                          |
+| Oscillators | `71`/`7F` | `00` Osc 1 … `02` Osc 3 — [oscillators.md](../../docs/live-edit/single/oscillators.md#oscillators-select) |
+| Filters | `71`/`7A` | `00` F1 … `02` F1+F2 — [filters.md](../../docs/live-edit/single/filters.md#filters-select); **disabled** when Vocoder active |
+| Effects g1 | `6E`/`75` | `00` Delay … `04` High EQ |
+| Effects g2 | `6E`/`76` | `00` Distortion … `04` Others — [effects.md](../../docs/live-edit/single/effects.md#effects-select) |
 
 ```bash
 sendmidi dev "$MIDI_DEV" hex syx 00 20 33 01 00 71 00 7F 01 # Osc 2
@@ -66,8 +66,8 @@ sendmidi dev "$MIDI_DEV" hex syx 00 20 33 01 00 6E 00 76 02 # Chorus
 
 ## Before mapping
 
-Set global **MIDI Controller Page A/B** to **SysEx** (not Controller Data) so
-panel edits emit Access SysEx — [global.md](../../docs/live-edit/global.md).
+Set global **MIDI Controller Page A/B** to **SysEx** when capturing or testing
+live-edit bytes — [Paging](../../docs/misc/virus.md#midi-controller-page-a).
 
 ## Interactive capture (panel → host)
 
@@ -115,8 +115,8 @@ with another menu, **MULTI** diff instead of single byte).
 panel state, or confirmation that a control is not stored in the dump) before
 continuing the batch or documenting offsets.
 
-Scripts: [artifacts/captures/dump-correlate.sh](../../artifacts/captures/dump-correlate.sh),
-[dump-correlate-fx.sh](../../artifacts/captures/dump-correlate-fx.sh), etc.
+Scratch capture files and helper scripts belong in `artifacts/` during mapping
+work (not committed; see `.gitignore`).
 
 ## Single-parameter verify (send → dump)
 
@@ -142,12 +142,12 @@ for i, (x, y) in enumerate(zip(a, b)):
 
 ## Smoke tests
 
-| #   | Message (summary)    | Panel check   |
+| # | Message (summary) | Panel check |
 | --- | -------------------- | ------------- |
-| 1   | P1 Hold `4A` `00`    | Hold Disabled |
-| 2   | P1 Hold `4A` `01`    | Hold Enabled  |
-| 3   | P16 Enable `48` `00` | Part 16 Off   |
-| 4   | P1 Vol `27` `48`     | Part 1 Vol +8 |
+| 1 | P1 Hold `4A` `00` | Hold Disabled |
+| 2 | P1 Hold `4A` `01` | Hold Enabled |
+| 3 | P16 Enable `48` `00` | Part 16 Off |
+| 4 | P1 Vol `27` `48` | Part 1 Vol +8 |
 
 ## Stop and ask the user when
 
@@ -161,11 +161,11 @@ for i, (x, y) in enumerate(zip(a, b)):
 
 ## Doc targets after confirm
 
-| Work            | Update                                                       |
+| Work | Update |
 | --------------- | ------------------------------------------------------------ |
-| Live edit bytes | [Documentation](../../README.md#documentation)            |
-| Dump offsets    | [Documentation](../../README.md#documentation)                    |
-| Enum tables     | [docs/reference/parameter-options.md](../../docs/reference/parameter-options.md) |
+| Live edit bytes | [Documentation](../../README.md#documentation) |
+| Dump offsets | [Documentation](../../README.md#documentation) |
+| Enum tables | [docs/reference/parameter-options.md](../../docs/reference/parameter-options.md) |
 
 Follow [documentation-standards](../documentation-standards/SKILL.md) when
 writing markdown.

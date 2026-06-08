@@ -11,15 +11,7 @@ Dump worksheet: [single.md — Modulation Matrix](../../dumps/single.md#modulati
 All **42** Source / Destination / Amount cells confirmed in **Single Dump**
 (`30 00 40` / `<part>=0x40`).
 
-```text
-F0 00 20 33 01 00 <cmd> <part> <param> <value> F7
-```
-
-**`<part>`** = **`0x40`** (Single edit buffer) unless editing Multi Part *n*
-(**`0x00`–`0x0F`**).
-
-Select the **matrix slot** and **destination row (1–3)** on the panel before
-sending SysEx. **`cmd`** and **param** depend on **slot** and **row** — there is
+Paging: [virus.md](../../misc/virus.md#part-byte). **`cmd`** and **param** depend on **slot** and **row** — there is
 no single global **`41`** / **`42`** pair for all slots.
 
 ## Slot layout
@@ -39,10 +31,10 @@ three times.
 
 ## Per-slot `cmd` / param map (TI mk2)
 
-Full enum sweeps on all six slots; all **42** cells dump-correlate verified on
-TI mk2 (Single edit buffer **`30 00 40`**).
+Full enum sweeps on all six slots; all **42** cells verified on Single edit
+buffer **`30 00 40`**.
 
-| Slot  | Source    | Dest 1    | Amt 1     | Dest 2    | Amt 2     | Dest 3    | Amt 3     |
+| Slot | Source | Dest 1 | Amt 1 | Dest 2 | Amt 2 | Dest 3 | Amt 3 |
 | ----- | --------- | --------- | --------- | --------- | --------- | --------- | --------- |
 | **1** | `71`/`40` | `71`/`41` | `71`/`42` | `6E`/`5A` | `6E`/`5B` | `6E`/`5C` | `6E`/`5D` |
 | **2** | `71`/`43` | `71`/`44` | `71`/`45` | `71`/`46` | `71`/`47` | `6E`/`5E` | `6E`/`5F` |
@@ -111,10 +103,10 @@ matching slot/row param). Panel label **Filterbank Frequency** uses wire **`60`*
 Bipolar **−64..+63** → `stored = ui + 64` (**`00`** = −64, **`40`** = +0,
 **`7F`** = +63). Same family as [LFO Contour](../../reference/parameter-options.md#contour-1).
 
-| `<value>` | LCD | Confirmed        |
-| --------- | --- | ---------------- |
-| `00`      | −64 | ✓                |
-| `19`      | −39 | ✓ (slot 6 row 1) |
-| `2F`      | −17 | ✓ (slot 3 row 2) |
-| `40`      | +0  | ✓                |
-| `7F`      | +63 | ✓                |
+| `<value>` | LCD |
+| --------- | --- |
+| `00` | −64 |
+| `19` | −39 |
+| `2F` | −17 |
+| `40` | +0 |
+| `7F` | +63 |
