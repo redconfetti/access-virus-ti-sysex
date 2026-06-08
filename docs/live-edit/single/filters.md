@@ -10,12 +10,11 @@ Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-ma
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
-
 ## Panel reference
 
 **LCD:** **FILTERS** → **Filter 1** / **Filter 2** / **Common** / **Filter 1
 envelope**. Filter 1, Filter 2, **Common**, and **Filter 1 ADSR** confirmed on
-TI mk2 desktop; remaining **FILTERS** rows (e.g. modulation, velocity targets) —
+Remaining **FILTERS** rows (e.g. modulation, velocity targets) —
 see
 [hardware-mapping-workflow — SELECT](../../../.cursor/skills/hardware-mapping-workflow/SKILL.md#select-buttons-section-focus).
 
@@ -95,8 +94,7 @@ F0 00 20 33 01 00 70 00 2A 7F F7 # Resonance 127 (landing)
 **Live edit:** `cmd=0x70`, param `0x33`.
 
 **FILTERS → EDIT → Filter 1 → Mode** (or **Filter 1 Mode**).
-index **51** = **`0x33`**. Classic 1999: **0** LP, **1** HP, **2** BP, **3** BS.
-TI mk2 adds more modes — capture **every** LCD label until the list repeats.
+index **51** = **`0x33`**. Additional modes — capture **every** LCD label until the list repeats.
 
 | UI (reported) | `<value>` |
 | ------------- | --------- |
@@ -109,7 +107,7 @@ TI mk2 adds more modes — capture **every** LCD label until the list repeats.
 | Analog 3 Pole | `06` |
 | Analog 4 Pole | `07` |
 
-**TI mk2 desktop (INIT, Filter 1):** **8** modes, **`00`–`07`** sequential. No
+**(INIT, Filter 1):** **8** modes, **`00`–`07`** sequential. No
 further
 options after Analog 4 Pole on hardware tested. **Filter 2 Mode** (`0x34`) has
 only
@@ -247,7 +245,7 @@ F0 00 20 33 01 00 70 00 29 7F F7 # +63
 
 **FILTERS → EDIT → Filter 2 → Mode**.
 **`0x34`**.
-Classic **Filter2 Mode**: LP / HP / BP / BS only — **no** Analog 1–4 Pole on TI.
+**Filter2 Mode**: LP / HP / BP / BS only — **no** Analog 1–4 Pole variants.
 
 | UI (reported) | `<value>` |
 | ------------- | --------- |
@@ -388,7 +386,7 @@ when editing from either menu may still emit both — capture if needed.
 
 ## Filter Common
 
-**LCD:** **FILTERS** → **Common** (after Filter 1 / 2). Confirmed on TI mk2
+**LCD:** **FILTERS** → **Common** (after Filter 1 / 2). Confirmed
 desktop unless noted.
 
 ### Filter Routing

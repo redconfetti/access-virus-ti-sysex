@@ -26,8 +26,7 @@ rows. **Arp>Matrix** → **Pattern** + **Resolution** only — see
 
 ## Settings
 
-**Single Dump** offsets (Single edit buffer **`30 00 40`**, `<part>=0x40`; TI mk2
-dump correlate):
+**Single Dump** offsets (Single edit buffer **`30 00 40`**, `<part>=0x40`):
 
 | Control | Live edit | Dump offset |
 | ----------- | --------- | ----------- |

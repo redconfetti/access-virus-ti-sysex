@@ -10,7 +10,6 @@ Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-ma
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
-
 **Chorus** reuses Page A bytes **`68`–`6F`** across [types](#chorus-type-1)
 — always decode with **`70`/`67`** (and **`6E`/`76`/`02`** for EFFECTS focus).
 
@@ -264,7 +263,7 @@ F0 00 20 33 01 00 6E 00 49 7F F7 # 100.0 %
 Panel layout: [Character panel
 visibility](../../reference/parameter-options.md#character-panel-visibility).
 
-All nine **Type** values (`00`–`08`) panel-mapped on TI mk2. Three wire families:
+All nine **Type** values (`00`–`08`) panel-mapped. Three wire families:
 **Analog Boost** (`70`/`15`, `70`/`21`); **Stereo Widener** / **Speaker Cabinet**
 (`71`/`61`, `71`/`62`); preset types **`01`–`06`** (**Type** only).
 
@@ -904,7 +903,7 @@ F0 00 20 33 01 00 71 00 5A 7F F7 # 127
 
 Panel layout: [Others panel
 visibility](../../reference/parameter-options.md#others-panel-visibility). Sub-page order
-(panel-confirmed on TI mk2):
+(panel-confirmed):
 
 1. **Filter Bank**
 2. **Vocoder**
@@ -1208,7 +1207,7 @@ F0 00 20 33 01 00 6E 00 18 7F F7 # +100.0 %
 visibility](../../reference/parameter-options.md#vocoder-panel-visibility). **Mode** and
 **Input Select** (Input Follower) use **`cmd=0x71`** (Page B). All other rows
 below use **`cmd=0x70`** (Page A). **Not** **`cmd=0x6E`** for these controls on
-TI mk2 SysEx capture.
+SysEx capture.
 
 When **Mode** ≠ **Off**, **FILTERS** is disabled on the panel — LCD
 **`Vocoder active. Filters are disabled`** (see
@@ -1447,7 +1446,7 @@ F0 00 20 33 01 00 70 40 3A 1F F7 # 32
 **EDIT FX → Others → Input Follower**. [Panel
 visibility](../../reference/parameter-options.md#input-follower-panel-visibility). **Input
 Select** uses **`cmd=0x71`**; **Attack**, **Release**, and **Sensitivity** use
-**`cmd=0x70`**. **Not** **`cmd=0x6E`** on TI mk2 SysEx capture.
+**`cmd=0x70`**. **Not** **`cmd=0x6E`** on SysEx capture.
 
 | Control | `cmd`/`param` | Dump offset |
 | ---------------- | ------------------------------------------------------------ | ----------- |
@@ -1873,7 +1872,7 @@ F0 00 20 33 01 00 70 00 76 05 F7 # S&G
 Panel layout: [Reverb panel
 visibility](../../reference/parameter-options.md#reverb-panel-visibility).
 
-**Mode = Off (`00`)** — **Mode** and **Send** only (TI reference).
+**Mode = Off (`00`)** — **Mode** and **Send** only.
 
 **Send = Off** — does **not** hide **Clock**, **Time**, **Damping**,
 **Coloration**,

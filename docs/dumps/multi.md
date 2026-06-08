@@ -8,7 +8,7 @@ byte-level Multi Dump mapping.
 
 ### Multi Dump byte reference
 
-Byte reference for Virus TI/TI2 Multi SysEx messages (Multi Dump, 267
+Byte reference for Multi SysEx messages (Multi Dump, 267
 bytes). **Edit Multi** parameters are mapped in
 [Multi parameter map](#multi-parameter-map) and
 [Confirmed payload
@@ -44,7 +44,7 @@ sixteen singles in **part order** — see
 
 ### Multi parameter map
 
-Fields match the **Virus TI Edit Multi** screen (TI manual).
+Fields match the **Edit Multi** screen.
 
 #### Summary
 
@@ -76,7 +76,7 @@ Fields match the **Virus TI Edit Multi** screen (TI manual).
 ##### Multi Program Name
 
 ASCII name for the multi — **10 bytes** at **`0x0D`–`0x16`** (case as entered on
-the panel), null at **`0x17`**. **No live-edit SysEx** on TI mk2 desktop (panel
+the panel), null at **`0x17`**. **No live-edit SysEx** on desktop (panel
 rename → **Multi Dump** only; **`receivemidi`** capture empty on rename).
 
 Hardware-verified (edit buffer, INIT MULTI baseline → **`Init Mult4`**):
@@ -108,8 +108,7 @@ Live edit: **`72` / `0x0F`** — see [multis.md](../live-edit/multis.md).
 
 Disabled / Enabled — whether keyboard notes are **also sent to MIDI OUT**.
 Distinct from CONFIG **Local** / **Mode** (TI Keyboard / Polar panel).
-Desktop module has no keyboard. Dump byte **not confirmed** on desktop
-(identical enable/disable dumps).
+Desktop module has no keyboard.
 
 ##### Enable
 
@@ -136,7 +135,7 @@ regions.
 ##### Secondary Output (not in Multi Dump) {#secondary-output-not-in-multi-dump}
 
 Per-part **secondary** output routing — live edit only (`73` / `0x2D`; same
-param as Edit Single → Surround → Output). Hardware-tested on TI mk2 desktop:
+param as Edit Single → Surround → Output). Hardware-tested:
 **no** change to **Multi Dump** vs baseline. See
 [multis.md](../live-edit/multis.md#secondary-output).
 
@@ -280,7 +279,7 @@ stored byte); same for all multi bank slots.
 | ------------ | ----------- | ------------------------ | -------------------------------------------------------------------------------- |
 | `0x00` | `F0` | SysEx start | Fixed |
 | `0x01..0x03` | `00 20 33` | Access manufacturer ID | Fixed |
-| `0x04` | `01` | Virus family marker | Fixed in observed TI/TI2 messages |
+| `0x04` | `01` | Virus family marker | Fixed in observed messages |
 | `0x05` | `device_id` | Device ID | `00` observed |
 | `0x06` | `31` | Request Multi command | Fixed for `REQUEST_MULTI` |
 | `0x07` | `bank` | Multi bank selector | **`00`** + slot **`7F`** = edit buffer; **`01`** + slot = Multi bank |
@@ -331,7 +330,7 @@ Captured via `REQUEST_MULTI` bank **`01`** (267-byte reply only; slots
 | ------------- | ----------- | ------------------------ | --------------------------------- |
 | `0x00` | `F0` | SysEx start | Fixed |
 | `0x01..0x03` | `00 20 33` | Access manufacturer ID | Fixed |
-| `0x04` | `01` | Virus family marker | Fixed in observed TI/TI2 messages |
+| `0x04` | `01` | Virus family marker | Fixed in observed messages |
 | `0x05` | `device_id` | Device ID | `00` observed |
 | `0x06` | `11` | Dump Multi command | Fixed for Multi Dump |
 | `0x07` | `bank` | Multi bank selector | Echoes request bank |
@@ -399,7 +398,7 @@ with Hold off). Diff from INIT (`0x45`) when toggling one flag.
 ### Runtime-only Edit Multi
 
 These panel / host controls have live SysEx (where documented) but **no**
-byte in **Multi Dump** on TI mk2 desktop — confirmed by edit → re-dump
+byte in **Multi Dump** — confirmed by edit → re-dump
 diffs (INIT MULTI baseline):
 
 | Control | Live edit | In Multi Dump |

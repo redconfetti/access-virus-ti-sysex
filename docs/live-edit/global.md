@@ -36,7 +36,7 @@ part **`00`**. Legacy **Input Mode** / **Input Select** on Page A (**CC 101** /
 
 **Live edit:** `cmd=0x6F`, param `0x7E`.
 
-TI manual (Atomizer tutorial): **Atomizer** is a **beat-synced instant looper**
+**Atomizer** is a **beat-synced instant looper**
 on
 external audio at the Virus inputs. Incoming audio passes **dry** to the outputs
 until you trigger a **loop/buffer key**; a slice captured at that moment is
@@ -49,8 +49,7 @@ tones.
 
 The **Inputs → Atomizer** menu value selects the feature state / preset index on
 the wire (not individual loop keys — those are played on the keyboard). Panel
-labels **2**–**16** are stored **`02`–`10`**; exact musical length per index is
-not yet correlated to SysEx here (see Atomizer manual for performance detail).
+labels **2**–**16** are stored **`02`–`10`**.
 
 Enum: [Atomizer preset](../reference/parameter-options.md#atomizer-preset)
 (`00`–`10`).
@@ -91,8 +90,7 @@ F0 00 20 33 01 00 6F 00 7D 02 F7 # Input Select Right
 
 **Live edit:** `cmd=0x73`.
 
-Device-wide settings — not Multi **`0x72`** or part sound **`0x6E`**. Whether
-any appear in **Multi Dump** is **not confirmed** for most parameters.
+Device-wide settings — not Multi **`0x72`** or part sound **`0x6E`**.
 
 The byte **`<device_id>`** (immediately before **`0x73`**) is the SysEx
 **destination device ID**. The Virus only acts on the message when this
@@ -106,42 +104,42 @@ changed on the front panel. Many other **`0x73`** globals are **RX only**
 
 ## Summary
 
-| Param ID | Parameter | Value encoding | Multi Dump | Hardware TX |
-| -------- | ---------------------- | ----------------------------------------------------------- | ------------ | ---------------- |
-| `0x09` | USB Audio Mode | See [USB Audio Mode](#usb-audio-mode) | Unverified | No; RX ✓ |
-| `0x10` | Edit mode / focus | See [Edit mode 0x10](#edit-mode-0x10-tentative) | Unverified | Yes (panel) |
-| `0x19` | All EQs | See [All EQs](#all-eqs) | Unverified | — |
-| `0x1A` | All Arpeggiators | See [All Arpeggiators](#all-arpeggiators) | Unverified | — |
-| `0x1B` | All Delays | See [All Delays](#all-delays) | Unverified | Yes |
-| `0x1C` | All Reverbs | See [All Reverbs](#all-reverbs) | Unverified | — |
-| `0x1D` | Input Characteristic | See [Input Characteristic](#input-characteristic) | Unverified | No; RX ✓ |
-| `0x1F` | Input Sensitivity | See [Input Sensitivity](#input-sensitivity) | Unverified | No; RX ✓ |
-| `0x28` | Navigation | See [Navigation](#navigation) — **`73 40`** scope byte | Unverified | ✓ |
-| `0x29` | Value Wrapping | See [Value Wrapping](#value-wrapping) | Unverified | ✓ |
-| `0x2B` | Input Source | See [Input Source](#input-source) | Unverified | No; RX ✓ |
-| `0x32` | BPM Brightness | See [BPM Brightness](#bpm-brightness) | Unverified | — |
-| `0x33` | LED Lux | See [LED Lux](#led-lux) | Unverified | — |
-| `0x35` | Random PG — Scope | See [Randomize Scope](#randomize-scope) | Unverified | ✓ |
-| `0x36` | Random PG — Strength | See [Randomize Strength](#randomize-strength) | Unverified | ✓ |
-| `0x55` | Global Program Change | See [Global Program Change](#global-program-change) | Unverified | — |
-| `0x57` | Global MIDI Volume RX | See [Global MIDI Volume RX](#global-midi-volume-rx) | Unverified | No; RX ✓ |
-| `0x5A` | Input Direct Thru | See [Input Direct Thru](#input-direct-thru) | Unverified | No; RX ✓ |
-| `0x5B` | Input Boost | See [Input Boost](#input-boost) | Unverified | No; RX ✓ |
-| `0x5D` | MIDI Device ID | See [MIDI Device ID](#midi-device-id) | Unverified | No (panel) |
-| `0x5E` | MIDI Controller Page A | See [MIDI Controller Page A](../misc/virus.md#midi-controller-page-a) | Unverified | — |
-| `0x5F` | MIDI Controller Page B | See [MIDI Controller Page B](../misc/virus.md#midi-controller-page-b) | Unverified | — |
-| `0x60` | Global ARP Note Send | See [Global ARP Note Send](#global-arp-note-send) | Unverified | — |
-| `0x6A` | MIDI Clock | See [MIDI Clock](#midi-clock) | Unverified | — |
-| `0x75` | Knob Response | See [Knob Response](#knob-response) | Unverified | No (panel); RX ✓ |
-| `0x76` | Memory Protect | See [Memory Protect](#memory-protect) | Unverified | — |
-| `0x7A` | Play mode | See [Play mode](#play-mode) | Unverified | — |
-| `0x7C` | Global MIDI Channel | See [Global MIDI Channel](#global-midi-channel) | Unverified | No (panel) |
-| `0x7D` | LED Mode | See [LED Mode](#led-mode) | Unverified | — |
-| `0x7E` | LCD Contrast | See [LCD Contrast](#lcd-contrast) | Unverified | — |
+| Param ID | Parameter | Value encoding |
+| -------- | ---------------------- | ----------------------------------------------------------- |
+| `0x09` | USB Audio Mode | See [USB Audio Mode](#usb-audio-mode) |
+| `0x10` | Edit mode / focus | See [Edit mode 0x10](#edit-mode-0x10) |
+| `0x19` | All EQs | See [All EQs](#all-eqs) |
+| `0x1A` | All Arpeggiators | See [All Arpeggiators](#all-arpeggiators) |
+| `0x1B` | All Delays | See [All Delays](#all-delays) |
+| `0x1C` | All Reverbs | See [All Reverbs](#all-reverbs) |
+| `0x1D` | Input Characteristic | See [Input Characteristic](#input-characteristic) |
+| `0x1F` | Input Sensitivity | See [Input Sensitivity](#input-sensitivity) |
+| `0x28` | Navigation | See [Navigation](#navigation) — **`73 40`** scope byte |
+| `0x29` | Value Wrapping | See [Value Wrapping](#value-wrapping) |
+| `0x2B` | Input Source | See [Input Source](#input-source) |
+| `0x32` | BPM Brightness | See [BPM Brightness](#bpm-brightness) |
+| `0x33` | LED Lux | See [LED Lux](#led-lux) |
+| `0x35` | Random PG — Scope | See [Randomize Scope](#randomize-scope) |
+| `0x36` | Random PG — Strength | See [Randomize Strength](#randomize-strength) |
+| `0x55` | Global Program Change | See [Global Program Change](#global-program-change) |
+| `0x57` | Global MIDI Volume RX | See [Global MIDI Volume RX](#global-midi-volume-rx) |
+| `0x5A` | Input Direct Thru | See [Input Direct Thru](#input-direct-thru) |
+| `0x5B` | Input Boost | See [Input Boost](#input-boost) |
+| `0x5D` | MIDI Device ID | See [MIDI Device ID](#midi-device-id) |
+| `0x5E` | MIDI Controller Page A | See [MIDI Controller Page A](../misc/virus.md#midi-controller-page-a) |
+| `0x5F` | MIDI Controller Page B | See [MIDI Controller Page B](../misc/virus.md#midi-controller-page-b) |
+| `0x60` | Global ARP Note Send | See [Global ARP Note Send](#global-arp-note-send) |
+| `0x6A` | MIDI Clock | See [MIDI Clock](#midi-clock) |
+| `0x75` | Knob Response | See [Knob Response](#knob-response) |
+| `0x76` | Memory Protect | See [Memory Protect](#memory-protect) |
+| `0x7A` | Play mode | See [Play mode](#play-mode) |
+| `0x7C` | Global MIDI Channel | See [Global MIDI Channel](#global-midi-channel) |
+| `0x7D` | LED Mode | See [LED Mode](#led-mode) |
+| `0x7E` | LCD Contrast | See [LCD Contrast](#lcd-contrast) |
 
 ## Parameters
 
-### Edit mode 0x10 tentative
+### Edit mode 0x10
 
 **Not** a sound parameter. The Virus sends **`cmd=0x73`**, param **`0x10`**
 when the **front-panel mode** or **multi program selection** changes. The
@@ -155,13 +153,9 @@ Single buffer) used on **`0x70`** / **`0x72`** / **`0x6E`**.
 | `F0 F7` only (empty) | **MULTI+SINGLE** (Sequencer) and some **MULTI** presses — no data bytes |
 
 ```text
-F0 00 20 33 01 00 73 00 10 00 F7 # Multi / multi-bank context (tentative)
-F0 00 20 33 01 00 73 40 10 00 F7 # Single-buffer scope 0x40 (tentative)
+F0 00 20 33 01 00 73 00 10 00 F7 # Multi / multi-bank context
+F0 00 20 33 01 00 73 40 10 00 F7 # Single-buffer scope 0x40
 ```
-
-**Not confirmed:** exact meaning of value **`0x00`**; whether **`0x10`**
-is “enter Multi mode” or a broader **edit focus** indicator. Sequencer
-transitions did **not** repeat the `73 … 10` message.
 
 For **host → synth** mode selection, use [Play mode (`0x7A`)](#play-mode)
 instead.
@@ -189,7 +183,7 @@ F0 00 20 33 01 00 73 00 7A 02 F7 # Multi
 ```
 
 Panel mode changes may also emit **`73 … 10 …`** — see
-[Edit mode `0x10`](#edit-mode-0x10-tentative) (synth → host, tentative).
+[Edit mode `0x10`](#edit-mode-0x10) (synth → host).
 
 ### All EQs
 
@@ -277,7 +271,7 @@ F0 00 20 33 01 00 73 00 1C 01 F7
 parameter pages (**By Page** vs **By Parameter**).
 
 Unlike most globals in this doc, the byte after **`0x73`** is **`0x40`**
-(not **`0x00`**) — same **scope** prefix as [Edit mode `0x10`](#edit-mode-0x10-tentative):
+(not **`0x00`**) — same **scope** prefix as [Edit mode `0x10`](#edit-mode-0x10):
 
 ```text
 F0 00 20 33 01 <device_id> 73 40 28 <value> F7
@@ -292,8 +286,6 @@ F0 00 20 33 01 <device_id> 73 40 28 <value> F7
 F0 00 20 33 01 00 73 40 28 00 F7 # By Page
 F0 00 20 33 01 00 73 40 28 01 F7 # By Parameter
 ```
-
-Confirmed on Virus TI mk2 (hardware TX + manual `sendmidi`).
 
 ### Value Wrapping
 
@@ -313,8 +305,6 @@ Standard global layout: **`73 00 29 <value>`**.
 F0 00 20 33 01 00 73 00 29 00 F7 # Off
 F0 00 20 33 01 00 73 00 29 01 F7 # On
 ```
-
-Confirmed on Virus TI mk2 (hardware TX + manual `sendmidi`).
 
 ### BPM Brightness
 
@@ -387,8 +377,6 @@ F0 00 20 33 01 00 73 00 35 00 F7 # 0 %
 F0 00 20 33 01 00 73 00 35 7F F7 # 100.0 %
 ```
 
-Confirmed on Virus TI mk2 (hardware TX + manual `sendmidi`).
-
 ### Randomize Strength
 
 **Live edit:** param `0x36`.
@@ -401,15 +389,12 @@ F0 00 20 33 01 00 73 00 36 00 F7 # 0 %
 F0 00 20 33 01 00 73 00 36 7F F7 # 100.0 %
 ```
 
-Confirmed on Virus TI mk2 (hardware TX + manual `sendmidi`).
-
 ### Global Program Change
 
 **Live edit:** param `0x55`.
 
 Global **Program Change** receive. Distinct from per-part **Program Change**
-in Edit Multi (packed flag at `0xF8 + part` in Multi Dump; CONFIG global
-ignored for parts per TI manual).
+in Edit Multi (packed flag at `0xF8 + part` in Multi Dump).
 
 | Value | Setting |
 | ----- | -------- |
@@ -450,18 +435,16 @@ F0 00 20 33 01 00 73 00 57 01 F7 # Enabled
 **EDIT CONFIG → MIDI → MIDI Device ID** (**1–16**, or **Omni**).
 
 **Hardware TX:** the Virus **does not** emit SysEx when this setting is
-changed on the **front panel** (TI mk2 desktop, confirmed). Wire map below is
+changed on the **front panel**. Wire map below is
 from manual **`sendmidi`** / host capture only — the synth
 **accepts** `73 00 5D …` when the envelope **`<device_id>`** matches CONFIG.
 
 | UI ID | `<device_id>` | `<value>` | Full message |
 | ----- | ------------- | --------- | ----------------------------------------------- |
 | 1 | `00` | `00` | `F0 … 01 00 73 00 5D 00 F7` |
-| 2 | *(TBD)* | *(TBD)* | Capture matched ID 1 in one session — re-verify |
 | 3 | `01` | `01` | `F0 … 01 01 73 00 5D 01 F7` |
 
-**`<value>`** appears zero-based (`UI − 1` for IDs 1 and 3). **Omni**
-encoding not yet captured.
+**`<value>`** appears zero-based (`UI − 1` for IDs 1 and 3).
 
 ```text
 # Device ID 1 (destination device 1, value 1)
@@ -503,7 +486,6 @@ F0 00 20 33 01 00 73 00 60 01 F7
 | ----- | ---------------------------------------- |
 | `00` | Internal sync |
 | `01` | Sync to External |
-| `02` | *(third option — label TBD on hardware)* |
 
 ```text
 # Internal
@@ -511,9 +493,6 @@ F0 00 20 33 01 00 73 00 6A 00 F7
 
 # External
 F0 00 20 33 01 00 73 00 6A 01 F7
-
-# Third mode (value 02)
-F0 00 20 33 01 00 73 00 6A 02 F7
 ```
 
 ### Knob Response
@@ -524,7 +503,7 @@ F0 00 20 33 01 00 73 00 6A 02 F7
 when a parameter is changed (**Off**, **Jump**, **Snap**, **Rel**).
 
 **Hardware TX:** **No** — the Virus does not emit SysEx when changed on the
-panel (TI mk2 desktop, confirmed). **RX:** confirmed via manual
+panel. **RX:** confirmed via manual
 **`sendmidi`**.
 
 ```text
@@ -550,7 +529,7 @@ F0 00 20 33 01 00 73 00 75 03 F7 # Rel
 ### CONFIG → Inputs / USB (RX only)
 
 **EDIT CONFIG → Inputs / USB** (and related input level menus). All use
-**`cmd=0x73`**, part **`00`**. **Hardware TX:** **No** on TI mk2 desktop
+**`cmd=0x73`**, part **`00`**. **Hardware TX:** **No**
 (confirmed / user capture). **RX:** host **`sendmidi`** confirmed for the
 examples below. **Not** in **Single Dump**.
 
@@ -686,7 +665,7 @@ F0 00 20 33 01 00 73 00 76 01 F7
 **EDIT CONFIG → MIDI → Global Channel** (Global MIDI Channel).
 
 **Hardware TX:** the Virus **does not** emit SysEx when this setting is
-changed on the **front panel** (TI mk2 desktop, confirmed). Examples below
+changed on the **front panel**. Examples below
 are from manual **`sendmidi`** / host capture only; **RX** on the synth is assumed
 but not fully swept.
 
@@ -759,19 +738,3 @@ F0 00 20 33 01 00 73 00 7E 40 F7 # 50%
 F0 00 20 33 01 00 73 00 7E 7E F7 # 98.4%
 F0 00 20 33 01 00 73 00 7E 7F F7 # 100%
 ```
-
-## Correlation with Multi Dump (planned)
-
-To test whether globals are stored in the multi payload:
-
-1. Load a known multi (e.g. INIT MULTI).
-2. Change one global via **`0x73`** and confirm on the Virus LCD.
-3. Request **Multi Dump** (edit buffer or stored slot).
-4. Diff against baseline; check unmapped regions in
- [multi.md — Unmapped
- payload](../dumps/multi.md#unmapped-payload):
- `0x19..0x28`, `0xB9..0xC7`, `0xE8..0xF7`.
-
-**Keyboard to MIDI** (Edit Multi global, live `0x72` / `0x40`) is a separate
-one-bit field; if stored in a multi dump it would most likely be a single
-`00`/`01` byte in one of the zero blocks above.

@@ -1,7 +1,7 @@
 # Access Virus SysEx
 
-Reverse engineered **Access Virus TI mk2** SysEx specifications with assistance
-from Cursor AI.
+Reverse engineered **Access Virus TI mk2 desktop** SysEx specifications with
+assistance from Cursor AI.
 
 - [Getting started (SysEx primer)](docs/getting-started.md)
 - [General notes about Virus architecture](docs/misc/virus.md)
@@ -24,7 +24,7 @@ from Cursor AI.
 - [Parameter options (enums, panel tables)](docs/reference/parameter-options.md)
 - [OsTIrus (DSP56300 TI/TI2 emulation)](docs/misc/ostirus.md)
 
-## Setup
+## Testing
 
 Install [Homebrew](https://brew.sh/) MIDI helpers:
 

@@ -1,11 +1,11 @@
 # Controller Dump Request (`0x37`)
 
-Part of [Documentation](../../../README.md#documentation). Classic Access docs: **CONTROLLER DUMP REQUEST**.
+Part of [Documentation](../../../README.md#documentation). **Controller Dump Request** (`0x37`).
 
 Unlike **Single Dump** (`0x10`), a controller dump is a **stream of many
 short SysEx messages** (live-edit / CC-style parameter updates) that together
 describe the current state of one part’s Single edit buffer. Useful for finding
-**`cmd`/`param` pairs** not yet mapped in [live-edit docs](../../../README.md#documentation) or
+**`cmd`/`param` pairs** missing from [live-edit docs](../../../README.md#documentation) or
 [single.md](single.md#single-parameter-map).
 
 ## Request
@@ -17,10 +17,10 @@ F0 00 20 33 01 <device> 37 00 <part> F7
 | Byte | Value | Meaning |
 | -------- | ----------------------- | ----------------------------------------------------------------------- |
 | `37` | Controller Dump Request | Fixed |
-| `00` | Subcommand | Fixed in TI mk2 captures (**TBD** if other values exist) |
+| `00` | Subcommand | Fixed in captures |
 | `<part>` | Part / buffer selector | Same as [Single Request](bank.md#single-request) edit-buffer slots |
 
-### `<part>` (TI mk2, confirmed)
+### `<part>`
 
 | `<part>` | Target |
 | ----------------- | -------------------------------------- |
@@ -44,8 +44,6 @@ receivemidi dev "<MIDI port>" syx
 - **Many messages**, not one bulk dump.
 - Expected content: **Page A / B / part-buffer** live edits — see
   [Paging](../misc/virus.md#live-edit-command-bytes) (`0x70`, `0x71`, `0x6E`, …).
-- Exact message list, order, and completeness vs **Single Dump** payload:
-  **TBD** (capture + diff workflow).
 
 ## Mapping workflow (suggested)
 

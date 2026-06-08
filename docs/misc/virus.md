@@ -1,12 +1,12 @@
-# Access Virus (TI mk2)
+# Access Virus
 
-General notes about Access Virus TI mk2 architecture
+General notes about Access Virus architecture
 
-Note: Currently applies only to Access Virus TI mk2 desktop (not keyboard/Polar)
+Desktop module only (not keyboard/Polar).
 
 ## Banks and programs
 
-The TI mk2 provides **four RAM banks** (A–D). Each bank holds **128 Single
+The Virus provides **four RAM banks** (A–D). Each bank holds **128 Single
 programs**.
 
 | Bank | Role |
@@ -54,7 +54,7 @@ Placeholders **`<part>`**, **`<param>`**, **`<value>`** are one byte each.
 
 ### Page A vs Page B
 
-Classic Access docs split many Single parameters between **Page A** and **Page
+Many Single parameters are split between **Page A** and **Page
 B**. On the TI, live edits use **`cmd=0x70`** (Page A) or **`cmd=0x71`** (Page
 B). Which page a panel control uses is fixed per parameter — see the panel
 live-edit docs and [parameter-options.md](../reference/parameter-options.md).
@@ -151,14 +151,14 @@ Message-level layouts:
 - Live multi edits (not full dumps):
 [multis.md](../live-edit/multis.md)
 
-## Multi bank (TI series)
+## Multi bank
 
 See [multi.md — Embedded vs Reference
 Multis](../dumps/multi.md#embedded-vs-reference-multis).
 
 ## Front-panel modes
 
-The TI desktop exposes **Multi**, **Single**, and **Sequencer**
+The front panel exposes **Multi**, **Single**, and **Sequencer**
 (**MULTI+SINGLE**) play/edit modes.
 
 **Host → synth** — select mode with **`cmd=0x73`**, param **`0x7A`**:
@@ -172,7 +172,7 @@ The TI desktop exposes **Multi**, **Single**, and **Sequencer**
 See [Play mode (`0x7A`)](../live-edit/global.md#play-mode).
 
 **Synth → host** (panel) may emit **`cmd=0x73`**, param **`0x10`**, or empty
-`F0 F7` frames — see [Edit mode `0x10`](../live-edit/global.md#edit-mode-0x10-tentative).
+`F0 F7` frames — see [Edit mode `0x10`](../live-edit/global.md#edit-mode-0x10).
 
 | Panel action | Typical SysEx from Virus |
 | ---------------------------- | --------------------------------- |

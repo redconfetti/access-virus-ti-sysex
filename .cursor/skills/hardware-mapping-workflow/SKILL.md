@@ -1,7 +1,7 @@
 ---
 name: hardware-mapping-workflow
 description: >-
- Maps Access Virus TI mk2 SysEx by hardware capture with sendmidi/receivemidi.
+ Maps Access Virus SysEx by hardware capture with sendmidi/receivemidi.
  Use when confirming parameters, live-edit bytes, dump offsets,
  work, panel-to-host capture, or MIDI SysEx testing.
 disable-model-invocation: true
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # Hardware mapping workflow
 
-Maps **Virus TI mk2 desktop** SysEx against real hardware. Use the MIDI port
+Maps **Virus** SysEx against real hardware. Use the MIDI port
 from `sendmidi list` / `receivemidi list`. See also
 [OsTIrus](../../docs/misc/ostirus.md).
 

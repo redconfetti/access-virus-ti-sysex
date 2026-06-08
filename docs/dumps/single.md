@@ -61,13 +61,13 @@ versa.
 sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 30 00 40
 ```
 
-Classic **Single Request** (`0x30`) with `bank=00` uses `slot=00`–`0F` for Multi
+**Single Request** (`0x30`) with `bank=00` uses `slot=00`–`0F` for Multi
 parts and `slot=40` for Single-mode buffer — arrangement dumps mirror the
 **`00` + part index** scheme.
 
 ## Single Dump upload (`0x10`)
 
-Classic Access docs call this **SINGLE DUMP**; the TI mk2 reply/upload is
+The reply/upload is
 **Single Dump** — **524 bytes**, not 256 + checksum. See
 [Dump format](#dump-format) above.
 
@@ -91,7 +91,6 @@ F0 00 20 33 01 <device> 10 <bank> <slot> <TI payload 0x09..0x208> <cs> F7
 | --------------- | --------------- | ----------------------------------------------------- |
 | `00` | `00`–`0F` | Multi **Part 1–16** edit buffer |
 | `00` | `40` | **Single mode** edit buffer |
-| `01`–`04` | `00`–`7F` | **Store** to RAM A–D (classic; TI store path **TBD**) |
 
 A short message like `F0 … 10 01 40 F7` (no payload) will **not** load RAM A
 program 64 — there is nothing to parse.
@@ -103,7 +102,7 @@ parallel one-message SysEx loader; hosts that want a stored patch should send
 524-byte body (editors, backup tools). See
 [bank.md — Single mode program recall](bank.md#no-load-program-by-slot-sysex-in-single-mode).
 
-### Load RAM A program 64 into Multi Part 1 (TI mk2)
+### Load RAM A program 64 into Multi Part 1
 
 Two steps — **Single Request**, then re-send a full **`0x10`** with the
 destination header:
@@ -275,7 +274,7 @@ Multi edit parameters are in
 
 ### Oscillators
 
-**SubCategory** labels in the parameter inventory below are **not always** TI mk2
+**SubCategory** labels in the parameter inventory below are **not always**
 **EDIT** menu names. Examples: **Oscillator Common FM** and **Oscillator Common Sync** are
 inventory groupings only — there is no **EDIT OSC → Common → FM** page. FM and
 sync-related controls live on **Osc 2** sub-menus, **EDIT OSC → Common** (e.g.
@@ -382,7 +381,7 @@ Per-mode sweeps (switch **`6E`/`1E`** or **`6E`/`23`**, then test controls from
 | Velocity --> FM Amount | Velocity Map | `0xBA` | `71` / `0x32` — **Edit Single → Velocity Map → FM Amount** only (±100 %) |
 | Oscillator 2 FM Mode | Oscillator 2 Classic | `0xAA` | `71` / `0x22` — **EDIT OSC → Osc 2**; Classic `00`–`06`, Wavetable/… **FreqMod** `00`, **PhaseMod** `01` |
 | ~~Sync Amount / X-Sync Frequency~~ | — | — | Same as **Oscillator 2 FM Amount** — `70` / `0x1B` when **Sync On** (`70`/`1C`=`01`) |
-| ~~Velocity --> FM / Sync~~ | — | — | **N/A** on TI mk2 — Velocity Map has **FM Amount** only (`71`/`32`); no separate **FM/Sync** row |
+| ~~Velocity --> FM / Sync~~ | — | — | **N/A** — Velocity Map has **FM Amount** only (`71`/`32`); no separate **FM/Sync** row |
 | ~~Filter Envelope --> X-Sync~~ | — | — | Same wire as **Filter Envelope --> FM / X-Sync** — `70` / `0x1E`; inventory-only duplicate |
 | Noise Oscillator Volume | Noise | `0x2D` | `70` / `0x25` (CC 37; Off `00`, **1..127** direct `stored = lcd`) |
 | Noise Color | Noise | `0x2F` | `70` / `0x27` (**−64..+63** → `stored = ui + 64`) |
@@ -423,7 +422,7 @@ separate dump bytes **`0x0A6`** / **`0x0A7`** — see
 | Filter Cutoff Link toggle | Filter Common | `0x0A8` | `71` / `0x20` — **`00`** Off / **`01`** On (`<part>=0x40`) |
 | Filter Balance | Filter Common | `0x038` | `70` / `0x30` (bipolar `ui+64`) |
 | Pan Spread | Filter Common | `0x183` | `6E` / `0x7A` (Split routing only) |
-| ~~Filter Envelope Select~~ | — | — | **N/A** on TI mk2 — no panel control; use **Filter 1/2 Env Polarity** (`71`/`1E`, `71`/`1F`) and [FILTERS SELECT](../live-edit/single/filters.md#select-717a) (`71`/`7A`) |
+| ~~Filter Envelope Select~~ | — | — | **N/A** — no panel control; use **Filter 1/2 Env Polarity** (`71`/`1E`, `71`/`1F`) and [FILTERS SELECT](../live-edit/single/filters.md#select-717a) (`71`/`7A`) |
 | Filter Envelope Attack | Filter / Aux Envelopes | `0x03E` | `70` / `0x36` (Filter 1 ADSR menu) |
 | Filter Envelope Decay | Filter / Aux Envelopes | `0x03F` | `70` / `0x37` |
 | Filter Envelope Sustain | Filter / Aux Envelopes | `0x040` | `70` / `0x38` (linear %) |
@@ -742,89 +741,4 @@ hardware-verified on clean **`-INIT-`** (`30 00 40` / `<part>=0x40`).
 | Soft Knob 3 Function As… | Soft Knobs | `0x0C8` | `71` / `0x40` — same wire as [Mod Matrix slot 1 Source](#modulation-matrix) (`71`/`40`) |
 | Soft Knob 3 Name | Soft Knobs | `0x0BD` | `71` / `0x35` — [Soft Knob Names](../reference/parameter-options.md#soft-knob-names) |
 
-### Patch Utility - Config
-
-Patch utility / I/O config; likely not in Single Dump.
-
-| Control | SubCategory | Dump offset | Live edit |
-| --------------- | ---------------------------- | ----------- | --------- |
-| USB Audio Mode | Input / Output Configuration | **Not in dump** | `73` / `0x09` — [USB Audio Mode](../live-edit/global.md#usb-audio-mode); **RX** only |
-| Surround Output | Input / Output Configuration |  |  |
-| Master Volume | Input / Output Configuration |  |  |
-
-### Patch Utility - Remote
-
-Remote template UI; not a synth parameter.
-
-| Control | SubCategory | Dump offset | Live edit |
-| ------------------------------------- | ---------------- | ----------- | --------- |
-| Remote Template Configuration Ability | Remote Templates |  |  |
-
-### Global
-
-Global settings — see [global.md](../live-edit/global.md). Not stored
-in Single Dump. Rows below are legacy inventory placeholders; **panel-only**
-CONFIG (no SysEx on TI mk2) is omitted — documented only when a wire byte is
-confirmed in `global.md`.
-
-| Control | SubCategory | Dump offset | Live edit |
-| ------------------------------------------ | -------------- | ----------- | -------------------------------------------------------------------------------------- |
-| LED Mode | Hardware Panel |  |  |
-| LED Brightness (Lux) - TI Series Only | Hardware Panel |  |  |
-| BPM Brightness (Lux) - TI Series Only | Hardware Panel |  |  |
-| LCD Contrast | Hardware Panel |  |  |
-| Memory Protect | Memory / RAM |  |  |
-| Sync Clock to External Host toggle | MIDI |  |  |
-| Master Clock / Global Tempo | MIDI |  |  |
-| MIDI Clock Source | MIDI |  |  |
-| MIDI Destination | MIDI |  |  |
-| MIDI Device ID | MIDI |  |  |
-| Global MIDI Channel | MIDI |  |  |
-| MIDI Volume Receive (RX) toggle | MIDI | **Not in dump** | `73` / `0x57` — [Global MIDI Volume RX](../live-edit/global.md#global-midi-volume-rx); **RX** only |
-| Program Change Receive (RX) toggle | MIDI |  |  |
-| MIDI Control Page A toggle | MIDI |  |  |
-| MIDI Control Page B toggle | MIDI |  |  |
-| Arpeggiator to MIDI Out / Note Send toggle | MIDI |  |  |
-| All Argpeggiators toggle | FX |  |  |
-| All Delays | FX |  |  |
-| All Reverbs | FX |  |  |
-| All EQs | FX |  |  |
-| Knob Response | Knobs |  | [`73`/`75`](../live-edit/global.md#knob-response) — **RX** only; no panel TX |
-| Keyboard Local Mode / Control | Global |  |  |
-| Keyboard Channel Mode | Global |  |  |
-| Keyboard Transpose | Global |  |  |
-| Keyboard Aftertouch Sensitivity | Global |  |  |
-| Modwheel Assign | Global |  |  |
-| Pedal 1 Assign | Global |  |  |
-| Pedal 2 Assign | Global |  |  |
-| Master Tuning | Global |  |  |
-| Pure Tuning | Global |  |  |
-| Input Source | In / Out | **Not in dump** | `73` / `0x2B` — [Input Source](../live-edit/global.md#input-source); **RX** only |
-| Input Characteristic | In / Out | **Not in dump** | `73` / `0x1D` — [Input Characteristic](../live-edit/global.md#input-characteristic); **RX** only |
-| Input Direct Thru | In / Out | **Not in dump** | `73` / `0x5A` — **`0`–`127`** `stored = lcd` — [Input Direct Thru](../live-edit/global.md#input-direct-thru); **RX** only |
-| Input Boost | In / Out | **Not in dump** | `73` / `0x5B` — **`00`** Off, **`01`–`7F`** level — [Input Boost](../live-edit/global.md#input-boost); **RX** only |
-| Input Sensitivity (CONFIG) | In / Out | **Not in dump** | `73` / `0x1F` — [Input Sensitivity](../live-edit/global.md#input-sensitivity); **RX** only |
-
-## Known / unknowns at this stage
-
-- **Known**
-- Single dumps are **fixed‑size 524‑byte** SysEx messages.
-- **Arrangement** exports: **16** singles after the multi; **slot `0x08`**
- = zero-based part index **`0x00`–`0x0F`** (confirmed on arrangement export).
-- Checksum at **`0x209`**; sum payload from **`0x09`** per formula above.
-- The **patch name** appears as an ASCII sequence near offset 0xFA, padded to
- a fixed length with spaces.
-- The final byte before `F7` behaves like a **checksum byte**.
-- **405** UI controls are listed in [Single parameter
- map](#single-parameter-map)
- for byte /
- live-edit correlation (Multi parameters →
- [multi.md](multi.md#multi-parameter-map); excluding Flash ROM,
- X/Y Pad, and Browser).
-- **Unknown (to be refined with more examples)**
-- Exact mapping from payload offsets to GUI parameters.
-- Meaning of **`0x09`–`0x0B`** (`0C 10 00` vs `0C 00 00`) beyond “TI header”.
-- Trailer bytes at **`0x204`–`0x208`** (`7F 40 00 01 00 00`).
-
-Future work: compare additional Single dumps (small, targeted parameter
-changes) and record byte deltas in the parameter map.
+Global CONFIG settings are documented in [global.md](../live-edit/global.md); they are not stored in Single Dump.

@@ -12,7 +12,6 @@ Dump worksheet: [Single parameter map](../../dumps/single.md#lfo)
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
-
 Page **B#7–13** (*Lfo3* settings …) dump offsets: see
 [Single parameter map — LFO](../../dumps/single.md#lfo).
 Documented LFO settings: [LFO live edit routing](../../reference/parameter-options.md#lfo-live-edit-routing),
@@ -32,11 +31,6 @@ separate **LFO Modulation** amount pages. Inventory rows:
 
 Capture path: **`LFO n` / control → LCD value**. Use **+/−** when possible. Knob
 sweeps: use the **last** SysEx line of a burst.
-
-### SELECT
-
-**TBD** — confirm whether **EDIT LFO** has a front-panel **SELECT** (LFO 1 / 2 /
-3) with live SysEx, as on **OSCILLATORS** / **FILTERS** / **EFFECTS**.
 
 ## LFO 1
 

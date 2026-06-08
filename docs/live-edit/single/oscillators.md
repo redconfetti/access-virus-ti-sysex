@@ -10,7 +10,6 @@ Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-ma
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
-
 ## Panel reference
 
 **LCD:** **OSCILLATORS** → **Oscillator 1** / **2** / **Common** / **Mixer**.
@@ -983,7 +982,7 @@ lcd ≈ round(1 + (internal − 1) × (stored / 127), 0.1)
 
 Full **wire → LCD** map: [parameter-options.md — Osc 1 Hypersaw
 Density LCD](../../reference/parameter-options.md#osc-1-hypersaw--density-lcd) (same panel
-curve on TI mk2).
+curve).
 
 ```text
 F0 00 20 33 01 00 70 00 16 00 F7 # Density 1.0
@@ -1577,7 +1576,7 @@ Same encoding as [Noise Volume](#noise-volume).
 
 **`<part>`:** Multi Part *n* → **`0x00`–`0x0F`**; Single edit buffer →
 **`0x40`**. Param **`0x32`** is unchanged — only the part index switches with
-the active edit context (panel-verified TI mk2).
+the active edit context (panel-verified).
 
 | LCD | `<value>` |
 | --- | --------- |

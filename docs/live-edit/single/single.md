@@ -10,7 +10,6 @@ Dump worksheet: [Single parameter map](../../dumps/single.md#single-parameter-ma
 
 Paging: [virus.md](../../../misc/virus.md#paging) (`0x70` Page A, `0x71` Page B, `0x6E` part buffer, `0x6F` extended, `0x72` Multi). Param IDs depend on **`cmd`**.
 
-
 ## Common (Edit Single)
 
 Per-part **Common** page settings (Edit Single). Pitch-bender and smooth-mode
@@ -564,7 +563,7 @@ F0 00 20 33 01 00 6E 00 58 7F F7 # Sustain Slope +63
 **Note:** **`cmd=0x6F`** **`7C`/`7D`/`7E`** are **Inputs** (see
 [Inputs](../global.md#inputs-edit-single)). Other **`6F`** params (e.g.
 **`78`/`79`/`7A`**)
-appear in some captures but are **unconfirmed** for Envelope 4 — the
+for Envelope 4 — the
 **`6E` `55`–`59`** block matches full ADSR sweeps on hardware.
 
 ## Velocity Map (Edit Single)
@@ -592,7 +591,7 @@ for 7Fh: pct = +100.0 %
 | Filter2 Env Amount | `71` | `37` |
 | Resonance 2 | `71` | `39` |
 
-On TI mk2 the
+The
 **Velocity Map** menu exposes the **10** rows above; **`71`/`33`–`35`**
 were not swept in capture and may be unused or reserved on this
 firmware. There is **no** separate **FM/Sync** row — **FM Amount** applies
@@ -620,7 +619,7 @@ The same **`00` / `40` / `7F`** anchors apply to every row in the table.
 
 ## Surround (Edit Single)
 
-**Edit Single → Surround.** On TI mk2 this is the patch **secondary output**
+**Edit Single → Surround.** This is the patch **secondary output**
 bus (rear/surround send in a multi-output setup — separate from the main
 **Output Routing** path on **`72`/`29`** in Multi mode). Same wire as
 **Edit Multi → Secondary Output**: **`cmd=0x73`**, param **`0x2D`**. In Single

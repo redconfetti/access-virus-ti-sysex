@@ -29,7 +29,7 @@ Slot N
 There is **no** per-row Source — only **Destination** and **Amount** repeat
 three times.
 
-## Per-slot `cmd` / param map (TI mk2)
+## Per-slot `cmd` / param map
 
 Full enum sweeps on all six slots; all **42** cells verified on Single edit
 buffer **`30 00 40`**.

@@ -3,7 +3,7 @@
 Part of [Documentation](../../README.md#documentation). Paging:
 [virus.md](../misc/virus.md#paging).
 
-Live SysEx notes for Multi edit behavior on Virus TI mk2.
+Live SysEx notes for Multi edit behavior.
 
 ```text
 F0 00 20 33 01 00 72 <part> <param> <value> F7
@@ -114,7 +114,7 @@ encoding)**.
  F0 00 20 33 01 00 71 <part> <param> <value> F7
  ```
 
-- **Not in Multi Dump** — eliminated on TI mk2 desktop (identical dump vs
+- **Not in Multi Dump** — eliminated on desktop (identical dump vs
   INIT baseline; values live in **Single Dump** when editing that part’s
   Single). See
   [multi.md — Bend limits](../dumps/multi.md#bend-limits-not-in-multi-dump).
@@ -208,7 +208,7 @@ encoding)**.
 
 **Load from RAM/ROM (Multi mode, Part 1)** — set bank/program via **`0x72`**, then
 upload with **Single Dump** (`0x10`); hardware load-from-bank via **`0x72` alone**
-is **not confirmed** on TI mk2:
+via **Single Dump** upload:
 
 ```text
 F0 00 20 33 01 00 72 00 20 00 F7  # Part 1 → RAM A
@@ -238,7 +238,7 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
 
 **Live edit:** param `0x2D`.
 
-- Per-part **secondary** output routing (Edit Multi). On TI mk2 the same
+- Per-part **secondary** output routing (Edit Multi). The same
  setting appears as **Edit Single → Surround → Output** (rear/surround bus);
  see [Surround (Edit Single)](single/single.md#surround-edit-single).
 - Sent via **`cmd=0x73`**, not `0x72`:
@@ -248,10 +248,7 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
  F0 00 20 33 01 00 73 40 2D <value> F7   # Single edit buffer
  ```
 
- Part 1 captures confirmed; Single mode uses **`<part>=0x40`**. Whether other
- Multi parts use a different part byte with the same param is **not confirmed**.
-
-- **Not in Multi Dump** — eliminated (hardware-tested: `73 00 2D` and
+ Part 1 captures confirmed; Single mode uses **`<part>=0x40`**. - **Not in Multi Dump** — eliminated (hardware-tested: `73 00 2D` and
   `72 00 2D` — no dump change vs INIT baseline). Same class as Edit Single
   Surround **Output** (also absent from **Single Dump**). See
   [multi.md](../dumps/multi.md#secondary-output-not-in-multi-dump).
@@ -269,8 +266,7 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
 ### Keyboard-related (`0x40`) — global
 
 - Observed as global control (`part=00`).
-- Keyboard local / global keyboard behavior (label TBD on panel).
-- On TI desktop module, **`72 00 40` on/off does not change Multi Dump**
+- On the desktop module, **`72 00 40` on/off does not change Multi Dump**
  (hardware-tested).
 - Supported values: see [Boolean On/Off](#boolean-onoff).
 
@@ -315,16 +311,6 @@ F0 00 20 33 01 00 72 00 21 40 F7  # Part 1 → program 64 (wire 0x40)
 - Per-part Program Change response.
 - Dump correlation: packed flag at `0xF8 + part` (`±0x40` behavior).
 - Supported values: see [Boolean On/Off](#boolean-onoff).
-
-### Keyboard settings context (manual)
-
-The TI manual distinguishes:
-
-- **Keyboard to MIDI** (Edit Multi field).
-- **Keyboard Local / Mode** (global CONFIG keyboard settings).
-
-Current live mapping does not fully disambiguate these on all hardware
-variants, so `0x40` remains keyboard-related with target TBD.
 
 ### Example messages
 

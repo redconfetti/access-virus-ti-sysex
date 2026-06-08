@@ -1,13 +1,13 @@
 ---
 name: documentation-standards
 description: >-
- Documents Access Virus TI SysEx in this repo: reference/parameter-options.md for enums,
+ Documents Access Virus SysEx in this repo: reference/parameter-options.md for enums,
  live-edit by panel section, SysEx examples per parameter. Use when adding or
  editing docs/live-edit, docs/dumps, or parameter option tables.
 disable-model-invocation: true
 ---
 
-# Documentation standards (Access Virus TI SysEx)
+# Documentation standards (Access Virus SysEx)
 
 Apply when writing or restructuring documentation in this repository.
 
@@ -17,14 +17,14 @@ Apply when writing or restructuring documentation in this repository.
 | ------------------------------------------------------------ | ----------------------------------------------------------------------------- |
 | [docs/reference/parameter-options.md](../../docs/reference/parameter-options.md) | **All** option/value lookup tables (enums, panel visibility, LCD curves) |
 | [Documentation](../../README.md#documentation) | Live SysEx per **panel section** — `cmd` / `param` / encoding + **examples** |
-| [Documentation](../../README.md#documentation) | Single Dump / Multi Dump layout and parameter **inventory** (offsets TBD) |
+| [Documentation](../../README.md#documentation) | Single Dump / Multi Dump layout and parameter **inventory** |
 | [README.md](../../README.md) | Tools, ports, first `sendmidi` message |
 | [docs/getting-started.md](../../docs/getting-started.md) | SysEx primer (`cmd`, requests vs live edit) |
 
 **Do not** put enum option tables in live-edit files — link to
 `reference/parameter-options.md#anchor` instead.
 
-## Virus TI logical sections
+## Logical sections
 
 Organize live-edit and dump inventory rows to match the synth’s menus:
 
@@ -50,7 +50,7 @@ blocks to `effects.md` or `single.md`.
 3. **SysEx examples** — fenced `text` block with full lines (include `F0`/`F7`
  in docs for readability; note `sendmidi` omits them). See template below.
 4. **Confirmed** — Hardware TX / panel / capture when known; otherwise mark
- **TBD**.
+.
 5. **Enums** — link to [parameter-options.md](../../docs/reference/parameter-options.md);
  table lives there, not duplicated.
 

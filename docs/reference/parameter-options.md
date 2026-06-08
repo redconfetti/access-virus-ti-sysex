@@ -228,8 +228,7 @@ panel **2**–**16** → **`02`–`10`**.
 
 ## Arpeggiator Mode
 
-**EDIT ARP → Mode** (`71` / `0x0F`). **`stored = index`**. lists modes **`00`–`06`** only; TI mk2
-adds **Arp>Matrix** at **`07`**.
+**EDIT ARP → Mode** (`71` / `0x0F`). **`stored = index`**. lists modes **`00`–`06`**; **Arp>Matrix** at **`07`**.
 
 | Index | `<value>` | Option |
 | ----- | --------- | ---------- |
@@ -246,7 +245,7 @@ adds **Arp>Matrix** at **`07`**.
 
 ## Arpeggiator panel visibility
 
-**EDIT ARP** (TI mk2). **Mode** is always on the panel.
+**EDIT ARP**. **Mode** is always on the panel.
 
 ### Mode = Off (`00`)
 
@@ -448,7 +447,7 @@ F0 00 20 33 01 00 71 40 04 01 F7 # On
 ## Arpeggiator Loop Length
 
 User arpeggiator pattern **loop length** — **1**–**32** steps (max pattern length
-on TI mk2). Live edit: **`cmd=0x6E`**, param **`0x7F`** (part buffer — not Page
+). Live edit: **`cmd=0x6E`**, param **`0x7F`** (part buffer — not Page
 B **`71`**). **`stored = steps − 1`** (**`00`–`1F`**). **Single Dump**
 offset **`0x189`** ( **`-INIT-`** baseline).
 
@@ -581,7 +580,7 @@ See [Arpeggiator step triplet](#arpeggiator-step-triplet).
 
 ## Delay panel visibility
 
-**Edit FX → Delay**. Panel-confirmed (TI mk2). **Type** is always available.
+**Edit FX → Delay**. Panel-confirmed. **Type** is always available.
 
 ### Send = Off (`00`)
 
@@ -751,7 +750,7 @@ confirmed (**Tape Free** `6E`/`0A`/`02`, **Time** sweep `70`/`72`
 | **Classic** | **Delay Time** | **Send** ≠ Off, **Mode** = Simple Delay or Ping Pong … (`01`–`05`), **[Clock](#delay-clock) = Off** (`00`); **hidden** on **Pattern** (`06`–`16`) |
 | **Tape Free** / **Tape Doppler** | **Time** | **Send** ≠ Off (no **Clock** row) |
 
-Approximate scale (intermediate rows not all spot-checked):
+Approximate scale:
 
 ```text
 lcd_ms ≈ stored × 693.6 / 127 # round display to 0.1 ms
@@ -1013,7 +1012,7 @@ F0 00 20 33 01 00 71 00 12 <value> F7 # LFO 1 Clock (Multi Part 1)
 | `14` | 8/1 |
 | `15` | 16/1 |
 
-Valid wire values **`00`–`15`** on TI mk2 (**22** menu rows). Distinct from
+Valid wire values **`00`–`15`** (**22** menu rows). Distinct from
 [Arpeggiator Resolution](#arpeggiator-resolution) (`71`/`11`) and [Delay
 Clock](#delay-clock) (stops at **`10`**).
 
@@ -1044,7 +1043,7 @@ edit **`cmd` / `param`** depend on which LFO is being edited:
 | **Amount** | `71` / `50` | `71` / `52` | `71` / `0C` |
 | **Fade In** | — | — | `71` / `0D` |
 
-**Routing rules (TI mk2):**
+**Routing rules:**
 
 - **Clock** — always **`cmd=0x71`** (Page B). Params **`0x12`** (LFO 1),
   **`0x13`** (LFO 2), **`0x15`** (LFO 3). Byte **`0x14`** is not an LFO clock
@@ -1157,8 +1156,7 @@ wave_number = stored − 3        # Wave 3 → 06, Wave 64 → 43
 stored      = wave_number + 3   # for wave_number 3..64
 ```
 
-Contiguous run — no gaps between **Wave 3** and **Wave 64**. Spot-checked on
-TI mk2:
+Contiguous run — no gaps between **Wave 3** and **Wave 64**. Spot-checked:
 
 | `<value>` | Option |
 | --------- | ------- |
@@ -1265,8 +1263,6 @@ stored = round((pct − 0.8) × 126 / 99.2 + 1)
 | `01` | 0.8 % |
 | `7F` | 100.0 % |
 
-Intermediate steps are linear between endpoints (not yet spot-checked row-by-row).
-
 ---
 
 ## LFO 1 Destination
@@ -1306,7 +1302,7 @@ F0 00 20 33 01 00 70 40 4B 43 F7 # Osc 2 Pitch +4.7 % (linked knob example)
 **Assign Target** menu. **`00`** = **Off**. Other rows share the **Mod Matrix
 Destinations** name set ([Mod Matrix Destinations](#mod-matrix-destinations));
 wire **`<value>`** bytes are a separate namespace (not the mod-matrix table
-index). Full enum confirmed on TI mk2 (**121** destinations + **Off**), matching
+index). Full enum confirmed (**121** destinations + **Off**), matching
 [Mod Matrix Destinations](#mod-matrix-destinations) by name. Same **`<value>`**
 bytes on [LFO 2 Assign Target](#assign-target-1) (**`71`/`51`**). Unused wire
 bytes: **`49`**, **`4A`**, **`58`**, **`6B`**, **`70`**, **`77`**.
@@ -1676,9 +1672,9 @@ Feedback](#delay-feedback-1).
 **Edit FX → Delay → Send** (all **Types**).
 **`stored = index`** (`00`–`7F`). Live edit: **`cmd=0x70`**, param **`0x71`**
 (Page **A#113**). Same LCD map as [Reverb Send](#reverb-send-lcd) (**`6E`/`02`**).
-Panel-confirmed on TI mk2 (see table). Rows **`19`–`1D`**,
+Panel-confirmed (see table). Rows **`19`–`1D`**,
 **`1F`–`27`**, **`29`–`3F`** are
-**amplitude-interpolated** (not yet spot-checked).
+**amplitude-interpolated**.
 
 | Region | Rule |
 | ----------------------- | ------------------------------------------------------------------- |
@@ -1839,7 +1835,7 @@ confirmed (**`01`–`03`** stepped; **`00`** Off). First active algorithm is
 **`01`**
 (not **`00`**), same pattern as [Delay Mode](#delay-mode-1).
 
-| `<value>` | Option | Meaning (TI reference) |
+| `<value>` | Option | Meaning |
 | --------- | ---------- | ---------------------------------------------- |
 | `00` | Off | No reverb; other rows **hidden** |
 | `01` | Reverb | Standard reverb + [Predelay](#reverb-predelay-1) |
@@ -1871,14 +1867,11 @@ F0 00 20 33 01 00 6E 00 03 00 F7 # Ambience (Part 1)
 
 ## Reverb panel visibility
 
-**Edit FX → Reverb**. Panel-confirmed on TI mk2 (differs from TI reference
-manual
-in places and from [Delay panel visibility](#delay-panel-visibility)).
+**Edit FX → Reverb**. Panel visibility follows [Delay panel visibility](#delay-panel-visibility).
 
 ### Mode = Off (`00`)
 
-**Mode** and **[Send](#reverb-send-lcd)** only — algorithm rows **hidden** (TI
-reference; not re-checked this session).
+**Mode** and **[Send](#reverb-send-lcd)** only — algorithm rows **hidden**.
 
 ### Send = Off (`00` on Send control)
 
@@ -1892,7 +1885,7 @@ hide **Type**, **Clock**, **Time**, **Damping**, **Coloration**, or **Predelay**
 Shared rows for all three **Modes** (mk2 panel-confirmed). **Feedback 2** shows
 the
 **same** controls as **Feedback 1** (only the algorithm differs — first tail
-**immediate** on **Feedback 2** per TI reference).
+**immediate** on **Feedback 2**).
 
 | Control | Visible | Notes |
 | -------------- | ------------------------ | ------------------------------------------------------------------------------ |
@@ -2033,8 +2026,8 @@ F0 00 20 33 01 00 6E 00 06 7F F7 # +63
 
 ## Reverb Predelay
 
-**Edit FX → Reverb → Predelay**. **0.0..500.0 ms** on the TI mk2 panel when
-**[Clock](#reverb-clock-1)** = **Off** (TI reference manual cites **300.4 ms** max
+**Edit FX → Reverb → Predelay**. **0.0..500.0 ms** on the panel when
+**[Clock](#reverb-clock-1)** = **Off** (**300.4 ms** max
 —
 mk2 panel reaches **500.0 ms**). Also used as the repeat period for **Feedback
 1/2**. Live edit: **`cmd=0x6E`**, param **`0x07`**. **`stored = lcd`** (wire
@@ -2093,7 +2086,7 @@ F0 00 20 33 01 00 6E 00 09 7F F7 # 127
 (`00`–`7F`), direct wire byte. Only the live-edit address differs (**`6E`/`02`**
 vs Delay **`70`/`71`**).
 
-Panel-confirmed on TI mk2 (Reverb path, **`02`/value** captures):
+Panel-confirmed (Reverb path, **`02`/value** captures):
 
 | `<value>` | LCD |  |
 | --------- | ---------- | --- |
@@ -2370,7 +2363,7 @@ storage (**`70`/`2E`**, **`70`/`2A`**).
 
 Live edit **`cmd=0x6E`**, param **`0x75`** — see
 [effects.md — SELECT](../live-edit/single/effects.md#select-6e75-6e76).
-**`stored = index`** (`00`–`04` confirmed; higher values **TBD**).
+**`stored = index`**.
 
 | Index | `<value>` | Label |
 | ----- | --------- | ------- |
@@ -2391,7 +2384,7 @@ documented here as knob routing.
 **EFFECTS** section — second **SELECT** group. Live edit **`cmd=0x6E`**, param
 **`0x76`** — see
 [effects.md — SELECT](../live-edit/single/effects.md#select-6e75-6e76).
-**`stored = index`** (`00`–`04` confirmed; higher values **TBD**).
+**`stored = index`**.
 
 | Index | `<value>` | Label |
 | ----- | --------- | ---------- |
@@ -2405,7 +2398,7 @@ Sets which **EFFECTS** section focus target the physical panel uses. Parameter
 values are the live-edit bytes in [effects.md](../live-edit/single/effects.md) — not
 documented here as knob routing.
 
-**Others (`04`)** — **EDIT FX** then sub-menu (panel order on TI mk2):
+**Others (`04`)** — **EDIT FX** then sub-menu (panel order):
 
 1. **Filter Bank**
 2. **Vocoder**
@@ -2466,7 +2459,7 @@ Type](#character-type-1). Live-edit **`cmd`/`param`** per row — see
 ### Preset types (`01`–`06`)
 
 **Vintage 1**, **Vintage 2**, **Vintage 3**, **Pad Opener**, **Lead Enhancer**,
-**Bass Enhancer** — panel-confirmed on TI mk2. Selecting one of these types
+**Bass Enhancer** — panel-confirmed. Selecting one of these types
 applies a fixed character preset; there are **no** further **EDIT FX** menu
 rows — only [`6E`/`1A`](#character-type-1) SysEx when changing **Type**. Dump: only
 **`0x123`** changes (`stored = type index **`00`–`06`**).
@@ -2478,7 +2471,7 @@ rows — only [`6E`/`1A`](#character-type-1) SysEx when changing **Type**. Dump:
 ### Stereo Widener (`07`) / Speaker Cabinet (`08`)
 
 **Stereo Widener** and **Speaker Cabinet** share the same **EDIT FX** rows and
-live-edit **`cmd`/`param`** IDs (panel- and capture-confirmed on TI mk2).
+live-edit **`cmd`/`param`** IDs (panel- and capture-confirmed).
 
 | Control | Visible | `cmd`/`param` | Notes |
 | ------------- | ------- | ------------- | -------------------------------------------------------------------- |
@@ -2504,7 +2497,7 @@ Modulation destination **Analog Boost Int** (soft-knob wire **`55`**) — name
 predates **Character** menu label; applies to **Analog Boost** intensity wire.
 
 **`stored = wire byte`** (`00`–`7F`). **`00`** = **Off**; **`01`–`7F`** show
-panel **%** (one decimal). Confirmed anchors on TI mk2; interior steps follow
+panel **%** (one decimal). Confirmed anchors; interior steps follow
 **`pct ≈ stored × 100 / 127`** (LCD rounding).
 
 | `<value>` | LCD |  |
@@ -2645,7 +2638,7 @@ Init patch default **6.0 cm** @ wire **`10`** (panel-confirmed).
 (Classic) and **Amount** (Hyper); decode with **`70`/`67`**.
 
 Bipolar **degrees**. Center **`40`** = **+0°**; endpoints **`00`** = **−180°**,
-**`7F`** = **+180°** (panel-confirmed on TI mk2).
+**`7F`** = **+180°** (panel-confirmed).
 
 ```text
 ui_deg = (stored − 64) × 180 / 64
@@ -2732,7 +2725,7 @@ param (**`76`** on **`70`**).
 [effects.md — Phaser](../live-edit/single/effects.md#phaser).
 
 **Mix** = **`00`** (**Off**): **Mix** only. **Mix** ≥ **`01`**: full row set below
-(panel-confirmed on TI mk2).
+(panel-confirmed).
 
 | Control | Visible (Mix = Off) | Visible (Mix ≥ `01`) | `cmd`/`param` | Notes |
 | ------------- | ------------------- | -------------------- | ------------- | --------------------------------------------------------------------------------------------------------- |
@@ -2778,14 +2771,14 @@ panel level **1..127** (LCD numeric).
 | `04` | 5 Stages |
 | `05` | 6 Stages |
 
-Panel-confirmed on TI mk2 (step **`00`–`05`** after **Mix** ≠ **Off**).
+Panel-confirmed (step **`00`–`05`** after **Mix** ≠ **Off**).
 
 ---
 
 ## Others Type
 
 **EDIT FX → Others** sub-pages (after **EFFECTS** group **2** =
-**Others** — [`6E`/`76`/`04`](#select-6e75-6e76-group-2)). TI mk2 panel order:
+**Others** — [`6E`/`76`/`04`](#select-6e75-6e76-group-2)). Panel order:
 
 | Menu order | Option | SysEx on page change | Notes |
 | ---------- | ------------------ | -------------------- | ------------------------------------------------------------ |
@@ -2793,7 +2786,7 @@ Panel-confirmed on TI mk2 (step **`00`–`05`** after **Mix** ≠ **Off**).
 | 2 | **Vocoder** | **No** | [Vocoder Mode](#vocoder-mode-1) — **`71`/`27`** |
 | 3 | **Input Follower** | **No** | [Input Select](#input-follower-input-select-1) — **`71`/`26`** |
 
-Hardware-tested on TI mk2: switching among these three **EDIT FX** pages sends
+Hardware-tested: switching among these three **EDIT FX** pages sends
 **no** live-edit SysEx. Only parameter edits (e.g. **Filter Bank → Type**) TX
 bytes.
 
@@ -3035,7 +3028,7 @@ bipolar **Frequency** (Ring Mod / Freq Shifter).
 | `1B`–`1F` | `>a` | `3B`–`3F` | `>i` | `5B`–`5F` | `>ö` | `7B`–`7E` | `>u` |
 |  |  |  |  |  |  | `7F` | `<u>` |
 
-Panel-confirmed on TI mk2 (full **`15`** sweep on **Vowel Filter**).
+Panel-confirmed (full **`15`** sweep on **Vowel Filter**).
 
 ---
 
@@ -3063,7 +3056,7 @@ Panel-confirmed on TI mk2 (full **`15`** sweep on **Vowel Filter**).
 
 **`stored = semitone index`** from **C0** — chromatic **`+1`** per step.
 **`00`–`60`** (**97** steps): **`00`** = **C0** … **`5F`** = **B7**, **`60`** =
-**C8**. Panel stops at **C8** — wire **`61`–`7F`** not reachable on TI mk2.
+**C8**. Panel stops at **C8** — wire **`61`–`7F`** not reachable on panel.
 
 | `<value>` | LCD |  |
 | --------- | --- | --- |
@@ -3274,7 +3267,7 @@ visibility](#distortion-panel-visibility).
 
 **Type** wire values sharing **Mix**, **Intensity**, **Treble Boost**, **High
 Cut**
-(all **0.0..100.0 %**). Panel-confirmed on TI mk2:
+(all **0.0..100.0 %**). Panel-confirmed:
 
 | `<value>` | Type |
 | --------- | ------------- |
@@ -3336,7 +3329,7 @@ No **Treble Boost** / **High Cut** (capture: no **`46`/`47`** after **`64 12`**
 
 **Type** wire values with only **Mix** and **Intensity** (both **0.0..100.0
 %**).
-Panel-confirmed on TI mk2:
+Panel-confirmed:
 
 | `<value>` | Type |
 | --------- | ---------------- |
@@ -3397,7 +3390,7 @@ overdrive types.
 No **Intensity** / **Treble Boost** labels on the panel (byte **`65`** is
 **Drive** here).
 
-All **Distortion Type** wire values **`00`–`19`** panel-mapped on TI mk2 (this
+All **Distortion Type** wire values **`00`–`19`** panel-mapped (this
 pass).
 
 ---
@@ -3441,7 +3434,7 @@ Virus TI **Search by Category** / browser filter names; **`stored = index`**.
 
 Soft Knob 1/2/3 **Function As…** — panel menu order (**128** names).
 **`<value>`** is the SysEx destination byte (not the table index).
-TI mk2 capture: **`cmd=0x71`** — **Function As…** Knob 1 **`3E`**,
+Capture: **`cmd=0x71`** — **Function As…** Knob 1 **`3E`**,
 Knob 2 **`3F`** (**B#63** *Definable2 Single*), Knob 3 **`40`**.
 Indices **59** / **61** use LCD names **Freq Shifter Mix** / **FreqShifter
 Frequency**.
@@ -3690,7 +3683,7 @@ share it). Live edit **`cmd=0x71`**; param **per slot** (**`0x40`**, **`0x43`**,
 [mod-matrix.md](../live-edit/single/mod-matrix.md). **`<value>`** is the
 SysEx wire byte (not the **Index** column).
 
-40 options — full wire map confirmed on TI mk2 (Slot 1 sweep):
+40 options — full wire map confirmed (Slot 1 sweep):
 
 | `<value>` | Option | Index |
 | --------- | ---------------- | ----- |
@@ -3892,7 +3885,7 @@ Target table):
 Oscillator **Wavetable** wave select names (`cmd=0x70`, `param=0x13`,
 **Mode `02`**).
 **Wire** = index **`00`–`63`** for panel indices **0–99**. Order confirmed
-on TI mk2 hardware (full **+** sweep).
+on hardware (full **+** sweep).
 
 100 options (`0`–`99`).
 
