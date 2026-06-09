@@ -22,4 +22,5 @@ assistance from Cursor AI.
   - [Banks & requests](docs/dumps/bank.md)
   - [Controller](docs/dumps/controller.md)
 - [Parameter Options Reference](docs/reference/parameter-options.md)
+- [Address Index](docs/reference/address-index.md)
 - [OsTIrus (DSP56300 TI/TI2 emulation)](docs/misc/ostirus.md)

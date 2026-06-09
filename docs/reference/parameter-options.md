@@ -19,6 +19,7 @@ Panel enum: [Arpeggiator Mode](#arpeggiator-mode)
 
 ## Contents
 
+- [Notation (cmd, param, dump offset)](#notation-cmd-param-dump-offset)
 - [Value encodings](#value-encodings)
   - [Bipolar centered (±64 @ 0x40)](#bipolar-centered-64--0x40)
   - [Edit Multi live balance (−63..+64 @ 0x40)](#edit-multi-live-balance-6364--0x40)
@@ -190,6 +191,33 @@ Panel enum: [Arpeggiator Mode](#arpeggiator-mode)
 - [Edit Single — Panorama (LCD)](#edit-single--panorama-lcd)
 - [Osc 1 Classic — Pulse Width (LCD)](#osc-1-classic--pulse-width-lcd)
 - [Osc 1 Hypersaw — Density (LCD)](#osc-1-hypersaw--density-lcd)
+
+---
+
+## Notation (cmd, param, dump offset)
+
+Hex bytes in this repo can mean different things depending on **where** they
+appear:
+
+| Where you see it              | Role                                   | Example                              |
+| ----------------------------- | -------------------------------------- | ------------------------------------ |
+| **`cmd=0x72`** in a heading   | Live-edit **page** byte in the message | Multi / common address space         |
+| **`param 0x20`**              | Parameter index **on that page**       | Bank on `0x72`; Osc 2 Wave on `0x70` |
+| **`<value> 00`** in SysEx     | Wire value for one parameter           | Off, minimum, or enum index          |
+| **`0x29`**, **`Dump @0x0A8`** | Byte **offset inside a dump file**     | Part 1 bank in Multi Dump            |
+| **`bank 01`**, **`slot 40`**  | Address in request or dump **header**  | RAM A program 0                      |
+
+**Live-edit** lines like `71 40 19 00` are **`param`** and **`value`** after
+**`cmd`** and **`<part>`** — not dump offsets.
+
+In **parameter map tables** ([dumps/single.md](../dumps/single.md), live-edit
+sections): **Live edit** = `cmd` / `param`; **Dump offset** = position in a
+524- or 267-byte snapshot. Message layout:
+[Getting started — Message structure](../getting-started.md#message-structure).
+Live-edit lookup: [address-index.md](address-index.md).
+
+Data bytes on the wire are **7-bit** (`00`–`7F`). **`0x`** marks one byte in
+hex (decimal 0–255 in docs; only 0–127 on the wire).
 
 ---
 

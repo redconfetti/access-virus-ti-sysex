@@ -38,7 +38,9 @@ All requests use header `F0 00 20 33 01 <device> … F7`.
 **Single Request** — **`cmd=0x30`**.
 
 ```text
-F0 00 20 33 01 <device> 30 <bank> <slot> F7
+F0 00 20 33 01 <device> <page> <index> <value> F7
+F0 00 20 33 01 dd pp ii vv F7
+F0 00 20 33 01 00 30 00 40 F7 # Single Edit Buffer Dump request
 ```
 
 | `bank`    | `slot`    | Meaning                                      |
