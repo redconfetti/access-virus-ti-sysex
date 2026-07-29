@@ -62,6 +62,7 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
   * [Pressure Curve](#pressure-curve)
   * [Pure Tuning](#pure-tuning)
   * [Logo Groove](#logo-groove)
+  * [Audio Clock Source](#audio-clock-source)
   * [Memory Protect](#memory-protect)
   * [Global MIDI Channel](#global-midi-channel)
   * [LED Mode](#led-mode)
@@ -179,6 +180,7 @@ desktop those CONFIG entries do not exist, so a desktop cannot capture them.
 | -------- | ---------------------- | --------------------------------------------------------------------- |
 | `0x09`   | USB Audio Mode         | See [USB Audio Mode](#usb-audio-mode)                                 |
 | `0x10`   | Edit mode / focus      | See [Edit mode 0x10](#edit-mode-0x10)                                 |
+| `0x11`   | Audio Clock Source     | See [Audio Clock Source](#audio-clock-source)                         |
 | `0x19`   | All EQs                | See [All EQs](#all-eqs)                                               |
 | `0x1A`   | All Arpeggiators       | See [All Arpeggiators](#all-arpeggiators)                             |
 | `0x1B`   | All Delays             | See [All Delays](#all-delays)                                         |
@@ -946,6 +948,29 @@ F0 00 20 33 01 00 73 00 34 7F F7 # 127
 Transmitted by the Virus when changed on the front panel. Confirmed on a TI2 by
 passive capture: the panel emits across the full `00`–`7F` range, and the value it
 settles on matches the number shown on screen.
+
+### Audio Clock Source
+
+**Live edit:** `cmd=0x73`, param `0x11`.
+
+**CONFIG → Audio Clock → Source**. Range **`0`–`1`**.
+
+| `<value>` | Option     |
+| --------- | ---------- |
+| `00`      | `Auto`     |
+| `01`      | `Internal` |
+
+```text
+F0 00 20 33 01 00 73 00 11 00 F7 # Auto
+F0 00 20 33 01 00 73 00 11 01 F7 # Internal
+```
+
+Transmitted by the Virus when changed on the front panel. Confirmed on a TI2 by
+passive capture; the panel labels match Access's own value list for this parameter.
+
+Selects whether the Virus derives its audio clock from an incoming source (S/PDIF
+or USB) when one is present, or always runs from its own internal clock. Related:
+[Input Source](#input-source) (`0x2B`).
 
 ### Memory Protect
 
