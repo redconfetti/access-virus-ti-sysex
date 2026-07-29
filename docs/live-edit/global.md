@@ -1014,11 +1014,18 @@ F0 00 20 33 01 00 73 00 08 01 F7 # USB
 ```
 
 Confirmed **transmitted** by the Virus on front-panel edit (observed on a TI2 in a
-panel capture). **Its CONFIG page was not identified**, and the option labels here
-come from Access's own parameter database rather than from a panel reading — so
-treat the labels as unconfirmed against the LCD. Distinct from
-[Input Source](#input-source) (`0x2B`, Analog / S/PDIF), which is a different
-control despite the similar name.
+panel capture). The labels come from Access's parameter database, and both strings
+are also present in the Virus's **own** display string table — `Default` and `USB`
+sit immediately after `Analog` and `S/PDIF`, which are
+[Input Source](#input-source)'s (`0x2B`) options — so they are the device's
+labels, not just the editor's.
+
+**Two limits.** Which value carries which label was not read off an LCD, only
+inferred from the list order. And **the control was not located on the front
+panel**: a scan of the EDIT menu on a TI2 keyboard found no parameter displaying
+`Default`/`USB`, so it is likely **conditionally visible** (or on a page not
+reached), rather than absent. Distinct from `0x2B` despite the similar name —
+different control, different options.
 
 ### Memory Protect
 
