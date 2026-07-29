@@ -165,10 +165,24 @@ founded, and TX should be treated as the exception that has to be demonstrated
 per parameter, not assumed. See [Knob Response](#knob-response) and
 [CONFIG → Inputs / USB (RX only)](#config--inputs--usb-rx-only).
 
-Whole CONFIG pages appear not to transmit: nudging the **Soft Knob 1/2/3**
-Destination and Mode controls produced no `0x73` traffic at all, so Access's
-`Soft Knob Configuration` parameters (`0x6E`–`0x73`) are **not** confirmed
-observable from the panel.
+Whole CONFIG pages do not transmit. The following were each turned on the front
+panel of a TI2 with a capture running, and produced **no `0x73` traffic at all**:
+
+| CONFIG page | Controls turned | Access's parameters |
+| ----------- | --------------- | ------------------- |
+| Soft Knob 1/2/3 | Destination, Mode (all three pages) | `0x6E`–`0x73` |
+| Knob Behavior | Response, Display Time, Target | `0x75`, `0x61`, `0x79` |
+| Global Tuning | Master Tuning | `0x5C` |
+
+Each negative is backed by a positive control in the same capture session: after
+the runs above, toggling **All Delays** emitted `0x1B` immediately, and the
+Global Tuning page's other control (**Pure Tuning**, `0x4C`) transmitted normally
+while Master Tuning beside it did not.
+
+**"Does not transmit on panel edit" is not "cannot be set over SysEx."** These
+parameters may well accept a host → synth message; that direction was not tested
+here. What is established is only that the panel does not echo them, so a host
+must not wait for one.
 
 One confirmed non-transmitter: **Master Tuning** (CONFIG → Global Tuning, panel
 range **`-64`**/**`<0>`**/**`+63`**) emitted **nothing at all** — neither SysEx nor
