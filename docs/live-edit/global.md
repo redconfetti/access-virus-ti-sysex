@@ -61,6 +61,7 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
   * [Velocity Curve](#velocity-curve)
   * [Pressure Curve](#pressure-curve)
   * [Pure Tuning](#pure-tuning)
+  * [Logo Groove](#logo-groove)
   * [Memory Protect](#memory-protect)
   * [Global MIDI Channel](#global-midi-channel)
   * [LED Mode](#led-mode)
@@ -189,6 +190,7 @@ desktop those CONFIG entries do not exist, so a desktop cannot capture them.
 | `0x2B`   | Input Source           | See [Input Source](#input-source)                                     |
 | `0x32`   | BPM Brightness         | See [BPM Brightness](#bpm-brightness)                                 |
 | `0x33`   | LED Lux                | See [LED Lux](#led-lux)                                               |
+| `0x34`   | Logo Groove            | See [Logo Groove](#logo-groove)                                       |
 | `0x35`   | Random PG — Scope      | See [Randomize Scope](#randomize-scope)                               |
 | `0x36`   | Random PG — Strength   | See [Randomize Strength](#randomize-strength)                         |
 | `0x3E`   | Velocity Curve         | See [Velocity Curve](#velocity-curve)                                 |
@@ -921,6 +923,29 @@ F0 00 20 33 01 00 73 00 4C 7F F7 # Pure (just intonation)
 Transmitted by the Virus when changed on the front panel. Confirmed on a TI2 by
 passive capture, and the on-screen labels match Access's own value list for this
 parameter exactly.
+
+### Logo Groove
+
+**Live edit:** `cmd=0x73`, param `0x34`.
+
+**CONFIG → System 6/6 → Logo Groove**. Range **`0`–`127`**, shown on the panel as
+a bare number. **`stored = ui`** — no offset.
+
+| UI    | `<value>` |
+| ----- | --------- |
+| `0`   | `00`      |
+| `32`  | `20`      |
+| `127` | `7F`      |
+
+```text
+F0 00 20 33 01 00 73 00 34 00 F7 # 0
+F0 00 20 33 01 00 73 00 34 20 F7 # 32
+F0 00 20 33 01 00 73 00 34 7F F7 # 127
+```
+
+Transmitted by the Virus when changed on the front panel. Confirmed on a TI2 by
+passive capture: the panel emits across the full `00`–`7F` range, and the value it
+settles on matches the number shown on screen.
 
 ### Memory Protect
 
