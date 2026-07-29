@@ -190,6 +190,7 @@ Panel enum: [Arpeggiator Mode](#arpeggiator-mode)
 - [Control Smooth Mode / clock quantize](#control-smooth-mode--clock-quantize)
 - [Edit Single — Panorama (LCD)](#edit-single--panorama-lcd)
 - [Osc 1 Classic — Pulse Width (LCD)](#osc-1-classic--pulse-width-lcd)
+- [Keyboard controller destination (128 entries)](#keyboard-controller-destination-128-entries)
 - [Osc 1 Hypersaw — Density (LCD)](#osc-1-hypersaw--density-lcd)
 
 ---
@@ -4895,6 +4896,151 @@ detent listed).
 | `65`      | 90.2  | `6C`      | 92.9  | `6E`      | 93.7  |
 | `79`      | 98.0  | `7A`      | 98.4  | `7D`      | 99.6  |
 | `7F`      | 100   |           |       |           |       |
+
+## Keyboard controller destination (128 entries)
+
+Shared by the CONFIG **Keyboard** page's controller-assignment parameters — Mod
+Wheel (`0x73`/`0x43`), Hold Pedal (`0x73`/`0x44`) and Control Pedal
+(`0x73`/`0x45`). **`stored = index`**.
+
+Entry `00` is **`Off`**. The remaining entries are MIDI CC numbers `1`–`127`,
+named where the Virus has a name for that destination and shown bare (`#3`) where
+it does not. Note the display uses an arrow glyph for LFO destinations
+(`Lfo1~Osc1#74` renders as `Lfo1->Osc1#74` on the LCD).
+
+Confirmed on a **TI2 keyboard**: the panel emits all 128 values, and the on-screen
+list matches this order entry for entry.
+
+| `<value>` | Destination |
+| --------- | ----------- |
+| `00`      | `Off` |
+| `01`      | `ModWheel#1` |
+| `02`      | `Breath#2` |
+| `03`      | `#3` |
+| `04`      | `Foot#4` |
+| `05`      | `Portamento#5` |
+| `06`      | `Data#6` |
+| `07`      | `Volume#7` |
+| `08`      | `Balance#8` |
+| `09`      | `#9` |
+| `0A`      | `Panorama#10` |
+| `0B`      | `Expression#11` |
+| `0C`      | `#12` |
+| `0D`      | `#13` |
+| `0E`      | `#14` |
+| `0F`      | `#15` |
+| `10`      | `#16` |
+| `11`      | `Osc1Shape#17` |
+| `12`      | `Osc1Pw#18` |
+| `13`      | `Osc1WaveSel#19` |
+| `14`      | `Osc1Semi#20` |
+| `15`      | `Osc1Keyflw#21` |
+| `16`      | `Osc2Shape#22` |
+| `17`      | `Osc2Pw#23` |
+| `18`      | `Osc2WaveSel#24` |
+| `19`      | `Osc2Semi#25` |
+| `1A`      | `Osc2Detune#26` |
+| `1B`      | `Osc2FmAmt#27` |
+| `1C`      | `Osc2Sync#28` |
+| `1D`      | `Osc2FiltEnv#29` |
+| `1E`      | `FmFiltEnv#30` |
+| `1F`      | `Osc2Keyflw#31` |
+| `20`      | `#32` |
+| `21`      | `OscBalance#33` |
+| `22`      | `SuboscVol#34` |
+| `23`      | `SuboscShape#35` |
+| `24`      | `OscMainvol#36` |
+| `25`      | `NoiseVol#37` |
+| `26`      | `RingmodVol#38` |
+| `27`      | `NoiseColor#39` |
+| `28`      | `Cutoff#40` |
+| `29`      | `Cutoff2#41` |
+| `2A`      | `Filt1Reso#42` |
+| `2B`      | `Filt2Reso#43` |
+| `2C`      | `Filt1EnvAmt#44` |
+| `2D`      | `Filt2EnvAmt#45` |
+| `2E`      | `Filt1Keyflw#46` |
+| `2F`      | `Filt2Keyflw#47` |
+| `30`      | `FiltBalance#48` |
+| `31`      | `SatCurve#49` |
+| `32`      | `#50` |
+| `33`      | `Filt1Mode#51` |
+| `34`      | `Filt2Mode#52` |
+| `35`      | `FiltRouting#53` |
+| `36`      | `FiltAttack#54` |
+| `37`      | `FiltDecay#55` |
+| `38`      | `FiltSustain#56` |
+| `39`      | `FiltSusTime#57` |
+| `3A`      | `FiltRelease#58` |
+| `3B`      | `AmpAttack#59` |
+| `3C`      | `AmpDecay#60` |
+| `3D`      | `AmpSustain#61` |
+| `3E`      | `AmpSusTime#62` |
+| `3F`      | `AmpRelease#63` |
+| `40`      | `HoldPedalS#64` |
+| `41`      | `PortaSwitchS#65` |
+| `42`      | `SostPedalS#66` |
+| `43`      | `Lfo1Rate#67` |
+| `44`      | `Lfo1Shape#68` |
+| `45`      | `Lfo1EnvMode#69` |
+| `46`      | `Lfo1Mode#70` |
+| `47`      | `Lfo1Contour#71` |
+| `48`      | `Lfo1Keyflw#72` |
+| `49`      | `Lfo1Keytrig#73` |
+| `4A`      | `Lfo1~Osc1#74` |
+| `4B`      | `Lfo1~Osc2#75` |
+| `4C`      | `Lfo1~Pw#76` |
+| `4D`      | `Lfo1~Reso#77` |
+| `4E`      | `Lfo1~Gain#78` |
+| `4F`      | `Lfo2Rate#79` |
+| `50`      | `Lfo2Shape#80` |
+| `51`      | `Lfo2EnvMode#81` |
+| `52`      | `Lfo2Mode#82` |
+| `53`      | `Lfo2Contour#83` |
+| `54`      | `Lfo2Keyflw#84` |
+| `55`      | `Lfo2Keytrig#85` |
+| `56`      | `Lfo2~Shape#86` |
+| `57`      | `Lfo2~FmAmt#87` |
+| `58`      | `Lfo2~Cut1#88` |
+| `59`      | `Lfo2~Cut2#89` |
+| `5A`      | `Lfo2~Pan#90` |
+| `5B`      | `PatchVol#91` |
+| `5C`      | `#92` |
+| `5D`      | `Transpose#93` |
+| `5E`      | `KeyMode#94` |
+| `5F`      | `#95` |
+| `60`      | `#96` |
+| `61`      | `UnisonMode#97` |
+| `62`      | `UnisonDet#98` |
+| `63`      | `UnisonSpread#99` |
+| `64`      | `UnisonPhase#100` |
+| `65`      | `InputMode#101` |
+| `66`      | `InputSel#102` |
+| `67`      | `#103` |
+| `68`      | `#104` |
+| `69`      | `ChorusMix#105` |
+| `6A`      | `ChorusRate#106` |
+| `6B`      | `ChorusDepth#107` |
+| `6C`      | `ChorusDelay#108` |
+| `6D`      | `ChorusFeedb#109` |
+| `6E`      | `ChorusShape#110` |
+| `6F`      | `#111` |
+| `70`      | `#112` |
+| `71`      | `EffectSend#113` |
+| `72`      | `DelayTime#114` |
+| `73`      | `DelayFeedb#115` |
+| `74`      | `DelayRate#116` |
+| `75`      | `DelayDepth#117` |
+| `76`      | `DelayShape#118` |
+| `77`      | `DelayColor#119` |
+| `78`      | `#120` |
+| `79`      | `#121` |
+| `7A`      | `#122` |
+| `7B`      | `#123` |
+| `7C`      | `#124` |
+| `7D`      | `#125` |
+| `7E`      | `#126` |
+| `7F`      | `#127` |
 
 ## Osc 1 Hypersaw — Density (LCD)
 

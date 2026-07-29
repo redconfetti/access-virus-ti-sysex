@@ -53,6 +53,13 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
     * [Input Characteristic](#input-characteristic)
   * [Transpose Buttons](#transpose-buttons)
   * [Transpose](#transpose)
+  * [Mod Wheel Destination](#mod-wheel-destination)
+  * [Hold Pedal Destination](#hold-pedal-destination)
+  * [Control Pedal Destination](#control-pedal-destination)
+  * [Keyboard Local](#keyboard-local)
+  * [Keyboard Mode](#keyboard-mode)
+  * [Velocity Curve](#velocity-curve)
+  * [Pressure Curve](#pressure-curve)
   * [Memory Protect](#memory-protect)
   * [Global MIDI Channel](#global-midi-channel)
   * [LED Mode](#led-mode)
@@ -177,8 +184,15 @@ desktop those CONFIG entries do not exist, so a desktop cannot capture them.
 | `0x33`   | LED Lux                | See [LED Lux](#led-lux)                                               |
 | `0x35`   | Random PG — Scope      | See [Randomize Scope](#randomize-scope)                               |
 | `0x36`   | Random PG — Strength   | See [Randomize Strength](#randomize-strength)                         |
+| `0x3E`   | Velocity Curve         | See [Velocity Curve](#velocity-curve)                                 |
 | `0x3F`   | Transpose Buttons      | See [Transpose Buttons](#transpose-buttons)                           |
+| `0x40`   | Keyboard Local         | See [Keyboard Local](#keyboard-local)                                 |
+| `0x41`   | Keyboard Mode          | See [Keyboard Mode](#keyboard-mode)                                   |
 | `0x42`   | Transpose              | See [Transpose](#transpose)                                           |
+| `0x43`   | Mod Wheel Destination  | See [Mod Wheel Destination](#mod-wheel-destination)                   |
+| `0x44`   | Hold Pedal Destination | See [Hold Pedal Destination](#hold-pedal-destination)                 |
+| `0x45`   | Control Pedal Dest.    | See [Control Pedal Destination](#control-pedal-destination)           |
+| `0x46`   | Pressure Curve         | See [Pressure Curve](#pressure-curve)                                 |
 | `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change)                   |
 | `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx)                   |
 | `0x5A`   | Input Direct Thru      | See [Input Direct Thru](#input-direct-thru)                           |
@@ -751,6 +765,128 @@ field is a full 7-bit value. **The panel's displayed extremes were not recorded*
 so the UI range this maps onto — and therefore the exact `stored = ui + offset`
 formula — is **not yet confirmed**; only the centre point is. Transmitted by the
 Virus when changed on the front panel. **Keyboard models only.**
+
+### Mod Wheel Destination
+
+**Live edit:** `cmd=0x73`, param `0x43`.
+
+**CONFIG → Keyboard 3/5 → Mod Wheel**. Selects what the mod wheel transmits.
+Range **`00`–`7F`**, `stored = index`; `00` is `Off`.
+
+```text
+F0 00 20 33 01 00 73 00 43 00 F7 # Off
+F0 00 20 33 01 00 73 00 43 01 F7 # ModWheel#1
+F0 00 20 33 01 00 73 00 43 28 F7 # Cutoff#40
+F0 00 20 33 01 00 73 00 43 7F F7 # #127
+```
+
+Full 128-entry table:
+[Keyboard controller destination](../reference/parameter-options.md#keyboard-controller-destination-128-entries).
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Hold Pedal Destination
+
+**Live edit:** `cmd=0x73`, param `0x44`.
+
+**CONFIG → Keyboard 4/5 → Hold Pedal**. Same 128-entry destination list as
+[Mod Wheel](#mod-wheel-destination); `stored = index`, `00` is `Off`.
+
+```text
+F0 00 20 33 01 00 73 00 44 00 F7 # Off
+F0 00 20 33 01 00 73 00 44 40 F7 # HoldPedalS#64
+F0 00 20 33 01 00 73 00 44 7F F7 # #127
+```
+
+Full table:
+[Keyboard controller destination](../reference/parameter-options.md#keyboard-controller-destination-128-entries).
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Control Pedal Destination
+
+**Live edit:** `cmd=0x73`, param `0x45`.
+
+**CONFIG → Keyboard 4/5 → Control Pedal**. Same 128-entry destination list as
+[Mod Wheel](#mod-wheel-destination); `stored = index`, `00` is `Off`.
+
+```text
+F0 00 20 33 01 00 73 00 45 00 F7 # Off
+F0 00 20 33 01 00 73 00 45 0B F7 # Expression#11
+F0 00 20 33 01 00 73 00 45 7F F7 # #127
+```
+
+Full table:
+[Keyboard controller destination](../reference/parameter-options.md#keyboard-controller-destination-128-entries).
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Keyboard Local
+
+**Live edit:** `cmd=0x73`, param `0x40`.
+
+**CONFIG → Keyboard 1/5 → Local**. Range **`0`–`1`**.
+
+| `<value>` | Option |
+| --------- | ------ |
+| `00`      | `Off`  |
+| `01`      | `On`   |
+
+```text
+F0 00 20 33 01 00 73 00 40 00 F7 # Off
+F0 00 20 33 01 00 73 00 40 01 F7 # On
+```
+
+The Virus **emits this unprompted when a host opens its plugin MIDI port**, with
+value `00` — i.e. connecting an editor switches Local off. Also transmitted when
+changed on the front panel. **Keyboard models only.**
+
+### Keyboard Mode
+
+**Live edit:** `cmd=0x73`, param `0x41`.
+
+**CONFIG → Keyboard 1/5 → Mode**. Range **`0`–`1`**.
+
+| `<value>` | Option           |
+| --------- | ---------------- |
+| `00`      | `One Channel`    |
+| `01`      | `Multi Channels` |
+
+```text
+F0 00 20 33 01 00 73 00 41 00 F7 # One Channel
+F0 00 20 33 01 00 73 00 41 01 F7 # Multi Channels
+```
+
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Velocity Curve
+
+**Live edit:** `cmd=0x73`, param `0x3E`.
+
+**CONFIG → Keyboard 5/5 → Velocity Curve**. Bipolar **percentage**, not a set of
+named curves: **`-100.0 %`–`+100.0 %`** across `00`–`7F` in 128 steps
+(≈ 1.575 % per step), centre `+0.0 %` at `40`.
+
+```text
+F0 00 20 33 01 00 73 00 3E 00 F7 # -100.0 %
+F0 00 20 33 01 00 73 00 3E 40 F7 # +0.0 %
+F0 00 20 33 01 00 73 00 3E 7F F7 # +100.0 %
+```
+
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Pressure Curve
+
+**Live edit:** `cmd=0x73`, param `0x46`.
+
+**CONFIG → Keyboard 5/5 → Pressure Curve**. Same bipolar percentage encoding as
+[Velocity Curve](#velocity-curve): **`-100.0 %`–`+100.0 %`** across `00`–`7F`,
+centre at `40`.
+
+```text
+F0 00 20 33 01 00 73 00 46 00 F7 # -100.0 %
+F0 00 20 33 01 00 73 00 46 40 F7 # +0.0 %
+F0 00 20 33 01 00 73 00 46 7F F7 # +100.0 %
+```
+
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
 
 ### Memory Protect
 
