@@ -51,6 +51,8 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
     * [Input Boost](#input-boost)
     * [Input Source](#input-source)
     * [Input Characteristic](#input-characteristic)
+  * [Transpose Buttons](#transpose-buttons)
+  * [Transpose](#transpose)
   * [Memory Protect](#memory-protect)
   * [Global MIDI Channel](#global-midi-channel)
   * [LED Mode](#led-mode)
@@ -137,10 +139,24 @@ The byte **`<device_id>`** (immediately before **`0x73`**) is the SysEx
 **destination device ID**. The Virus only acts on the message when this
 matches its configured **MIDI Device ID** (CONFIG).
 
-At least **All Delays** (`0x1B`) is **transmitted by the Virus** when
-changed on the front panel. Many other **`0x73`** globals are **RX only**
-(host → synth); the panel does not emit SysEx when they are edited — see
-[Knob Response](#knob-response) and [CONFIG → Inputs / USB (RX only)](#config--inputs--usb-rx-only).
+Many **`0x73`** globals are **transmitted by the Virus** when changed on the
+front panel, not RX only. Confirmed by passive capture on a **TI2 keyboard**
+(`receivemidi` / `amidi`, nothing sent to the synth) — **28** distinct `0x73`
+indices have been observed emitted from panel edits:
+
+```text
+08 11 19 1A 1B 1C 1D 1F 28 29 2B 32 33 34 35 36
+3E 3F 40 41 42 43 44 45 46 4C 5A 5B
+```
+
+Some globals do still appear to be RX only — see
+[Knob Response](#knob-response) and [CONFIG → Inputs / USB (RX only)](#config--inputs--usb-rx-only)
+— so absence of panel TX should be established per parameter rather than assumed
+for the page as a whole.
+
+**Note on form factor**: `0x3E`–`0x46` are the **Global Keyboard Parameters**
+group. They are only reachable from the front panel on a keyboard model; on a
+desktop those CONFIG entries do not exist, so a desktop cannot capture them.
 
 ## Summary
 
@@ -161,6 +177,8 @@ changed on the front panel. Many other **`0x73`** globals are **RX only**
 | `0x33`   | LED Lux                | See [LED Lux](#led-lux)                                               |
 | `0x35`   | Random PG — Scope      | See [Randomize Scope](#randomize-scope)                               |
 | `0x36`   | Random PG — Strength   | See [Randomize Strength](#randomize-strength)                         |
+| `0x3F`   | Transpose Buttons      | See [Transpose Buttons](#transpose-buttons)                           |
+| `0x42`   | Transpose              | See [Transpose](#transpose)                                           |
 | `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change)                   |
 | `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx)                   |
 | `0x5A`   | Input Direct Thru      | See [Input Direct Thru](#input-direct-thru)                           |
@@ -691,6 +709,48 @@ F0 00 20 33 01 00 73 00 1D 01 F7 # Phono
 
 **Not** Edit FX **Character** intensity (`70`/`15` → dump **`0x01D`**) — same
 param **hex** on a different **`cmd`**.
+
+### Transpose Buttons
+
+**Live edit:** `cmd=0x73`, param `0x3F`.
+
+**CONFIG → Keyboard 2/5 → Transpose Buttons**. Range: **`0`–`1`**.
+
+| `<value>` | Option     |
+| --------- | ---------- |
+| `00`      | `Patch`    |
+| `01`      | `Keyboard` |
+
+```text
+F0 00 20 33 01 00 73 00 3F 00 F7 # Patch
+F0 00 20 33 01 00 73 00 3F 01 F7 # Keyboard
+```
+
+Transmitted by the Virus when changed on the front panel. **Keyboard models
+only** — a desktop has no such CONFIG entry.
+
+### Transpose
+
+**Live edit:** `cmd=0x73`, param `0x42`.
+
+**CONFIG → Keyboard 2/5 → Transpose**. Bipolar, displayed as a signed value;
+**`<0>` is `0x40`** (confirmed against the panel readout).
+
+| UI    | `<value>` |
+| ----- | --------- |
+| `<0>` | `40`      |
+
+```text
+F0 00 20 33 01 00 73 00 42 40 F7 # <0> (centre, confirmed)
+F0 00 20 33 01 00 73 00 42 00 F7 # wire minimum
+F0 00 20 33 01 00 73 00 42 7F F7 # wire maximum
+```
+
+Values across the whole **`00`–`7F`** range are emitted by the panel, so the wire
+field is a full 7-bit value. **The panel's displayed extremes were not recorded**,
+so the UI range this maps onto — and therefore the exact `stored = ui + offset`
+formula — is **not yet confirmed**; only the centre point is. Transmitted by the
+Virus when changed on the front panel. **Keyboard models only.**
 
 ### Memory Protect
 
