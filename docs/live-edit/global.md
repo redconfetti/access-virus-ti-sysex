@@ -149,20 +149,26 @@ The byte **`<device_id>`** (immediately before **`0x73`**) is the SysEx
 **destination device ID**. The Virus only acts on the message when this
 matches its configured **MIDI Device ID** (CONFIG).
 
-Many **`0x73`** globals are **transmitted by the Virus** when changed on the
-front panel, not RX only. Confirmed by passive capture on a **TI2 keyboard**
-(`receivemidi` / `amidi`, nothing sent to the synth) — **28** distinct `0x73`
-indices have been observed emitted from panel edits:
+**At least 28** `0x73` globals are **transmitted by the Virus** when changed on
+the front panel — more than the one this page previously named, though still a
+minority of the page. Confirmed by passive capture on a **TI2 keyboard**
+(`receivemidi` / `amidi`, nothing sent to the synth):
 
 ```text
 08 11 19 1A 1B 1C 1D 1F 28 29 2B 32 33 34 35 36
 3E 3F 40 41 42 43 44 45 46 4C 5A 5B
 ```
 
-Some globals do still appear to be RX only — see
-[Knob Response](#knob-response) and [CONFIG → Inputs / USB (RX only)](#config--inputs--usb-rx-only)
-— so absence of panel TX should be established per parameter rather than assumed
-for the page as a whole.
+Access's own parameter database lists **81** parameters in this bank, so **53 have
+never been observed transmitting** — the RX-only caveat on this page is well
+founded, and TX should be treated as the exception that has to be demonstrated
+per parameter, not assumed. See [Knob Response](#knob-response) and
+[CONFIG → Inputs / USB (RX only)](#config--inputs--usb-rx-only).
+
+Whole CONFIG pages appear not to transmit: nudging the **Soft Knob 1/2/3**
+Destination and Mode controls produced no `0x73` traffic at all, so Access's
+`Soft Knob Configuration` parameters (`0x6E`–`0x73`) are **not** confirmed
+observable from the panel.
 
 One confirmed non-transmitter: **Master Tuning** (CONFIG → Global Tuning, panel
 range **`-64`**/**`<0>`**/**`+63`**) emitted **nothing at all** — neither SysEx nor
