@@ -63,6 +63,7 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
   * [Pure Tuning](#pure-tuning)
   * [Logo Groove](#logo-groove)
   * [Audio Clock Source](#audio-clock-source)
+  * [Analog Input Source](#analog-input-source)
   * [Memory Protect](#memory-protect)
   * [Global MIDI Channel](#global-midi-channel)
   * [LED Mode](#led-mode)
@@ -173,11 +174,14 @@ panel of a TI2 with a capture running, and produced **no `0x73` traffic at all**
 | Soft Knob 1/2/3 | Destination, Mode (all three pages) | `0x6E`–`0x73` |
 | Knob Behavior | Response, Display Time, Target | `0x75`, `0x61`, `0x79` |
 | Global Tuning | Master Tuning | `0x5C` |
+| *(front panel)* | the **Master Volume** knob | `0x7F` |
 
 Each negative is backed by a positive control in the same capture session: after
 the runs above, toggling **All Delays** emitted `0x1B` immediately, and the
 Global Tuning page's other control (**Pure Tuning**, `0x4C`) transmitted normally
-while Master Tuning beside it did not.
+while Master Tuning beside it did not. The Master Volume knob is the strongest
+case: it produced **zero bytes** in a capture that had just recorded 61 note-ons,
+754 aftertouch messages, pitch bend and mod-wheel CC from the same instrument.
 
 **"Does not transmit on panel edit" is not "cannot be set over SysEx."** These
 parameters may well accept a host → synth message; that direction was not tested
@@ -200,6 +204,7 @@ desktop those CONFIG entries do not exist, so a desktop cannot capture them.
 | -------- | ---------------------- | --------------------------------------------------------------------- |
 | `0x09`   | USB Audio Mode         | See [USB Audio Mode](#usb-audio-mode)                                 |
 | `0x10`   | Edit mode / focus      | See [Edit mode 0x10](#edit-mode-0x10)                                 |
+| `0x08`   | Analog Input Source    | See [Analog Input Source](#analog-input-source)                       |
 | `0x11`   | Audio Clock Source     | See [Audio Clock Source](#audio-clock-source)                         |
 | `0x19`   | All EQs                | See [All EQs](#all-eqs)                                               |
 | `0x1A`   | All Arpeggiators       | See [All Arpeggiators](#all-arpeggiators)                             |
@@ -991,6 +996,29 @@ passive capture; the panel labels match Access's own value list for this paramet
 Selects whether the Virus derives its audio clock from an incoming source (S/PDIF
 or USB) when one is present, or always runs from its own internal clock. Related:
 [Input Source](#input-source) (`0x2B`).
+
+### Analog Input Source
+
+**Live edit:** `cmd=0x73`, param `0x08`.
+
+Range **`0`–`1`**.
+
+| `<value>` | Option    |
+| --------- | --------- |
+| `00`      | `Default` |
+| `01`      | `USB`     |
+
+```text
+F0 00 20 33 01 00 73 00 08 00 F7 # Default
+F0 00 20 33 01 00 73 00 08 01 F7 # USB
+```
+
+Confirmed **transmitted** by the Virus on front-panel edit (observed on a TI2 in a
+panel capture). **Its CONFIG page was not identified**, and the option labels here
+come from Access's own parameter database rather than from a panel reading — so
+treat the labels as unconfirmed against the LCD. Distinct from
+[Input Source](#input-source) (`0x2B`, Analog / S/PDIF), which is a different
+control despite the similar name.
 
 ### Memory Protect
 
