@@ -60,6 +60,7 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
   * [Keyboard Mode](#keyboard-mode)
   * [Velocity Curve](#velocity-curve)
   * [Pressure Curve](#pressure-curve)
+  * [Pure Tuning](#pure-tuning)
   * [Memory Protect](#memory-protect)
   * [Global MIDI Channel](#global-midi-channel)
   * [LED Mode](#led-mode)
@@ -161,6 +162,12 @@ Some globals do still appear to be RX only — see
 — so absence of panel TX should be established per parameter rather than assumed
 for the page as a whole.
 
+One confirmed non-transmitter: **Master Tuning** (CONFIG → Global Tuning, panel
+range **`-64`**/**`<0>`**/**`+63`**) emitted **nothing at all** — neither SysEx nor
+CC — when swept across its full range on the panel, in the same capture in which
+the eight parameters either side of it did emit. Its parameter ID is therefore
+**not** established here.
+
 **Note on form factor**: `0x3E`–`0x46` are the **Global Keyboard Parameters**
 group. They are only reachable from the front panel on a keyboard model; on a
 desktop those CONFIG entries do not exist, so a desktop cannot capture them.
@@ -193,6 +200,7 @@ desktop those CONFIG entries do not exist, so a desktop cannot capture them.
 | `0x44`   | Hold Pedal Destination | See [Hold Pedal Destination](#hold-pedal-destination)                 |
 | `0x45`   | Control Pedal Dest.    | See [Control Pedal Destination](#control-pedal-destination)           |
 | `0x46`   | Pressure Curve         | See [Pressure Curve](#pressure-curve)                                 |
+| `0x4C`   | Pure Tuning            | See [Pure Tuning](#pure-tuning)                                       |
 | `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change)                   |
 | `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx)                   |
 | `0x5A`   | Input Direct Thru      | See [Input Direct Thru](#input-direct-thru)                           |
@@ -887,6 +895,32 @@ F0 00 20 33 01 00 73 00 46 7F F7 # +100.0 %
 ```
 
 Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Pure Tuning
+
+**Live edit:** `cmd=0x73`, param `0x4C`.
+
+**CONFIG → Global Tuning → Pure Tuning**. A continuous blend, **not** a mode
+switch: `00`–`7F`, where the two ends and the midpoint display as names and every
+other step displays as its own number.
+
+| `<value>`     | Display      |
+| ------------- | ------------ |
+| `00`          | `Tempered`   |
+| `01`–`3F`     | `1`–`63`     |
+| `40`          | `Natural`    |
+| `41`–`7E`     | `65`–`126`   |
+| `7F`          | `Pure`       |
+
+```text
+F0 00 20 33 01 00 73 00 4C 00 F7 # Tempered (equal temperament)
+F0 00 20 33 01 00 73 00 4C 40 F7 # Natural (midpoint)
+F0 00 20 33 01 00 73 00 4C 7F F7 # Pure (just intonation)
+```
+
+Transmitted by the Virus when changed on the front panel. Confirmed on a TI2 by
+passive capture, and the on-screen labels match Access's own value list for this
+parameter exactly.
 
 ### Memory Protect
 
