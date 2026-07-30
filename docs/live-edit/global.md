@@ -1024,23 +1024,30 @@ sit immediately after `Analog` and `S/PDIF`, which are
 [Input Source](#input-source)'s (`0x2B`) options — so they are the device's
 labels, not just the editor's.
 
-It is a **CONFIG → Inputs** parameter: in a front-panel capture that walked the
-CONFIG pages in order, `0x08` emitted between *Input Thru* / *Boost* and
+**Panel label: `Mode`, on the leftmost soft knob of CONFIG → Inputs 2/2.**
+
+**This control is conditionally visible, and the condition is the host driver.**
+On a machine with **no Access USB driver** the leftmost knob on that page shows no
+label and no values at all, and a scan of the whole EDIT menu finds nothing
+offering `Default`/`USB`. Install the Virus TI Software Suite on the connected host
+and the same page, on the same unit, shows **`Mode`** with **`Default`** /
+**`USB`** — verified both ways on one TI2.
+
+So `USB` means the input section takes its signal from **USB audio** instead of the
+analog jacks, which only makes sense while a host is present to supply it — hence
+the gating. A host that does not see this parameter should not conclude the synth
+lacks it.
+
+Its position is independently corroborated: in a front-panel capture that walked
+the CONFIG pages in order, `0x08` emitted between *Input Thru* / *Boost* and
 *Input Source* / *Characteristic*.
 
-**Two limits.** Which value carries which label was not read off an LCD, only
-inferred from the list order. And the control is **not always visible**: on a
-later session with the same unit, a scan of the EDIT menu and the Inputs pages
-found no control offering `Default`/`USB`, and the parameter never emitted. The
-difference between the two sessions was that the first ran on a host with
-**Access's USB driver installed** and the second did not — so this is plausibly
-conditional on the Virus talking to that driver, which would fit `USB` meaning
-"take the input section's signal from USB audio rather than the analog jacks".
-**Unconfirmed**: nobody has yet checked whether the option appears only with the
-driver loaded.
+**One limit**: which value carries which label was not read off the LCD, only taken
+from Access's list order (`Default` = 0, `USB` = 1).
 
-Distinct from `0x2B` despite the similar name — different control, different
-options.
+Distinct from [Input Source](#input-source) (`0x2B`, Analog / S/PDIF) despite both
+living on the Inputs pages — different control, different options, and note the
+panel calls **this** one `Mode`.
 
 ### Audio Clock Frequency
 
