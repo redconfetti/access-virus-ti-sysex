@@ -183,16 +183,28 @@ verified against replies.
 
 RAM-only is consistent with the purpose: ROM contents cannot change.
 
-**Entry `n` corresponds to slot `n`**, and the two bytes are a **deterministic
-function of that slot's patch content**:
+**Entry `n` occupies data bytes `2n` and `2n+1`**, and the two bytes are a
+**deterministic function of that slot's patch content**:
 
 * Requesting the same unmodified bank returns a **byte-identical** table across a
   power cycle, hours apart, over two different transports, and from a different
   requester — so it is not a nonce, counter or timestamp. Confirmed for all four
   RAM banks.
-* Copying slot 126's patch into slot 127 changed **exactly one** entry — 127 —
-  and changed it to **slot 126's value**. Restoring slot 127 returned the table
-  to byte-identical.
+* Writing a slot with **one single payload byte changed** moves that slot's entry
+  and no other. Done twice on slot 127: once altering a byte **outside** the patch
+  name, once altering **only** the 10-character name. Both moved the entry, so the
+  value depends on widely separated parts of the patch rather than on the name or
+  any one small field. Each write was **read back and verified** before the table
+  was re-requested, and restoring the original returned the table to
+  byte-identical.
+* The single-byte change moved data byte **`254`** alone — slot 127's low byte.
+  That is what fixes the layout as adjacent pairs: a two-plane layout (128 low
+  bytes then 128 high bytes) would have had to move byte `127` or `255`, and
+  neither moved.
+
+**The low byte is additive.** In both probes it moved by *exactly* the change in
+the payload's byte sum — `+1` for the single-byte edit, `+28` when the name's sum
+rose by 28. So it behaves as a weight-1 running sum reduced mod 128.
 
 **How Access's plugin uses it:** on connect it requests `39 01`–`39 04`, diffs the
 four tables against its cache, then issues `0x30` only for slots that differ — 28
@@ -207,11 +219,17 @@ receivemidi dev "<MIDI port>" syx
 amidi -p hw:1,0,1 -S 'F0 00 20 33 01 10 39 01 F7' -d -t 4
 ```
 
-**What is not known:** how the two bytes are computed. A 14-bit sum of the payload
-bytes was tested against 25 real Single Dumps across every prefix length in both
-byte orders and matched at chance level, so it is **not** a simple byte-sum. Also,
-digest equality does **not** imply the two slots' dumps are byte-identical — the
-digest appears to cover a subset of the 512-byte payload.
+**What is not known:** *which* bytes the sum covers. Sweeping every contiguous span
+of the 513-byte dump payload against **12** real Single Dumps (slots 0–9, 126, 127),
+with an optional constant offset, reproduces the observed low byte for **no** span.
+So the covered set is either non-contiguous, or computed over the stored 512-byte
+preset rather than the transmitted payload, or includes a per-slot term.
+
+The **high** byte is also unexplained: it did not move in either probe, both deltas
+being too small to carry out of the low byte, so nothing here tests it.
+
+Finally, digest equality does **not** imply two slots' dumps are byte-identical —
+consistent with the sum covering only part of the payload.
 
 ## RAM Single banks (A–D)
 
