@@ -1020,12 +1020,23 @@ sit immediately after `Analog` and `S/PDIF`, which are
 [Input Source](#input-source)'s (`0x2B`) options — so they are the device's
 labels, not just the editor's.
 
+It is a **CONFIG → Inputs** parameter: in a front-panel capture that walked the
+CONFIG pages in order, `0x08` emitted between *Input Thru* / *Boost* and
+*Input Source* / *Characteristic*.
+
 **Two limits.** Which value carries which label was not read off an LCD, only
-inferred from the list order. And **the control was not located on the front
-panel**: a scan of the EDIT menu on a TI2 keyboard found no parameter displaying
-`Default`/`USB`, so it is likely **conditionally visible** (or on a page not
-reached), rather than absent. Distinct from `0x2B` despite the similar name —
-different control, different options.
+inferred from the list order. And the control is **not always visible**: on a
+later session with the same unit, a scan of the EDIT menu and the Inputs pages
+found no control offering `Default`/`USB`, and the parameter never emitted. The
+difference between the two sessions was that the first ran on a host with
+**Access's USB driver installed** and the second did not — so this is plausibly
+conditional on the Virus talking to that driver, which would fit `USB` meaning
+"take the input section's signal from USB audio rather than the analog jacks".
+**Unconfirmed**: nobody has yet checked whether the option appears only with the
+driver loaded.
+
+Distinct from `0x2B` despite the similar name — different control, different
+options.
 
 ### Memory Protect
 
