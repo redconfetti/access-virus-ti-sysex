@@ -13,6 +13,7 @@ Architecture: [virus.md](../misc/virus.md).
   * [Single Bank Request](#single-bank-request)
   * [Controller Dump Request](#controller-dump-request)
   * [Bank Checksum Request](#bank-checksum-request)
+  * [The checksum, in full](#the-checksum-in-full)
 * [RAM Single banks (A–D)](#ram-single-banks-ad)
 * [ROM Singles (A–Z)](#rom-singles-az)
 * [Multi bank](#multi-bank)
@@ -219,17 +220,40 @@ receivemidi dev "<MIDI port>" syx
 amidi -p hw:1,0,1 -S 'F0 00 20 33 01 10 39 01 F7' -d -t 4
 ```
 
-**What is not known:** *which* bytes the sum covers. Sweeping every contiguous span
-of the 513-byte dump payload against **12** real Single Dumps (slots 0–9, 126, 127),
-with an optional constant offset, reproduces the observed low byte for **no** span.
-So the covered set is either non-contiguous, or computed over the stored 512-byte
-preset rather than the transmitted payload, or includes a per-slot term.
+### The checksum, in full
 
-The **high** byte is also unexplained: it did not move in either probe, both deltas
-being too small to carry out of the low byte, so nothing here tests it.
+Let `payload` be the Single Dump's 513 bytes — everything between the 9-byte
+header and the message's own checksum, i.e. `message[9:-2]`. Then:
 
-Finally, digest equality does **not** imply two slots' dumps are byte-identical —
-consistent with the sum covering only part of the payload.
+```text
+S       = sum(payload) - payload[0] - payload[2] - payload[3] - payload[256]
+entry n = ( S & 0x7F , (S >> 7) & 0x7F )
+```
+
+A 14-bit sum of the payload with four bytes skipped, sent low septet first.
+
+Derived from 12 dumps, then checked by predicting **10 slots that were not used to
+derive it** (20, 33, 47, 55, 68, 71, 90, 103, 111, 119): **both bytes correct on all
+10**.
+
+**Why `payload[256]` is skipped — it is not patch data.** A TI Single Dump nests the
+older Virus A/B/C preset inside the newer one:
+
+```text
+header (9) | 256 A/B/C preset bytes | A/B/C checksum | 256 TI bytes | checksum | F7
+```
+
+256 + 1 + 256 = 513. The byte in the middle is the **A/B/C-compatibility checksum**,
+which the synth maintains itself — writing a Single Dump with that byte altered leaves
+it unchanged on the device, and the bank checksum ignores it. `payload[0]`, `[2]` and
+`[3]` are likewise skipped as preset metadata rather than parameter data (`payload[0]`
+reads `0x09`/`0x0A` across patches, consistent with a format version).
+
+The checksum **does** cover the TI-only half: single-byte probes at payload offsets
+260, 300, 400, 500 and 512 each moved the entry by `+1`.
+
+**One consequence worth noting:** equal entries do not guarantee two slots' dumps are
+byte-identical, since four bytes are outside the sum and it is a 14-bit reduction.
 
 ## RAM Single banks (A–D)
 
