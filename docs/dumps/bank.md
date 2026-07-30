@@ -12,6 +12,7 @@ Architecture: [virus.md](../misc/virus.md).
   * [No “load program by slot” SysEx in Single mode](#no-load-program-by-slot-sysex-in-single-mode)
   * [Single Bank Request](#single-bank-request)
   * [Controller Dump Request](#controller-dump-request)
+  * [Bank Checksum Request](#bank-checksum-request)
 * [RAM Single banks (A–D)](#ram-single-banks-ad)
 * [ROM Singles (A–Z)](#rom-singles-az)
 * [Multi bank](#multi-bank)
@@ -30,6 +31,7 @@ All requests use header `F0 00 20 33 01 <device> … F7`.
 | **`0x32`** | **Single Bank Request**     | `32 <bank>`                   | **128 × Single Dump** — banks **`01`–`1E`** (RAM + ROM)                                       |
 | **`0x34`** | **Arrangement Request**     | `34 00` (TI)                  | Multi Dump + 16 × Single Dump — [single.md](single.md#arrangement-export-single-dump--16)     |
 | **`0x37`** | **Controller Dump Request** | `37 00 <part>`                | SysEx parameter stream — [controller.md](controller.md)                                       |
+| **`0x39`** | **Bank Checksum Request**   | `39 <bank>`                   | **Bank Checksum (`0x14`)** — RAM banks **`01`–`04`** only — [below](#bank-checksum-request)   |
 
 ### Single Request
 
@@ -138,6 +140,78 @@ Full notes: [controller.md](controller.md).
 sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x37 0x00 0x00
 sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x37 0x00 0x40
 ```
+
+### Bank Checksum Request
+
+**Request:** `cmd=0x39`. **Not previously documented here**, and absent from
+gearmulator's `virusLib::SysexMessageType` and from the Osirus/OsTIrus technical
+notes — but Access's own Virus Control plugin uses it on every connect.
+
+Ask the synth for a **table of per-slot checksums** covering one RAM bank, so a
+host can tell which of the 128 slots changed without downloading all of them.
+
+```text
+F0 00 20 33 01 <device> 39 <bank> F7
+```
+
+**Reply** — command **`0x14`**, a fixed **267-byte** message:
+
+```text
+F0 00 20 33 01 <device> 14 <bank> 00 <256 bytes> <checksum> F7
+```
+
+| Offset        | Field    | Value                                            |
+| ------------- | -------- | ------------------------------------------------ |
+| `0x06`        | Command  | `14`                                             |
+| `0x07`        | Bank     | echoes the request                               |
+| `0x08`        | —        | `00` in every reply observed                     |
+| `0x09`–`0x108`| Payload  | **256 bytes = 128 slots × 2 bytes**              |
+| `0x109`       | Checksum | same rule as a Single Dump                       |
+| `0x10A`       | End      | `F7`                                             |
+
+Checksum: `(device + 0x14 + bank + 0x00 + sum(bytes 0x09..0x108)) & 0x7F` —
+verified against replies.
+
+**Valid `<bank>`** — RAM only, unlike [Single Bank Request](#single-bank-request):
+
+| Request `bank` | Bank    | Result                                                        |
+| -------------- | ------- | ------------------------------------------------------------- |
+| `00`           | —       | **No reply**                                                  |
+| `01`–`04`      | RAM A–D | 267-byte `0x14` reply ✓                                       |
+| `05`–`1E`      | ROM A–Z | **No reply** ✓ — `0x32` serves ROM, `0x39` does not           |
+| `1F`+          | —       | **No reply** ✓                                                |
+
+RAM-only is consistent with the purpose: ROM contents cannot change.
+
+**Entry `n` corresponds to slot `n`**, and the two bytes are a **deterministic
+function of that slot's patch content**:
+
+* Requesting the same unmodified bank returns a **byte-identical** table across a
+  power cycle, hours apart, over two different transports, and from a different
+  requester — so it is not a nonce, counter or timestamp. Confirmed for all four
+  RAM banks.
+* Copying slot 126's patch into slot 127 changed **exactly one** entry — 127 —
+  and changed it to **slot 126's value**. Restoring slot 127 returned the table
+  to byte-identical.
+
+**How Access's plugin uses it:** on connect it requests `39 01`–`39 04`, diffs the
+four tables against its cache, then issues `0x30` only for slots that differ — 28
+Single Requests instead of 512 in one observed session.
+
+```bash
+# Per-slot checksum table for RAM A
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x39 0x01
+receivemidi dev "<MIDI port>" syx
+
+# Linux
+amidi -p hw:1,0,1 -S 'F0 00 20 33 01 10 39 01 F7' -d -t 4
+```
+
+**What is not known:** how the two bytes are computed. A 14-bit sum of the payload
+bytes was tested against 25 real Single Dumps across every prefix length in both
+byte orders and matched at chance level, so it is **not** a simple byte-sum. Also,
+digest equality does **not** imply the two slots' dumps are byte-identical — the
+digest appears to cover a subset of the 512-byte payload.
 
 ## RAM Single banks (A–D)
 
