@@ -21,6 +21,7 @@ extracting it from a copy you already have.
 * [Windows](#windows)
 * [Linux](#linux)
 * [Reading it](#reading-it)
+* [Two scripts for working with it](#two-scripts-for-working-with-it)
 * [The one format trap](#the-one-format-trap)
 * [Verified on](#verified-on)
 
@@ -150,6 +151,35 @@ A parameter entry names its value list, and the list gives every label:
 ```xml
 <Parameter name="Mode" bank="115" index="122" min="0" max="3" valuelist="Val Playmodes"/>
 ```
+
+## Two scripts for working with it
+
+* **`scripts/parse-remotedevice.py`** — flattens the XML into a
+  `(bank, index) -> name / range / value list` table. `--bank 0x73` filters to one
+  bank, `--valuelist NAME` prints one enum, `--valuelists` lists them all,
+  `--format csv|json|table`.
+
+  ```bash
+  scripts/parse-remotedevice.py --xml REMOTEDEVICE.XML --bank 0x73 --format csv
+  scripts/parse-remotedevice.py --xml REMOTEDEVICE.XML --valuelist 'Val Playmodes'
+  ```
+
+* **`scripts/decode-param-capture.py`** — turns a passive MIDI capture into a
+  per-parameter report. Because turning a front-panel control makes the Virus emit
+  its own live-edit SysEx, a capture alone identifies a parameter's `cmd` and index
+  with **nothing sent to the synth**. Every message carries its own index, so one
+  capture of many knobs self-separates — no need to isolate one control per run.
+
+  ```bash
+  amidi -d -p hw:1,0,1 > capture.txt &     # Linux; or receivemidi on macOS
+  # ... turn front-panel controls ...
+  scripts/decode-param-capture.py capture.txt --xml REMOTEDEVICE.XML --cmd 73
+  ```
+
+  With `--xml` it names each index and **checks every observed value against the
+  declared min/max** — two independent sources agreeing on one index, which is what
+  makes a passive capture worth publishing. Out-of-range values are flagged loudly
+  rather than silently accepted.
 
 ## The one format trap
 
