@@ -64,6 +64,8 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
   * [Logo Groove](#logo-groove)
   * [Audio Clock Source](#audio-clock-source)
   * [Analog Input Source](#analog-input-source)
+  * [Audio Clock Frequency](#audio-clock-frequency)
+  * [USB MIDI Port Active](#usb-midi-port-active)
   * [Memory Protect](#memory-protect)
   * [Global MIDI Channel](#global-midi-channel)
   * [LED Mode](#led-mode)
@@ -205,6 +207,7 @@ desktop those CONFIG entries do not exist, so a desktop cannot capture them.
 | `0x09`   | USB Audio Mode         | See [USB Audio Mode](#usb-audio-mode)                                 |
 | `0x10`   | Edit mode / focus      | See [Edit mode 0x10](#edit-mode-0x10)                                 |
 | `0x08`   | Analog Input Source    | See [Analog Input Source](#analog-input-source)                       |
+| `0x10`   | Audio Clock Frequency  | See [Audio Clock Frequency](#audio-clock-frequency)                   |
 | `0x11`   | Audio Clock Source     | See [Audio Clock Source](#audio-clock-source)                         |
 | `0x19`   | All EQs                | See [All EQs](#all-eqs)                                               |
 | `0x1A`   | All Arpeggiators       | See [All Arpeggiators](#all-arpeggiators)                             |
@@ -230,6 +233,7 @@ desktop those CONFIG entries do not exist, so a desktop cannot capture them.
 | `0x45`   | Control Pedal Dest.    | See [Control Pedal Destination](#control-pedal-destination)           |
 | `0x46`   | Pressure Curve         | See [Pressure Curve](#pressure-curve)                                 |
 | `0x4C`   | Pure Tuning            | See [Pure Tuning](#pure-tuning)                                       |
+| `0x52`   | USB MIDI Port Active   | See [USB MIDI Port Active](#usb-midi-port-active)                     |
 | `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change)                   |
 | `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx)                   |
 | `0x5A`   | Input Direct Thru      | See [Input Direct Thru](#input-direct-thru)                           |
@@ -1037,6 +1041,56 @@ driver loaded.
 
 Distinct from `0x2B` despite the similar name — different control, different
 options.
+
+### Audio Clock Frequency
+
+**Live edit:** `cmd=0x73`, param `0x10`.
+
+**CONFIG → Audio Clock**. Range **`0`–`1`**.
+
+| `<value>` | Option     |
+| --------- | ---------- |
+| `00`      | `44.1 kHz` |
+| `01`      | `48.0 kHz` |
+
+```text
+F0 00 20 33 01 00 73 00 10 00 F7 # 44.1 kHz
+F0 00 20 33 01 00 73 00 10 01 F7 # 48.0 kHz
+```
+
+This is the **audio sample rate**, not the DSP core clock — a distinction worth
+keeping, since the Virus's internal DSP clock is a separate thing entirely.
+Observed transmitted by the Virus with both values; the panel control it
+corresponds to was not pinned down, so treat the CONFIG location as approximate.
+
+### USB MIDI Port Active
+
+**Live edit:** `cmd=0x73`, param `0x52`.
+
+Range **`0`–`1`** (`Yes`/`No` in Access's own value list).
+
+| `<value>` | Meaning |
+| --------- | ------- |
+| `00`      | `No`    |
+| `01`      | `Yes`   |
+
+**Do not send this.** It is listed here because the Virus **transmits** it, not
+because a host should write it: setting it to `00` plausibly deactivates the very
+USB MIDI port a host is talking over, and that was not tested.
+
+It is genuinely useful as a **received** message. The Virus emits `0x52 = 00`
+unprompted when its USB connection is removed, and the same event restores
+[Keyboard Local](#keyboard-local) to `01`. Observed on a TI2 by capturing its DIN
+MIDI OUT while USB was unplugged.
+
+**This also explains a behaviour that otherwise looks like broken hardware**: while
+the USB MIDI port is active, the TI2 sends **nothing at all** on its 5-pin DIN
+MIDI OUT — no SysEx, and no note data even while keys are played. Unplug USB and
+DIN output starts working immediately. Confirmed on a TI2 with three controls: a
+MIDI keyboard into the same DIN input worked, the same cable moved to that keyboard
+worked, and the Virus's own output appeared only once USB was disconnected. So a
+DIN-only setup cannot capture from this synth while it is also plugged into a
+computer.
 
 ### Memory Protect
 
