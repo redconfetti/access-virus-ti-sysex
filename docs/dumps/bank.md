@@ -184,6 +184,13 @@ verified against replies.
 
 RAM-only is consistent with the purpose: ROM contents cannot change.
 
+**Use banks `01`–`04`; there is no reason to walk the rest.** The table above records a sweep, but
+disassembling the handler on **5.1.7.00** shows the out-of-range cases are not simply ignored: for
+`bank` `05` and up it returns nothing *and* leaves the chip's Page Register at a computed value
+(`0x40 + 2 × (bank − 5)`) instead of restoring it. No handler on this page restores the Page
+Register — the next command that needs it sets it again — so this is not unique to `0x39`, and no
+harm was observed. It is simply argument space with nothing on the other side of it.
+
 **Entry `n` occupies data bytes `2n` and `2n+1`**, and the two bytes are a
 **deterministic function of that slot's patch content**:
 
