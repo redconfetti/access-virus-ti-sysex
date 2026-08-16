@@ -12,6 +12,7 @@ Architecture: [virus.md](../misc/virus.md).
   * [No “load program by slot” SysEx in Single mode](#no-load-program-by-slot-sysex-in-single-mode)
   * [Single Bank Request](#single-bank-request)
   * [Controller Dump Request](#controller-dump-request)
+  * [What the request handlers touch internally](#what-the-request-handlers-touch-internally)
 * [RAM Single banks (A–D)](#ram-single-banks-ad)
 * [ROM Singles (A–Z)](#rom-singles-az)
 * [Multi bank](#multi-bank)
@@ -138,6 +139,40 @@ Full notes: [controller.md](controller.md).
 sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x37 0x00 0x00
 sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x37 0x00 0x40
 ```
+
+### What the request handlers touch internally
+
+From disassembling the TI2's SysEx dispatcher on **5.1.7.00**. Offered as background for anyone
+implementing a host; none of it changes how the requests above are used.
+
+The handlers all write some internal state — request scratch, a parameter index — as ordinary
+bookkeeping while servicing the request. That part is unremarkable. The one worth knowing about is
+**`0x37`**, which takes a different path from the rest:
+
+| Cmd        | Uses the bulk/dump reply path? | Internal state written while servicing                        |
+| ---------- | ------------------------------ | ------------------------------------------------------------- |
+| `0x30`     | yes                            | parameter `0x3C` ← `bank − 1`, plus request scratch        |
+| `0x31`     | yes                            | request scratch                                               |
+| `0x32`     | yes                            | request scratch, parameter `0x11`                             |
+| `0x34`     | yes                            | request scratch, parameters `0x11`, `0x2E`, `0x30`            |
+| **`0x37`** | **no**                         | **both DSP HDI08 host mailboxes, across an edit-buffer walk** |
+
+`0x37` never assembles a dump. It writes the two DSP host mailboxes while walking the selected
+part's edit buffer, and what returns is routed out through the parameter-change path instead, which is
+consistent with the stream of short live-edit messages [controller.md](controller.md) documents
+as its reply. Practical consequence for a host: **there is no bulk message to wait on for `0x37`**;
+expect the live-edit stream described there.
+
+Two caveats on reading this table:
+
+* **Writing internal state does not make a request "a write."** Servicing a read needs scratch. The
+  entries above are recorded so an implementer isn't surprised to see them, not as a warning.
+* **No handler restores the Page Register.** Each sets it to what it needs and leaves it; the next
+  command that cares sets it again.
+
+**Scope:** static analysis of the dispatcher and the handlers it reaches on **TI2 / 5.1.7.00** only.
+The HDI08 traffic was not observed on the bus, so `0x37`'s mechanism is read from the code rather
+than measured. Behaviour on other models and versions is untested.
 
 ## RAM Single banks (A–D)
 
