@@ -1,5 +1,23 @@
 # Getting started
 
+## Contents
+
+* [Sending System Exclusive Messages](#sending-system-exclusive-messages)
+  * [Receiving System Exclusive Data](#receiving-system-exclusive-data)
+* [Platforms other than macOS](#platforms-other-than-macos)
+  * [Linux](#linux)
+  * [Windows](#windows)
+  * [Why the difference](#why-the-difference)
+  * [One more thing that looks like broken hardware](#one-more-thing-that-looks-like-broken-hardware)
+* [Message structure](#message-structure)
+  * [Live Edits](#live-edits)
+  * [Single Requests](#single-requests)
+  * [Payload shapes](#payload-shapes)
+* [Address index](#address-index)
+* [Parameter values](#parameter-values)
+
+---
+
 ## Sending System Exclusive Messages
 
 The best way to understand SysEx commands is to test them using [sendmidi][]
@@ -12,6 +30,10 @@ brew install sendmidi receivemidi
 [Homebrew]: https://brew.sh/
 [sendmidi]: https://github.com/gbevin/SendMIDI
 [receivemidi]: https://github.com/gbevin/ReceiveMIDI
+
+The examples below use macOS port names. For Linux and Windows, see
+[Platforms other than macOS](#platforms-other-than-macos) — Linux works out of the
+box with different tooling, and Windows has a gotcha worth reading before you start.
 
 To communicate with your synth, you'll need to list the ports to identify which
 one to send commands to.
@@ -66,6 +88,69 @@ After you've run the command, the data should show in the other terminal:
 $ receivemidi dev "Virus TI USB Plugin I/O" syx
 system-exclusive hex 00 20 33 01 00 10 00 40 0C 01 00 7F 00 00 00 00 00 00 40 00 00 00 00 00 00 40 00 00 40 60 40 00 00 40 20 00 00 40 40 60 00 40 00 0040 00 00 40 7F 40 00 00 00 00 40 40 40 00 00 00 00 00 00 2E 00 40 7F 00 7F 7F 40 04 00 00 00 30 01 00 00 40 00 00 40 40 40 40 40 30 01 00 00 40 00 00 4040 40 40 40 64 00 40 00 00 00 00 30 7F 40 00 01 01 7F 00 45 10 7F 40 01 00 01 00 40 00 10 0C 01 40 00 00 00 00 00 00 00 00 40 00 00 00 00 40 00 5E 01 0000 01 00 00 00 00 39 04 00 00 00 00 00 00 00 01 42 3E 01 00 01 01 01 24 00 00 00 00 00 00 00 00 40 40 28 2B 55 40 40 40 40 00 00 00 40 40 40 40 7F 00 4040 40 00 03 3A 64 00 00 40 00 40 00 00 40 00 40 00 40 00 40 00 40 00 03 00 24 70 30 40 7F 00 40 47 33 40 40 28 20 00 00 00 00 03 00 40 03 00 40 03 00 4020 2D 49 4E 49 54 2D 20 20 20 02 00 00 00 00 15 17 00 01 00 02 44 14 40 01 00 00 00 00 03 04 02 00 00 00 00 00 7F 40 40 7F 7F 40 00 00 00 00 00 00 00 0000 00 00 00 00 00 00 00 40 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 00 00 00 00 00 00 00 7F 7F 40 00 00 00 00 00 14 46 00 40 4614 46 00 40 46 00 40 00 40 00 40 00 40 00 40 00 40 00 40 00 40 00 40 00 00 00 00 00 00 00 00 02 00 00 00 00 00 01 01 01 00 00 1F 40 64 01 40 64 00 40 6401 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 6400 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 40 64 01 40 64 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0000 00 00 00 00 00 00 00 00 00 01 30 7F 40 00 01 00 53 46 dec
 ```
+
+## Platforms other than macOS
+
+### Linux
+
+No extra install needed beyond `alsa-utils`. The kernel's `snd-usb-audio` driver has
+carried a device-specific quirk for the Virus TI for years, so it appears as an
+ordinary ALSA raw-MIDI device:
+
+```bash
+$ amidi -l
+Dir Device    Name
+IO  hw:1,0,0  Virus TI MIDI
+IO  hw:1,0,1  Virus TI Synth
+```
+
+**Use `hw:1,0,1` ("Virus TI Synth")** — that is the SysEx-responsive endpoint, the
+equivalent of macOS's *Virus TI USB Plugin I/O*. `hw:1,0,0` stayed silent in testing.
+
+Send, and send-then-listen:
+
+```bash
+# Sets "Osc Volume" to "<0>"
+amidi -p hw:1,0,1 -S 'F0 00 20 33 01 00 70 40 24 40 F7'
+
+# Request the Single edit buffer and capture the reply (524-byte dump)
+amidi -p hw:1,0,1 -S 'F0 00 20 33 01 00 30 00 40 F7' -d -t 3
+```
+
+Unlike `sendmidi`, `amidi -S` wants the **full** message including `F0`/`F7`.
+
+For a long passive capture, run `amidi -d -p hw:1,0,1 > capture.txt` in the
+background and turn front-panel controls — the Virus emits its own live-edit SysEx
+for many parameters, so you can map them without sending anything.
+
+`python-rtmidi` also works if you prefer scripting; it needs
+`libasound2-dev pkg-config python3-dev` to build.
+
+### Windows
+
+**The Virus does not appear as a standard Windows MIDI port.** With Access's driver
+installed, `midiOutGetNumDevs` lists only the Microsoft GS Wavetable Synth — the
+synth's MIDI is reachable only through Access's own driver API, not through the
+normal Windows MIDI interface. So `sendmidi`-style tools will not see it, and this
+guide's workflow does not translate directly.
+
+Options are the Virus Control plugin in a DAW, or a Linux/macOS machine for protocol
+work.
+
+### Why the difference
+
+MIDI-over-USB is **disabled on the Virus at startup** and has to be switched on by
+the host. Linux's quirk does this automatically at probe time; on Windows, Access's
+driver does it. Anything that has not sent that enable sequence sees no MIDI. The
+device also reports the state of that port over SysEx — see
+[USB MIDI Port Active](live-edit/global.md#usb-midi-port-active).
+
+### One more thing that looks like broken hardware
+
+**While the USB MIDI port is active, the Virus sends nothing on its 5-pin DIN MIDI
+OUT** — no SysEx, and no note data even while keys are played. Unplug USB and DIN
+output starts working immediately. So if you are trying to capture over a DIN
+interface, disconnect USB first.
 
 ## Message structure
 
