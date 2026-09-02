@@ -23,4 +23,5 @@ assistance from Cursor AI.
   - [Controller](docs/dumps/controller.md)
 - [Parameter Options Reference](docs/reference/parameter-options.md)
 - [Address Index](docs/reference/address-index.md)
+- [Extracting Access's own parameter data](docs/reference/extracting-parameter-data.md)
 - [OsTIrus (DSP56300 TI/TI2 emulation)](docs/misc/ostirus.md)
