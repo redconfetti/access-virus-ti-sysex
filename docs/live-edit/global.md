@@ -51,6 +51,21 @@ Single → Inputs](#inputs-edit-single) when editing a Single program.
     * [Input Boost](#input-boost)
     * [Input Source](#input-source)
     * [Input Characteristic](#input-characteristic)
+  * [Transpose Buttons](#transpose-buttons)
+  * [Transpose](#transpose)
+  * [Mod Wheel Destination](#mod-wheel-destination)
+  * [Hold Pedal Destination](#hold-pedal-destination)
+  * [Control Pedal Destination](#control-pedal-destination)
+  * [Keyboard Local](#keyboard-local)
+  * [Keyboard Mode](#keyboard-mode)
+  * [Velocity Curve](#velocity-curve)
+  * [Pressure Curve](#pressure-curve)
+  * [Pure Tuning](#pure-tuning)
+  * [Logo Groove](#logo-groove)
+  * [Audio Clock Source](#audio-clock-source)
+  * [Analog Input Source](#analog-input-source)
+  * [Audio Clock Frequency](#audio-clock-frequency)
+  * [USB MIDI Port Active](#usb-midi-port-active)
   * [Memory Protect](#memory-protect)
   * [Global MIDI Channel](#global-midi-channel)
   * [LED Mode](#led-mode)
@@ -137,10 +152,53 @@ The byte **`<device_id>`** (immediately before **`0x73`**) is the SysEx
 **destination device ID**. The Virus only acts on the message when this
 matches its configured **MIDI Device ID** (CONFIG).
 
-At least **All Delays** (`0x1B`) is **transmitted by the Virus** when
-changed on the front panel. Many other **`0x73`** globals are **RX only**
-(host → synth); the panel does not emit SysEx when they are edited — see
-[Knob Response](#knob-response) and [CONFIG → Inputs / USB (RX only)](#config--inputs--usb-rx-only).
+**At least 28** `0x73` globals are **transmitted by the Virus** when changed on
+the front panel — more than the one this page previously named, though still a
+minority of the page. Confirmed by passive capture on a **TI2 keyboard**
+(`receivemidi` / `amidi`, nothing sent to the synth):
+
+```text
+08 11 19 1A 1B 1C 1D 1F 28 29 2B 32 33 34 35 36
+3E 3F 40 41 42 43 44 45 46 4C 5A 5B
+```
+
+Access's own parameter database lists **81** parameters in this bank, so **53 have
+never been observed transmitting** — the RX-only caveat on this page is well
+founded, and TX should be treated as the exception that has to be demonstrated
+per parameter, not assumed. See [Knob Response](#knob-response) and
+[CONFIG → Inputs / USB (RX only)](#config--inputs--usb-rx-only).
+
+Whole CONFIG pages do not transmit. The following were each turned on the front
+panel of a TI2 with a capture running, and produced **no `0x73` traffic at all**:
+
+| CONFIG page | Controls turned | Access's parameters |
+| ----------- | --------------- | ------------------- |
+| Soft Knob 1/2/3 | Destination, Mode (all three pages) | `0x6E`–`0x73` |
+| Knob Behavior | Response, Display Time, Target | `0x75`, `0x61`, `0x79` |
+| Global Tuning | Master Tuning | `0x5C` |
+| *(front panel)* | the **Master Volume** knob | `0x7F` |
+
+Each negative is backed by a positive control in the same capture session: after
+the runs above, toggling **All Delays** emitted `0x1B` immediately, and the
+Global Tuning page's other control (**Pure Tuning**, `0x4C`) transmitted normally
+while Master Tuning beside it did not. The Master Volume knob is the strongest
+case: it produced **zero bytes** in a capture that had just recorded 61 note-ons,
+754 aftertouch messages, pitch bend and mod-wheel CC from the same instrument.
+
+**"Does not transmit on panel edit" is not "cannot be set over SysEx."** These
+parameters may well accept a host → synth message; that direction was not tested
+here. What is established is only that the panel does not echo them, so a host
+must not wait for one.
+
+One confirmed non-transmitter: **Master Tuning** (CONFIG → Global Tuning, panel
+range **`-64`**/**`<0>`**/**`+63`**) emitted **nothing at all** — neither SysEx nor
+CC — when swept across its full range on the panel, in the same capture in which
+the eight parameters either side of it did emit. Its parameter ID is therefore
+**not** established here.
+
+**Note on form factor**: `0x3E`–`0x46` are the **Global Keyboard Parameters**
+group. They are only reachable from the front panel on a keyboard model; on a
+desktop those CONFIG entries do not exist, so a desktop cannot capture them.
 
 ## Summary
 
@@ -148,6 +206,9 @@ changed on the front panel. Many other **`0x73`** globals are **RX only**
 | -------- | ---------------------- | --------------------------------------------------------------------- |
 | `0x09`   | USB Audio Mode         | See [USB Audio Mode](#usb-audio-mode)                                 |
 | `0x10`   | Edit mode / focus      | See [Edit mode 0x10](#edit-mode-0x10)                                 |
+| `0x08`   | Analog Input Source    | See [Analog Input Source](#analog-input-source)                       |
+| `0x10`   | Audio Clock Frequency  | See [Audio Clock Frequency](#audio-clock-frequency)                   |
+| `0x11`   | Audio Clock Source     | See [Audio Clock Source](#audio-clock-source)                         |
 | `0x19`   | All EQs                | See [All EQs](#all-eqs)                                               |
 | `0x1A`   | All Arpeggiators       | See [All Arpeggiators](#all-arpeggiators)                             |
 | `0x1B`   | All Delays             | See [All Delays](#all-delays)                                         |
@@ -159,8 +220,20 @@ changed on the front panel. Many other **`0x73`** globals are **RX only**
 | `0x2B`   | Input Source           | See [Input Source](#input-source)                                     |
 | `0x32`   | BPM Brightness         | See [BPM Brightness](#bpm-brightness)                                 |
 | `0x33`   | LED Lux                | See [LED Lux](#led-lux)                                               |
+| `0x34`   | Logo Groove            | See [Logo Groove](#logo-groove)                                       |
 | `0x35`   | Random PG — Scope      | See [Randomize Scope](#randomize-scope)                               |
 | `0x36`   | Random PG — Strength   | See [Randomize Strength](#randomize-strength)                         |
+| `0x3E`   | Velocity Curve         | See [Velocity Curve](#velocity-curve)                                 |
+| `0x3F`   | Transpose Buttons      | See [Transpose Buttons](#transpose-buttons)                           |
+| `0x40`   | Keyboard Local         | See [Keyboard Local](#keyboard-local)                                 |
+| `0x41`   | Keyboard Mode          | See [Keyboard Mode](#keyboard-mode)                                   |
+| `0x42`   | Transpose              | See [Transpose](#transpose)                                           |
+| `0x43`   | Mod Wheel Destination  | See [Mod Wheel Destination](#mod-wheel-destination)                   |
+| `0x44`   | Hold Pedal Destination | See [Hold Pedal Destination](#hold-pedal-destination)                 |
+| `0x45`   | Control Pedal Dest.    | See [Control Pedal Destination](#control-pedal-destination)           |
+| `0x46`   | Pressure Curve         | See [Pressure Curve](#pressure-curve)                                 |
+| `0x4C`   | Pure Tuning            | See [Pure Tuning](#pure-tuning)                                       |
+| `0x52`   | USB MIDI Port Active   | See [USB MIDI Port Active](#usb-midi-port-active)                     |
 | `0x55`   | Global Program Change  | See [Global Program Change](#global-program-change)                   |
 | `0x57`   | Global MIDI Volume RX  | See [Global MIDI Volume RX](#global-midi-volume-rx)                   |
 | `0x5A`   | Input Direct Thru      | See [Input Direct Thru](#input-direct-thru)                           |
@@ -691,6 +764,340 @@ F0 00 20 33 01 00 73 00 1D 01 F7 # Phono
 
 **Not** Edit FX **Character** intensity (`70`/`15` → dump **`0x01D`**) — same
 param **hex** on a different **`cmd`**.
+
+### Transpose Buttons
+
+**Live edit:** `cmd=0x73`, param `0x3F`.
+
+**CONFIG → Keyboard 2/5 → Transpose Buttons**. Range: **`0`–`1`**.
+
+| `<value>` | Option     |
+| --------- | ---------- |
+| `00`      | `Patch`    |
+| `01`      | `Keyboard` |
+
+```text
+F0 00 20 33 01 00 73 00 3F 00 F7 # Patch
+F0 00 20 33 01 00 73 00 3F 01 F7 # Keyboard
+```
+
+Transmitted by the Virus when changed on the front panel. **Keyboard models
+only** — a desktop has no such CONFIG entry.
+
+### Transpose
+
+**Live edit:** `cmd=0x73`, param `0x42`.
+
+**CONFIG → Keyboard 2/5 → Transpose**. Bipolar, displayed as a signed value;
+**`<0>` is `0x40`** (confirmed against the panel readout).
+
+| UI    | `<value>` |
+| ----- | --------- |
+| `<0>` | `40`      |
+
+```text
+F0 00 20 33 01 00 73 00 42 40 F7 # <0> (centre, confirmed)
+F0 00 20 33 01 00 73 00 42 00 F7 # wire minimum
+F0 00 20 33 01 00 73 00 42 7F F7 # wire maximum
+```
+
+Values across the whole **`00`–`7F`** range are emitted by the panel, so the wire
+field is a full 7-bit value. **The panel's displayed extremes were not recorded**,
+so the UI range this maps onto — and therefore the exact `stored = ui + offset`
+formula — is **not yet confirmed**; only the centre point is. Transmitted by the
+Virus when changed on the front panel. **Keyboard models only.**
+
+### Mod Wheel Destination
+
+**Live edit:** `cmd=0x73`, param `0x43`.
+
+**CONFIG → Keyboard 3/5 → Mod Wheel**. Selects what the mod wheel transmits.
+Range **`00`–`7F`**, `stored = index`; `00` is `Off`.
+
+```text
+F0 00 20 33 01 00 73 00 43 00 F7 # Off
+F0 00 20 33 01 00 73 00 43 01 F7 # ModWheel#1
+F0 00 20 33 01 00 73 00 43 28 F7 # Cutoff#40
+F0 00 20 33 01 00 73 00 43 7F F7 # #127
+```
+
+Full 128-entry table:
+[Keyboard controller destination](../reference/parameter-options.md#keyboard-controller-destination-128-entries).
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Hold Pedal Destination
+
+**Live edit:** `cmd=0x73`, param `0x44`.
+
+**CONFIG → Keyboard 4/5 → Hold Pedal**. Same 128-entry destination list as
+[Mod Wheel](#mod-wheel-destination); `stored = index`, `00` is `Off`.
+
+```text
+F0 00 20 33 01 00 73 00 44 00 F7 # Off
+F0 00 20 33 01 00 73 00 44 40 F7 # HoldPedalS#64
+F0 00 20 33 01 00 73 00 44 7F F7 # #127
+```
+
+Full table:
+[Keyboard controller destination](../reference/parameter-options.md#keyboard-controller-destination-128-entries).
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Control Pedal Destination
+
+**Live edit:** `cmd=0x73`, param `0x45`.
+
+**CONFIG → Keyboard 4/5 → Control Pedal**. Same 128-entry destination list as
+[Mod Wheel](#mod-wheel-destination); `stored = index`, `00` is `Off`.
+
+```text
+F0 00 20 33 01 00 73 00 45 00 F7 # Off
+F0 00 20 33 01 00 73 00 45 0B F7 # Expression#11
+F0 00 20 33 01 00 73 00 45 7F F7 # #127
+```
+
+Full table:
+[Keyboard controller destination](../reference/parameter-options.md#keyboard-controller-destination-128-entries).
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Keyboard Local
+
+**Live edit:** `cmd=0x73`, param `0x40`.
+
+**CONFIG → Keyboard 1/5 → Local**. Range **`0`–`1`**.
+
+| `<value>` | Option |
+| --------- | ------ |
+| `00`      | `Off`  |
+| `01`      | `On`   |
+
+```text
+F0 00 20 33 01 00 73 00 40 00 F7 # Off
+F0 00 20 33 01 00 73 00 40 01 F7 # On
+```
+
+The Virus **emits this unprompted when a host opens its plugin MIDI port**, with
+value `00` — i.e. connecting an editor switches Local off. Also transmitted when
+changed on the front panel. **Keyboard models only.**
+
+### Keyboard Mode
+
+**Live edit:** `cmd=0x73`, param `0x41`.
+
+**CONFIG → Keyboard 1/5 → Mode**. Range **`0`–`1`**.
+
+| `<value>` | Option           |
+| --------- | ---------------- |
+| `00`      | `One Channel`    |
+| `01`      | `Multi Channels` |
+
+```text
+F0 00 20 33 01 00 73 00 41 00 F7 # One Channel
+F0 00 20 33 01 00 73 00 41 01 F7 # Multi Channels
+```
+
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Velocity Curve
+
+**Live edit:** `cmd=0x73`, param `0x3E`.
+
+**CONFIG → Keyboard 5/5 → Velocity Curve**. Bipolar **percentage**, not a set of
+named curves: **`-100.0 %`–`+100.0 %`** across `00`–`7F` in 128 steps
+(≈ 1.575 % per step), centre `+0.0 %` at `40`.
+
+```text
+F0 00 20 33 01 00 73 00 3E 00 F7 # -100.0 %
+F0 00 20 33 01 00 73 00 3E 40 F7 # +0.0 %
+F0 00 20 33 01 00 73 00 3E 7F F7 # +100.0 %
+```
+
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Pressure Curve
+
+**Live edit:** `cmd=0x73`, param `0x46`.
+
+**CONFIG → Keyboard 5/5 → Pressure Curve**. Same bipolar percentage encoding as
+[Velocity Curve](#velocity-curve): **`-100.0 %`–`+100.0 %`** across `00`–`7F`,
+centre at `40`.
+
+```text
+F0 00 20 33 01 00 73 00 46 00 F7 # -100.0 %
+F0 00 20 33 01 00 73 00 46 40 F7 # +0.0 %
+F0 00 20 33 01 00 73 00 46 7F F7 # +100.0 %
+```
+
+Transmitted by the Virus when changed on the front panel. **Keyboard models only.**
+
+### Pure Tuning
+
+**Live edit:** `cmd=0x73`, param `0x4C`.
+
+**CONFIG → Global Tuning → Pure Tuning**. A continuous blend, **not** a mode
+switch: `00`–`7F`, where the two ends and the midpoint display as names and every
+other step displays as its own number.
+
+| `<value>`     | Display      |
+| ------------- | ------------ |
+| `00`          | `Tempered`   |
+| `01`–`3F`     | `1`–`63`     |
+| `40`          | `Natural`    |
+| `41`–`7E`     | `65`–`126`   |
+| `7F`          | `Pure`       |
+
+```text
+F0 00 20 33 01 00 73 00 4C 00 F7 # Tempered (equal temperament)
+F0 00 20 33 01 00 73 00 4C 40 F7 # Natural (midpoint)
+F0 00 20 33 01 00 73 00 4C 7F F7 # Pure (just intonation)
+```
+
+Transmitted by the Virus when changed on the front panel. Confirmed on a TI2 by
+passive capture, and the on-screen labels match Access's own value list for this
+parameter exactly.
+
+### Logo Groove
+
+**Live edit:** `cmd=0x73`, param `0x34`.
+
+**CONFIG → System 6/6 → Logo Groove**. Range **`0`–`127`**, shown on the panel as
+a bare number. **`stored = ui`** — no offset.
+
+| UI    | `<value>` |
+| ----- | --------- |
+| `0`   | `00`      |
+| `32`  | `20`      |
+| `127` | `7F`      |
+
+```text
+F0 00 20 33 01 00 73 00 34 00 F7 # 0
+F0 00 20 33 01 00 73 00 34 20 F7 # 32
+F0 00 20 33 01 00 73 00 34 7F F7 # 127
+```
+
+Transmitted by the Virus when changed on the front panel. Confirmed on a TI2 by
+passive capture: the panel emits across the full `00`–`7F` range, and the value it
+settles on matches the number shown on screen.
+
+### Audio Clock Source
+
+**Live edit:** `cmd=0x73`, param `0x11`.
+
+**CONFIG → Audio Clock → Source**. Range **`0`–`1`**.
+
+| `<value>` | Option     |
+| --------- | ---------- |
+| `00`      | `Auto`     |
+| `01`      | `Internal` |
+
+```text
+F0 00 20 33 01 00 73 00 11 00 F7 # Auto
+F0 00 20 33 01 00 73 00 11 01 F7 # Internal
+```
+
+Transmitted by the Virus when changed on the front panel. Confirmed on a TI2 by
+passive capture; the panel labels match Access's own value list for this parameter.
+
+Selects whether the Virus derives its audio clock from an incoming source (S/PDIF
+or USB) when one is present, or always runs from its own internal clock. Related:
+[Input Source](#input-source) (`0x2B`).
+
+### Analog Input Source
+
+**Live edit:** `cmd=0x73`, param `0x08`.
+
+Range **`0`–`1`**.
+
+| `<value>` | Option    |
+| --------- | --------- |
+| `00`      | `Default` |
+| `01`      | `USB`     |
+
+```text
+F0 00 20 33 01 00 73 00 08 00 F7 # Default
+F0 00 20 33 01 00 73 00 08 01 F7 # USB
+```
+
+Confirmed **transmitted** by the Virus on front-panel edit (observed on a TI2 in a
+panel capture). The labels come from Access's parameter database, and both strings
+are also present in the Virus's **own** display string table — `Default` and `USB`
+sit immediately after `Analog` and `S/PDIF`, which are
+[Input Source](#input-source)'s (`0x2B`) options — so they are the device's
+labels, not just the editor's.
+
+**Panel label: `Mode`, on the leftmost soft knob of CONFIG → Inputs 2/2.**
+
+**This control is conditionally visible, and the condition is the host driver.**
+On a machine with **no Access USB driver** the leftmost knob on that page shows no
+label and no values at all, and a scan of the whole EDIT menu finds nothing
+offering `Default`/`USB`. Install the Virus TI Software Suite on the connected host
+and the same page, on the same unit, shows **`Mode`** with **`Default`** /
+**`USB`** — verified both ways on one TI2.
+
+So `USB` means the input section takes its signal from **USB audio** instead of the
+analog jacks, which only makes sense while a host is present to supply it — hence
+the gating. A host that does not see this parameter should not conclude the synth
+lacks it.
+
+Its position is independently corroborated: in a front-panel capture that walked
+the CONFIG pages in order, `0x08` emitted between *Input Thru* / *Boost* and
+*Input Source* / *Characteristic*.
+
+**One limit**: which value carries which label was not read off the LCD, only taken
+from Access's list order (`Default` = 0, `USB` = 1).
+
+Distinct from [Input Source](#input-source) (`0x2B`, Analog / S/PDIF) despite both
+living on the Inputs pages — different control, different options, and note the
+panel calls **this** one `Mode`.
+
+### Audio Clock Frequency
+
+**Live edit:** `cmd=0x73`, param `0x10`.
+
+**CONFIG → Audio Clock**. Range **`0`–`1`**.
+
+| `<value>` | Option     |
+| --------- | ---------- |
+| `00`      | `44.1 kHz` |
+| `01`      | `48.0 kHz` |
+
+```text
+F0 00 20 33 01 00 73 00 10 00 F7 # 44.1 kHz
+F0 00 20 33 01 00 73 00 10 01 F7 # 48.0 kHz
+```
+
+This is the **audio sample rate**, not the DSP core clock — a distinction worth
+keeping, since the Virus's internal DSP clock is a separate thing entirely.
+Observed transmitted by the Virus with both values; the panel control it
+corresponds to was not pinned down, so treat the CONFIG location as approximate.
+
+### USB MIDI Port Active
+
+**Live edit:** `cmd=0x73`, param `0x52`.
+
+Range **`0`–`1`** (`Yes`/`No` in Access's own value list).
+
+| `<value>` | Meaning |
+| --------- | ------- |
+| `00`      | `No`    |
+| `01`      | `Yes`   |
+
+**Do not send this.** It is listed here because the Virus **transmits** it, not
+because a host should write it: setting it to `00` plausibly deactivates the very
+USB MIDI port a host is talking over, and that was not tested.
+
+It is genuinely useful as a **received** message. The Virus emits `0x52 = 00`
+unprompted when its USB connection is removed, and the same event restores
+[Keyboard Local](#keyboard-local) to `01`. Observed on a TI2 by capturing its DIN
+MIDI OUT while USB was unplugged.
+
+**This also explains a behaviour that otherwise looks like broken hardware**: while
+the USB MIDI port is active, the TI2 sends **nothing at all** on its 5-pin DIN
+MIDI OUT — no SysEx, and no note data even while keys are played. Unplug USB and
+DIN output starts working immediately. Confirmed on a TI2 with three controls: a
+MIDI keyboard into the same DIN input worked, the same cable moved to that keyboard
+worked, and the Virus's own output appeared only once USB was disconnected. So a
+DIN-only setup cannot capture from this synth while it is also plugged into a
+computer.
 
 ### Memory Protect
 
