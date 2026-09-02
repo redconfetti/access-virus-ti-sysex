@@ -12,6 +12,8 @@ Architecture: [virus.md](../misc/virus.md).
   * [No “load program by slot” SysEx in Single mode](#no-load-program-by-slot-sysex-in-single-mode)
   * [Single Bank Request](#single-bank-request)
   * [Controller Dump Request](#controller-dump-request)
+  * [Bank Checksum Request](#bank-checksum-request)
+  * [The checksum, in full](#the-checksum-in-full)
   * [What the request handlers touch internally](#what-the-request-handlers-touch-internally)
 * [RAM Single banks (A–D)](#ram-single-banks-ad)
 * [ROM Singles (A–Z)](#rom-singles-az)
@@ -31,6 +33,7 @@ All requests use header `F0 00 20 33 01 <device> … F7`.
 | **`0x32`** | **Single Bank Request**     | `32 <bank>`                   | **128 × Single Dump** — banks **`01`–`1E`** (RAM + ROM)                                       |
 | **`0x34`** | **Arrangement Request**     | `34 00` (TI)                  | Multi Dump + 16 × Single Dump — [single.md](single.md#arrangement-export-single-dump--16)     |
 | **`0x37`** | **Controller Dump Request** | `37 00 <part>`                | SysEx parameter stream — [controller.md](controller.md)                                       |
+| **`0x39`** | **Bank Checksum Request**   | `39 <bank>`                   | **Bank Checksum (`0x14`)** — RAM banks **`01`–`04`** only — [below](#bank-checksum-request)   |
 
 ### Single Request
 
@@ -140,6 +143,125 @@ sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x37 0x00 0x00
 sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x37 0x00 0x40
 ```
 
+### Bank Checksum Request
+
+**Request:** `cmd=0x39`. **Not previously documented here**, and absent from
+gearmulator's `virusLib::SysexMessageType` and from the Osirus/OsTIrus technical
+notes — but Access's own Virus Control plugin uses it on every connect.
+
+Ask the synth for a **table of per-slot checksums** covering one RAM bank, so a
+host can tell which of the 128 slots changed without downloading all of them.
+
+```text
+F0 00 20 33 01 <device> 39 <bank> F7
+```
+
+**Reply** — command **`0x14`**, a fixed **267-byte** message:
+
+```text
+F0 00 20 33 01 <device> 14 <bank> 00 <256 bytes> <checksum> F7
+```
+
+| Offset        | Field    | Value                                            |
+| ------------- | -------- | ------------------------------------------------ |
+| `0x06`        | Command  | `14`                                             |
+| `0x07`        | Bank     | echoes the request                               |
+| `0x08`        | —        | `00` in every reply observed                     |
+| `0x09`–`0x108`| Payload  | **256 bytes = 128 slots × 2 bytes**              |
+| `0x109`       | Checksum | same rule as a Single Dump                       |
+| `0x10A`       | End      | `F7`                                             |
+
+Checksum: `(device + 0x14 + bank + 0x00 + sum(bytes 0x09..0x108)) & 0x7F` —
+verified against replies.
+
+**Valid `<bank>`** — RAM only, unlike [Single Bank Request](#single-bank-request):
+
+| Request `bank` | Bank    | Result                                                        |
+| -------------- | ------- | ------------------------------------------------------------- |
+| `00`           | —       | **No reply**                                                  |
+| `01`–`04`      | RAM A–D | 267-byte `0x14` reply ✓                                       |
+| `05`–`1E`      | ROM A–Z | **No reply** ✓ — `0x32` serves ROM, `0x39` does not           |
+| `1F`+          | —       | **No reply** ✓                                                |
+
+RAM-only is consistent with the purpose: ROM contents cannot change.
+
+**Use banks `01`–`04`; there is no reason to walk the rest.** The table above records a sweep, but
+disassembling the handler on **5.1.7.00** shows the out-of-range cases are not simply ignored: for
+`bank` `05` and up it returns nothing *and* leaves the chip's Page Register at a computed value
+(`0x40 + 2 × (bank − 5)`) instead of restoring it. No handler on this page restores the Page
+Register — the next command that needs it sets it again — so this is not unique to `0x39`, and no
+harm was observed. It is simply argument space with nothing on the other side of it.
+
+**Entry `n` occupies data bytes `2n` and `2n+1`**, and the two bytes are a
+**deterministic function of that slot's patch content**:
+
+* Requesting the same unmodified bank returns a **byte-identical** table across a
+  power cycle, hours apart, over two different transports, and from a different
+  requester — so it is not a nonce, counter or timestamp. Confirmed for all four
+  RAM banks.
+* Writing a slot with **one single payload byte changed** moves that slot's entry
+  and no other. Done twice on slot 127: once altering a byte **outside** the patch
+  name, once altering **only** the 10-character name. Both moved the entry, so the
+  value depends on widely separated parts of the patch rather than on the name or
+  any one small field. Each write was **read back and verified** before the table
+  was re-requested, and restoring the original returned the table to
+  byte-identical.
+* The single-byte change moved data byte **`254`** alone — slot 127's low byte.
+  That is what fixes the layout as adjacent pairs: a two-plane layout (128 low
+  bytes then 128 high bytes) would have had to move byte `127` or `255`, and
+  neither moved.
+
+**The low byte is additive.** In both probes it moved by *exactly* the change in
+the payload's byte sum — `+1` for the single-byte edit, `+28` when the name's sum
+rose by 28. So it behaves as a weight-1 running sum reduced mod 128.
+
+**How Access's plugin uses it:** on connect it requests `39 01`–`39 04`, diffs the
+four tables against its cache, then issues `0x30` only for slots that differ — 28
+Single Requests instead of 512 in one observed session.
+
+```bash
+# Per-slot checksum table for RAM A
+sendmidi dev "<MIDI port>" hex syx 00 20 33 01 00 0x39 0x01
+receivemidi dev "<MIDI port>" syx
+
+# Linux
+amidi -p hw:1,0,1 -S 'F0 00 20 33 01 10 39 01 F7' -d -t 4
+```
+
+### The checksum, in full
+
+Let `payload` be the Single Dump's 513 bytes — everything between the 9-byte
+header and the message's own checksum, i.e. `message[9:-2]`. Then:
+
+```text
+S       = sum(payload) - payload[0] - payload[2] - payload[3] - payload[256]
+entry n = ( S & 0x7F , (S >> 7) & 0x7F )
+```
+
+A 14-bit sum of the payload with four bytes skipped, sent low septet first.
+
+Derived from 12 dumps, then checked by predicting **10 slots that were not used to
+derive it** (20, 33, 47, 55, 68, 71, 90, 103, 111, 119): **both bytes correct on all
+10**.
+
+**Why `payload[256]` is skipped — it is not patch data.** A TI Single Dump nests the
+older Virus A/B/C preset inside the newer one:
+
+```text
+header (9) | 256 A/B/C preset bytes | A/B/C checksum | 256 TI bytes | checksum | F7
+```
+
+256 + 1 + 256 = 513. The byte in the middle is the **A/B/C-compatibility checksum**,
+which the synth maintains itself — writing a Single Dump with that byte altered leaves
+it unchanged on the device, and the bank checksum ignores it. `payload[0]`, `[2]` and
+`[3]` are likewise skipped as preset metadata rather than parameter data (`payload[0]`
+reads `0x09`/`0x0A` across patches, consistent with a format version).
+
+The checksum **does** cover the TI-only half: single-byte probes at payload offsets
+260, 300, 400, 500 and 512 each moved the entry by `+1`.
+
+**One consequence worth noting:** equal entries do not guarantee two slots' dumps are
+byte-identical, since four bytes are outside the sum and it is a 14-bit reduction.
 ### What the request handlers touch internally
 
 From disassembling the TI2's SysEx dispatcher on **5.1.7.00**. Offered as background for anyone
